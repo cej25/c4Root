@@ -2,7 +2,7 @@
 
 // Switch all tasks related to {subsystem} on (1)/off (0)
 #define MCP_ON 1
-#define STEFAN_ON 0
+#define STEFAN_ON 1
 #define FRS_ON 0
 
 // Define FRS setup.C file - FRS should provide; place in /config/{expName}/frs/
@@ -21,7 +21,7 @@ typedef struct EXT_STR_h101_t
 } EXT_STR_h101;
 
 
-void chap_make_trees()
+void chap_hispec10()
 {   
     const Int_t nev = -1; const Int_t fRunId = 1; const Int_t fExpId = 1;
 
@@ -50,15 +50,9 @@ void chap_make_trees()
     FairLogger::GetLogger()->SetColoredLog(true);
 
     // Define where to read data from. Online = stream/trans server, Nearline = .lmd file.
-    //TString filename = "/LynxOS/mbsusr/mbsdaq/78puliser.lmd";
-    //TString filename = "/LynxOS/mbsusr/mbsdaq/mcpfirstrun.lmd";
-  // TString filename = "onlymcponlyleadingedgetrigger2tresholdadjusted.lmd";
-  // TString filename = "/LynxOS/mbsusr/mbsdaq/mbsrun/HISPEC10_test/noiserunmcpsundaybeforeexp.lmd"; // pulser file for finetime
-  TString filename ="/LynxOS/mbsusr/mbsdaq/mbsrun/x86_timesorter/20250410-1505_0001.lmd";
-    TString outputpath = "novemberbeamtimetestinrealoldfile.lmd";
-	//TString outputpath = "calum_test";
-    
-TString outputFileName = outputpath + "sorted.root";
+    TString filename = "/LynxOS/mbsusr/mbsdaq/78puliser.lmd";
+    TString outputpath = "output";
+    TString outputFileName = outputpath + ".root";
 
     // Create Online run
     Int_t refresh = 1; // Refresh rate for online histograms
@@ -68,11 +62,11 @@ TString outputFileName = outputpath + "sorted.root";
     EventHeader* EvtHead = new EventHeader();
     run->SetEventHeader(EvtHead);
     run->SetRunId(1);
-    //run->ActivateHttpServer(refresh, port);
+    run->ActivateHttpServer(refresh, port);
     run->SetSink(new FairRootFileSink(outputFileName));
-    //TFolder* histograms = new TFolder("Histograms", "Histograms");
-    //FairRootManager::Instance()->Register("Histograms", "Histogram Folder", histograms, false);
-    //run->AddObject(histograms);
+    TFolder* histograms = new TFolder("Histograms", "Histograms");
+    FairRootManager::Instance()->Register("Histograms", "Histogram Folder", histograms, false);
+    run->AddObject(histograms);
 
   
     // Create source using ucesb for input
@@ -128,10 +122,10 @@ TString outputFileName = outputpath + "sorted.root";
     if (MCP_ON)
     {
         H10MCPReader* unpackmcp = new H10MCPReader((EXT_STR_h101_mcp_onion*)&ucesb_struct.mcp, offsetof(EXT_STR_h101, mcp));
-        //unpackmcp->DoFineTimeCalOnline(config_path + "/mcp/mcp_fine_time_0804.root", 200000);
-        unpackmcp->SetInputFileFineTimeHistos(config_path + "/mcp/mcp_fine_time_0804.root");
+        //unpackmcp->DoFineTimeCalOnline(config_path + "/bplast/fine_time_G302_21FEB.root", 1000000);
+        // unpackmcp->SetInputFileFineTimeHistos(config_path + "/bplast/fine_time_G302_21FEB.root");
 
-        unpackmcp->SetOnline(false);
+        unpackmcp->SetOnline(true);
         source->AddReader(unpackmcp);
     }
 
@@ -139,7 +133,7 @@ TString outputFileName = outputpath + "sorted.root";
     {
         StefanReader* unpackstefan = new StefanReader((EXT_STR_h101_stefan_onion*)&ucesb_struct.stefan, offsetof(EXT_STR_h101, stefan));
         
-        unpackstefan->SetOnline(false);
+        unpackstefan->SetOnline(true);
         source->AddReader(unpackstefan);
     }
     
@@ -158,7 +152,7 @@ TString outputFileName = outputpath + "sorted.root";
     {
         H10MCPRaw2Cal* calmcp = new H10MCPRaw2Cal();
         
-        calmcp->SetOnline(false);
+        calmcp->SetOnline(true);
         run->AddTask(calmcp);
     }
     
@@ -166,7 +160,7 @@ TString outputFileName = outputpath + "sorted.root";
     {
         StefanRaw2Cal* calstefan = new StefanRaw2Cal();
 
-        calstefan->SetOnline(false);
+        calstefan->SetOnline(true);
         run->AddTask(calstefan);
     }
     
@@ -188,11 +182,50 @@ TString outputFileName = outputpath + "sorted.root";
     {
         FrsCal2Hit* hitfrs = new FrsCal2Hit();
         
-        hitfrs->SetOnline(false); 
+        hitfrs->SetOnline(true); 
         run->AddTask(hitfrs);
     } 
 
 
+    // ======================================================================================== //
+    // =========== **** SPECTRA ***** ========================================================= //
+    // ======================================================================================== //
+    
+    // ---------------------------------------------------------------------------------------- //
+    // *** Online Spectra ********************************************************************* //   
+    if (MCP_ON)
+    {
+        H10MCPOnlineSpectra* onlinemcp = new H10MCPOnlineSpectra();
+        
+        run->AddTask(onlinemcp);
+        
+    }
+    
+    if (STEFAN_ON)
+    {
+        StefanOnlineSpectra* onlinestefan = new StefanOnlineSpectra();
+        run->AddTask(onlinestefan);
+    }
+
+    TFrsConfiguration::Set_Z_range(30,50);
+    TFrsConfiguration::Set_AoQ_range(1.8,2.4);
+    TFrsConfiguration::Set_x2_range(-120,120);
+    TFrsConfiguration::Set_x4_range(-120,120);
+    std::vector<FrsGate*> frsgates{};
+ 
+    if (FRS_ON)
+    {
+        FrsOnlineSpectra* onlinefrs = new FrsOnlineSpectra(frsgates);
+        // For monitoring FRS on our side
+        FrsRawSpectra* frsrawspec = new FrsRawSpectra();
+        FrsCalSpectra* frscalspec = new FrsCalSpectra();
+    
+        run->AddTask(onlinefrs);
+        run->AddTask(frsrawspec);
+        run->AddTask(frscalspec);
+    }
+   
+  
     // Initialise
     run->Init();
     
@@ -205,8 +238,8 @@ TString outputFileName = outputpath + "sorted.root";
     cout << "\n\n" << endl;
 
     // Run
-   run->Run((nev < 0) ? nev : 0, (nev < 0) ? 0 : nev); 
-//un->Run(10000000); 
+    run->Run((nev < 0) ? nev : 0, (nev < 0) ? 0 : nev); 
+
     // ---------------------------------------------------------------------------------------- //
     // *** Finish Macro *********************************************************************** //
 

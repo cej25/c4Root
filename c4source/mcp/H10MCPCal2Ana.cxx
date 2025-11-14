@@ -95,7 +95,7 @@ void H10MCPCal2Ana::Exec(Option_t* option)
             if (mcp_id == 0 && type == 0 && number == 0) 
             { 
                 if (t1_seen) { t1_discard++; continue; }
-                else { T1 = hit->Get_fast_lead_time(); t1_seen = true; }
+                else { T1 = hit->Get_fast_lead_time(); E1 = hit->Get_energy(); t1_seen = true; }
             }
             if (mcp_id == 0 && type == 1 && number == 0) 
             { 
@@ -121,7 +121,7 @@ void H10MCPCal2Ana::Exec(Option_t* option)
             if (mcp_id == 1 && type == 0 && number == 0) 
             { 
                 if (t2_seen) { t2_discard++; continue; }
-                else { T2 = hit->Get_fast_lead_time(); t2_seen = true; }
+                else { T2 = hit->Get_fast_lead_time(); E2 = hit->Get_energy(); t2_seen = true; }
             }
             if (mcp_id == 1 && type == 1 && number == 0) 
             { 
@@ -156,11 +156,13 @@ void H10MCPCal2Ana::Exec(Option_t* option)
                 full_event,
                 mcp1_complete,
                 mcp2_complete,
+                E1,
                 T1,
                 X11,
                 X12,
                 Y11,
                 Y12,
+                E2,
                 T2,
                 X21,
                 X22,
@@ -194,11 +196,13 @@ void H10MCPCal2Ana::FinishEvent()
     full_event = false;
     mcp1_complete = false;
     mcp2_complete = false;
+    E1 = 0;
     T1 = 0;
     X11 = 0;
     X12 = 0;
     Y11 = 0;
     Y12 = 0;
+    E2 = 0;
     T2 = 0;
     X21 = 0;
     X22 = 0;

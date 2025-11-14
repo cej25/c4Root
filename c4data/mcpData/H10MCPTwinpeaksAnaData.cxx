@@ -7,11 +7,13 @@ H10MCPTwinpeaksAnaData::H10MCPTwinpeaksAnaData()
     full_event = 0;
     mcp1_complete = 0;
     mcp2_complete = 0;
+    E1 = 0;
     T1 = 0;
     X11 = 0;
     X12 = 0;
     Y11 = 0;
     Y12 = 0;
+    E2 = 0;
     T2 = 0;
     X21 = 0;
     X22 = 0;
@@ -24,11 +26,13 @@ H10MCPTwinpeaksAnaData::H10MCPTwinpeaksAnaData(Long64_t abs_time,
                                             Bool_t full,
                                             Bool_t mcp1,
                                             Bool_t mcp2,
+                                            Double_t e1,
                                             Double_t t1,
                                             Double_t x11,
                                             Double_t x12,
                                             Double_t y11,
                                             Double_t y12,
+                                            Double_t e2,
                                             Double_t t2,
                                             Double_t x21,
                                             Double_t x22,
@@ -40,11 +44,13 @@ H10MCPTwinpeaksAnaData::H10MCPTwinpeaksAnaData(Long64_t abs_time,
     full_event = full;
     mcp1_complete = mcp1;
     mcp2_complete = mcp2;
+    E1 = e1;
     T1 = t1;
     X11 = x11;
     X12 = x12;
     Y11 = y11;
     Y12 = y12;
+    E2 = e2;
     T2 = t2;
     X21 = x21;
     X22 = x22;

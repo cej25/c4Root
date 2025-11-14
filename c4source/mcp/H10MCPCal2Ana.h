@@ -61,11 +61,13 @@ class H10MCPCal2Ana : public FairTask
         Bool_t full_event = false;
         Bool_t mcp1_complete = false;
         Bool_t mcp2_complete = false;
+        Double_t E1 = 0;
         Double_t T1 = 0;
         Double_t X11 = 0;
         Double_t X12 = 0;
         Double_t Y11 = 0;
         Double_t Y12 = 0;
+        Double_t E2 = 0;
         Double_t T2 = 0;
         Double_t X21 = 0;
         Double_t X22 = 0;

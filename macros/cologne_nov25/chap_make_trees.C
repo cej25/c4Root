@@ -2,22 +2,12 @@
 
 // Switch all tasks related to {subsystem} on (1)/off (0)
 #define MCP_ON 1
-#define STEFAN_ON 0
-#define FRS_ON 0
-
-// Define FRS setup.C file - FRS should provide; place in /config/{expName}/frs/
-extern "C"
-{
-    #include "../../config/s115/frs/setup_115_022_2025_s1calib_conv.C"
-}
 
 // Struct should containt all subsystem h101 structures
 typedef struct EXT_STR_h101_t
 {   
     EXT_STR_h101_unpack_t eventheaders;
     EXT_STR_h101_mcp_t mcp;
-    EXT_STR_h101_stefan_t stefan;
-    EXT_STR_h101_frs_onion_t frs;
 } EXT_STR_h101;
 
 
@@ -49,16 +39,17 @@ void chap_make_trees()
     FairLogger::GetLogger()->SetLogScreenLevel("INFO");
     FairLogger::GetLogger()->SetColoredLog(true);
 
-    // Define where to read data from. Online = stream/trans server, Nearline = .lmd file.
-    //TString filename = "/LynxOS/mbsusr/mbsdaq/78puliser.lmd";
-    //TString filename = "/LynxOS/mbsusr/mbsdaq/mcpfirstrun.lmd";
-  // TString filename = "onlymcponlyleadingedgetrigger2tresholdadjusted.lmd";
-  // TString filename = "/LynxOS/mbsusr/mbsdaq/mbsrun/HISPEC10_test/noiserunmcpsundaybeforeexp.lmd"; // pulser file for finetime
-  TString filename ="/LynxOS/mbsusr/mbsdaq/mbsrun/x86_timesorter/20250410-1505_0001.lmd";
-    TString outputpath = "novemberbeamtimetestinrealoldfile.lmd";
-	//TString outputpath = "calum_test";
-    
-TString outputFileName = outputpath + "sorted.root";
+    // Input file - lmd
+    TString filepath = "/mnt/data/lmd/test/";
+    TString filename = filepath + "novemberpulser.lmd";
+    //TString filename = filepath + "20250410-1505_0001.lmd";
+
+    //TString filename ="/LynxOS/mbsusr/mbsdaq/mbsrun/x86_timesorter/20250410-1505_0001.lmd";
+
+    // Output file - root
+    TString outputpath = "/mnt/data/trees/";    
+    TString outputFileName = outputpath + "novemberpulser_tree.root";
+    //TString outputFileName = outputpath + "20250410-1505_0001_tree.root";
 
     // Create Online run
     Int_t refresh = 1; // Refresh rate for online histograms
@@ -68,55 +59,20 @@ TString outputFileName = outputpath + "sorted.root";
     EventHeader* EvtHead = new EventHeader();
     run->SetEventHeader(EvtHead);
     run->SetRunId(1);
-    //run->ActivateHttpServer(refresh, port);
     run->SetSink(new FairRootFileSink(outputFileName));
-    //TFolder* histograms = new TFolder("Histograms", "Histograms");
-    //FairRootManager::Instance()->Register("Histograms", "Histogram Folder", histograms, false);
-    //run->AddObject(histograms);
 
-  
-    // Create source using ucesb for input
     EXT_STR_h101 ucesb_struct;
     TString ntuple_options = "UNPACK,RAW"; // Define which level of data to unpack
     UcesbSource* source = new UcesbSource(filename, ntuple_options, ucesb_path, &ucesb_struct, sizeof(ucesb_struct));
     source->SetMaxEvents(nev);
     run->SetSource(source);
 
-    // ------------------------------------------------------------------------------------ //
-    // *** Initialise FRS parameters ****************************************************** //
-    
-    TFRSParameter* frs = new TFRSParameter();
-    TMWParameter* mw = new TMWParameter();
-    TTPCParameter* tpc = new TTPCParameter();
-    TMUSICParameter* music = new TMUSICParameter();
-    TLABRParameter* labr = new TLABRParameter();
-    TSCIParameter* sci = new TSCIParameter();
-    TIDParameter* id = new TIDParameter();
-    TSIParameter* si = new TSIParameter();
-    TMRTOFMSParameter* mrtof = new TMRTOFMSParameter();
-    TRangeParameter* range = new TRangeParameter();
-    setup(frs,mw,tpc,music,labr,sci,id,si,mrtof,range); // Function defined in frs setup.C macro
-    TFrsConfiguration::SetParameters(frs,mw,tpc,music,labr,sci,id,si,mrtof,range);
-    //TFrsConfiguration::SetParameterFilename();
-    
-    // ------------------------------------------------------------------------------------ //
-    // *** Initialise Gates *************************************************************** //
-    
-    
-    // ------------------------------------------------------------------------------------ //
-    // *** Initialise Correlations ******************************************************** //
-    
-    TCorrelationsConfiguration::SetCorrelationsFile(config_path + "/correlations.dat");
 
-    
+
     // ------------------------------------------------------------------------------------ //
     // *** Load Detector Configurations *************************************************** //
     TH10MCPConfiguration::SetDetectorConfigurationFile(config_path + "/mcp/mcp_mapping.txt");
-    TFrsConfiguration::SetConfigPath(config_path + "/frs/");
-    TFrsConfiguration::SetCrateMapFile(config_path + "/frs/crate_map.txt");
  
-    // MCP STEFAN..
-
     // ------------------------------------------------------------------------------------- //
     // *** Read Subsystems - comment out unwanted systems ********************************** //
 
@@ -128,69 +84,26 @@ TString outputFileName = outputpath + "sorted.root";
     if (MCP_ON)
     {
         H10MCPReader* unpackmcp = new H10MCPReader((EXT_STR_h101_mcp_onion*)&ucesb_struct.mcp, offsetof(EXT_STR_h101, mcp));
-        //unpackmcp->DoFineTimeCalOnline(config_path + "/mcp/mcp_fine_time_0804.root", 200000);
-        unpackmcp->SetInputFileFineTimeHistos(config_path + "/mcp/mcp_fine_time_0804.root");
+        //unpackmcp->DoFineTimeCalOnline(config_path + "/mcp/test_pulser_14nov25.root", 7000); //make the fine time calibration with a long file (2000000)
+        unpackmcp->SetInputFileFineTimeHistos(config_path + "/mcp/test_pulser_14nov25.root"); //create a tree with this fine time calibration
 
         unpackmcp->SetOnline(false);
         source->AddReader(unpackmcp);
     }
 
-    if (STEFAN_ON)
-    {
-        StefanReader* unpackstefan = new StefanReader((EXT_STR_h101_stefan_onion*)&ucesb_struct.stefan, offsetof(EXT_STR_h101, stefan));
-        
-        unpackstefan->SetOnline(false);
-        source->AddReader(unpackstefan);
-    }
-    
-    if (FRS_ON)
-    {
-        FrsReader* unpackfrs = new FrsReader((EXT_STR_h101_frs_onion*)&ucesb_struct.frs, offsetof(EXT_STR_h101, frs));
-        
-        unpackfrs->SetOnline(true);
-        
-        source->AddReader(unpackfrs);
-    }
-    
     // ---------------------------------------------------------------------------------------- //
     // *** Calibrate Subsystems - comment out unwanted systems ******************************** //
     if (MCP_ON)
     {
         H10MCPRaw2Cal* calmcp = new H10MCPRaw2Cal();
-        
-        calmcp->SetOnline(false);
+        calmcp->SetOnline(true);
         run->AddTask(calmcp);
+
+        H10MCPCal2Ana* anamcp = new H10MCPCal2Ana();
+        anamcp->SetOnline(false);
+        run->AddTask(anamcp);       
     }
     
-    if (STEFAN_ON)
-    {
-        StefanRaw2Cal* calstefan = new StefanRaw2Cal();
-
-        calstefan->SetOnline(false);
-        run->AddTask(calstefan);
-    }
-    
-    if (FRS_ON)
-    {
-        FrsRaw2Cal* calfrs = new FrsRaw2Cal();
-        
-        calfrs->SetOnline(true);
-        run->AddTask(calfrs);
-    }
-
-
-    // ---------------------------------------------------------------------------------------- //
-    // *** Analyse Subsystem Hits ************************************************************* //
-    
-    // Stefan MCP etc..
-    
-    if (FRS_ON)
-    {
-        FrsCal2Hit* hitfrs = new FrsCal2Hit();
-        
-        hitfrs->SetOnline(false); 
-        run->AddTask(hitfrs);
-    } 
 
 
     // Initialise
@@ -206,7 +119,6 @@ TString outputFileName = outputpath + "sorted.root";
 
     // Run
    run->Run((nev < 0) ? nev : 0, (nev < 0) ? 0 : nev); 
-//un->Run(10000000); 
     // ---------------------------------------------------------------------------------------- //
     // *** Finish Macro *********************************************************************** //
 
