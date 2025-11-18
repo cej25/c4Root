@@ -18,7 +18,7 @@
 // Definition of setup and configuration files
 // FRS
 #define FRS_SETUP_FILE "../../../config/shiyan/frs/setup/setup_103_016_2025_run6_conv.C"
-#define FRS_CONFIG_FILE "../../../config/shiyan/frs/general/frs_config_v5.C"
+#define FRS_CONFIG_FILE "../../../config/shiyan/frs/general/frs_config_v6.C"
 // LISA
 #define LISA_CONFIG_FILE "../../../config/shiyan/lisa/general/lisa_config_v2.C"
 

@@ -104,11 +104,49 @@ InitStatus FrsRawNearlineSpectra::Init()
         h1_sci_dt[ihist] = MakeTH1(dir_sci_dt, "F", Form("h1_sci_dt_%i", ihist), Form("Scintillator dT Channel %i", ihist), 4096, 0, 4096); // need to figure out ranges
     }
 
-    // MHTDC T
+    // To replace with crate mapping maybe
+    std::map<int, std::string> mhtdcNames = {
+        {16, "mhtdc_11LA"},
+        {17, "mhtdc_11LB"},
+        {18, "mhtdc_11LC"},
+        {19, "mhtdc_11LD"},
+        {20, "mhtdc_11RA"},
+        {21, "mhtdc_11RB"},
+        {22, "mhtdc_11RC"},
+        {23, "mhtdc_11RD"},
+        {2,  "mhtdc_21L"},
+        {3,  "mhtdc_21R"},
+        {13, "mhtdc_22L"},
+        {14, "mhtdc_22R"},
+        {10, "mhtdc_31L"},
+        {11, "mhtdc_31R"},
+        {0,  "mhtdc_41L"},
+        {1,  "mhtdc_41R"},
+        {4,  "mhtdc_42L"},
+        {15, "mhtdc_42R"},
+        {6,  "mhtdc_43L"},
+        {7,  "mhtdc_43R"},
+        {8,  "mhtdc_81L"},
+        {9,  "mhtdc_81R"}
+    };
+
     for (int ihist = 0; ihist < 32; ihist++)
     {
-        h1_sci_mhtdc[ihist] = MakeTH1(dir_sci_mhtdc, "F", Form("h1_sci_mhtdc_%i", ihist), Form("Scintillator MHTDC T Channel %i", ihist), 4000, 0, 100000); // need to figure out ranges
+        std::string hname;
+        if (mhtdcNames.count(ihist))
+            hname = mhtdcNames[ihist];
+        else
+            hname = "empty";
+
+        h1_sci_mhtdc[ihist] = MakeTH1(dir_sci_mhtdc,"F",Form("h1_%s_%i", hname.c_str(), ihist),Form("%s", hname.c_str()),4000, 0, 100000);
     }
+
+
+    // // MHTDC T
+    // for (int ihist = 0; ihist < 32; ihist++)
+    // {
+    //     h1_sci_mhtdc[ihist] = MakeTH1(dir_sci_mhtdc, "F", Form("h1_sci_mhtdc_%i", ihist), Form("Scintillator MHTDC T Channel %i", ihist), 4000, 0, 100000); // need to figure out ranges
+    // }
 
 
     
