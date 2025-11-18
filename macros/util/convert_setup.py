@@ -49,6 +49,7 @@ def convert_macro(input_file):
                     found_rho_line = True
                     if found_sci11_used == False:
                         outfile.write('  id->sci11_in = 0; // 1 = SCI11 used for analysis - SCI11 in beamline since 2025\n')
+                        found_sci11_used = True
                     if found_sc11x == False:
                         outfile.write('  id->use_sc11x = 0; // 1 = SCI11 is used for XPOS - SCI11 in beamline since 2025\n')
                         found_sc11x = True
