@@ -11,6 +11,7 @@ void setup(TFRSParameter* frs,
         TMRTOFMSParameter* mrtof,
         TRangeParameter* range)
 {
+  id->use_sc11x = 0; // 1 = SCI11 is used - SCI11 used since 2025
   frs->rho0[0]   = 1.; //TA-S2
   frs->rho0[1]   = 1.; //S2-S4
   frs->rho0[2]   = 1.; //S4-S8
@@ -90,7 +91,7 @@ void setup(TFRSParameter* frs,
   id->Z_HTM_select = 3; //1=sc21, 2=sc22, 3=scM01
 
   //S1S2 PID options
-  id->use_sc11x = 0; //0 = brho from TA-S2, no s1 x used, 1 = x from sc11 lr dt
+  id->use_sci11x = 0; //0 = brho from TA-S2, no s1 x used, 1 = x from sc11 lr dt
   
   //=============primary Z and plot ranges=============//
   frs->primary_z = 47.;
@@ -148,10 +149,10 @@ void setup(TFRSParameter* frs,
   // MHTDCAnalysis S1-S2
   id->mhtdc_length_sc1121 = (18.07667 + 0.001*(frs->dist_SC21 - frs->dist_focS2) + 0.001*(frs->dist_focS1 - frs->dist_SC11) );// SCI 11-21
   id->mhtdc_length_sc1122 = (18.07667 + 0.001*(frs->dist_SC21 - frs->dist_focS2) + 0.001*(frs->dist_focS1 - frs->dist_SC11) );// SCI 11-22
-  id->mhtdc_vel_a_music21[0]= 609.38;//parameters need to be set (copied from s4)
-  id->mhtdc_vel_a_music21[1]= 1167.8;//parameters need to be set (copied from s4)
-  id->mhtdc_vel_a_music21[2]= 0.0;
-  id->mhtdc_vel_a_music21[3]=0.0;
+  id->mhtdc_vel_a_music21_s1s2[0]= 609.38;//parameters need to be set (copied from s4)
+  id->mhtdc_vel_a_music21_s1s2[1]= 1167.8;//parameters need to be set (copied from s4)
+  id->mhtdc_vel_a_music21_s1s2[2]= 0.0;
+  id->mhtdc_vel_a_music21_s1s2[3]=0.0;
   id->mhtdc_offset_z_music21=0.0;
 
   // MHTDCAnalysis S2-S4
@@ -552,10 +553,10 @@ void setup(TFRSParameter* frs,
   id->vel_music43_a[3] =  0.0;
   
  //  MUSIC21 velocity MHTDC 
-  id->mhtdc_vel_a_music21[0] = 4813.8; //107Ag  MUSIC21 calibration
-  id->mhtdc_vel_a_music21[1] = 11333.88;
-  id->mhtdc_vel_a_music21[2] = 119.49;
-  id->mhtdc_vel_a_music21[3] = 0.;
+  id->mhtdc_vel_a_music21_s1s2[0] = 4813.8; //107Ag  MUSIC21 calibration
+  id->mhtdc_vel_a_music21_s1s2[1] = 11333.88;
+  id->mhtdc_vel_a_music21_s1s2[2] = 119.49;
+  id->mhtdc_vel_a_music21_s1s2[3] = 0.;
   
    //  MUSIC22 velocity MHTDC 
   id->mhtdc_vel_a_music22[0] = 0.;

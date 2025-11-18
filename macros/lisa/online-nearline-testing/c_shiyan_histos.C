@@ -37,7 +37,7 @@ typedef struct EXT_STR_h101_t
 
 } EXT_STR_h101;
 
-void e_shiyan_histos()
+void c_shiyan_histos()
 {   
     const Int_t nev = -1; const Int_t fRunId = 1; const Int_t fExpId = 1;
     // ::: Experiment name

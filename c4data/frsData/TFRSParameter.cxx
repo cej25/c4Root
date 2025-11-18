@@ -1075,6 +1075,7 @@ TIDParameter::TIDParameter(const char* name)
   x_s2_select = 1;
   tof_s2_select = 1;
   tof_s4_select = 1;
+  sci11_in = 0; // sci11 used for analysis
   use_sc11x = 0; // sci11 position not used for x
 
   id_tofoff2 = 267690.0;    // Offset (ps), 22sep03

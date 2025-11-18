@@ -51,7 +51,9 @@ add_subdirectory(online/bb7)
 add_subdirectory(nearline/bb7)
 add_subdirectory(online/beammonitor)
 add_subdirectory(online/bgo)
-#add_subdirectory(nearline/bgo)
+add_subdirectory(nearline/bgo)
+# add_subdirectory(online/bplast)
+# add_subdirectory(nearline/bgo)
 
 set(SRCS
 #online

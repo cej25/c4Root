@@ -26,7 +26,19 @@ def convert_macro(input_file):
             
             # Flag to start copying lines after finding "frs->rho0"
             found_rho_line = False
+            found_sci11_used = False
+            found_sc11 = False
+            found_tof_s2_select = False
 
+            # Check for use_sc11 first
+            for line in lines:
+                if "id-sci11_in" in line:
+                    found_sci11_used = True
+                if "id->use_sc11x" in line:
+                    found_sc11 = True
+                if "id->tof_s2_select" in line:
+                    found_tof_s2_select = True
+            
             for line in lines:
                 # Skip the line containing `an->`
                 if 'an->' in line:
@@ -35,7 +47,16 @@ def convert_macro(input_file):
                 # Start copying after "frs->rho0"
                 if "frs->rho0" in line:
                     found_rho_line = True
-                
+                    if found_sci11_used == False:
+                        outfile.write('  id->sci11_in = 0; // 1 = SCI11 used for analysis - SCI11 in beamline since 2025\n')
+                    if found_sc11x == False:
+                        outfile.write('  id->use_sc11x = 0; // 1 = SCI11 is used for XPOS - SCI11 in beamline since 2025\n')
+                        found_sc11x = True
+                    if found_tof_s2_select = False:
+                        outfile.write('  id->tof_s2_select = 0; // 0 = no SCI11, 1 = tof 11-21, 2 = tof 11-22\n')
+                        found_tof_s2_select = True
+            
+
                 if found_rho_line:
                     modified_line = line.replace("id->vel_a[", "id->vel_music41_a[")
                     modified_line = modified_line.replace("id->vel_a2[", "id->vel_music42_a[")
@@ -64,6 +85,9 @@ def convert_macro(input_file):
                     modified_line = modified_line.replace("id->offset_z3 ", "id->offset_z43 ")
                     
                     outfile.write(modified_line)
+                
+            #if found_sc11 == True
+                #write "id->use_sc11x = 0;" somewhere
         
         print(f"Converted macro saved to {output_file}")
     except Exception as e:
