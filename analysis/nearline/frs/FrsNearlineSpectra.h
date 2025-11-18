@@ -22,7 +22,7 @@ class TFrsConfiguration;
 class TExperimentConfiguration;
 class EventHeader;
 class FrsHitData;
-class FrsCalSciData;
+class FrsCalData;
 class FrsGate;
 class TFile;
 class TDirectory;
@@ -325,7 +325,10 @@ class FrsNearlineSpectra : public FairTask
 
         // :::: MHTDC SCI ::::
         // ::: Sci position
-        TH1* h1_mhtdc_sci_x_11;
+        TH1* h1_mhtdc_sci_x_11a;
+        TH1* h1_mhtdc_sci_x_11b;
+        TH1* h1_mhtdc_sci_x_11c;
+        TH1* h1_mhtdc_sci_x_11d;
         TH1* h1_mhtdc_sci_x_21;
         TH1* h1_mhtdc_sci_x_22;
         TH1* h1_mhtdc_sci_x_31;
@@ -359,7 +362,10 @@ class FrsNearlineSpectra : public FairTask
         TH1* h1_mhtdc_sci_81r;
 
         // ::: DT L-R 
-        TH1* h1_mhtdc_sci_dt_11lr;
+        TH1* h1_mhtdc_sci_dt_11lra;
+        TH1* h1_mhtdc_sci_dt_11lrb;
+        TH1* h1_mhtdc_sci_dt_11lrc;
+        TH1* h1_mhtdc_sci_dt_11lrd;
         TH1* h1_mhtdc_sci_dt_21lr;
         TH1* h1_mhtdc_sci_dt_22lr;
         TH1* h1_mhtdc_sci_dt_31lr;
@@ -369,19 +375,10 @@ class FrsNearlineSpectra : public FairTask
         TH1* h1_mhtdc_sci_dt_81lr;
 
         // ::: TOF
-        TH1* h1_mhtdc_sci_tof_11_21;
-        TH1* h1_mhtdc_sci_tof_21_41;
-        TH1* h1_mhtdc_sci_tof_21_42;
-        TH1* h1_mhtdc_sci_tof_21_81;
-        TH1* h1_mhtdc_sci_tof_22_41;
-        TH1* h1_mhtdc_sci_tof_22_81;
-
-        TH1* h1_mhtdc_sci_tof_11_21_selected;
-        TH1* h1_mhtdc_sci_tof_21_41_selected;
-        TH1* h1_mhtdc_sci_tof_21_42_selected;
-        TH1* h1_mhtdc_sci_tof_21_81_selected;
-        TH1* h1_mhtdc_sci_tof_22_41_selected;
-        TH1* h1_mhtdc_sci_tof_22_81_selected;
+        TH1* h1_mhtdc_sci_tof_s1s2_full;
+        TH1* h1_mhtdc_sci_tof_s2s4_full;
+        TH1* h1_mhtdc_sci_tof_s1s2;
+        TH1* h1_mhtdc_sci_tof_s2s4;
 
         // :::: MHTDC Gated :::: 
         // ---------2D ---------
