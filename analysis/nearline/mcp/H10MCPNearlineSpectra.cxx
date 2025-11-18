@@ -60,6 +60,11 @@ InitStatus H10MCPNearlineSpectra::Init()
     dir_mcp = gDirectory->mkdir("MCPs");
     gDirectory->cd("MCPs");
 
+    dir_Position = dir_mcp->mkdir("Position");
+    dir_Energy = dir_mcp->mkdir("Energy");
+    dir_Gated = dir_mcp->mkdir("Gated");
+
+
     // Time difference
     h1_dT = MakeTH1(dir_mcp, "F", "h1_dT", "dT MCP2 - MCP1", 4000, -100, 100);  
     // Time vs position
@@ -69,43 +74,73 @@ InitStatus H10MCPNearlineSpectra::Init()
     h2_dY2_dT = MakeTH2(dir_mcp,"F", "h2_dY2_dT", " dT vs Y22- Y21" , 100, -250, 250, 100, -100, 100);
     
     // HeatMap
-    h2_MCP1_HeatMap = MakeTH2(dir_mcp,"F", "h2_MCP1_HeatMap", "MCP1 HeatMap" , 500, -250, 250, 500, -250, 250);
-    h2_MCP2_HeatMap = MakeTH2(dir_mcp,"F", "h2_MCP2_HeatMap", "MCP2 HeatMap" , 500, -250, 250, 500, -250, 250);
+    h2_MCP1_HeatMap = MakeTH2(dir_Position,"F", "h2_MCP1_HeatMap", "MCP1 HeatMap" , 500, -250, 250, 500, -250, 250);
+    h2_MCP2_HeatMap = MakeTH2(dir_Position,"F", "h2_MCP2_HeatMap", "MCP2 HeatMap" , 500, -250, 250, 500, -250, 250);
 
     // Position 1D
-    h1_dX1 = MakeTH1(dir_mcp, "F", "h1_dX1", " X12 - X11", 100, -250, 250); 
-    h1_dY1 = MakeTH1(dir_mcp, "F", "h1_dY1", " Y12 - Y11", 100, -250, 250); 
-    h1_dX2 = MakeTH1(dir_mcp, "F", "h1_dX2", " X22 - X21", 100, -250, 250); 
-    h1_dY2 = MakeTH1(dir_mcp, "F", "h1_dY2", " Y22 - Y21", 100, -250, 250); 
+    h1_dX1 = MakeTH1(dir_Position, "F", "h1_dX1", " X12 - X11", 100, -250, 250); 
+    h1_dY1 = MakeTH1(dir_Position, "F", "h1_dY1", " Y12 - Y11", 100, -250, 250); 
+    h1_dX2 = MakeTH1(dir_Position, "F", "h1_dX2", " X22 - X21", 100, -250, 250); 
+    h1_dY2 = MakeTH1(dir_Position, "F", "h1_dY2", " Y22 - Y21", 100, -250, 250); 
 
-    // Energy 1D
-    h1_E1 = MakeTH1(dir_mcp, "F", "h1_E1", " E1 MCP1", 1000, 0, 40000); 
-    h1_E2 = MakeTH1(dir_mcp, "F", "h1_E2", " E2 MCP2", 1000, 0, 40000); 
+    // Energy 1D - Time channel
+    h1_E1 = MakeTH1(dir_Energy, "F", "h1_E1", " E1 MCP1", 1000, 0, 40000); 
+    h1_E2 = MakeTH1(dir_Energy, "F", "h1_E2", " E2 MCP2", 1000, 0, 40000); 
+    // Energy 1D - Position channels
+    h1_E_X11 = MakeTH1(dir_Energy, "F", "h1_E_X11", " E_X11 MCP1", 1000, 0, 40000); 
+    h1_E_X12 = MakeTH1(dir_Energy, "F", "h1_E_X12", " E_X12 MCP1", 1000, 0, 40000); 
+    h1_E_Y11 = MakeTH1(dir_Energy, "F", "h1_E_Y11", " E_Y12 MCP1", 1000, 0, 40000); 
+    h1_E_Y12 = MakeTH1(dir_Energy, "F", "h1_E_Y12", " E_Y12 MCP1", 1000, 0, 40000); 
+
+    h1_E_X21 = MakeTH1(dir_Energy, "F", "h1_E_X21", " E_X11 MCP2", 1000, 0, 40000); 
+    h1_E_X22 = MakeTH1(dir_Energy, "F", "h1_E_X22", " E_X12 MCP2", 1000, 0, 40000); 
+    h1_E_Y21 = MakeTH1(dir_Energy, "F", "h1_E_Y21", " E_Y12 MCP2", 1000, 0, 40000); 
+    h1_E_Y22 = MakeTH1(dir_Energy, "F", "h1_E_Y22", " E_Y12 MCP2", 1000, 0, 40000); 
 
     // Time vs Energy
     h2_E1_dT = MakeTH2(dir_mcp,"F", "h2_E1_dT", " dT vs E1" , 100, -250, 250, 1000, 0, 40000);
     h2_E2_dT = MakeTH2(dir_mcp,"F", "h2_E2_dT", " dT vs E2" , 100, -250, 250, 1000, 0, 40000);
 
     // :::Gated Histograms
+    //    Legend: Pos1Gate = Gate on the position of MCP1, as a TCut drawn on the heatmap of the MCP1
+    //            Pos1Gate = Gate on the position of MCP2, as a TCut drawn on the heatmap of the MCP2
+    //            dTGate = Gate on the dT spectrum
+
+    // All of these will prob need to be vectors to get multiple gates
     // Time gated on position
-    h1_dT_Pos1Gate = MakeTH1(dir_mcp, "F", "h1_dT_Pos1Gate", " dT Gated on MCP1 Position", 4000, -100, 100);
-    h1_dT_Pos2Gate = MakeTH1(dir_mcp, "F", "h1_dT_Pos2Gate", " dT Gated on MCP2 Position", 4000, -100, 100);
+    h1_dT_Pos1Gate = MakeTH1(dir_Gated, "F", "h1_dT_Pos1Gate", " dT Gated on MCP1 Position", 4000, -100, 100);
+    h1_dT_Pos2Gate = MakeTH1(dir_Gated, "F", "h1_dT_Pos2Gate", " dT Gated on MCP2 Position", 4000, -100, 100);
 
     // Energy gated on position
-    h1_E1_Pos1Gate = MakeTH1(dir_mcp, "F", "h1_E1_Pos1Gate", " E1 MCP1 Gated on MCP1 Position", 1000, 0, 40000); 
-    h1_E2_Pos1Gate = MakeTH1(dir_mcp, "F", "h1_E2_Pos1Gate", " E2 MCP2 Gated on MCP1 Position", 1000, 0, 40000); 
-    h1_E2_Pos2Gate = MakeTH1(dir_mcp, "F", "h1_E2_Pos2Gate", " E2 MCP2 Gated on MCP2 Position", 1000, 0, 40000); 
+    h1_E1_Pos1Gate = MakeTH1(dir_Gated, "F", "h1_E1_Pos1Gate", " E1 MCP1 Gated on MCP1 Position", 1000, 0, 40000); 
+    h1_E2_Pos1Gate = MakeTH1(dir_Gated, "F", "h1_E2_Pos1Gate", " E2 MCP2 Gated on MCP1 Position", 1000, 0, 40000); 
+    h1_E2_Pos2Gate = MakeTH1(dir_Gated, "F", "h1_E2_Pos2Gate", " E2 MCP2 Gated on MCP2 Position", 1000, 0, 40000);
+    
+    h1_E_X11_Pos1Gate = MakeTH1(dir_Gated, "F", "h1_E_X11_Pos1Gate", " E of X11 ch Gated on MCP1 Position", 1000, 0, 40000); 
+    h1_E_X12_Pos1Gate = MakeTH1(dir_Gated, "F", "h1_E_X12_Pos1Gate", " E of X12 ch Gated on MCP1 Position", 1000, 0, 40000); 
+    h1_E_Y11_Pos1Gate = MakeTH1(dir_Gated, "F", "h1_E_Y11_Pos1Gate", " E of Y11 ch Gated on MCP1 Position", 1000, 0, 40000); 
+    h1_E_Y12_Pos1Gate = MakeTH1(dir_Gated, "F", "h1_E_Y12_Pos1Gate", " E of Y12 ch Gated on MCP1 Position", 1000, 0, 40000); 
+
+    h1_E_X21_Pos2Gate = MakeTH1(dir_Gated, "F", "h1_E_X21_Pos2Gate", " E of X21 ch Gated on MCP2 Position", 1000, 0, 40000); 
+    h1_E_X22_Pos2Gate = MakeTH1(dir_Gated, "F", "h1_E_X22_Pos2Gate", " E of X22 ch Gated on MCP2 Position", 1000, 0, 40000); 
+    h1_E_Y21_Pos2Gate = MakeTH1(dir_Gated, "F", "h1_E_Y21_Pos2Gate", " E of Y21 ch Gated on MCP2 Position", 1000, 0, 40000); 
+    h1_E_Y22_Pos2Gate = MakeTH1(dir_Gated, "F", "h1_E_Y22_Pos2Gate", " E of Y22 ch Gated on MCP2 Position", 1000, 0, 40000); 
 
     // HeatMap gated on positions
-    h2_MCP1_HeatMap_Pos2Gate = MakeTH2(dir_mcp,"F", "h2_MCP1_HeatMap_Pos2Gate", "MCP1 HeatMap Gated on MCP2 Position" , 500, -250, 250, 500, -250, 250);
-    h2_MCP2_HeatMap_Pos1Gate = MakeTH2(dir_mcp,"F", "h2_MCP2_HeatMap_Pos1Gate", "MCP2 HeatMap Gated on MCP1 Position" , 500, -250, 250, 500, -250, 250);
+    h2_MCP1_HeatMap_Pos2Gate = MakeTH2(dir_Gated,"F", "h2_MCP1_HeatMap_Pos2Gate", "MCP1 HeatMap Gated on MCP2 Position" , 500, -250, 250, 500, -250, 250);
+    h2_MCP2_HeatMap_Pos1Gate = MakeTH2(dir_Gated,"F", "h2_MCP2_HeatMap_Pos1Gate", "MCP2 HeatMap Gated on MCP1 Position" , 500, -250, 250, 500, -250, 250);
 
     // Time vs Energy gated on positions
-    h2_E1_dT_Pos1Gate = MakeTH2(dir_mcp,"F", "h2_E1_dT_Pos1Gate", " dT vs E1 gated on MCP1 Position" , 100, -250, 250, 1000, 0, 40000);
-    h2_E2_dT_Pos2Gate = MakeTH2(dir_mcp,"F", "h2_E2_dT_Pos1Gate", " dT vs E2 gated on MCP2 Position" , 100, -250, 250, 1000, 0, 40000);
+    h2_E1_dT_Pos1Gate = MakeTH2(dir_Gated,"F", "h2_E1_dT_Pos1Gate", " dT vs E1 gated on MCP1 Position" , 100, -250, 250, 1000, 0, 40000);
+    h2_E1_dT_Pos2Gate = MakeTH2(dir_Gated,"F", "h2_E1_dT_Pos2Gate", " dT vs E1 gated on MCP2 Position" , 100, -250, 250, 1000, 0, 40000);
+    h2_E1_dT_Pos1Gate_Pos2Gate = MakeTH2(dir_Gated,"F", "h2_E1_dT_Pos1Gate_Pos2Gate", " dT vs E1 gated on MCP1 and MCP2 Positions" , 100, -250, 250, 1000, 0, 40000);
+
+    h2_E2_dT_Pos2Gate = MakeTH2(dir_Gated,"F", "h2_E2_dT_Pos2Gate", " dT vs E2 gated on MCP2 Position" , 100, -250, 250, 1000, 0, 40000);
+    h2_E2_dT_Pos1Gate = MakeTH2(dir_Gated,"F", "h2_E2_dT_Pos1Gate", " dT vs E2 gated on MCP1 Position" , 100, -250, 250, 1000, 0, 40000);
+    h2_E2_dT_Pos1Gate_Pos2Gate = MakeTH2(dir_Gated,"F", "h2_E2_dT_Pos1Gate_Pos2Gate", " dT vs E2 gated on MCP1 and MCP2 Positions" , 100, -250, 250, 1000, 0, 40000);
 
     // MCP2 Position gated on MCP1 position and dT gate
-    h2_MCP2_HeatMap_Pos1Gate_dTGate = MakeTH2(dir_mcp,"F", "h2_MCP2_HeatMap_Pos1Gate_dTGate", "MCP2 HeatMap Gated on MCP1 Position and dT" , 500, -250, 250, 500, -250, 250);
+    h2_MCP2_HeatMap_Pos1Gate_dTGate = MakeTH2(dir_Gated,"F", "h2_MCP2_HeatMap_Pos1Gate_dTGate", "MCP2 HeatMap Gated on MCP1 Position and dT" , 500, -250, 250, 500, -250, 250);
 
 
     // Dennis stuff, unclear
@@ -153,12 +188,20 @@ void H10MCPNearlineSpectra::Exec(Option_t* option)
 
         T1 = hit->T1;
         E1 = hit->E1;
+        E_X11 = hit->E_X11;
+        E_X12 = hit->E_X12;
+        E_Y11 = hit->E_Y11;
+        E_Y12 = hit->E_Y12;
         X11 = hit->X11;
         X12 = hit->X12;
         Y11 = hit->Y11;
         Y12 = hit->Y12;
         T2 = hit->T2;
         E2 = hit->E2;
+        E_X21 = hit->E_X21;
+        E_X22 = hit->E_X22;
+        E_Y21 = hit->E_Y21;
+        E_Y22 = hit->E_Y22;
         X21 = hit->X21;
         X22 = hit->X22;
         Y21 = hit->Y21;
@@ -183,12 +226,23 @@ void H10MCPNearlineSpectra::Exec(Option_t* option)
         // :::Energy 1D
         h1_E1->Fill(E1);
         h1_E2->Fill(E2);
+
+        h1_E_X11->Fill(E_X11);
+        h1_E_X12->Fill(E_X12);
+        h1_E_Y11->Fill(E_Y11);
+        h1_E_Y12->Fill(E_Y12);
+
+        h1_E_X21->Fill(E_X21);
+        h1_E_X22->Fill(E_X22);
+        h1_E_Y21->Fill(E_Y21);
+        h1_E_Y22->Fill(E_Y22);
+
         // :::Time vs Energy
         if(E1!=0)h2_E1_dT->Fill(E1, T2-T1);
         if(E2!=0)h2_E2_dT->Fill(E2, T2-T1);
 
         // :::Gated histograms
-        // For gate condition
+        // In the gate loop
 
             // Time gated on MCPx positions
             /*
@@ -201,6 +255,15 @@ void H10MCPNearlineSpectra::Exec(Option_t* option)
             h1_E1_Pos1Gate->Fill(E1);
             h1_E2_Pos1Gate->Fill(E2);
             h1_E2_Pos2Gate->Fill(E2);
+
+            h1_E_X11_Pos1Gate->Fill(E_X11);
+            h1_E_X12_Pos1Gate->Fill(E_X12);
+            h1_E_Y11_Pos1Gate->Fill(E_Y11);
+            h1_E_Y12_Pos1Gate->Fill(E_Y12);
+            h1_E_X21_Pos1Gate->Fill(E_X21);
+            h1_E_X22_Pos1Gate->Fill(E_X22);
+            h1_E_Y21_Pos1Gate->Fill(E_Y21);
+            h1_E_Y22_Pos1Gate->Fill(E_Y22);
             */
 
             // HeatMaps Gated on positions
@@ -212,7 +275,13 @@ void H10MCPNearlineSpectra::Exec(Option_t* option)
             // Time vs Energy gated on position
             /*
             if(E1!=0)h2_E1_dT_Pos1Gate->Fill(E1, T2-T1);
+            if(E1!=0)h2_E1_dT_Pos2Gate->Fill(E1, T2-T1);
+
             if(E2!=0)h2_E2_dT_Pos2Gate->Fill(E2, T2-T1);
+            if(E2!=0)h2_E2_dT_Pos1Gate->Fill(E2, T2-T1);
+
+            if(E1!=0)h2_E1_dT_Pos1Gate_Pos2Gate->Fill(E1, T2-T1);
+            if(E2!=0)h2_E2_dT_Pos1Gate_Pos2Gate->Fill(E2, T2-T1);
             */
 
             // MCP2 heatmap gated on MCP1 position and dT

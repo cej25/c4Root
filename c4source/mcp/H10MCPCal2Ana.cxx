@@ -100,22 +100,22 @@ void H10MCPCal2Ana::Exec(Option_t* option)
             if (mcp_id == 0 && type == 1 && number == 0) 
             { 
                 if (x11_seen) { x11_discard++; continue; }
-                else { X11 = hit->Get_fast_lead_time(); x11_seen = true; }
+                else { X11 = hit->Get_fast_lead_time(); E_X11 = hit->Get_energy(); x11_seen = true; }
             }
             if (mcp_id == 0 && type == 1 && number == 1) 
             { 
                 if (x12_seen) { x12_discard++; continue; }
-                else { X12 = hit->Get_fast_lead_time(); x12_seen = true; }
+                else { X12 = hit->Get_fast_lead_time(); E_X12 = hit->Get_energy(); x12_seen = true; }
             }
             if (mcp_id == 0 && type == 2 && number == 0) 
             { 
                 if (y11_seen) { y11_discard++; continue; }
-                else { Y11 = hit->Get_fast_lead_time(); y11_seen = true; }
+                else { Y11 = hit->Get_fast_lead_time(); E_Y11 = hit->Get_energy(); y11_seen = true; }
             }
             if (mcp_id == 0 && type == 2 && number == 1) 
             { 
                 if (y12_seen) { y12_discard++; continue; }
-                else { Y12 = hit->Get_fast_lead_time(); y12_seen = true; } 
+                else { Y12 = hit->Get_fast_lead_time(); E_Y12 = hit->Get_energy(); y12_seen = true; } 
             }
 
             if (mcp_id == 1 && type == 0 && number == 0) 
@@ -126,22 +126,22 @@ void H10MCPCal2Ana::Exec(Option_t* option)
             if (mcp_id == 1 && type == 1 && number == 0) 
             { 
                 if (x21_seen) { x21_discard++; continue; }
-                else { X21 = hit->Get_fast_lead_time(); x21_seen = true; }
+                else { X21 = hit->Get_fast_lead_time(); E_X21 = hit->Get_energy(); x21_seen = true; }
             }
             if (mcp_id == 1 && type == 1 && number == 1) 
             { 
                 if (x22_seen) { x22_discard++; continue; }
-                else { X22 = hit->Get_fast_lead_time(); x22_seen = true; }
+                else { X22 = hit->Get_fast_lead_time(); E_X22 = hit->Get_energy(); x22_seen = true; }
             }
             if (mcp_id == 1 && type == 2 && number == 0) 
             { 
                 if (y21_seen) { y21_discard++; continue; }
-                else { Y21 = hit->Get_fast_lead_time(); y21_seen = true; }
+                else { Y21 = hit->Get_fast_lead_time(); E_Y21 = hit->Get_energy(); y21_seen = true; }
             }
             if (mcp_id == 1 && type == 2 && number == 1) 
             { 
                 if (y22_seen) { y22_discard++; continue; }
-                else { Y22 = hit->Get_fast_lead_time(); y22_seen = true; }
+                else { Y22 = hit->Get_fast_lead_time(); E_Y22 = hit->Get_energy(); y22_seen = true; }
             }
         
         }
@@ -157,12 +157,20 @@ void H10MCPCal2Ana::Exec(Option_t* option)
                 mcp1_complete,
                 mcp2_complete,
                 E1,
+                E_X11,
+                E_X12,
+                E_Y11,
+                E_Y12,
                 T1,
                 X11,
                 X12,
                 Y11,
                 Y12,
                 E2,
+                E_X21,
+                E_X22,
+                E_Y21,
+                E_Y22,
                 T2,
                 X21,
                 X22,
@@ -197,12 +205,20 @@ void H10MCPCal2Ana::FinishEvent()
     mcp1_complete = false;
     mcp2_complete = false;
     E1 = 0;
+    E_X11 = 0;
+    E_X12 = 0;
+    E_Y11 = 0;
+    E_Y12 = 0;
     T1 = 0;
     X11 = 0;
     X12 = 0;
     Y11 = 0;
     Y12 = 0;
     E2 = 0;
+    E_X21 = 0;
+    E_X22 = 0;
+    E_Y21 = 0;
+    E_Y22 = 0;
     T2 = 0;
     X21 = 0;
     X22 = 0;

@@ -57,15 +57,28 @@ class H10MCPNearlineSpectra : public FairTask
         
         // Directory
         TDirectory* dir_mcp;
+
+        TDirectory* dir_Position;
+        TDirectory* dir_Energy;
+        TDirectory* dir_Gated;
+
         // Variable
         double T1 = 0;
         double E1 = 0;
+        double E_X11 = 0;
+        double E_X12 = 0;
+        double E_Y11 = 0;
+        double E_Y12 = 0;
         double X11 = 0;
         double X12 = 0;
         double Y11 = 0;
         double Y12 = 0;
         double T2 = 0;
         double E2 = 0;
+        double E_X21 = 0;
+        double E_X22 = 0;
+        double E_Y21 = 0;
+        double E_Y22 = 0;
         double X21 = 0;
         double X22 = 0;
         double Y21 = 0;
@@ -86,6 +99,15 @@ class H10MCPNearlineSpectra : public FairTask
         TH1* h1_E1;
         TH1* h1_E2;
 
+        TH1* h1_E_X11;
+        TH1* h1_E_X12;
+        TH1* h1_E_Y11;
+        TH1* h1_E_Y12;
+        TH1* h1_E_X21;
+        TH1* h1_E_X22;
+        TH1* h1_E_Y21;
+        TH1* h1_E_Y22;
+
         TH2* h2_MCP1_HeatMap;
         TH2* h2_MCP2_HeatMap;
 
@@ -100,11 +122,25 @@ class H10MCPNearlineSpectra : public FairTask
         TH1* h1_E2_Pos1Gate;
         TH1* h1_E2_Pos2Gate;
 
+        TH1* h1_E_X11_Pos1Gate;
+        TH1* h1_E_X12_Pos1Gate;
+        TH1* h1_E_Y11_Pos1Gate;
+        TH1* h1_E_Y12_Pos1Gate;
+        TH1* h1_E_X21_Pos2Gate;
+        TH1* h1_E_X22_Pos2Gate;
+        TH1* h1_E_Y21_Pos2Gate;
+        TH1* h1_E_Y22_Pos2Gate;
+
         TH2* h2_MCP1_HeatMap_Pos2Gate;
         TH2* h2_MCP2_HeatMap_Pos1Gate;
 
         TH2* h2_E1_dT_Pos1Gate;
+        TH2* h2_E1_dT_Pos2Gate;
         TH2* h2_E2_dT_Pos2Gate;
+        TH2* h2_E2_dT_Pos1Gate;
+
+        TH2* h2_E1_dT_Pos1Gate_Pos2Gate;
+        TH2* h2_E2_dT_Pos1Gate_Pos2Gate;
         
         TH2* h2_MCP2_HeatMap_Pos1Gate_dTGate;
         
