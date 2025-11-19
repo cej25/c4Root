@@ -130,6 +130,13 @@ InitStatus FrsRawNearlineSpectra::Init()
         {9,  "mhtdc_81R"}
     };
 
+    // list of histograms
+    // h1_sci_mhtdc_11la = MakeTH1(dir_sci_mhtdc,"F", "h1_sci_mhtdc_11la", "MHTDC 11LA" ,4000, 0, 100000);
+    // h1_sci_mhtdc_11lb = MakeTH1(dir_sci_mhtdc,"F", "h1_sci_mhtdc_11lb", "MHTDC 11LB" ,4000, 0, 100000);
+    // etc
+
+
+
     for (int ihist = 0; ihist < 32; ihist++)
     {
         std::string hname;
@@ -139,6 +146,9 @@ InitStatus FrsRawNearlineSpectra::Init()
             hname = "empty";
 
         h1_sci_mhtdc[ihist] = MakeTH1(dir_sci_mhtdc,"F",Form("h1_%s_%i", hname.c_str(), ihist),Form("%s", hname.c_str()),4000, 0, 100000);
+        
+
+
     }
 
 
@@ -227,6 +237,12 @@ void FrsRawNearlineSpectra::Exec(Option_t* option)
         h1_sci_dt[i]->Fill(sciDT[i]);
         for (int j = 0; j < sciMHTDC[i].size(); j++) h1_sci_mhtdc[i]->Fill(sciMHTDC[i][j]);
     }
+
+    // fill list of histograms
+    // h1_sci_mhtdc_11la->Fill(sciMHTDC[frs_config->Get_mhtdc_11LA_chan()]);
+    // h1_sci_mhtdc_11lb->Fill(sciMHTDC[frs_config->Get_mhtdc_11LB_chan()]);
+    // etc
+
     // auto const & musicItem = musicArray->at(0);
     // musicE = musicItem.Get_music_e();
     // musicT = musicItem.Get_music_t();
