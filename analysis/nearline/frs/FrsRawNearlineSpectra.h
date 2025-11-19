@@ -88,30 +88,6 @@ class FrsRawNearlineSpectra : public FairTask
         TDirectory* dir_tpc_adc;
         TDirectory* dir_tpc_n_adc[7];
         TDirectory* dir_tpc_tdc;
-
-        // Data
-        std::vector<Float_t> sci_11LA_chan;
-        std::vector<Float_t> sci_11LB_chan;
-        std::vector<Float_t> sci_11LC_chan;
-        std::vector<Float_t> sci_11LD_chan;
-        std::vector<Float_t> sci_21L_chan;
-        std::vector<Float_t> sci_22L_chan;
-        std::vector<Float_t> sci_31L_chan;
-        std::vector<Float_t> sci_41L_chan;
-        std::vector<Float_t> sci_42L_chan;
-        std::vector<Float_t> sci_43L_chan;
-        std::vector<Float_t> sci_81L_chan;
-        std::vector<Float_t> sci_11RA_chan;
-        std::vector<Float_t> sci_11RB_chan;
-        std::vector<Float_t> sci_11RC_chan;
-        std::vector<Float_t> sci_11RD_chan;
-        std::vector<Float_t> sci_21R_chan;
-        std::vector<Float_t> sci_22R_chan;
-        std::vector<Float_t> sci_31R_chan;
-        std::vector<Float_t> sci_41R_chan;
-        std::vector<Float_t> sci_42R_chan;
-        std::vector<Float_t> sci_43R_chan;
-        std::vector<Float_t> sci_81R_chan;
     
         // Histograms
         TH1* h1_sci_de[32];
