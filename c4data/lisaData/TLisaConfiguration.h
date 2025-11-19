@@ -42,6 +42,8 @@ class TLisaConfiguration
         static void SetDetectorCoefficientFile(std::string fp) { calibration_file = fp; }
         static void SetLISAGateFebex(const std::string& file) { gate_ranges_files.emplace_back(file); }
         static void SetLISAGateMWD(const std::string& file) { gate_ranges_MWD_files.emplace_back(file); }
+        static void SetLISAGatedEdX(const std::string& file) { gate_ranges_dedx_files.emplace_back(file); }
+
         //static void SetLISAGateFebex(std::string fp) { gate_ranges_file = fp; }
         //static void SetLISAGateMWD(std::string fp) { gate_ranges_MWD_file = fp; }
         static void SetExcludedChannels(std::set<std::tuple<int, int, int>> ex) { excluded = ex; }
@@ -78,6 +80,9 @@ class TLisaConfiguration
         const std::map<int, std::vector<std::tuple<std::string, double, double>>>& GatesLISAMWD() const;
         //std::map<int, std::pair<double,double>> GatesLISAMWD() const;
         bool GatesLISAMWDLoaded() const;  
+        // ::: Gates for LISA  - dEdX
+        const std::map<int, std::vector<std::tuple<std::string, double, double>>>& GatesLISAdEdX() const;
+        bool GatesLISAdEdXLoaded() const; 
 
         void SetTraceLength(int length) { trace_length = length; }
         int GetTraceLength() { return trace_length; }
@@ -223,6 +228,7 @@ class TLisaConfiguration
         //static std::string gate_ranges_file;
         static std::vector<std::string> gate_ranges_files;  // For handling different gate files
         static std::vector<std::string> gate_ranges_MWD_files;
+        static std::vector<std::string> gate_ranges_dedx_files;
 
         TLisaConfiguration();
 
@@ -235,6 +241,7 @@ class TLisaConfiguration
         void ReadCalibrationCoefficients();
         void ReadLISAGateFebexFile();
         void ReadLISAGateMWDFile();
+        void ReadLISAGatedEdXFile();
 
         static TLisaConfiguration* instance;
 
@@ -252,6 +259,8 @@ class TLisaConfiguration
         std::map<int, std::vector<std::tuple<std::string, double, double>>> gate_LISA_febex;
         //std::map<int, std::vector<std::pair<double, double>>> gate_LISA_febex;
         std::map<int, std::vector<std::tuple<std::string, double, double>>> gate_LISA_MWD;
+        std::map<int, std::vector<std::tuple<std::string, double, double>>> gate_LISA_dEdX;
+
 
         int num_layers;   
         int xmax;
@@ -276,6 +285,7 @@ class TLisaConfiguration
         bool timeshift_calibration_coeffs_loaded = 0;
         bool gates_febex_loaded = 0;
         bool gates_MWD_loaded = 0;
+        bool gates_dEdX_loaded = 0;
 
         int trace_length = 4000; // default 4k
 
@@ -356,10 +366,15 @@ inline const std::map<int, std::vector<std::tuple<std::string, double, double>>>
 {
     return gate_LISA_febex;
 }
-//::: Gates fir Lisa - MWD
+//::: Gates for Lisa - MWD
 inline const std::map<int, std::vector<std::tuple<std::string, double, double>>>& TLisaConfiguration::GatesLISAMWD() const
 {
     return gate_LISA_MWD;
+}
+//::: Gates for Lisa - dEdX
+inline const std::map<int, std::vector<std::tuple<std::string, double, double>>>& TLisaConfiguration::GatesLISAdEdX() const
+{
+    return gate_LISA_dEdX;
 }
 // inline std::map<int, std::pair<double,double>> TLisaConfiguration::GatesLISAFebex() const
 // {
@@ -443,6 +458,10 @@ inline bool TLisaConfiguration::GatesLISAFebexLoaded() const
 inline bool TLisaConfiguration::GatesLISAMWDLoaded() const
 {
     return gates_MWD_loaded;
+}
+inline bool TLisaConfiguration::GatesLISAdEdXLoaded() const
+{
+    return gates_dEdX_loaded;
 }
 
 /*

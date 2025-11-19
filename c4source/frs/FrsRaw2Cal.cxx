@@ -259,7 +259,7 @@ void FrsRaw2Cal::ProcessScintillators()
     sciMHTDC = sciItem.Get_mhtdc_array();
     Double_t conv_ns = sci->mhtdc_factor_ch_to_ns;
 
-    // Getting Scintillator data in ns, for the range selected from the raw sci data
+    // Getting Scintillator data and converting in ns, for the range selected from the raw sci data
     // --- 11L A ---
     for (auto val : sciMHTDC[frs_config->Get_mhtdc_11LA_chan()])
     {

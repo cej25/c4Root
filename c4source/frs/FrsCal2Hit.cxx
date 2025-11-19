@@ -1346,7 +1346,7 @@ void FrsCal2Hit::ProcessSci_MHTDC()
     //c4LOG(info,"hits in 21l 2 : " << hits_in_21l_tofs1s2_selected);
 
     //c4LOG(info,"size of mhtdc tof2111 : " << mhtdc_tof2111_selected.size());
-    c4LOG(info," sci : " << id->sci11_in);
+    //c4LOG(info," sci : " << id->sci11_in);
     if(id->sci11_in == 0)
     {
         //c4LOG(info,"ciao = 0a");
@@ -2398,13 +2398,13 @@ void FrsCal2Hit::ProcessIDs_MHTDC()
         for (int i = 0; i < hits_in_s1s2; i++) 
         {
 
-            c4LOG(info,"hits in s1s2: " << hits_in_s1s2);
-            c4LOG(info,"tof2111 size: " << mhtdc_tof2111_selected.size());
+            //c4LOG(info,"hits in s1s2: " << hits_in_s1s2);
+            //c4LOG(info,"tof2111 size: " << mhtdc_tof2111_selected.size());
 
             temp_id_mhtdc_tof_s1s2[i] = mhtdc_tof2111_selected[i];
-            c4LOG(info,"TOFa_a2");
+            //c4LOG(info,"TOFa_a2");
             temp_id_mhtdc_beta_s1s2[i] = (id->mhtdc_length_sc1121 / temp_id_mhtdc_tof_s1s2[i]) / speed_light; // can never be outside 0 and 1
-            c4LOG(info,"TOFa_a3");
+            //c4LOG(info,"TOFa_a3");
             //c4LOG(info, "BETA : " << temp_id_mhtdc_beta_s1s2[i]);
         }
     }
@@ -2633,9 +2633,9 @@ void FrsCal2Hit::ProcessIDs_MHTDC()
         }
     }
 
-    c4LOG(info, " hits in s1s2 : " << sci21l_hits_tofs2s4_pos_selected.size());
-    c4LOG(info, " hits in s2s4 : " << sci41l_hits_tofs2s4_selected.size());
-    c4LOG(info, " ------ ");
+    //c4LOG(info, " hits in s1s2 : " << sci21l_hits_tofs2s4_pos_selected.size());
+    //c4LOG(info, " hits in s2s4 : " << sci41l_hits_tofs2s4_selected.size());
+    //c4LOG(info, " ------ ");
 
 
     for (int i = 0; i < id_mhtdc_beta_s1s2_selected.size();  i++)
