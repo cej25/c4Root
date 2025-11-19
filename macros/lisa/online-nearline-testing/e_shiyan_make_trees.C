@@ -18,14 +18,19 @@
 // Definition of setup and configuration files
 // FRS
 //#define FRS_SETUP_FILE "../../../config/shiyan/frs/setup/setup_103_016_2025_run6_conv.C" //run6
-#define FRS_SETUP_FILE "../../../config/shiyan/frs/setup/setup_103_016_2025_setting10_conv.C" //run18
-//#define FRS_SETUP_FILE "../../../config/shiyan/frs/setup/setup_103_016_2025_setting13_conv.C" //run19
-
+//#define FRS_SETUP_FILE "../../../config/shiyan/frs/setup/setup_103_016_2025_setting10_conv.C" //run18
+#define FRS_SETUP_FILE "../../../config/shiyan/frs/setup/setup_103_016_2025_setting13_conv_nov25.C" //run19
 //#define FRS_SETUP_FILE "../../../config/shiyan/frs/setup/setup_103_020_2025_conv.C" //setting 20
 
-#define FRS_CONFIG_FILE "../../../config/shiyan/frs/general/frs_config_v5.C"
-// LISA
+#define FRS_CONFIG_FILE "../../../config/shiyan/frs/general/frs_config_v6.C"
 #define LISA_CONFIG_FILE "../../../config/shiyan/lisa/general/lisa_config_v2.C"
+
+//pareeksha
+//#define FRS_SETUP_FILE "../../../config/pareeksha/frs/setup_Fragment_conv_updated.C"
+
+//#define FRS_CONFIG_FILE "../../../config/pareeksha/frs/general/frs_config_v0.C"
+// LISA
+//#define LISA_CONFIG_FILE "../../../config/pareeksha/lisa/general/lisa_config_pareeksha.C"
 
 
 // :::  Define FRS and LISA setup.C file; place in /config/shiyan/frs/setup/
@@ -61,6 +66,7 @@ void e_shiyan_make_trees()
     const Int_t nev = -1; const Int_t fRunId = 1; const Int_t fExpId = 1;
     // ::: Experiment name
     TString fExpName = "shiyan";
+    //TString fExpName = "pareeksha";
 
     // ::: Here you define commonly used path
     TString c4Root_path = "/u/gandolfo/c4/c4Root";
@@ -85,12 +91,18 @@ void e_shiyan_make_trees()
 
     
     // ::: FILE  PATH
+    //Test with pareeksha
+    //TString inputpath = "/u/gandolfo/data/lustre/gamma/s092_s143_files/ts/";
+    //TString filename = inputpath + "run_0033_0001.lmd";
+
+    // Shiyan
     TString inputpath = "/u/gandolfo/data/lustre/gamma/s092_s103_files/ts/";                       // Data from LISA
-    TString filename = inputpath + "run_0018_0001.lmd";
+    TString filename = inputpath + "run_0019_0001.lmd";
 
     // ::: OUTPUT 
-    TString outputpath = "/u/gandolfo/data/shiyan_debug/frs_mhit/";   //testing
-    TString outputFilename = outputpath + "run_0018_0001_tree_test.root";
+    TString outputpath = "/u/gandolfo/data/shiyan_debug/frs_mhit/";   //shiyan
+    //TString outputpath = "/u/gandolfo/data/pareeksha_debug/";  
+    TString outputFilename = outputpath + "run_0019_0001_tree.root";
     
     // ::: Create online run
     Int_t refresh = 10; // not needed
@@ -213,12 +225,12 @@ void e_shiyan_make_trees()
         run->AddTask(hitfrs);
     } 
 
-    if (LISA_ON && LISA_HIT)
-    {
-        LisaCal2Hit* lisacal2hit = new LisaCal2Hit();
-        lisacal2hit->SetOnline(false);
-        run->AddTask(lisacal2hit);
-    }
+    // if (LISA_ON && LISA_HIT)
+    // {
+    //     LisaCal2Hit* lisacal2hit = new LisaCal2Hit();
+    //     lisacal2hit->SetOnline(false);
+    //     run->AddTask(lisacal2hit);
+    // }
 
     // Write information on setup and config in a "info" tree
     TString frsSetupFile = FRS_SETUP_FILE;

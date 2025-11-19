@@ -35,7 +35,7 @@ def convert_macro(input_file):
                 if "id-sci11_in" in line:
                     found_sci11_used = True
                 if "id->use_sc11x" in line:
-                    found_sc11 = True
+                    found_sc11x = True
                 if "id->tof_s2_select" in line:
                     found_tof_s2_select = True
             
