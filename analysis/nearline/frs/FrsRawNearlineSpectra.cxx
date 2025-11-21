@@ -38,6 +38,17 @@
 FrsRawNearlineSpectra::FrsRawNearlineSpectra()
     :   FrsRawNearlineSpectra("FrsRawNearlineSpectra", 1)
 {
+    frs_config = TFrsConfiguration::GetInstance();
+    frs = frs_config->FRS();
+    mw = frs_config->MW();
+    tpc = frs_config->TPC();
+    music = frs_config->MUSIC();
+    labr = frs_config->LABR();
+    sci = frs_config->SCI();
+    id = frs_config->ID();
+    si = frs_config->SI();
+    mrtof = frs_config->MRTOF();
+    range = frs_config->Range();
 }
 
 FrsRawNearlineSpectra::FrsRawNearlineSpectra(const TString& name, Int_t iVerbose)
@@ -48,6 +59,18 @@ FrsRawNearlineSpectra::FrsRawNearlineSpectra(const TString& name, Int_t iVerbose
     ,   musicArray(nullptr)
     ,   tpcArray(nullptr)
 {
+    exp_config = TExperimentConfiguration::GetInstance();
+    frs_config = TFrsConfiguration::GetInstance();
+    frs = frs_config->FRS();
+    mw = frs_config->MW();
+    tpc = frs_config->TPC();
+    music = frs_config->MUSIC();
+    labr = frs_config->LABR();
+    sci = frs_config->SCI();
+    id = frs_config->ID();
+    si = frs_config->SI();
+    mrtof = frs_config->MRTOF();
+    range = frs_config->Range();
 }
 
 FrsRawNearlineSpectra::~FrsRawNearlineSpectra()
@@ -103,6 +126,32 @@ InitStatus FrsRawNearlineSpectra::Init()
     {
         h1_sci_dt[ihist] = MakeTH1(dir_sci_dt, "F", Form("h1_sci_dt_%i", ihist), Form("Scintillator dT Channel %i", ihist), 4096, 0, 4096); // need to figure out ranges
     }
+
+    // MHTDC SCI
+    h1_sci_mhtdc_11la = MakeTH1(dir_sci_mhtdc,"F","h1_sci_mhtdc_11la","MHTDC 11LA", 4000, 0, 100000);
+    h1_sci_mhtdc_11lb = MakeTH1(dir_sci_mhtdc,"F","h1_sci_mhtdc_11lb","MHTDC 11LB", 4000, 0, 100000);
+    h1_sci_mhtdc_11lc = MakeTH1(dir_sci_mhtdc,"F","h1_sci_mhtdc_11lc","MHTDC 11LC", 4000, 0, 100000);
+    h1_sci_mhtdc_11ld = MakeTH1(dir_sci_mhtdc,"F","h1_sci_mhtdc_11ld","MHTDC 11LD", 4000, 0, 100000);
+    h1_sci_mhtdc_21l = MakeTH1(dir_sci_mhtdc,"F","h1_sci_mhtdc_21l","MHTDC 21L", 4000, 0, 100000);
+    h1_sci_mhtdc_22l = MakeTH1(dir_sci_mhtdc,"F","h1_sci_mhtdc_22l","MHTDC 22L", 4000, 0, 100000);
+    h1_sci_mhtdc_31l = MakeTH1(dir_sci_mhtdc,"F","h1_sci_mhtdc_31l","MHTDC 31L", 4000, 0, 100000);
+    h1_sci_mhtdc_41l = MakeTH1(dir_sci_mhtdc,"F","h1_sci_mhtdc_41l","MHTDC 41L", 4000, 0, 100000);
+    h1_sci_mhtdc_42l = MakeTH1(dir_sci_mhtdc,"F","h1_sci_mhtdc_42l","MHTDC 42L", 4000, 0, 100000);
+    h1_sci_mhtdc_43l = MakeTH1(dir_sci_mhtdc,"F","h1_sci_mhtdc_43l","MHTDC 43L", 4000, 0, 100000);
+    h1_sci_mhtdc_81l = MakeTH1(dir_sci_mhtdc,"F","h1_sci_mhtdc_81l","MHTDC 81L", 4000, 0, 100000);
+
+    h1_sci_mhtdc_11ra = MakeTH1(dir_sci_mhtdc,"F","h1_sci_mhtdc_11ra","MHTDC 11RA", 4000, 0, 100000);
+    h1_sci_mhtdc_11rb = MakeTH1(dir_sci_mhtdc,"F","h1_sci_mhtdc_11rb","MHTDC 11RB", 4000, 0, 100000);
+    h1_sci_mhtdc_11rc = MakeTH1(dir_sci_mhtdc,"F","h1_sci_mhtdc_11rc","MHTDC 11RC", 4000, 0, 100000);
+    h1_sci_mhtdc_11rd = MakeTH1(dir_sci_mhtdc,"F","h1_sci_mhtdc_11rd","MHTDC 11RD", 4000, 0, 100000);
+    h1_sci_mhtdc_21r = MakeTH1(dir_sci_mhtdc,"F","h1_sci_mhtdc_21r","MHTDC 21R", 4000, 0, 100000);
+    h1_sci_mhtdc_22r = MakeTH1(dir_sci_mhtdc,"F","h1_sci_mhtdc_22r","MHTDC 22R", 4000, 0, 100000);
+    h1_sci_mhtdc_31r = MakeTH1(dir_sci_mhtdc,"F","h1_sci_mhtdc_31r","MHTDC 31R", 4000, 0, 100000);
+    h1_sci_mhtdc_41r = MakeTH1(dir_sci_mhtdc,"F","h1_sci_mhtdc_41r","MHTDC 41R", 4000, 0, 100000);
+    h1_sci_mhtdc_42r = MakeTH1(dir_sci_mhtdc,"F","h1_sci_mhtdc_42r","MHTDC 42R", 4000, 0, 100000);
+    h1_sci_mhtdc_43r = MakeTH1(dir_sci_mhtdc,"F","h1_sci_mhtdc_43r","MHTDC 43R", 4000, 0, 100000);
+    h1_sci_mhtdc_81r = MakeTH1(dir_sci_mhtdc,"F","h1_sci_mhtdc_81r","MHTDC 81R", 4000, 0, 100000);
+
 
     // To replace with crate mapping maybe
     std::map<int, std::string> mhtdcNames = {
@@ -238,10 +287,30 @@ void FrsRawNearlineSpectra::Exec(Option_t* option)
         for (int j = 0; j < sciMHTDC[i].size(); j++) h1_sci_mhtdc[i]->Fill(sciMHTDC[i][j]);
     }
 
-    // fill list of histograms
-    // h1_sci_mhtdc_11la->Fill(sciMHTDC[frs_config->Get_mhtdc_11LA_chan()]);
+    for (int i = 0; i < sciMHTDC[frs_config->Get_mhtdc_11LA_chan()].size(); i++) h1_sci_mhtdc_11la->Fill(sciMHTDC[frs_config->Get_mhtdc_11LA_chan()][i]);
     // h1_sci_mhtdc_11lb->Fill(sciMHTDC[frs_config->Get_mhtdc_11LB_chan()]);
-    // etc
+    // h1_sci_mhtdc_11lc->Fill(sciMHTDC[frs_config->Get_mhtdc_11LC_chan()]);
+    // h1_sci_mhtdc_11ld->Fill(sciMHTDC[frs_config->Get_mhtdc_11LD_chan()]);
+    // h1_sci_mhtdc_21l->Fill(sciMHTDC[frs_config->Get_mhtdc_21L_chan()]);
+    // h1_sci_mhtdc_22l->Fill(sciMHTDC[frs_config->Get_mhtdc_22L_chan()]);
+    // h1_sci_mhtdc_31l->Fill(sciMHTDC[frs_config->Get_mhtdc_31L_chan()]);
+    // h1_sci_mhtdc_41l->Fill(sciMHTDC[frs_config->Get_mhtdc_41L_chan()]);
+    // h1_sci_mhtdc_42l->Fill(sciMHTDC[frs_config->Get_mhtdc_42L_chan()]);
+    // h1_sci_mhtdc_43l->Fill(sciMHTDC[frs_config->Get_mhtdc_43L_chan()]);
+    // h1_sci_mhtdc_81l->Fill(sciMHTDC[frs_config->Get_mhtdc_81L_chan()]);
+
+    // h1_sci_mhtdc_11ra->Fill(sciMHTDC[frs_config->Get_mhtdc_11RA_chan()]);
+    // h1_sci_mhtdc_11rb->Fill(sciMHTDC[frs_config->Get_mhtdc_11RB_chan()]);
+    // h1_sci_mhtdc_11rc->Fill(sciMHTDC[frs_config->Get_mhtdc_11RC_chan()]);
+    // h1_sci_mhtdc_11rd->Fill(sciMHTDC[frs_config->Get_mhtdc_11RD_chan()]);
+    // h1_sci_mhtdc_21r->Fill(sciMHTDC[frs_config->Get_mhtdc_21R_chan()]);
+    // h1_sci_mhtdc_22r->Fill(sciMHTDC[frs_config->Get_mhtdc_22R_chan()]);
+    // h1_sci_mhtdc_31r->Fill(sciMHTDC[frs_config->Get_mhtdc_31R_chan()]);
+    // h1_sci_mhtdc_41r->Fill(sciMHTDC[frs_config->Get_mhtdc_41R_chan()]);
+    // h1_sci_mhtdc_42r->Fill(sciMHTDC[frs_config->Get_mhtdc_42R_chan()]);
+    // h1_sci_mhtdc_43r->Fill(sciMHTDC[frs_config->Get_mhtdc_43R_chan()]);
+    // h1_sci_mhtdc_81r->Fill(sciMHTDC[frs_config->Get_mhtdc_81R_chan()]);
+
 
     // auto const & musicItem = musicArray->at(0);
     // musicE = musicItem.Get_music_e();

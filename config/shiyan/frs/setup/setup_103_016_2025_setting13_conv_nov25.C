@@ -13,15 +13,10 @@ void setup(TFRSParameter* frs,
 {
   id->sci11_in = 1; // 1 = SCI11 used for analysis - SCI11 in beamline since 2025
   frs->rho0[0]   = 1.; //TA-S2
-  id->sci11_in = 1; // 1 = SCI11 used for analysis - SCI11 in beamline since 2025
   frs->rho0[1]   = 1.; //S2-S4
-  id->sci11_in = 1; // 1 = SCI11 used for analysis - SCI11 in beamline since 2025
   frs->rho0[2]   = 1.; //S4-S8
-  id->sci11_in = 1; // 1 = SCI11 used for analysis - SCI11 in beamline since 2025
   frs->rho0[4]   = 1.; //TA-S1
-  id->sci11_in = 1; // 1 = SCI11 used for analysis - SCI11 in beamline since 2025
   frs->rho0[5]   = 1.; //S1-S2
-  id->sci11_in = 1; // 1 = SCI11 used for analysis - SCI11 in beamline since 2025
   frs->rho0[6]   = 1.; //S2-S3
 
   // note: dispersion same sign as gicosy. Unit in m.

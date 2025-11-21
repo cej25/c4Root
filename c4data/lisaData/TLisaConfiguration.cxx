@@ -38,6 +38,7 @@ std::string TLisaConfiguration::z_calibration_file = "blank";
 std::string TLisaConfiguration::calibration_file = "blank";
 std::vector<std::string> TLisaConfiguration::gate_ranges_files = {"blank"};
 std::vector<std::string> TLisaConfiguration::gate_ranges_MWD_files = {"blank"};
+std::vector<std::string> TLisaConfiguration::gate_ranges_dedx_files = {"blank"};
 
 //std::string TLisaConfiguration::gate_ranges_files = "blank";
 //std::string TLisaConfiguration::gate_ranges_MWD_file = "blank";
@@ -511,6 +512,43 @@ void TLisaConfiguration::ReadLISAGateMWDFile()
         c4LOG(info, "Loaded LISA MWD Gates from file: " + gate_file);  
     }
     gates_MWD_loaded = 1;
+    return;
+}
+
+void TLisaConfiguration::ReadLISAGatedEdXFile()
+{       
+    gate_LISA_dEdX.clear(); 
+
+    for (const auto& gate_file : gate_ranges_dedx_files)
+    {
+        std::ifstream gate_ranges(gate_file);
+        std::string line;
+        if (gate_ranges.fail()) 
+        {
+            c4LOG(warn, "Could not open LISA dEdX Gates file: " + gate_file);
+            continue;
+        }
+        while (std::getline(gate_ranges, line))
+        {
+            if (line.empty() || line[0] == '#') continue;
+
+            std::istringstream iss(line);
+            int layer_id;
+            double gate_min, gate_max;
+
+            iss >> layer_id >> gate_min >> gate_max;
+
+            gate_LISA_dEdX[layer_id].emplace_back(gate_file, gate_min, gate_max);
+
+            std::cout << "File dEdX: " << gate_file
+                      << " | Layer ID: " << layer_id 
+                      << " | Gate dEdX Min: " << gate_min 
+                      << " | Gate dEdX Max: " << gate_max << "\n";
+        }
+        gate_ranges.close();
+        c4LOG(info, "Loaded LISA dEdX Gates from file: " + gate_file);  
+    }
+    gates_dEdX_loaded = 1;
     return;
 }
 

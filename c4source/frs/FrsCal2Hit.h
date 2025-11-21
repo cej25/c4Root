@@ -7,6 +7,7 @@
 #include "FrsData.h"
 #include "FrsCalData.h"
 #include "FrsHitData.h"
+#include "FrsStructures.h"
 #include "EventHeader.h"
 #include "GainShift.h"
 
@@ -46,7 +47,6 @@ class FrsCal2Hit : public FairTask
 
         void FinishEvent();
         void FinishTask();
-
 
         void SetMusic41TACGainShift(GainShift * p) {music41_tac_z_gain_shifts = p;}
         void SetMusic42TACGainShift(GainShift * p) {music42_tac_z_gain_shifts = p;}

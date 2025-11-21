@@ -69,9 +69,12 @@ class LisaNearlineSpectra : public FairTask
 
         std::vector<LisaGate*> febex_gates;
         std::vector<LisaGate*> mwd_gates;
+        std::vector<LisaGate*> mwd_dedx_gates;
+
 
         int gate_number = 0;
         int mwd_gate_number = 0;
+        int mwd_dedx_gate_number = 0;
 
         // TClonesArray* fHitLisa;
 
@@ -139,6 +142,9 @@ class LisaNearlineSpectra : public FairTask
         TDirectory* dir_gated_mwd;
         TDirectory** dir_mwd_gates;
         TDirectory** dir_mwd_gates_channel;
+        TDirectory* dir_gated_dedx;
+        TDirectory** dir_mwd_dedx_gates;
+        TDirectory** dir_mwd_dedx_gates_channel;
      
         // ::: Histograms :::
         // ::: Stats
@@ -166,8 +172,6 @@ class LisaNearlineSpectra : public FairTask
         //      - Gated
         std::vector<std::vector<TH1*>> h1_energy_layer_gated; 
         std::vector<std::vector<TH1*>> h1_energy_xy_gated;
-        //std::vector<TH1F*> h1_energy_layer_gated;
-        //std::vector<TH1F*> h1_energy_xy_gated;
         
         //      MWD
         std::vector<std::vector<std::vector<TH1F*>>> h1_energy_MWD_ch;
@@ -179,8 +183,6 @@ class LisaNearlineSpectra : public FairTask
         //      - Gated
         std::vector<std::vector<TH1*>> h1_energy_MWD_layer_gated;
         std::vector<std::vector<TH1*>> h1_energy_MWD_xy_gated;
-        //std::vector<TH1F*> h1_energy_MWD_layer_gated;
-        //std::vector<TH1F*> h1_energy_MWD_xy_gated;
 
         //      dEdX
         std::vector<std::vector<std::vector<TH1F*>>> h1_dedx_ch;
@@ -189,6 +191,10 @@ class LisaNearlineSpectra : public FairTask
         TH2F* h2_dedx_vs_layer;
         std::vector<TH2F*> h2_dedx_layer_vs_layer;
         TH2F* h2_dedx_first_vs_last;
+        //      - Gated
+        std::vector<std::vector<TH1*>> h1_dedx_MWD_layer_gated;
+        std::vector<std::vector<TH1*>> h1_dedx_MWD_xy_gated;
+
 
         // ::: Traces
         std::vector<std::vector<std::vector<TH2F*>>> h2_traces_ch;

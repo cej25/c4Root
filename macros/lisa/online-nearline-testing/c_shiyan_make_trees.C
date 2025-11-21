@@ -5,14 +5,14 @@
 #include <sstream>
 
 // !!! Switch all tasks related to {subsystem} on (1)/off (0)
-#define LISA_ON 1
+#define LISA_ON 0
 #define FRS_ON 1
 
 // !!! Select the data level you want to visualize
 #define LISA_RAW 0
 #define LISA_ANA 0
-#define LISA_CAL 1
-#define LISA_HIT 1
+#define LISA_CAL 0
+#define LISA_HIT 0
 //...................................................
 
 // Definition of setup and configuration files
@@ -208,7 +208,7 @@ void c_shiyan_make_trees()
         run->AddTask(hitfrs);
     } 
 
-    if (LISA_HIT)
+    if (LISA_HIT && FRS_ON)
     {
         LisaCal2Hit* lisacal2hit = new LisaCal2Hit();
         lisacal2hit->SetOnline(false);

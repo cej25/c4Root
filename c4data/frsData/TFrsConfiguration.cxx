@@ -416,6 +416,18 @@ void TFrsConfiguration::Set_sci_limit_22r(Double_t min, Double_t max)
     fsci22r_max = max;
 }
 
+void TFrsConfiguration::Set_sci_limit_31l(Double_t min, Double_t max)
+{
+    fsci31l_min = min;
+    fsci31l_max = max;
+}
+
+void TFrsConfiguration::Set_sci_limit_31r(Double_t min, Double_t max)
+{
+    fsci31r_min = min;
+    fsci31r_max = max;
+}
+
 void TFrsConfiguration::Set_sci_limit_41l(Double_t min, Double_t max)
 {
     fsci41l_min = min;
