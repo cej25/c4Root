@@ -50,7 +50,6 @@ class FrsRawNearlineSpectra : public FairTask
     private:
 
         TFrsConfiguration const* frs_config;
-
         TExperimentConfiguration const* exp_config;
 
         TFRSParameter* frs;
@@ -89,7 +88,7 @@ class FrsRawNearlineSpectra : public FairTask
         TDirectory* dir_tpc_adc;
         TDirectory* dir_tpc_n_adc[7];
         TDirectory* dir_tpc_tdc;
-        
+    
         // Histograms
         TH1* h1_sci_de[32];
         TH1* h1_sci_dt[32];

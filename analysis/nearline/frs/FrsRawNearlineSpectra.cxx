@@ -153,53 +153,6 @@ InitStatus FrsRawNearlineSpectra::Init()
     h1_sci_mhtdc_81r = MakeTH1(dir_sci_mhtdc,"F","h1_sci_mhtdc_81r","MHTDC 81R", 4000, 0, 100000);
 
 
-    // To replace with crate mapping maybe
-    std::map<int, std::string> mhtdcNames = {
-        {16, "mhtdc_11LA"},
-        {17, "mhtdc_11LB"},
-        {18, "mhtdc_11LC"},
-        {19, "mhtdc_11LD"},
-        {20, "mhtdc_11RA"},
-        {21, "mhtdc_11RB"},
-        {22, "mhtdc_11RC"},
-        {23, "mhtdc_11RD"},
-        {2,  "mhtdc_21L"},
-        {3,  "mhtdc_21R"},
-        {13, "mhtdc_22L"},
-        {14, "mhtdc_22R"},
-        {10, "mhtdc_31L"},
-        {11, "mhtdc_31R"},
-        {0,  "mhtdc_41L"},
-        {1,  "mhtdc_41R"},
-        {4,  "mhtdc_42L"},
-        {15, "mhtdc_42R"},
-        {6,  "mhtdc_43L"},
-        {7,  "mhtdc_43R"},
-        {8,  "mhtdc_81L"},
-        {9,  "mhtdc_81R"}
-    };
-
-    // list of histograms
-    // h1_sci_mhtdc_11la = MakeTH1(dir_sci_mhtdc,"F", "h1_sci_mhtdc_11la", "MHTDC 11LA" ,4000, 0, 100000);
-    // h1_sci_mhtdc_11lb = MakeTH1(dir_sci_mhtdc,"F", "h1_sci_mhtdc_11lb", "MHTDC 11LB" ,4000, 0, 100000);
-    // etc
-
-
-
-    for (int ihist = 0; ihist < 32; ihist++)
-    {
-        std::string hname;
-        if (mhtdcNames.count(ihist))
-            hname = mhtdcNames[ihist];
-        else
-            hname = "empty";
-
-        h1_sci_mhtdc[ihist] = MakeTH1(dir_sci_mhtdc,"F",Form("h1_%s_%i", hname.c_str(), ihist),Form("%s", hname.c_str()),4000, 0, 100000);
-        
-
-
-    }
-
 
     // // MHTDC T
     // for (int ihist = 0; ihist < 32; ihist++)
@@ -284,32 +237,31 @@ void FrsRawNearlineSpectra::Exec(Option_t* option)
     {
         h1_sci_de[i]->Fill(sciDE[i]);
         h1_sci_dt[i]->Fill(sciDT[i]);
-        for (int j = 0; j < sciMHTDC[i].size(); j++) h1_sci_mhtdc[i]->Fill(sciMHTDC[i][j]);
     }
 
-    for (int i = 0; i < sciMHTDC[frs_config->Get_mhtdc_11LA_chan()].size(); i++) h1_sci_mhtdc_11la->Fill(sciMHTDC[frs_config->Get_mhtdc_11LA_chan()][i]);
-    // h1_sci_mhtdc_11lb->Fill(sciMHTDC[frs_config->Get_mhtdc_11LB_chan()]);
-    // h1_sci_mhtdc_11lc->Fill(sciMHTDC[frs_config->Get_mhtdc_11LC_chan()]);
-    // h1_sci_mhtdc_11ld->Fill(sciMHTDC[frs_config->Get_mhtdc_11LD_chan()]);
-    // h1_sci_mhtdc_21l->Fill(sciMHTDC[frs_config->Get_mhtdc_21L_chan()]);
-    // h1_sci_mhtdc_22l->Fill(sciMHTDC[frs_config->Get_mhtdc_22L_chan()]);
-    // h1_sci_mhtdc_31l->Fill(sciMHTDC[frs_config->Get_mhtdc_31L_chan()]);
-    // h1_sci_mhtdc_41l->Fill(sciMHTDC[frs_config->Get_mhtdc_41L_chan()]);
-    // h1_sci_mhtdc_42l->Fill(sciMHTDC[frs_config->Get_mhtdc_42L_chan()]);
-    // h1_sci_mhtdc_43l->Fill(sciMHTDC[frs_config->Get_mhtdc_43L_chan()]);
-    // h1_sci_mhtdc_81l->Fill(sciMHTDC[frs_config->Get_mhtdc_81L_chan()]);
+    for (int j = 0; j < sciMHTDC[frs_config->Get_mhtdc_11LA_chan()].size(); j++)h1_sci_mhtdc_11la->Fill(sciMHTDC[frs_config->Get_mhtdc_11LA_chan()][j]);
+    for (int j = 0; j < sciMHTDC[frs_config->Get_mhtdc_11LB_chan()].size(); j++)h1_sci_mhtdc_11lb->Fill(sciMHTDC[frs_config->Get_mhtdc_11LB_chan()][j]);
+    for (int j = 0; j < sciMHTDC[frs_config->Get_mhtdc_11LC_chan()].size(); j++)h1_sci_mhtdc_11lc->Fill(sciMHTDC[frs_config->Get_mhtdc_11LC_chan()][j]);
+    for (int j = 0; j < sciMHTDC[frs_config->Get_mhtdc_11LD_chan()].size(); j++)h1_sci_mhtdc_11ld->Fill(sciMHTDC[frs_config->Get_mhtdc_11LD_chan()][j]);
+    for (int j = 0; j < sciMHTDC[frs_config->Get_mhtdc_21L_chan()].size(); j++)h1_sci_mhtdc_21l->Fill(sciMHTDC[frs_config->Get_mhtdc_21L_chan()][j]);
+    for (int j = 0; j < sciMHTDC[frs_config->Get_mhtdc_22L_chan()].size(); j++)h1_sci_mhtdc_22l->Fill(sciMHTDC[frs_config->Get_mhtdc_22L_chan()][j]);
+    for (int j = 0; j < sciMHTDC[frs_config->Get_mhtdc_31L_chan()].size(); j++)h1_sci_mhtdc_31l->Fill(sciMHTDC[frs_config->Get_mhtdc_31L_chan()][j]);
+    for (int j = 0; j < sciMHTDC[frs_config->Get_mhtdc_41L_chan()].size(); j++)h1_sci_mhtdc_41l->Fill(sciMHTDC[frs_config->Get_mhtdc_41L_chan()][j]);
+    for (int j = 0; j < sciMHTDC[frs_config->Get_mhtdc_42L_chan()].size(); j++)h1_sci_mhtdc_42l->Fill(sciMHTDC[frs_config->Get_mhtdc_42L_chan()][j]);
+    for (int j = 0; j < sciMHTDC[frs_config->Get_mhtdc_43L_chan()].size(); j++)h1_sci_mhtdc_43l->Fill(sciMHTDC[frs_config->Get_mhtdc_43L_chan()][j]);
+    for (int j = 0; j < sciMHTDC[frs_config->Get_mhtdc_81L_chan()].size(); j++)h1_sci_mhtdc_81l->Fill(sciMHTDC[frs_config->Get_mhtdc_81L_chan()][j]);
 
-    // h1_sci_mhtdc_11ra->Fill(sciMHTDC[frs_config->Get_mhtdc_11RA_chan()]);
-    // h1_sci_mhtdc_11rb->Fill(sciMHTDC[frs_config->Get_mhtdc_11RB_chan()]);
-    // h1_sci_mhtdc_11rc->Fill(sciMHTDC[frs_config->Get_mhtdc_11RC_chan()]);
-    // h1_sci_mhtdc_11rd->Fill(sciMHTDC[frs_config->Get_mhtdc_11RD_chan()]);
-    // h1_sci_mhtdc_21r->Fill(sciMHTDC[frs_config->Get_mhtdc_21R_chan()]);
-    // h1_sci_mhtdc_22r->Fill(sciMHTDC[frs_config->Get_mhtdc_22R_chan()]);
-    // h1_sci_mhtdc_31r->Fill(sciMHTDC[frs_config->Get_mhtdc_31R_chan()]);
-    // h1_sci_mhtdc_41r->Fill(sciMHTDC[frs_config->Get_mhtdc_41R_chan()]);
-    // h1_sci_mhtdc_42r->Fill(sciMHTDC[frs_config->Get_mhtdc_42R_chan()]);
-    // h1_sci_mhtdc_43r->Fill(sciMHTDC[frs_config->Get_mhtdc_43R_chan()]);
-    // h1_sci_mhtdc_81r->Fill(sciMHTDC[frs_config->Get_mhtdc_81R_chan()]);
+    for (int j = 0; j < sciMHTDC[frs_config->Get_mhtdc_11RA_chan()].size(); j++)h1_sci_mhtdc_11ra->Fill(sciMHTDC[frs_config->Get_mhtdc_11RA_chan()][j]);
+    for (int j = 0; j < sciMHTDC[frs_config->Get_mhtdc_11RB_chan()].size(); j++)h1_sci_mhtdc_11rb->Fill(sciMHTDC[frs_config->Get_mhtdc_11RB_chan()][j]);
+    for (int j = 0; j < sciMHTDC[frs_config->Get_mhtdc_11RC_chan()].size(); j++)h1_sci_mhtdc_11rc->Fill(sciMHTDC[frs_config->Get_mhtdc_11RC_chan()][j]);
+    for (int j = 0; j < sciMHTDC[frs_config->Get_mhtdc_11RD_chan()].size(); j++)h1_sci_mhtdc_11rd->Fill(sciMHTDC[frs_config->Get_mhtdc_11RD_chan()][j]);
+    for (int j = 0; j < sciMHTDC[frs_config->Get_mhtdc_21R_chan()].size(); j++)h1_sci_mhtdc_21r->Fill(sciMHTDC[frs_config->Get_mhtdc_21R_chan()][j]);
+    for (int j = 0; j < sciMHTDC[frs_config->Get_mhtdc_22R_chan()].size(); j++)h1_sci_mhtdc_22r->Fill(sciMHTDC[frs_config->Get_mhtdc_22R_chan()][j]);
+    for (int j = 0; j < sciMHTDC[frs_config->Get_mhtdc_31R_chan()].size(); j++)h1_sci_mhtdc_31r->Fill(sciMHTDC[frs_config->Get_mhtdc_31R_chan()][j]);
+    for (int j = 0; j < sciMHTDC[frs_config->Get_mhtdc_41R_chan()].size(); j++)h1_sci_mhtdc_41r->Fill(sciMHTDC[frs_config->Get_mhtdc_41R_chan()][j]);
+    for (int j = 0; j < sciMHTDC[frs_config->Get_mhtdc_42R_chan()].size(); j++)h1_sci_mhtdc_42r->Fill(sciMHTDC[frs_config->Get_mhtdc_42R_chan()][j]);
+    for (int j = 0; j < sciMHTDC[frs_config->Get_mhtdc_43R_chan()].size(); j++)h1_sci_mhtdc_43r->Fill(sciMHTDC[frs_config->Get_mhtdc_43R_chan()][j]);
+    for (int j = 0; j < sciMHTDC[frs_config->Get_mhtdc_81R_chan()].size(); j++)h1_sci_mhtdc_81r->Fill(sciMHTDC[frs_config->Get_mhtdc_81R_chan()][j]);
 
 
     // auto const & musicItem = musicArray->at(0);
