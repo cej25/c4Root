@@ -401,7 +401,9 @@ void FrsRaw2Cal::ProcessScintillators()
         double t = conv_ns * val;
         if (t >= frs_config->fsci41r_min * conv_ns &&
             t <= frs_config->fsci41r_max * conv_ns)
-            sci41r_hits.push_back(t);
+            {
+                sci41r_hits.push_back(t);
+            }
     }
 
     // --- 42 L ---

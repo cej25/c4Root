@@ -389,6 +389,7 @@ c4_generate_version_info()
 
 
 option(WITH_ATIMA "Build ATIMA system (requires Catima library)" OFF)
+option(LISA_ONLY "Build c4 for LISA experiments only (LISA + FRS" OFF)
 
 #### EG 
 # this makes atima visible in the tasks
@@ -397,10 +398,17 @@ if(WITH_ATIMA)
     add_definitions(-DWITH_ATIMA)
     include_directories(${Catima_INCLUDE_DIRS})
     link_libraries(${Catima_LIBRARIES})
+    add_compile_options(-Wno-shadow) #a little dangerous but needed to stop catima being weird
 else()
     message(STATUS "${BMagenta}ATIMA is OFF — compiling without Catima.${CR}")
 endif()
 ####
+
+if (LISA_ONLY)
+  message(STATUS "Compiled with LISA + FRS only")
+  add_definitions(-DLISA_ONLY)
+endif()
+
 
 # Recurse into the given subdirectories.  This does not actually cause another cmake executable to
 # run.  The same process will walk through the project's entire directory structure.

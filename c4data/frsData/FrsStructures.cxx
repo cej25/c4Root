@@ -1,4 +1,5 @@
 #include "FrsStructures.h"
+#include <iostream>
 
 void Scintillator::Apply_T_gates(Double_t low, Double_t high)
 {
@@ -116,6 +117,11 @@ void TimeOfFlight::CalculateTOF_S2S4()
                         Hits_S2S4.emplace_back(std::make_pair(SciS2.hit_times.at(i), SciS4.hit_times.at(j)));
                         TOF_S2S4.emplace_back(TOF);
                     }
+                }
+                else
+                {
+                    Hits_S2S4.emplace_back(std::make_pair(SciS2.hit_times.at(i), SciS4.hit_times.at(j)));
+                    TOF_S2S4.emplace_back(TOF);
                 }
             }
         }
