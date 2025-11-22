@@ -85,9 +85,8 @@ InitStatus H10MCPNearlineSpectra::Init()
     h2_dX2_dT = MakeTH2(dir_mcp, "F", "h2_dX2_dT", "X22-X21 position vs Time Difference T2-T1", 100, -250, 250, 100, -100, 100); 
     h2_dY2_dT = MakeTH2(dir_mcp, "F", "h2_dY2_dT", "Y22-Y21 position vs Time Difference T2-T1", 100, -250, 250, 100, -100, 100); 
 
-
-	  MCP1Heatmap1 = MakeTH2(dir_mcp,"b", "MCP1Heatmap1", "MCP1 Heatmap 1" , 100, -250, 250, 100, -250, 250); 
-	  MCP2Heatmap1 = MakeTH2(dir_mcp,"b", "MCP2Heatmap1", "MCP2 Heatmap 1" , 100, -250, 250, 100, -250, 250); 
+	MCP1Heatmap1 = MakeTH2(dir_mcp,"b", "MCP1Heatmap1", "MCP1 Heatmap 1" , 100, -250, 250, 100, -250, 250); 
+	MCP2Heatmap1 = MakeTH2(dir_mcp,"b", "MCP2Heatmap1", "MCP2 Heatmap 1" , 100, -250, 250, 100, -250, 250); 
 
     h1_sc41_mcp1 = MakeTH1(dir_mcp, "I", "h1_sc41_mcp1", "SC41-MCP1 Time", 4000, 300, 700,"dt [ns]", kSpring, kBlack);
     h1_sc41_mcp2 = MakeTH1(dir_mcp, "I", "h1_sc41_mcp2", "SC41-MCP2 Time", 4000, 300, 700,"dt [ns]", kSpring, kBlack);

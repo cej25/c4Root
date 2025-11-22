@@ -37,7 +37,7 @@ void hispec10_histos(TString filename)
     TString fExpName = "hispec10";
 
     // Define important paths.
-    TString c4Root_path = "/lustre/gamma/hispec10_s103/c4Root";
+    TString c4Root_path = "/u/gandolfo/c4/c4Root";
     TString ucesb_path = c4Root_path + "/unpack/exps/" + fExpName + "/" + fExpName + " --input-buffer=200Mi --event-sizes --allow-errors";
     ucesb_path.ReplaceAll("//","/");
 
@@ -58,7 +58,7 @@ void hispec10_histos(TString filename)
     FairLogger::GetLogger()->SetColoredLog(true);
 
     // ::: O U T P U T
-    TString outputpath = "/lustre/gamma/lisa_s092/histos/";   //testing
+    TString outputpath = "/lustre/gamma/hisopec10_dennis/histo/";   //testing
     
     TString outputFileName = outputpath + TString(GET_FILENAME(filename)) + "_histos.root";
 
@@ -105,7 +105,7 @@ void hispec10_histos(TString filename)
     
     // ------------------------------------------------------------------------------------ //
     // *** Load Detector Configurations *************************************************** //
-    TH10MCPConfiguration::SetDetectorConfigurationFile(config_path + "/mcp/mcp_mapping_run13.txt");
+    TH10MCPConfiguration::SetDetectorConfigurationFile(config_path + "/mcp/mcp_mapping_1105.txt");
     TFrsConfiguration::SetConfigPath(config_path + "/frs/");
     TFrsConfiguration::SetCrateMapFile(config_path + "/frs/crate_map.txt");
  
@@ -120,7 +120,6 @@ void hispec10_histos(TString filename)
     // ======================================================================================== //
     
     // ---------------------------------------------------------------------------------------- //
-    // *** Online Spectra ********************************************************************* //   
     if (MCP_ON)
     {
         H10MCPNearlineSpectra* nearlinemcp = new H10MCPNearlineSpectra();
@@ -152,6 +151,12 @@ void hispec10_histos(TString filename)
         run->AddTask(onlinefrs);
         run->AddTask(frsrawspec);
         run->AddTask(frscalspec);
+    }
+
+    if (FRS_ON & MCP_ON)
+    {
+        FrsMCPCorrelations* mcpcorr = new FrsMCPCorrelations(frsgates);
+        run->AddTask(mcpcorr);
     }
    
   

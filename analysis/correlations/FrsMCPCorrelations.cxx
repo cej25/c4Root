@@ -62,10 +62,10 @@ FrsMCPCorrelations::FrsMCPCorrelations(std::vector<FrsGate*> fg)
 FrsMCPCorrelations::FrsMCPCorrelations(const TString& name, Int_t verbose)
     :   FairTask(name, verbose)
     ,   header(nullptr)
-    ,   lisaCalArray(nullptr)
     ,   frsHitArray(nullptr)
     ,   fNEvents(0)
     ,   multihitArray(nullptr)
+    ,   fHitsMCP(NULL)
 
 {
     frs_config = TFrsConfiguration::GetInstance();
@@ -93,12 +93,40 @@ InitStatus FrsMCPCorrelations::Init()
     fHitsMCP = (TClonesArray*)mgr->GetObject("H10MCPTwinpeaksCalData");
     c4LOG_IF(fatal, !fHitsMCP, "Branch H10MCPTwinpeaksCalData not found!");
 
-  
-
     FairRootManager::Instance()->GetOutFile()->cd();
 
 
     dir_corr = gDirectory->mkdir("Correlations");
+    gDirectory->cd("MCPs");
+
+    dir_frs_gates = new TDirectory*[FrsGates.size()];
+
+    if (!FrsGates.empty())
+    {
+        // dT Gated on FRS
+        h1_dT_gated_on_frs.resize(FrsGates.size());
+
+        // HeatMaps Gated on FRS
+        h2_MCP1_HeatMap_gated_on_frs.resize(FrsGates.size());
+        h2_MCP2_HeatMap_gated_on_frs.resize(FrsGates.size());
+
+        for (int gate_frs = 0; gate_frs < FrsGates.size(); gate_frs++)
+        {
+            dir_frs_gates[gate_frs] = dir_corr->mkdir(TString(FrsGates.at(gate_frs)->GetName())); 
+            
+            h1_dT_gated_on_frs[gate_frs] = MakeTH1(dir_frs_gates[gate_frs], "F", Form("h1_dT_%i", gate_frs), Form(" MCPs dT Gated %i", gate_frs), 10000, -100, 100,"dt [ns]", kPink, kBlack);  
+
+            h2_MCP1_HeatMap_gated_on_frs[gate_frs] = MakeTH2(dir_frs_gates[gate_frs],"b",  Form("h2_MCP1_Heatmap_gated_on_frs_%i", gate_frs), Form(" MCP1 HeatMap Gated %i", gate_frs), 500, -250, 250, 500, -250, 250); 
+            h2_MCP1_HeatMap_gated_on_frs[gate_frs]->GetXaxis()->SetTitle("DeltaX");
+            h2_MCP1_HeatMap_gated_on_frs[gate_frs]->GetYaxis()->SetTitle("DeltaY");
+
+            h2_MCP2_HeatMap_gated_on_frs[gate_frs] = MakeTH2(dir_frs_gates[gate_frs],"b",  Form("h2_MCP2_Heatmap_gated_on_frs_%i", gate_frs), Form(" MCP2 HeatMap Gated %i", gate_frs), 500, -250, 250, 500, -250, 250); 
+            h2_MCP1_HeatMap_gated_on_frs[gate_frs]->GetXaxis()->SetTitle("DeltaX");
+            h2_MCP1_HeatMap_gated_on_frs[gate_frs]->GetYaxis()->SetTitle("DeltaY");
+        
+        }
+
+    }
 
     return kSUCCESS;
 
@@ -114,7 +142,13 @@ void FrsMCPCorrelations::Exec(Option_t* option)
     const auto & frsHitItem = frsHitArray->at(0);
     const auto & multihitItem = multihitArray->at(0);
 
-    wr_FRS = frsHitItem.Get_wr_t();
+    //wr_FRS = frsHitItem.Get_wr_t();
+
+    Long64_t mpc_wr = 0;
+    H10MCPTwinpeaksAnaData* hit = (H10MCPTwinpeaksAnaData*)fHitsMCP->At(0);
+    if (!hit) return;
+
+    // if (!hit->full_event) return;   
 
     std::vector<Float_t> z41_mhtdc = multihitItem.Get_ID_z41_mhtdc();
     std::vector<Float_t> z42_mhtdc = multihitItem.Get_ID_z42_mhtdc();
@@ -124,135 +158,44 @@ void FrsMCPCorrelations::Exec(Option_t* option)
     Float_t x4_position = frsHitItem.Get_ID_x4();
     Float_t sci42e = frsHitItem.Get_sci_e_42();
 
-    int mh_counter_passed_s2s4[FrsGates.size()] = {0};
+    T1 = hit->T1;
+    X11 = hit->X11;
+    X12 = hit->X12;
+    Y11 = hit->Y11;
+    Y12 = hit->Y12;
+    T2 = hit->T2;
+    X21 = hit->X21;
+    X22 = hit->X22;
+    Y21 = hit->Y21;
+    Y22 = hit->Y22;
+    SC41 = hit->SC41;
+    SC42 = hit->SC42;
+    DSSDAccept = hit->DSSDAccept;
+    
     if (!FrsGates.empty())
     {
         for (int gate = 0; gate < FrsGates.size(); gate++)
         {    
-            // Loop for S1S2
             for (int i = 0; i < AoQ_s2s4_mhtdc.size(); i++)
             {
-                if (mh_counter_passed_s2s4[gate] > 0) break;
                 if (FrsGates[gate]->PassedS2S4(z41_mhtdc.at(i), z42_mhtdc.at(i), x2_position, x4_position, AoQ_s2s4_mhtdc.at(i), dEdeg_z41_mhtdc.at(i), sci42e))
                 {
-                    // MCP stuff
-
-                    // zwischenspeicher fuereventbuilding
-                    ULong64_t ttrigger0; // T1 hat leider der CAEN stempel geklaut
-                    ULong64_t T1;
-                    double T01=0;
-                    double T02=0;
-                    double E1=0;
-                    double X01=0;
-                    double X02=0;
-	                double Y01=0;
-                    double Y02=0;
-                    double X11=0;
-                    double X12=0;
-                    double Y11=0;
-                    double Y12=0;
-                    double T01Epoch=0;
-                    double T02Epoch=0;
-                    double X01Epoch=0;
-                    double X02Epoch=0;
-                    double Y01Epoch=0;
-                    double Y02Epoch=0;
-                    double X11Epoch=0;
-                    double X12Epoch=0;
-                    double Y11Epoch=0;
-                    double Y12Epoch=0;
-
-                    ULong64_t entry2 = 0;
-                    ULong64_t lastProcessedEntry = 0;
-                    ULong64_t t2search;
-                    int ttrigger = 0;
-                    int maxFileCount = 0;
-                    int ch0counter = 0;
-                    int ch1counter = 0;
-                    int ch2counter = 0;
-                    int ch3counter = 0;
-                    int ch4counter = 0;
-                    int ch5counter = 0;
-                    int eventcounter = 0;
-                    int dataPointsCounter = 0;
-                    int fileCount = 0;
-                    bool foundMatchingFile = false;
-                    int reruns = 0;
             
-                    if (fHitsMCP && fHitsMCP->GetEntriesFast() > 0)
-                    {   
-                        ch0counter = 0;
-                        ch1counter = 0;
-                        ch2counter = 0;
-                        ch3counter = 0;
-                        ch4counter = 0;
-                        ch5counter = 0;
-                        eventcounter = 0;
-                        Long64_t mpc_wr = 0;
-                        Int_t nHits = fHitsMCP->GetEntriesFast();
+                    h1_dT_gated_on_frs[gate]->Fill(T1-T2);
+                    h2_MCP1_HeatMap_gated_on_frs[gate]->Fill(X11-X12, Y11-Y12);
+                    h2_MCP2_HeatMap_gated_on_frs[gate]->Fill(X21-X22, Y21-Y22);
+
+                    
+                    // if (fHitsMCP && fHitsMCP->GetEntriesFast() > 0)
+                    // {   
+
     
+                    //     h1_test_histogram_FRSGated[gate]->Fill(T02 - T01+(T01Epoch-T01Epoch));
+                    //     histogram2_FRSGated[gate]->Fill(X02-X01, T02-T01);
+                    //     MCP1Heatmap_FRSGated[gate]->Fill(X02-X01+(X02Epoch-X01Epoch), Y02-Y01+(Y01Epoch-Y02Epoch));
+                    //     MCP2Heatmap_FRSGated[gate]->Fill(X12-X11+(X12Epoch-X11Epoch), Y12-Y11+(Y12Epoch-Y11Epoch));
 
-                        for (Int_t ihit = 0; ihit < nHits; ihit++) 
-                        {
-                            H10MCPTwinpeaksCalData* hit = (H10MCPTwinpeaksCalData*)fHitsMCP->At(ihit);
-                            if (!hit) continue;
-                            mcp_wr = hit->Get_wr_t();
-        
-                            Int_t mcp_id = hit->Get_mcp_id();
-                            Int_t type = hit->Get_type();
-                            Int_t number = hit->Get_number();
-        
-
-                            if (mcp_id==0 && type==0 && number== 0 ){
-                            T01 = hit->Get_fast_lead_time();
-                            T01Epoch=hit->Get_fast_lead_epoch();}
-                            if (mcp_id==1 && type==0 && number== 0 ){
-                            T02 = hit->Get_fast_lead_time();
-                            T02Epoch=hit->Get_fast_lead_epoch();}
-                            if (mcp_id==0 && type==1 && number== 0 ){
-                            X01 = hit->Get_fast_lead_time();
-                            X01Epoch=hit->Get_fast_lead_epoch();}
-                            if (mcp_id==0 && type==1 && number== 1 ){
-                            X02 = hit->Get_fast_lead_time();
-                            X02Epoch=hit->Get_fast_lead_epoch();}
-                            if (mcp_id==0 && type==2 && number== 0 ){
-                            Y01 = hit->Get_fast_lead_time(); 
-                            Y01Epoch=hit->Get_fast_lead_epoch();}
-                            if (mcp_id==0 && type==2 && number== 1 ){
-                            Y02 = hit->Get_fast_lead_time();
-                            Y02Epoch=hit->Get_fast_lead_epoch();}
-                            if (mcp_id==1 && type==1 && number== 0 ){
-                            X11 = hit->Get_fast_lead_time(); 
-                            X11Epoch=hit->Get_fast_lead_epoch();}
-                            if (mcp_id==1 && type==1 && number== 1 ){
-                            X12 = hit->Get_fast_lead_time(); 
-                            X12Epoch=hit->Get_fast_lead_epoch();}
-                            if (mcp_id==1 && type==2 && number== 0 ){
-                            Y11 = hit->Get_fast_lead_time();
-                            Y11Epoch=hit->Get_fast_lead_epoch();}
-                            if (mcp_id==1 && type==2 && number== 1 ){
-                            Y12 = hit->Get_fast_lead_time();
-                            Y12Epoch=hit->Get_fast_lead_epoch();}
-
-                            if (eventcounter == 6 )
-                            {
-                                ch0counter = 0;
-                                ch1counter = 0;
-                                ch2counter = 0;
-                                ch3counter = 0;
-                                ch4counter = 0;
-                                ch5counter = 0;
-                                eventcounter = 0;
-                                dataPointsCounter++; // Increment the counter for each data point collected
-                            }    
-                        }
-                        h1_test_histogram_FRSGated[gate]->Fill(T02 - T01+(T01Epoch-T01Epoch));
-                        histogram2_FRSGated[gate]->Fill(X02-X01, T02-T01);
-                        MCP1Heatmap_FRSGated[gate]->Fill(X02-X01+(X02Epoch-X01Epoch), Y02-Y01+(Y01Epoch-Y02Epoch));
-                        MCP2Heatmap_FRSGated[gate]->Fill(X12-X11+(X12Epoch-X11Epoch), Y12-Y11+(Y12Epoch-Y11Epoch));
-
-                        mh_counter_passed_s2s4[gate]++;
-                    }
+                    // }
                 }
             }
         }

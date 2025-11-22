@@ -2,13 +2,21 @@
 
 // Switch all tasks related to {subsystem} on (1)/off (0)
 #define MCP_ON 1
-#define STEFAN_ON 0
-#define FRS_ON 0
+#define STEFAN_ON 1
+#define FRS_ON 1
+
+#define GET_FILENAME(path) \
+	({ \
+	   std::string fullPath(path); \
+	   size_t lastSlashPos = fullPath.find_last_of("/"); \
+	   std::string fn = fullPath.substr(lastSlashPos + 1, fullPath.find_last_of(".") - lastSlashPos -1); \
+	   fn; \
+	})
 
 // Define FRS setup.C file - FRS should provide; place in /config/{expName}/frs/
 extern "C"
 {
-    #include "../../config/s115/frs/setup_115_022_2025_s1calib_conv.C"
+    #include "../../config/hispec10/frs/setup_103_002_2025_setting14_conv.C"
 }
 
 // Struct should containt all subsystem h101 structures
@@ -21,7 +29,7 @@ typedef struct EXT_STR_h101_t
 } EXT_STR_h101;
 
 
-void hispec10()
+void e_hispec10_histos()
 {   
     const Int_t nev = -1; const Int_t fRunId = 1; const Int_t fExpId = 1;
 
@@ -29,13 +37,13 @@ void hispec10()
     TString fExpName = "hispec10";
 
     // Define important paths.
-    TString c4Root_path = "/u/cjones/c4Root";
+    TString c4Root_path = "/u/gandolfo/c4/c4Root";
     TString ucesb_path = c4Root_path + "/unpack/exps/" + fExpName + "/" + fExpName + " --input-buffer=200Mi --event-sizes --allow-errors";
     ucesb_path.ReplaceAll("//","/");
 
     std::string config_path = std::string(c4Root_path.Data()) + "/config/" + std::string(fExpName.Data());
     
-    // Macro timing
+    // ::: Macro timing
     TString cRunId = Form("%04d", fRunId);
     TString cExpId = Form("%03d", fExpId);
     TStopwatch timer;
@@ -45,38 +53,31 @@ void hispec10()
     oss << std::put_time(&tm, "%Y%m%d_%H%M%S");
     timer.Start();
     
-    // Set level of debug information
+    // ::: Debug info - set level
     FairLogger::GetLogger()->SetLogScreenLevel("INFO");
     FairLogger::GetLogger()->SetColoredLog(true);
 
-    // Define where to read data from. Online = stream/trans server, Nearline = .lmd file.
-    //TString filename = "/u/cjones/onlymcp09041755.lmd";
-    TString filename = "/u/cjones/onlymcponlyleadingedgetrigger2.lmd";
-    //TString filename = "/u/cjones/finalfinalpulserrunfin.lmd";
-    TString outputpath = "htest";
-    TString outputFileName = outputpath + ".root";
+    // ::: INPUT
+    TString inputpath = "/u/gandolfo/data/lustre/gamma/hispec10_dennis/tree/";
+    TString filename = inputpath + "run_0137_0001_tree.root";
 
-    // Create Online run
-    Int_t refresh = 1; // Refresh rate for online histograms
-    Int_t port = 6060; // Port number for online visualisation - use 5000 on lxg1301 during experiments as it has firewall access.
+    // ::: O U T P U T
+    TString outputpath = "/u/gandolfo/data//lustre/gamma/hispec10_dennis/histo/";   //testing
+    TString outputFileName = outputpath + "run_0137_0001_histos.root";
 
-    FairRunOnline* run = new FairRunOnline();
+    FairRunAna* run = new FairRunAna();
     EventHeader* EvtHead = new EventHeader();
     run->SetEventHeader(EvtHead);
     run->SetRunId(1);
-    run->ActivateHttpServer(refresh, port);
-    run->SetSink(new FairRootFileSink(outputFileName));
-    TFolder* histograms = new TFolder("Histograms", "Histograms");
-    FairRootManager::Instance()->Register("Histograms", "Histogram Folder", histograms, false);
-    run->AddObject(histograms);
+    run->SetSink(new FairRootFileSink(outputFileName)); // don't write after termintion
+    FairSource* fs = new FairFileSource(filename);
+    run->SetSource(fs);
+    
+    //Read tree evt
+    TFile* file = TFile::Open(filename);
+    TTree* eventTree = (TTree*)file->Get("evt"); 
+    Int_t totEvt = eventTree->GetEntries();
 
-  
-    // Create source using ucesb for input
-    EXT_STR_h101 ucesb_struct;
-    TString ntuple_options = "UNPACK,RAW"; // Define which level of data to unpack
-    UcesbSource* source = new UcesbSource(filename, ntuple_options, ucesb_path, &ucesb_struct, sizeof(ucesb_struct));
-    source->SetMaxEvents(nev);
-    run->SetSource(source);
 
     // ------------------------------------------------------------------------------------ //
     // *** Initialise FRS parameters ****************************************************** //
@@ -111,89 +112,10 @@ void hispec10()
     TFrsConfiguration::SetConfigPath(config_path + "/frs/");
     TFrsConfiguration::SetCrateMapFile(config_path + "/frs/crate_map.txt");
  
-    // MCP STEFAN..
-
-    // ------------------------------------------------------------------------------------- //
-    // *** Read Subsystems - comment out unwanted systems ********************************** //
-
-    // EventHeader - should always be done
-    UnpackReader* unpackheader = new UnpackReader((EXT_STR_h101_unpack*)&ucesb_struct.eventheaders, offsetof(EXT_STR_h101, eventheaders));
-    
-    source->AddReader(unpackheader);
-    
-    if (MCP_ON)
-    {
-        H10MCPReader* unpackmcp = new H10MCPReader((EXT_STR_h101_mcp_onion*)&ucesb_struct.mcp, offsetof(EXT_STR_h101, mcp));
-        //unpackmcp->DoFineTimeCalOnline(config_path + "/mcp/mcp_fine_time_1004.root", 20000);
-        unpackmcp->SetInputFileFineTimeHistos(config_path + "/mcp/mcp_fine_time_1004.root");
-        
-        unpackmcp->SetOnline(true);
-        source->AddReader(unpackmcp);
-    }
-
-    if (STEFAN_ON)
-    {
-        StefanReader* unpackstefan = new StefanReader((EXT_STR_h101_stefan_onion*)&ucesb_struct.stefan, offsetof(EXT_STR_h101, stefan));
-        
-        unpackstefan->SetOnline(true);
-        source->AddReader(unpackstefan);
-    }
-    
-    if (FRS_ON)
-    {
-        FrsReader* unpackfrs = new FrsReader((EXT_STR_h101_frs_onion*)&ucesb_struct.frs, offsetof(EXT_STR_h101, frs));
-        
-        unpackfrs->SetOnline(true);
-        
-        source->AddReader(unpackfrs);
-    }
-    
-    // ---------------------------------------------------------------------------------------- //
-    // *** Calibrate Subsystems - comment out unwanted systems ******************************** //
-    if (MCP_ON)
-    {
-        H10MCPRaw2Cal* calmcp = new H10MCPRaw2Cal();
-        
-        calmcp->SetOnline(true);
-        run->AddTask(calmcp);
-    }
-    
-    if (STEFAN_ON)
-    {
-        StefanRaw2Cal* calstefan = new StefanRaw2Cal();
-
-        calstefan->SetOnline(true);
-        run->AddTask(calstefan);
-    }
-    
-    if (FRS_ON)
-    {
-        FrsRaw2Cal* calfrs = new FrsRaw2Cal();
-        
-        calfrs->SetOnline(true);
-        run->AddTask(calfrs);
-    }
+    TStefanConfiguration::SetDetectorConfigurationFile(config_path + "/stefan/stefan_mapping.txt");
+    TStefanConfiguration::SetDetectorCoefficientFile(config_path + "/stefan/stefan_cal.txt");
 
 
-    // ---------------------------------------------------------------------------------------- //
-    // *** Analyse Subsystem Hits ************************************************************* //
-    
-    // Stefan MCP etc..
-    if (MCP_ON)
-    {
-        H10MCPCal2Ana* anamcp = new H10MCPCal2Ana();
-        
-        anamcp->SetOnline(true);
-        run->AddTask(anamcp);
-    }
-    
-    if (FRS_ON)
-    {
-        FrsCal2Hit* hitfrs = new FrsCal2Hit();
-        
-        hitfrs->SetOnline(true); 
-        run->AddTask(hitfrs);
-    } 
 
 
     // ======================================================================================== //
@@ -201,20 +123,20 @@ void hispec10()
     // ======================================================================================== //
     
     // ---------------------------------------------------------------------------------------- //
-    // *** Online Spectra ********************************************************************* //   
     if (MCP_ON)
     {
-        H10MCPOnlineSpectra* onlinemcp = new H10MCPOnlineSpectra();
+        H10MCPNearlineSpectra* nearlinemcp = new H10MCPNearlineSpectra();
         
-        run->AddTask(onlinemcp);
+        run->AddTask(nearlinemcp);
         
     }
     
-    if (STEFAN_ON)
-    {
-        StefanOnlineSpectra* onlinestefan = new StefanOnlineSpectra();
-        run->AddTask(onlinestefan);
-    }
+    // if (STEFAN_ON)
+    // {
+    //     StefanOnlineSpectra* onlinestefan = new StefanOnlineSpectra();
+    //     // onlinestefan->SetBinningEnergy(65000,0,65000);
+    //     run->AddTask(onlinestefan);
+    // }
 
     TFrsConfiguration::Set_Z_range(30,50);
     TFrsConfiguration::Set_AoQ_range(1.8,2.4);
@@ -224,30 +146,31 @@ void hispec10()
  
     if (FRS_ON)
     {
-        FrsOnlineSpectra* onlinefrs = new FrsOnlineSpectra(frsgates);
         // For monitoring FRS on our side
-        FrsRawSpectra* frsrawspec = new FrsRawSpectra();
-        FrsCalSpectra* frscalspec = new FrsCalSpectra();
+        //FrsRawSpectra* frsrawspec = new FrsRawSpectra();
+        //FrsCalSpectra* frscalspec = new FrsCalSpectra();
     
-        run->AddTask(onlinefrs);
-        run->AddTask(frsrawspec);
-        run->AddTask(frscalspec);
+        //run->AddTask(frsrawspec);
+        //run->AddTask(frscalspec);
+    }
+
+    if (FRS_ON & MCP_ON)
+    {
+        FrsMCPCorrelations* mcpcorr = new FrsMCPCorrelations(frsgates);
+        run->AddTask(mcpcorr);
     }
    
   
     // Initialise
     run->Init();
     
-    FairLogger::GetLogger()->SetLogScreenLevel("info");
-
     // Information about portnumber and main data stream
     cout << "\n\n" << endl;
     cout << "Data stream is: " << filename << endl;
-    cout << "Online port server: " << port << endl;
     cout << "\n\n" << endl;
 
     // Run
-    run->Run((nev < 0) ? nev : 0, (nev < 0) ? 0 : nev); 
+    run->Run(0, totEvt); 
 
     // ---------------------------------------------------------------------------------------- //
     // *** Finish Macro *********************************************************************** //
