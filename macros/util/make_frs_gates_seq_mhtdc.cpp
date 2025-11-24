@@ -12,7 +12,7 @@ bool Gate_Z_AoQ(TTree * evt, bool bool_Z_AoQ, bool  bool_Z_Z2, bool  bool_x2_AoQ
     std::cout << "Drawing with the condition: " << cuts << std::endl;
     
 
-    evt->Draw("FrsMultiHitData.fID_z41_mhtdc:FrsMultiHitData.fID_AoQ_s2s4_mhtdc>>h2_Z_vs_AoQ(2000,1.8,2.5,2000,30,50)",cuts);
+    evt->Draw("FrsMultiHitData.fID_z41_mhtdc:FrsMultiHitData.fID_AoQ_s2s4_mhtdc>>h2_Z_vs_AoQ(2000,1,3,2000,10,30)",cuts);
     
     TH2F * h2_Z_vs_AoQ = (TH2F*)gROOT->FindObject("h2_Z_vs_AoQ");
     
@@ -84,7 +84,7 @@ bool Gate_x2_AoQ(TTree * evt, bool bool_Z_AoQ, bool  bool_Z_Z2, bool  bool_x2_Ao
     std::cout << "Drawing with the condition: " << cuts << std::endl;
     
     
-    evt->Draw("FrsMultiHitData.fID_s2x_s2s4_mhtdc:FrsMultiHitData.fID_AoQ_s2s4_mhtdc>>h2_x2_vs_AoQ(1000,2.0,3.0,1000,-100,100)",cuts);
+    evt->Draw("FrsMultiHitData.fID_s2x_s2s4_mhtdc:FrsMultiHitData.fID_AoQ_s2s4_mhtdc>>h2_x2_vs_AoQ(1000,1.0,3.0,1000,-100,100)",cuts);
     
     TH2F * h2_x2_vs_AoQ = (TH2F*)gROOT->FindObject("h2_x2_vs_AoQ");
     

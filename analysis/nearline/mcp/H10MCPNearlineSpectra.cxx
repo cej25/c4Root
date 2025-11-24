@@ -99,6 +99,7 @@ InitStatus H10MCPNearlineSpectra::Init()
     h1_stefan_sc42 = MakeTH1(dir_mcp, "I", "h1_stefan_sc42", "STEFAN-SC42 Time", 4000, 300, 1000,"dt [ns]", kOrange, kBlack);
 
 	
+
     // CEJ - Dennis, this is stuff from the nearline I didn't want to delete
     	  MCP1Heatmapgatedright = MakeTH2(dir_mcp,"b", "projectionngateright", "projectionngateright" , 100, -250, 250, 100, -250, 250); 
   MCP2Heatmapgatedright = MakeTH2(dir_mcp,"b", "MCP2Heatmap1rightgated", "MCP2Heatmap1rightgated" , 100, -250, 250, 100, -250, 250); 
@@ -122,6 +123,7 @@ InitStatus H10MCPNearlineSpectra::Init()
 		// MCP2HeatmapgatedMCP1centerup = MakeTH2(dir_mcp,"b", "MCP2HeatmapTcenter1up", "MCP2HeatmapT2" , 500, -250, 250, 500, -250, 250);
     // MCP2HeatmapgatedMCP1centerdown = MakeTH2(dir_mcp,"b", "MCP2HeatmapT1centerdown", "MCP2HeatmapT2" , 500, -250, 250, 500, -250, 250);		
 
+
     return kSUCCESS;
     
 }
@@ -130,6 +132,7 @@ InitStatus H10MCPNearlineSpectra::Init()
 
 void H10MCPNearlineSpectra::Exec(Option_t* option)
 { 
+    
     auto start = std::chrono::high_resolution_clock::now();
 
     double E1 = 0;
@@ -224,7 +227,7 @@ void H10MCPNearlineSpectra::Exec(Option_t* option)
 
 void H10MCPNearlineSpectra::FinishEvent()
 {
-    // resets and whatever
+
 }
 
 void H10MCPNearlineSpectra::FinishTask()

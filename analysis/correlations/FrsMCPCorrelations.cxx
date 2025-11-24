@@ -10,8 +10,8 @@
  * granted to it by virtue of its status as an Intergovernmental Organization *
  * or submit itself to any jurisdiction.                                      *
  ******************************************************************************
- *                              C.E. Jones                                    *
- *                               25.11.24                                     *
+ *                         C.E. Jones, E.G. Gandolfo                          *
+ *                               24.11.25                                     *
  ******************************************************************************/
 
 // ::: Note::: No canvases in Nearline Tasks please :::
@@ -80,6 +80,8 @@ FrsMCPCorrelations::~FrsMCPCorrelations()
 
 InitStatus FrsMCPCorrelations::Init()
 {
+    c4LOG(info,"start init");
+
     FairRootManager* mgr = FairRootManager::Instance();
     c4LOG_IF(fatal, NULL == mgr, "FairRootManager not found");
 
@@ -136,6 +138,7 @@ InitStatus FrsMCPCorrelations::Init()
 
 void FrsMCPCorrelations::Exec(Option_t* option)
 {   
+    
     // -> Reject events without both subsystems <-
     if (frsHitArray->size() <= 0 || fHitsMCP->GetEntriesFast() <= 0) return;
 
@@ -148,15 +151,22 @@ void FrsMCPCorrelations::Exec(Option_t* option)
     H10MCPTwinpeaksAnaData* hit = (H10MCPTwinpeaksAnaData*)fHitsMCP->At(0);
     if (!hit) return;
 
+    // EG Uncomment this is if you want to look at data only when both mcp are firing
     // if (!hit->full_event) return;   
 
     std::vector<Float_t> z41_mhtdc = multihitItem.Get_ID_z41_mhtdc();
+    std::vector<Float_t> z21_mhtdc = multihitItem.Get_ID_z21_mhtdc();
     std::vector<Float_t> z42_mhtdc = multihitItem.Get_ID_z42_mhtdc();
+    std::vector<Float_t> AoQ_s1s2_mhtdc = multihitItem.Get_ID_AoQ_corr_s1s2_mhtdc();
     std::vector<Float_t> AoQ_s2s4_mhtdc = multihitItem.Get_ID_AoQ_corr_s2s4_mhtdc();
     std::vector<Float_t> dEdeg_z41_mhtdc = multihitItem.Get_ID_dEdeg_z41_mhtdc();
     Float_t x2_position = frsHitItem.Get_ID_x2();
     Float_t x4_position = frsHitItem.Get_ID_x4();
     Float_t sci42e = frsHitItem.Get_sci_e_42();
+
+    //c4LOG(info, " ---- size of aoq s1s2: " << AoQ_s1s2_mhtdc.size() );
+    //c4LOG(info, " ---- size of aoq s2s4: " << AoQ_s2s4_mhtdc.size() );
+    //c4LOG(info, " ---- size of z41: " << z41_mhtdc.size() );
 
     T1 = hit->T1;
     X11 = hit->X11;
@@ -174,27 +184,30 @@ void FrsMCPCorrelations::Exec(Option_t* option)
     
     if (!FrsGates.empty())
     {
+
         for (int gate = 0; gate < FrsGates.size(); gate++)
         {    
+            c4LOG(info, "size of aoq s2s4: " << AoQ_s2s4_mhtdc.size() );
             for (int i = 0; i < AoQ_s2s4_mhtdc.size(); i++)
             {
-                if (FrsGates[gate]->PassedS2S4(z41_mhtdc.at(i), z42_mhtdc.at(i), x2_position, x4_position, AoQ_s2s4_mhtdc.at(i), dEdeg_z41_mhtdc.at(i), sci42e))
+                //c4LOG(info, "in mhtdc loop ");
+
+                if (FrsGates[gate]->PassedAllGates(z21_mhtdc.at(i), AoQ_s1s2_mhtdc.at(i), x2_position, z41_mhtdc.at(i), z42_mhtdc.at(i), x4_position, AoQ_s2s4_mhtdc.at(i), dEdeg_z41_mhtdc.at(i), sci42e))
                 {
             
+                    //c4LOG(info, "filling histos");
                     h1_dT_gated_on_frs[gate]->Fill(T1-T2);
                     h2_MCP1_HeatMap_gated_on_frs[gate]->Fill(X11-X12, Y11-Y12);
                     h2_MCP2_HeatMap_gated_on_frs[gate]->Fill(X21-X22, Y21-Y22);
 
                     
+                    // EG this is some old stuff I don't know about. For me it can be removed, prob DB/CJ should check if they need it
                     // if (fHitsMCP && fHitsMCP->GetEntriesFast() > 0)
-                    // {   
-
-    
+                    // {       
                     //     h1_test_histogram_FRSGated[gate]->Fill(T02 - T01+(T01Epoch-T01Epoch));
                     //     histogram2_FRSGated[gate]->Fill(X02-X01, T02-T01);
                     //     MCP1Heatmap_FRSGated[gate]->Fill(X02-X01+(X02Epoch-X01Epoch), Y02-Y01+(Y01Epoch-Y02Epoch));
                     //     MCP2Heatmap_FRSGated[gate]->Fill(X12-X11+(X12Epoch-X11Epoch), Y12-Y11+(Y12Epoch-Y11Epoch));
-
                     // }
                 }
             }
