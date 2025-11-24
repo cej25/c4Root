@@ -8,7 +8,7 @@
 // Define FRS setup.C file - FRS should provide; place in /config/{expName}/frs/
 extern "C"
 {
-    #include "../../config/s115/frs/setup_115_022_2025_s1calib_conv.C"
+    #include "../../config/hispec10/frs/setup_103_016_2025_conv.C"
 }
 
 // Struct should containt all subsystem h101 structures
@@ -21,7 +21,7 @@ typedef struct EXT_STR_h101_t
 } EXT_STR_h101;
 
 
-void hispec10()
+void e_hispec10()
 {   
     const Int_t nev = -1; const Int_t fRunId = 1; const Int_t fExpId = 1;
 
@@ -53,13 +53,12 @@ void hispec10()
     TString filename = "/u/gandolfo/data/lustre/gamma/s092_s103_files/ts/run_0140_0001.lmd";
 
     TString outputpath = "/u/gandolfo/data/lustre/gamma/hispec10_dennis/tree/";
-    TString outputFileName = outputpath + "run_0140_0001.root";
+    TString outputFileName = outputpath + "run_0140_0001_local.root";
 
     FairRunOnline* run = new FairRunOnline();
     EventHeader* EvtHead = new EventHeader();
     run->SetEventHeader(EvtHead);
     run->SetRunId(1);
-    run->ActivateHttpServer(refresh, port);
     run->SetSink(new FairRootFileSink(outputFileName));
     TFolder* histograms = new TFolder("Histograms", "Histograms");
     FairRootManager::Instance()->Register("Histograms", "Histogram Folder", histograms, false);
@@ -137,7 +136,7 @@ void hispec10()
     {
         FrsReader* unpackfrs = new FrsReader((EXT_STR_h101_frs_onion*)&ucesb_struct.frs, offsetof(EXT_STR_h101, frs));
         
-        unpackfrs->SetOnline(true);
+        unpackfrs->SetOnline(false);
         
         source->AddReader(unpackfrs);
     }
@@ -148,7 +147,7 @@ void hispec10()
     {
         H10MCPRaw2Cal* calmcp = new H10MCPRaw2Cal();
         
-        calmcp->SetOnline(true);
+        calmcp->SetOnline(false);
         run->AddTask(calmcp);
     }
     
@@ -164,7 +163,7 @@ void hispec10()
     {
         FrsRaw2Cal* calfrs = new FrsRaw2Cal();
         
-        calfrs->SetOnline(true);
+        calfrs->SetOnline(false);
         run->AddTask(calfrs);
     }
 
@@ -177,7 +176,7 @@ void hispec10()
     {
         H10MCPCal2Ana* anamcp = new H10MCPCal2Ana();
         
-        anamcp->SetOnline(true);
+        anamcp->SetOnline(false);
         run->AddTask(anamcp);
     }
     
@@ -185,7 +184,7 @@ void hispec10()
     {
         FrsCal2Hit* hitfrs = new FrsCal2Hit();
         
-        hitfrs->SetOnline(true); 
+        hitfrs->SetOnline(false); 
         run->AddTask(hitfrs);
     } 
 
@@ -198,7 +197,6 @@ void hispec10()
     // Information about portnumber and main data stream
     cout << "\n\n" << endl;
     cout << "Data stream is: " << filename << endl;
-    cout << "Online port server: " << port << endl;
     cout << "\n\n" << endl;
 
     // Run

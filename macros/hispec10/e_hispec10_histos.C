@@ -139,10 +139,14 @@ void e_hispec10_histos()
 
 
     std::vector<FrsGate*> fgs;
-    FrsGate* Ti44 = new FrsGate("Ti44", config_path + "/frs/44Tisetup19.root");  
-    FrsGate* full_pid = new FrsGate("full_pid", config_path + "/frs/fullgate_run140.root");  
+    FrsGate* V44 = new FrsGate("V44", config_path + "/frs/run14044V.root");  
+    FrsGate* Cr48 = new FrsGate("Cr48", config_path + "/frs/run14048Cr.root");  
+    FrsGate* Ca40 = new FrsGate("Ca40", config_path + "/frs/run14040Ca.root");  
 
-    fgs.emplace_back(full_pid);
+    fgs.emplace_back(V44);
+    fgs.emplace_back(Cr48);
+    fgs.emplace_back(Ca40);
+
  
     if (FRS_ON)
     {
