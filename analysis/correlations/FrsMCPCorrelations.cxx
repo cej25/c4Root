@@ -92,8 +92,11 @@ InitStatus FrsMCPCorrelations::Init()
     c4LOG_IF(fatal, !frsHitArray, "Branch FrsHitData not found!");
     multihitArray = mgr->InitObjectAs<decltype(multihitArray)>("FrsMultiHitData");
     c4LOG_IF(fatal, !multihitArray, "Branch FrsMultiHitData not found!");
-    fHitsMCP = (TClonesArray*)mgr->GetObject("H10MCPTwinpeaksCalData");
-    c4LOG_IF(fatal, !fHitsMCP, "Branch H10MCPTwinpeaksCalData not found!");
+
+    fHitsMCP = (TClonesArray*)mgr->GetObject("H10MCPTwinpeaksAnaData");
+    c4LOG_IF(fatal, !fHitsMCP, "Branch H10MCPTwinpeaksAnaData not found!");
+    // fHitsMCP = (TClonesArray*)mgr->GetObject("H10MCPTwinpeaksCalData");
+    // c4LOG_IF(fatal, !fHitsMCP, "Branch H10MCPTwinpeaksCalData not found!");
 
     FairRootManager::Instance()->GetOutFile()->cd();
 
@@ -140,14 +143,16 @@ void FrsMCPCorrelations::Exec(Option_t* option)
 {   
     
     // -> Reject events without both subsystems <-
-    if (frsHitArray->size() <= 0 || fHitsMCP->GetEntriesFast() <= 0) return;
+    //if (frsHitArray->size() <= 0 || fHitsMCP->GetEntriesFast() <= 0) return;
+    if (multihitArray->size() <= 0 || fHitsMCP->GetEntriesFast() <= 0) return;
+
 
     const auto & frsHitItem = frsHitArray->at(0);
     const auto & multihitItem = multihitArray->at(0);
 
-    //wr_FRS = frsHitItem.Get_wr_t();
+    wr_FRS = 0;
+    wr_FRS = frsHitItem.Get_wr_t();
 
-    Long64_t mpc_wr = 0;
     H10MCPTwinpeaksAnaData* hit = (H10MCPTwinpeaksAnaData*)fHitsMCP->At(0);
     if (!hit) return;
 
@@ -163,10 +168,8 @@ void FrsMCPCorrelations::Exec(Option_t* option)
     Float_t x2_position = frsHitItem.Get_ID_x2();
     Float_t x4_position = frsHitItem.Get_ID_x4();
     Float_t sci42e = frsHitItem.Get_sci_e_42();
+    //if(AoQ_s2s4_mhtdc.size()!=0)c4LOG(info, "----size of aoq s2s4: " << AoQ_s2s4_mhtdc.size() );
 
-    //c4LOG(info, " ---- size of aoq s1s2: " << AoQ_s1s2_mhtdc.size() );
-    //c4LOG(info, " ---- size of aoq s2s4: " << AoQ_s2s4_mhtdc.size() );
-    //c4LOG(info, " ---- size of z41: " << z41_mhtdc.size() );
 
     T1 = hit->T1;
     X11 = hit->X11;
@@ -181,24 +184,30 @@ void FrsMCPCorrelations::Exec(Option_t* option)
     SC41 = hit->SC41;
     SC42 = hit->SC42;
     DSSDAccept = hit->DSSDAccept;
+    mcp_wr = hit->wr_t;
+
+    //c4LOG(info, " WR FRS: " << wr_FRS);
+    //c4LOG(info, " WR MCP: " << mcp_wr);
+
     
     if (!FrsGates.empty())
     {
 
         for (int gate = 0; gate < FrsGates.size(); gate++)
         {    
-            c4LOG(info, "size of aoq s2s4: " << AoQ_s2s4_mhtdc.size() );
+            
+            //c4LOG(info, "size of aoq s2s4: " << AoQ_s2s4_mhtdc.size() );
             for (int i = 0; i < AoQ_s2s4_mhtdc.size(); i++)
             {
                 //c4LOG(info, "in mhtdc loop ");
 
-                if (FrsGates[gate]->PassedAllGates(z21_mhtdc.at(i), AoQ_s1s2_mhtdc.at(i), x2_position, z41_mhtdc.at(i), z42_mhtdc.at(i), x4_position, AoQ_s2s4_mhtdc.at(i), dEdeg_z41_mhtdc.at(i), sci42e))
+                if (FrsGates[gate]->PassedS2S4(z41_mhtdc.at(i), z42_mhtdc.at(i), x2_position, x4_position, AoQ_s2s4_mhtdc.at(i), dEdeg_z41_mhtdc.at(i), sci42e))
                 {
             
                     //c4LOG(info, "filling histos");
-                    h1_dT_gated_on_frs[gate]->Fill(T1-T2);
-                    h2_MCP1_HeatMap_gated_on_frs[gate]->Fill(X11-X12, Y11-Y12);
-                    h2_MCP2_HeatMap_gated_on_frs[gate]->Fill(X21-X22, Y21-Y22);
+                    if(T1!=0 && T2!=0)h1_dT_gated_on_frs[gate]->Fill(T1-T2);
+                    if( X12!=0 && X11!=0 && Y12!=0 && Y11!=0 ) h2_MCP1_HeatMap_gated_on_frs[gate]->Fill(X11-X12, Y11-Y12);
+                    if( X22!=0 && X21!=0 && Y22!=0 && Y21!=0 ) h2_MCP2_HeatMap_gated_on_frs[gate]->Fill(X21-X22, Y21-Y22);
 
                     
                     // EG this is some old stuff I don't know about. For me it can be removed, prob DB/CJ should check if they need it

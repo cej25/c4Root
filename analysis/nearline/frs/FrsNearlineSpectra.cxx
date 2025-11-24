@@ -806,7 +806,7 @@ void FrsNearlineSpectra::Process_MHTDC()
     std::vector<Float_t> z43_mhtdc = multiHitItem.Get_ID_z43_mhtdc();
     std::vector<Float_t> dEdegoQ_mhtdc = multiHitItem.Get_ID_dEdegoQ_mhtdc();
     std::vector<Float_t> dEdeg_z41_mhtdc = multiHitItem.Get_ID_dEdeg_z41_mhtdc();
-    c4LOG(info, "---FRS size of aoq s2s4: " << AoQ_s2s4_mhtdc.size() );
+    //c4LOG(info, "---FRS size of aoq s2s4: " << AoQ_s2s4_mhtdc.size() );
 
     // CEJ:: testing
     // if (AoQ_s1s2_mhtdc.size() == 1 && AoQ_s2s4_mhtdc.size() == 1) mult1++;

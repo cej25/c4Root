@@ -57,6 +57,9 @@ class FrsMCPCorrelations : public FairTask
         TFRSParameter* frs;
         TClonesArray* fHitsMCP;
         std::vector<FrsGate*> FrsGates;
+        Long64_t wr_FRS = 0;
+        Long64_t mcp_wr = 0;
+
 
 
         std::vector<FrsHitItem> const* frsHitArray;
