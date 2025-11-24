@@ -1035,8 +1035,6 @@ void FrsCal2Hit::ProcessSci_MHTDC()
     auto const & calTpcItem = calTpcArray->at(0);
     b_tpc_xy = calTpcItem.Get_b_tpc_xy();
 
-    // SCI 11 L and R - For Sc11 a "select" is used, there are 4 options?
-
     Scintillator Sci11;
     if (sci->sci11_select == 0) Sci11.raw_left_hits = calSciItem.Get_mhtdc_sci11la_hits();
     else if (sci->sci11_select == 1) Sci11.raw_left_hits = calSciItem.Get_mhtdc_sci11lb_hits();
@@ -1055,16 +1053,27 @@ void FrsCal2Hit::ProcessSci_MHTDC()
     Sci41.raw_left_hits = calSciItem.Get_mhtdc_sci41l_hits();
     Sci41.raw_right_hits = calSciItem.Get_mhtdc_sci41r_hits();
     Sci41.Apply_dT_gates(frs_config->fscilr_mhtdc_limit);
-    TimeOfFlight mhtdc_tofs;
-    mhtdc_tofs.SciS1 = Sci11;
-    mhtdc_tofs.SciS2 = Sci21;
-    mhtdc_tofs.SciS4 = Sci41;
-    mhtdc_tofs.Low_S1S2 = 0; mhtdc_tofs.High_S1S2 = 400; mhtdc_tofs.Gate_S1S2 = true;
-    mhtdc_tofs.Low_S2S4 = 0; mhtdc_tofs.High_S2S4 = 400; mhtdc_tofs.Gate_S2S4 = true;
-    mhtdc_tofs.Offset_S1S2 = sci->mhtdc_offset_21_11[sci->sci11_select]; mhtdc_tofs.Offset_S2S4 = sci->mhtdc_offset_41_21;
-    mhtdc_tofs.CalculateTOF_S1S2();
-    mhtdc_tofs.CalculateTOF_S2S4();
+    
+    ParticleID PID;
+    PID.SciS1 = Sci11;
+    PID.SciS2 = Sci21;
+    PID.SciS4 = Sci41;
+    PID.Low_S1S2 = 0; PID.High_S1S2 = 400; PID.Gate_S1S2 = true;
+    PID.Low_S2S4 = 0; PID.High_S2S4 = 400; PID.Gate_S2S4 = true;
+    PID.Offset_S1S2 = sci->mhtdc_offset_21_11[sci->sci11_select]; PID.Offset_S2S4 = sci->mhtdc_offset_41_21;
+    PID.CalculateTOF_S1S2();
+    PID.CalculateTOF_S2S4();
 
+
+    PID.Length_S1S2 = id->mhtdc_length_sc1121; PID.Length_S2S4 = id->mhtdc_length_sc2141;
+    PID.CalculateBetas();
+
+    std::cout << "EVENT" << std::endl;
+    for (int i = 0; i < PID.Betas_S1S2S4.size(); i++)
+    {
+        std::cout << "beta s1s2: " << PID.Betas_S1S2S4.at(i).first << std::endl;
+        std::cout << "beta s2s4: " << PID.Betas_S1S2S4.at(i).second << std::endl;
+    }
 
     // here use the select.. 
     if (sci->sci11_select == 0) sci11l_hits = calSciItem.Get_mhtdc_sci11la_hits();
