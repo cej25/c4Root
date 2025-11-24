@@ -8,6 +8,8 @@
 #include "FrsHitData.h"
 
 #include "H10MCPTwinpeaksAnaData.h"
+#include "TStefanConfiguration.h"
+#include "StefanHitData.h"
 
 
 #include "TH1.h"
@@ -32,6 +34,9 @@ class TDirectory;
 class FrsGate;
 class TGraph;
 class TCanvas;
+class StefanHitItem;
+class TStefanConfiguration;
+
 
 class FrsMCPCorrelations : public FairTask
 {
@@ -56,11 +61,13 @@ class FrsMCPCorrelations : public FairTask
         TFrsConfiguration const* frs_config;
         TFRSParameter* frs;
         TClonesArray* fHitsMCP;
+        std::vector<StefanHitItem> const* StefanHit; 
+        TStefanConfiguration const* stefan_config;
+
+
         std::vector<FrsGate*> FrsGates;
         Long64_t wr_FRS = 0;
         Long64_t mcp_wr = 0;
-
-
 
         std::vector<FrsHitItem> const* frsHitArray;
         std::vector<FrsMultiHitItem> const* multihitArray;
@@ -86,13 +93,15 @@ class FrsMCPCorrelations : public FairTask
         // ::: Directories
         TDirectory* dir_corr;
         TDirectory** dir_frs_gates;
+        TDirectory* dir_mcp_stefan;
+
 
         // ::: Histograms
         std::vector<TH1*> h1_dT_gated_on_frs;
         std::vector<TH2*> h2_MCP1_HeatMap_gated_on_frs;
         std::vector<TH2*> h2_MCP2_HeatMap_gated_on_frs;
-
-
+        std::vector<TH2*> h2_e_dssd_vs_mcp_dt;
+        std::vector<std::vector<TH2*>> h2_e_dssd_vs_mcp_dt_gated_on_frs;
 
     
 

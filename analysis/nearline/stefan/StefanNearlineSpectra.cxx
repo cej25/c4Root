@@ -10,6 +10,7 @@
 #include "EventHeader.h"
 #include "c4Logger.h"
 
+
 // ROOT
 #include "THttpServer.h"
 #include "TMath.h"
@@ -170,7 +171,7 @@ InitStatus StefanNearlineSpectra::Init()
         h2_mcp_tof_vs_e_vertical_strip.resize(num_dssds);
         h2_mcp_tof_vs_e_horizontal_strip.resize(num_dssds);
 
-        for (int i = 0; i < num_dssds; i++)
+        for (int i = 0; i < num_dssds; i++) // EG copy this
         {
             h2_mcp_tof_vs_e_dssd[i] = MakeTH2(dir_mcp_stefan_dssds[i], "D", Form("h2_mcp_tof_vs_e_dssd_%i", i), Form("MCP TOF vs DSSD %i E", i), 1000, -100, 100, 750, 0, 5000000);
 
