@@ -22,7 +22,7 @@ void chap_histograms()
     TString fExpName = "hispec10";
 
     // Define important paths.
-    TString c4Root_path = "/mnt/data/builds/c4rootnew/c4Root";
+    TString c4Root_path = "/lustre/gamma/gbrunic/McpTest/c4Root";
     TString ucesb_path = c4Root_path + "/unpack/exps/" + fExpName + "/" + fExpName + " --input-buffer=200Mi --event-sizes --allow-errors";
     ucesb_path.ReplaceAll("//","/");
 
@@ -42,16 +42,25 @@ void chap_histograms()
     FairLogger::GetLogger()->SetLogScreenLevel("INFO");
     FairLogger::GetLogger()->SetColoredLog(true);
 
+    /*// Define where to read data from. Online = stream/trans server, Nearline = .lmd file.*/
+    /*// Input file - root trees*/
+    /*TString filepath = "/mnt/data/trees/";*/
+    /*TString filename = filepath + "novemberpulser_tree.root";*/
+    /*//TString filename = filepath + "20250410-1505_0001_tree.root";*/
+    /**/
+    /*// Output file - histos file*/
+    /*TString outputpath = "/mnt/data/histos/";*/
+    /*TString outputFileName =  outputpath + "novemberpulser_histos.root";*/
+    /*//TString outputFileName =  outputpath + "20250410-1505_0001_histos.root";*/
+ 
     // Define where to read data from. Online = stream/trans server, Nearline = .lmd file.
     // Input file - root trees
-    TString filepath = "/mnt/data/trees/";
-    //TString filename = filepath + "48pulsernovember_test.root";
-    TString filename = filepath + "22novalphamcp1_tree.root";
+    TString filepath = "/lustre/gamma/gbrunic/McpTest/test_files/";
+    TString filename = filepath + "20250410-1505_0001_tree.root";
 
     // Output file - histos file
-    TString outputpath = "/mnt/data/histos/";
-    //TString outputFileName =  outputpath + "48pulsernovember_test.root";
-    TString outputFileName =  outputpath + "22novalphamcp1_histos.root";
+    TString outputpath = "/lustre/gamma/gbrunic/McpTest/test_files/";
+    TString outputFileName =  outputpath + "20250410-1505_0001_histos_postgate.root";
 
 
     FairRunAna* run = new FairRunAna();
@@ -65,24 +74,18 @@ void chap_histograms()
 
     // ------------------------------------------------------------------------------------ //
     // *** Load Detector Configurations *************************************************** //
-    //TH10MCPConfiguration::SetDetectorConfigurationFile(config_path + "/mcp/mcp_mapping_14nov25.txt");
-    TH10MCPConfiguration::SetDetectorConfigurationFile(config_path + "/mcp/mcp_mapping_22nov25.txt");
-
-    //TH10MCPConfiguration::SetDetectorConfigurationFile(config_path + "/mcp/mcp_mappingcolognetest.txt");
+    TH10MCPConfiguration::SetDetectorConfigurationFile(config_path + "/mcp/mcp_mapping_14nov25.txt");
+   
+    McpGate* testGate0 = new McpGate("testGate0", "/lustre/gamma/gbrunic/McpTest/test_files/testGates.root");
+    McpGate* testGate1 = new McpGate("testGate1", "/lustre/gamma/gbrunic/McpTest/test_files/testGatesSecond.root");
+    std::vector<McpGate*> mcpGateVector = {testGate0, testGate1};
+   
     // ---------------------------------------------------------------------------------------- //
-
-    // *** Load Gates of MCP ***
-    McpGate* T_alpha = new McpGate("T_alpha", config_path + "/mcp/test2.root");
-    McpGate* X_alpha = new McpGate("X_alpha", config_path + "/mcp/xshape.root");
-
-    std::vector<McpGate*> mcpGateVector = {T_alpha, X_alpha};
-
     if (MCP_ON)
     {
         H10MCPNearlineSpectra* nearlinemcp = new H10MCPNearlineSpectra(mcpGateVector);
         
         run->AddTask(nearlinemcp);
-        
     }
        
   

@@ -11,6 +11,8 @@
 #include <vector>
 #include "TBox.h"
 
+#include "McpGate.h"
+
 class TClonesArray;
 class EventHeader;
 class TCanvas;
@@ -24,6 +26,7 @@ class H10MCPNearlineSpectra : public FairTask
 {
     public:
         H10MCPNearlineSpectra();
+        H10MCPNearlineSpectra(std::vector<McpGate*>& fMcpGates);
         H10MCPNearlineSpectra(const TString& name, Int_t verbose = 1);
 
         virtual ~H10MCPNearlineSpectra();
@@ -42,6 +45,9 @@ class H10MCPNearlineSpectra : public FairTask
 
         TClonesArray* fHitsMCP;
 
+        // gates
+        std::vector<McpGate*> mcpGates;
+        int numberMcpGates = 0;
 
         // ranges
         EventHeader* header;
@@ -61,6 +67,8 @@ class H10MCPNearlineSpectra : public FairTask
         TDirectory* dir_Position;
         TDirectory* dir_Energy;
         TDirectory* dir_Gated;
+
+        std::vector<TDirectory*> dir_mcpGates;
 
         // Variable
         double T1 = 0;
@@ -115,34 +123,35 @@ class H10MCPNearlineSpectra : public FairTask
         TH2* h2_E2_dT;
 
         // Gated histogram
-        TH1* h1_dT_Pos1Gate;
-        TH1* h1_dT_Pos2Gate;
+        std::vector<TH1*> h1_dT_Pos1Gate;
+        std::vector<TH1*> h1_dT_Pos2Gate;
 
-        TH1* h1_E1_Pos1Gate;
-        TH1* h1_E2_Pos1Gate;
-        TH1* h1_E2_Pos2Gate;
+        std::vector<TH1*> h1_E1_Pos1Gate;
+        std::vector<TH1*> h1_E2_Pos1Gate;
+        std::vector<TH1*> h1_E2_Pos2Gate;
 
-        TH1* h1_E_X11_Pos1Gate;
-        TH1* h1_E_X12_Pos1Gate;
-        TH1* h1_E_Y11_Pos1Gate;
-        TH1* h1_E_Y12_Pos1Gate;
-        TH1* h1_E_X21_Pos2Gate;
-        TH1* h1_E_X22_Pos2Gate;
-        TH1* h1_E_Y21_Pos2Gate;
-        TH1* h1_E_Y22_Pos2Gate;
+        std::vector<TH1*> h1_E_X11_Pos1Gate;
+        std::vector<TH1*> h1_E_X12_Pos1Gate;
+        std::vector<TH1*> h1_E_Y11_Pos1Gate;
+        std::vector<TH1*> h1_E_Y12_Pos1Gate;
+        std::vector<TH1*> h1_E_X21_Pos2Gate;
+        std::vector<TH1*> h1_E_X22_Pos2Gate;
+        std::vector<TH1*> h1_E_Y21_Pos2Gate;
+        std::vector<TH1*> h1_E_Y22_Pos2Gate;
 
-        TH2* h2_MCP1_HeatMap_Pos2Gate;
-        TH2* h2_MCP2_HeatMap_Pos1Gate;
+        std::vector<TH2*> h2_MCP1_HeatMap_Pos2Gate;
+        std::vector<TH2*> h2_MCP1_HeatMap_Pos1Gate;
+        std::vector<TH2*> h2_MCP2_HeatMap_Pos1Gate;
 
-        TH2* h2_E1_dT_Pos1Gate;
-        TH2* h2_E1_dT_Pos2Gate;
-        TH2* h2_E2_dT_Pos2Gate;
-        TH2* h2_E2_dT_Pos1Gate;
+        std::vector<TH2*> h2_E1_dT_Pos1Gate;
+        std::vector<TH2*> h2_E1_dT_Pos2Gate;
+        std::vector<TH2*> h2_E2_dT_Pos2Gate;
+        std::vector<TH2*> h2_E2_dT_Pos1Gate;
 
-        TH2* h2_E1_dT_Pos1Gate_Pos2Gate;
-        TH2* h2_E2_dT_Pos1Gate_Pos2Gate;
+        std::vector<TH2*> h2_E1_dT_Pos1Gate_Pos2Gate;
+        std::vector<TH2*> h2_E2_dT_Pos1Gate_Pos2Gate;
         
-        TH2* h2_MCP2_HeatMap_Pos1Gate_dTGate;
+        std::vector<TH2*> h2_MCP2_HeatMap_Pos1Gate_dTGate;
         
         
 

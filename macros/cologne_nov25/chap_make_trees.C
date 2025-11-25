@@ -41,14 +41,15 @@ void chap_make_trees()
 
     // Input file - lmd
     TString filepath = "/mnt/data/lmd/test/";
-    TString filename = filepath + "novemberpulser.lmd";
+    //TString filename = filepath + "22Novfinetime.lmd";
+    TString filename = filepath + "22novalphamcp1.lmd";
     //TString filename = filepath + "20250410-1505_0001.lmd";
 
     //TString filename ="/LynxOS/mbsusr/mbsdaq/mbsrun/x86_timesorter/20250410-1505_0001.lmd";
 
     // Output file - root
     TString outputpath = "/mnt/data/trees/";    
-    TString outputFileName = outputpath + "novemberpulser_tree.root";
+    TString outputFileName = outputpath + "22novalphamcp1_tree.root";
     //TString outputFileName = outputpath + "20250410-1505_0001_tree.root";
 
     // Create Online run
@@ -71,7 +72,10 @@ void chap_make_trees()
 
     // ------------------------------------------------------------------------------------ //
     // *** Load Detector Configurations *************************************************** //
-    TH10MCPConfiguration::SetDetectorConfigurationFile(config_path + "/mcp/mcp_mapping_14nov25.txt");
+    //TH10MCPConfiguration::SetDetectorConfigurationFile(config_path + "/mcp/mcp_mapping_14nov25.txt");
+    TH10MCPConfiguration::SetDetectorConfigurationFile(config_path + "/mcp/mcp_mapping_22nov25.txt");
+
+    //TH10MCPConfiguration::SetDetectorConfigurationFile(config_path + "/mcp/mcp_mappingcolognetest.txt");
  
     // ------------------------------------------------------------------------------------- //
     // *** Read Subsystems - comment out unwanted systems ********************************** //
@@ -84,8 +88,8 @@ void chap_make_trees()
     if (MCP_ON)
     {
         H10MCPReader* unpackmcp = new H10MCPReader((EXT_STR_h101_mcp_onion*)&ucesb_struct.mcp, offsetof(EXT_STR_h101, mcp));
-        //unpackmcp->DoFineTimeCalOnline(config_path + "/mcp/test_pulser_14nov25.root", 7000); //make the fine time calibration with a long file (2000000)
-        unpackmcp->SetInputFileFineTimeHistos(config_path + "/mcp/test_pulser_14nov25.root"); //create a tree with this fine time calibration
+        //unpackmcp->DoFineTimeCalOnline(config_path + "/mcp/22Novfinetime.root", 2000000); //make the fine time calibration with a long file (2000000)
+        unpackmcp->SetInputFileFineTimeHistos(config_path + "/mcp/22Novfinetime.root"); //create a tree with this fine time calibration
 
         unpackmcp->SetOnline(false);
         source->AddReader(unpackmcp);

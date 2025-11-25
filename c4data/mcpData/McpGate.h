@@ -53,8 +53,9 @@ struct DeltaTimeGate{
 class McpGate{
   
   // Private 
-  TString& gateName;
-  TString& fileName;
+  private:
+  TString gateName;
+  TString gateFileName;
 
   TCutG* gate_mcp1PosDxVsPosDy = nullptr;
   TCutG* gate_mcp2PosDxVsPosDy = nullptr;
@@ -62,25 +63,29 @@ class McpGate{
 
   // TFile* gateFile;
 
-  bool Does_mcp1PosDxVsPosDy_Exist();
-  bool Does_mcp2PosDxVsPosDy_Exist();
-  bool Does_deltaTime_Exist();
-
   void GetGatesFromFile();
 
   // Public
-  McpGate(TString& gateName, TString& fileName);
+  public:
+  McpGate(const TString& gname, const TString& fname);
   virtual ~McpGate() = default;
 
   bool Passed_mcp1PosDxVsPosDy(Double_t dx, Double_t dy);
   bool Passed_mcp2PosDxVsPosDy(Double_t dx, Double_t dy);
   bool Passed_deltaTime(Double_t dt);
-  bool PassedAll(Double_t dx, Double_t dy, Double_t dt);
+  bool PassedAllPositions(Double_t dx1, Double_t dy1, Double_t dx2, Double_t dy2);
+  bool PassedAllGates(Double_t dx1, Double_t dy1, Double_t dx2, Double_t dy2, Double_t dt);
 
+  bool Does_mcp1PosDxVsPosDy_Exist();
+  bool Does_mcp2PosDxVsPosDy_Exist();
+  bool Does_deltaTime_Exist();
+
+
+  TString GetName();
   void SetDeltaTimeCut();
 
   ClassDef(McpGate, 1)
 
-}
+};
 
 #endif

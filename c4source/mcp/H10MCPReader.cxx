@@ -297,7 +297,9 @@ Bool_t H10MCPReader::Read() //do fine time here:
 {
     auto start = std::chrono::high_resolution_clock::now();
 
+    // std::cout << "hello reader 1" << std::endl;
     if (!fData) return kTRUE;
+    // std::cout << "hello reader 2" << std::endl;
 
     if ((fNEvent==fine_time_calibration_after)  & (!fine_time_calibration_set)){
         DoFineTimeCalibration();
@@ -371,6 +373,7 @@ Bool_t H10MCPReader::Read() //do fine time here:
             last_channel_read = channelid;
 
             bool is_leading = fData->mcp_tamex[it_board_number].time_edgev[it_hits] & 0x1;
+            // std::cout << "CHANNEL:: " << channelid << " LEADING::? " << is_leading << std::endl;
             
             //Fill fine times and skip.
             if (!fine_time_calibration_set && is_leading)
@@ -408,10 +411,12 @@ Bool_t H10MCPReader::Read() //do fine time here:
                 last_tdc_hit.lead_fine_T = fine_T;
 
                 fNleads_read[it_board_number][channelid]++;
+                // std::cout << "hello reader 3" << std::endl;
                 continue;
             }
             else if (!is_leading && last_tdc_hit.hit)
             { 
+                // std::cout << "hello reader WRITE" << std::endl;
                 new ((*fArray)[fArray->GetEntriesFast()]) H10MCPTwinpeaksData(
                     trig,
                     it_board_number,

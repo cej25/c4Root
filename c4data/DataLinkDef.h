@@ -89,6 +89,7 @@
 #pragma link C++ class H10MCPTwinpeaksData+;
 #pragma link C++ class H10MCPTwinpeaksCalData+;
 #pragma link C++ class H10MCPTwinpeaksAnaData+;
+#pragma link C++ class McpGate+;
 
 // LISA
 #pragma link C++ class LisaItem+;

@@ -90,9 +90,12 @@ Writes the times in ns!
 */
 void H10MCPRaw2Cal::Exec(Option_t* option)
 {
+    // std::cout << "hello" << std::endl;
     auto start = std::chrono::high_resolution_clock::now();
+    // std::cout << "entries:: " << funcal_data->GetEntriesFast() << std::endl; 
     if (funcal_data && funcal_data->GetEntriesFast() > 1)
     { // only get events with two hits or more
+        // std::cout << "hello2" << std::endl;
         Int_t event_multiplicity = funcal_data->GetEntriesFast();
  	    for (Int_t ihit = 0; ihit < event_multiplicity; ihit++)
         {
