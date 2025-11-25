@@ -17,7 +17,7 @@
 extern "C"
 {
     //#include "../../config/hispec10/frs/setup_103_002_2025_setting14_conv.C"
-    #include "../../config/hispec10/frs/setup_103_019_2025_conv.C" // for run 137
+    #include "../../config/hispec10/frs/setup_103_016_2025_conv.C" // for run 140
 
 }
 
@@ -61,11 +61,11 @@ void e_hispec10_histos()
 
     // ::: INPUT
     TString inputpath = "/u/gandolfo/data/lustre/gamma/hispec10_dennis/tree/";
-    TString filename = inputpath + "run_0137_0001_tree.root";
+    TString filename = inputpath + "run_0140_0001_tree.root";
 
     // ::: O U T P U T
     TString outputpath = "/u/gandolfo/data//lustre/gamma/hispec10_dennis/histo/";   //testing
-    TString outputFileName = outputpath + "run_0137_0001_histos.root";
+    TString outputFileName = outputpath + "run_0140_0001_histos.root";
 
     FairRunAna* run = new FairRunAna();
     EventHeader* EvtHead = new EventHeader();
@@ -139,8 +139,14 @@ void e_hispec10_histos()
 
 
     std::vector<FrsGate*> fgs;
-    FrsGate* Ti44 = new FrsGate("Ti44", config_path + "/frs/44Tisetup19.root");  
-    fgs.emplace_back(Ti44);
+    FrsGate* V44 = new FrsGate("V44", config_path + "/frs/run14044V.root");  
+    FrsGate* Cr48 = new FrsGate("Cr48", config_path + "/frs/run14048Cr.root");  
+    FrsGate* Ca40 = new FrsGate("Ca40", config_path + "/frs/run14040Ca.root");  
+
+    fgs.emplace_back(V44);
+    fgs.emplace_back(Cr48);
+    fgs.emplace_back(Ca40);
+
  
     if (FRS_ON)
     {

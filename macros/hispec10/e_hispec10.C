@@ -8,7 +8,7 @@
 // Define FRS setup.C file - FRS should provide; place in /config/{expName}/frs/
 extern "C"
 {
-    #include "../../config/s115/frs/setup_115_022_2025_s1calib_conv.C"
+    #include "../../config/hispec10/frs/setup_103_016_2025_conv.C"
 }
 
 // Struct should containt all subsystem h101 structures
@@ -21,7 +21,7 @@ typedef struct EXT_STR_h101_t
 } EXT_STR_h101;
 
 
-void hispec10()
+void e_hispec10()
 {   
     const Int_t nev = -1; const Int_t fRunId = 1; const Int_t fExpId = 1;
 
@@ -50,26 +50,20 @@ void hispec10()
     FairLogger::GetLogger()->SetColoredLog(true);
 
     // Define where to read data from. Online = stream/trans server, Nearline = .lmd file.
-    TString filename = "/u/gandolfo/data/lustre/gamma/s092_s103_files/ts/run_0137_0001.lmd";
+    TString filename = "/u/gandolfo/data/lustre/gamma/s092_s103_files/ts/run_0140_0001.lmd";
 
     TString outputpath = "/u/gandolfo/data/lustre/gamma/hispec10_dennis/tree/";
-    TString outputFileName = outputpath + ".root";
-
-    // Create Online run
-    Int_t refresh = 1; // Refresh rate for online histograms
-    Int_t port = 6060; // Port number for online visualisation - use 5000 on lxg1301 during experiments as it has firewall access.
+    TString outputFileName = outputpath + "run_0140_0001_local.root";
 
     FairRunOnline* run = new FairRunOnline();
     EventHeader* EvtHead = new EventHeader();
     run->SetEventHeader(EvtHead);
     run->SetRunId(1);
-    run->ActivateHttpServer(refresh, port);
     run->SetSink(new FairRootFileSink(outputFileName));
     TFolder* histograms = new TFolder("Histograms", "Histograms");
     FairRootManager::Instance()->Register("Histograms", "Histogram Folder", histograms, false);
     run->AddObject(histograms);
 
-  
     // Create source using ucesb for input
     EXT_STR_h101 ucesb_struct;
     TString ntuple_options = "UNPACK,RAW"; // Define which level of data to unpack
@@ -142,7 +136,7 @@ void hispec10()
     {
         FrsReader* unpackfrs = new FrsReader((EXT_STR_h101_frs_onion*)&ucesb_struct.frs, offsetof(EXT_STR_h101, frs));
         
-        unpackfrs->SetOnline(true);
+        unpackfrs->SetOnline(false);
         
         source->AddReader(unpackfrs);
     }
@@ -153,7 +147,7 @@ void hispec10()
     {
         H10MCPRaw2Cal* calmcp = new H10MCPRaw2Cal();
         
-        calmcp->SetOnline(true);
+        calmcp->SetOnline(false);
         run->AddTask(calmcp);
     }
     
@@ -169,7 +163,7 @@ void hispec10()
     {
         FrsRaw2Cal* calfrs = new FrsRaw2Cal();
         
-        calfrs->SetOnline(true);
+        calfrs->SetOnline(false);
         run->AddTask(calfrs);
     }
 
@@ -182,7 +176,7 @@ void hispec10()
     {
         H10MCPCal2Ana* anamcp = new H10MCPCal2Ana();
         
-        anamcp->SetOnline(true);
+        anamcp->SetOnline(false);
         run->AddTask(anamcp);
     }
     
@@ -190,49 +184,10 @@ void hispec10()
     {
         FrsCal2Hit* hitfrs = new FrsCal2Hit();
         
-        hitfrs->SetOnline(true); 
+        hitfrs->SetOnline(false); 
         run->AddTask(hitfrs);
     } 
 
-
-    // ======================================================================================== //
-    // =========== **** SPECTRA ***** ========================================================= //
-    // ======================================================================================== //
-    
-    // ---------------------------------------------------------------------------------------- //
-    // *** Online Spectra ********************************************************************* //   
-    if (MCP_ON)
-    {
-        H10MCPOnlineSpectra* onlinemcp = new H10MCPOnlineSpectra();
-        
-        run->AddTask(onlinemcp);
-        
-    }
-    
-    if (STEFAN_ON)
-    {
-        StefanOnlineSpectra* onlinestefan = new StefanOnlineSpectra();
-        run->AddTask(onlinestefan);
-    }
-
-    TFrsConfiguration::Set_Z_range(30,50);
-    TFrsConfiguration::Set_AoQ_range(1.8,2.4);
-    TFrsConfiguration::Set_x2_range(-120,120);
-    TFrsConfiguration::Set_x4_range(-120,120);
-    std::vector<FrsGate*> frsgates{};
- 
-    if (FRS_ON)
-    {
-        FrsOnlineSpectra* onlinefrs = new FrsOnlineSpectra(frsgates);
-        // For monitoring FRS on our side
-        FrsRawSpectra* frsrawspec = new FrsRawSpectra();
-        FrsCalSpectra* frscalspec = new FrsCalSpectra();
-    
-        run->AddTask(onlinefrs);
-        run->AddTask(frsrawspec);
-        run->AddTask(frscalspec);
-    }
-   
   
     // Initialise
     run->Init();
@@ -242,7 +197,6 @@ void hispec10()
     // Information about portnumber and main data stream
     cout << "\n\n" << endl;
     cout << "Data stream is: " << filename << endl;
-    cout << "Online port server: " << port << endl;
     cout << "\n\n" << endl;
 
     // Run
