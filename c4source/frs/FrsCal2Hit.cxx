@@ -127,7 +127,7 @@ void FrsCal2Hit::Exec(Option_t* option)
     if (tpatArray->size() == 0) return;
     fNEvents++;
 
-    std::cout << "::: EVENT START :::" << std::endl;
+    //std::cout << "::: EVENT START :::" << std::endl;
 
     auto start = std::chrono::high_resolution_clock::now();
     
@@ -1054,9 +1054,9 @@ void FrsCal2Hit::ProcessSci_MHTDC()
                 // std::cout <<  "11lr DT:: " << mhtdc_sc11lr_dt[i * hits_in_11r + j] << std::endl;
                 mhtdc_sc11lr_dt[i * hits_in_11r + j] = sci->mhtdc_factor_ch_to_ns * (rand3() + sci11l_hits[i] - sci11r_hits[j]);
                 mhtdc_sc11lr_x[i * hits_in_11r + j] = mhtdc_sc11lr_dt[i * hits_in_11r + j] * sci->mhtdc_factor_11l_11r + sci->mhtdc_offset_11l_11r;
-                std::cout << "LEFT: " << sci->mhtdc_factor_ch_to_ns * sci11l_hits[i] << std::endl;
-                std::cout << "RIGHT: " << sci->mhtdc_factor_ch_to_ns * sci11r_hits[i] << std::endl;
-                std::cout <<  "11lr DT:: " << mhtdc_sc11lr_dt[i * hits_in_11r + j] << std::endl;
+               // std::cout << "LEFT: " << sci->mhtdc_factor_ch_to_ns * sci11l_hits[i] << std::endl;
+             //   std::cout << "RIGHT: " << sci->mhtdc_factor_ch_to_ns * sci11r_hits[i] << std::endl;
+              //  std::cout <<  "11lr DT:: " << mhtdc_sc11lr_dt[i * hits_in_11r + j] << std::endl;
             }
         }
     }
@@ -1091,7 +1091,7 @@ void FrsCal2Hit::ProcessSci_MHTDC()
             {
                 // std::cout << "i :: " << i << " :: j :: " << j << " :: dt :: " << sci->mhtdc_factor_ch_to_ns * (rand3() + sci21l_hits[i] - sci21r_hits[j]) << std::endl;
                 mhtdc_sc21lr_dt[i * hits_in_21r + j] = sci->mhtdc_factor_ch_to_ns * (rand3() + sci21l_hits[i] - sci21r_hits[j]);
-                std::cout <<  "21lr DT:: " << mhtdc_sc21lr_dt[i * hits_in_21r + j] << std::endl;
+               // std::cout <<  "21lr DT:: " << mhtdc_sc21lr_dt[i * hits_in_21r + j] << std::endl;
                 mhtdc_sc21lr_x[i * hits_in_21r + j] = mhtdc_sc21lr_dt[i * hits_in_21r + j] * sci->mhtdc_factor_21l_21r + sci->mhtdc_offset_21l_21r;
             }
         }
@@ -2229,10 +2229,10 @@ void FrsCal2Hit::ProcessIDs_MHTDC()
     {
         for (int i = 0; i < hits_in_s1s2; i++) 
         {
-            std::cout << "TOF2111:: " << mhtdc_tof2111[i] << std::endl;
+            //std::cout << "TOF2111:: " << mhtdc_tof2111[i] << std::endl;
             temp_id_mhtdc_tof_s1s2[i] = mhtdc_tof2111[i];
             temp_id_mhtdc_beta_s1s2[i] = (id->mhtdc_length_sc1121 / temp_id_mhtdc_tof_s1s2[i]) / speed_light; // can never be outside 0 and 1
-            std::cout << "BETA:: " << temp_id_mhtdc_beta_s1s2[i] << std::endl;
+            //std::cout << "BETA:: " << temp_id_mhtdc_beta_s1s2[i] << std::endl;
         }
     }
     // CEJ :: removed for testing

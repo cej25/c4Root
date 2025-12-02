@@ -50,10 +50,10 @@ void e_hispec10()
     FairLogger::GetLogger()->SetColoredLog(true);
 
     // Define where to read data from. Online = stream/trans server, Nearline = .lmd file.
-    TString filename = "/u/dbittner/data/lustre/gamma/s092_s103_files/ts/run_0145_0001.lmd";
+    TString filename = "/u/dbittner/data/lustre/gamma/s092_s103_files/ts/run_0140_0001.lmd";
 
     TString outputpath = "/u/dbittner/data/lustre/gamma/hispec10_dennis/tree/";
-    TString outputFileName = outputpath + "run_0145_0001_localtest.root";
+    TString outputFileName = outputpath + "run_0140_0001_local.root";
 
     FairRunOnline* run = new FairRunOnline();
     EventHeader* EvtHead = new EventHeader();
