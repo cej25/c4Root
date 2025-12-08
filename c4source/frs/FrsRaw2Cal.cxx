@@ -523,13 +523,13 @@ void FrsRaw2Cal::ProcessScintillators()
     int hits_in_21r = sci21r_hits.size();
     int hits_in_22r = sci22r_hits.size();
     //if(hits_in_21l==0 ) c4LOG(info, " FRS HIT 0 (21L)");
+    
     for (int i = 0; i < hits_in_21l; i++)
     {
         for (int j = 0; j < hits_in_21r; j++)
         {
             dt21l_21r_hits.emplace_back(((sci->mhtdc_factor_ch_to_ns*rand3()) + sci21l_hits[i] - sci21r_hits[j]));
             x_21lr_hits.emplace_back(dt21l_21r_hits[i * hits_in_21r + j] * sci->mhtdc_factor_21l_21r + sci->mhtdc_offset_21l_21r);
-            //if(hits_in_11la==16 )c4LOG(info, "RAW2CAL SCI21 L , R : " << sci21l_hits[i] << " , " << sci21r_hits[j] << " DT : " << dt21l_21r_hits[i * hits_in_21r + j] );
         }
     }
     

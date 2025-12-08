@@ -22,7 +22,8 @@
 #define FRS_SETUP_FILE "../../../config/shiyan/frs/setup/setup_103_016_2025_setting13_conv_nov25.C" //run19
 //#define FRS_SETUP_FILE "../../../config/shiyan/frs/setup/setup_103_020_2025_conv.C" //setting 20
 
-#define FRS_CONFIG_FILE "../../../config/shiyan/frs/general/frs_config_v6.C"
+//#define FRS_CONFIG_FILE "../../../config/shiyan/frs/general/frs_config_v6.C"
+#define FRS_CONFIG_FILE "../../../config/shiyan/frs/general/frs_config_test.C"
 #define LISA_CONFIG_FILE "../../../config/shiyan/lisa/general/lisa_config_v2.C"
 
 //pareeksha
@@ -102,7 +103,7 @@ void e_shiyan_make_trees()
     // ::: OUTPUT 
     TString outputpath = "/u/gandolfo/data/shiyan_debug/frs_mhit/";   //shiyan
     //TString outputpath = "/u/gandolfo/data/pareeksha_debug/";  
-    TString outputFilename = outputpath + "run_0019_0001_tree.root";
+    TString outputFilename = outputpath + "run_0019_0001_tree_test_step1.root";
     
     // ::: Create online run
     Int_t refresh = 10; // not needed

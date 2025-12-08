@@ -344,6 +344,13 @@ InitStatus FrsNearlineSpectra::Init()
         h2_multihit_map->GetYaxis()->SetTitle("# s2s4_mhtdc");
         h2_multihit_map->SetOption("COLZ");
 
+        h2_multihit_map_selected = new TH2I("h2_multihit_map_selected", "MHit_s2s4 vs MHit_s1s2 selected ",
+                                10, 0, 10,   
+                                10, 0, 10);  
+        h2_multihit_map_selected->GetXaxis()->SetTitle("# s1s2_mhtdc_selected");
+        h2_multihit_map_selected->GetYaxis()->SetTitle("# s2s4_mhtdc_selected");
+        h2_multihit_map_selected->SetOption("COLZ");
+
         // ------ 2D ------ 
         // S1S2
         h2_Z21_vs_AoQs1s2_mhtdc = MakeTH2(dir_mhtdc_s1s2_2d, "D", "h2_Z21_vs_AoQs1s2_mhtdc", "Z21 vs. A/Q (S1-S2) (MHTDC)", 1500, frs_config->fMin_AoQ, frs_config->fMax_AoQ, 1000, frs_config->fMin_Z, frs_config->fMax_Z, "A/Q (S1-S2)", "Z (MUSIC 21)");
@@ -977,7 +984,9 @@ void FrsNearlineSpectra::Process_MHTDC()
     std::vector<Float_t> beta_s1s2_mhtdc = multiHitItem.Get_ID_beta_s1s2_mhtdc();
     std::vector<Float_t> beta_s2s4_mhtdc = multiHitItem.Get_ID_beta_s2s4_mhtdc();
     std::vector<Float_t> AoQ_s1s2_mhtdc = multiHitItem.Get_ID_AoQ_s1s2_mhtdc();
+    std::vector<Float_t> AoQ_s1s2_selected_mhtdc = multiHitItem.Get_ID_AoQ_corr_s1s2_selected_mhtdc();
     std::vector<Float_t> AoQ_s2s4_mhtdc = multiHitItem.Get_ID_AoQ_s2s4_mhtdc();
+    std::vector<Float_t> AoQ_s2s4_selected_mhtdc = multiHitItem.Get_ID_AoQ_corr_s2s4_selected_mhtdc();
     std::vector<Float_t> AoQ_corr_s1s2_mhtdc = multiHitItem.Get_ID_AoQ_corr_s1s2_mhtdc();
     std::vector<Float_t> AoQ_corr_s2s4_mhtdc = multiHitItem.Get_ID_AoQ_corr_s2s4_mhtdc();
     std::vector<Float_t> z21_mhtdc = multiHitItem.Get_ID_z21_mhtdc();
@@ -990,6 +999,8 @@ void FrsNearlineSpectra::Process_MHTDC()
 
     // ::: Hit Map Full for FRS
     h2_multihit_map->Fill(AoQ_s1s2_mhtdc.size(), AoQ_s2s4_mhtdc.size());
+    h2_multihit_map_selected->Fill(AoQ_s1s2_selected_mhtdc.size(), AoQ_s2s4_selected_mhtdc.size());
+
 
     // CEJ :: Process FRS Gate info here first.
     for (int gate = 0; gate < FrsGates.size(); gate++)
