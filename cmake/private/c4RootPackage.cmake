@@ -3,7 +3,6 @@ include(CMakePackageConfigHelpers)
 # Configure/Install CMake package
 function(install_cmake_package)
   # Correct spelling, in local scope
-  #set(PROJECT_NAME R3BRoot)
   set(PROJECT_NAME c4Root)
 
   set(PACKAGE_INSTALL_DESTINATION

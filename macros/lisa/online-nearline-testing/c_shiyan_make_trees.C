@@ -17,7 +17,7 @@
 
 // Definition of setup and configuration files
 // FRS
-#define FRS_SETUP_FILE "../../../config/shiyan/frs/setup/setup_103_016_2025_run6_conv.C"
+#define FRS_SETUP_FILE "../../../config/shiyan/frs/setup/setup_103_016_2025_setting13_conv_nov25.C"
 #define FRS_CONFIG_FILE "../../../config/shiyan/frs/general/frs_config_v6.C"
 // LISA
 #define LISA_CONFIG_FILE "../../../config/shiyan/lisa/general/lisa_config_v2.C"
@@ -123,6 +123,12 @@ void c_shiyan_make_trees()
     setup(frs,mw,tpc,music,labr,sci,id,si,mrtof,range); // Function defined in frs setup.C macro
     TFrsConfiguration::SetParameters(frs,mw,tpc,music,labr,sci,id,si,mrtof,range);
     frs_config(config_path);
+    TFrsConfiguration::Set_sci_limit_11la(0, 60000);
+    TFrsConfiguration::Set_sci_limit_11ra(0, 60000);
+    TFrsConfiguration::Set_sci_limit_21l(0, 60000);
+    TFrsConfiguration::Set_sci_limit_21r(0, 60000);
+    TFrsConfiguration::Set_sci_limit_41l(0, 60000);
+    TFrsConfiguration::Set_sci_limit_41r(0, 60000);
 
     // ::: L I S A parameter - Initialise
     lisa_config(config_path);
@@ -208,7 +214,7 @@ void c_shiyan_make_trees()
         run->AddTask(hitfrs);
     } 
 
-    if (LISA_HIT)
+    if (LISA_HIT && FRS_ON)
     {
         LisaCal2Hit* lisacal2hit = new LisaCal2Hit();
         lisacal2hit->SetOnline(false);

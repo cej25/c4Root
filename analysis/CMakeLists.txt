@@ -45,93 +45,136 @@ include_directories(SYSTEM ${SYSTEM_INCLUDE_DIRECTORIES})
 
 link_directories(${FAIRROOT_LIBRARY_DIR} ${ROOT_LIBRARY_DIR})
 
-add_subdirectory(online/aida)
-add_subdirectory(nearline/aida)
-add_subdirectory(online/bb7)
-add_subdirectory(nearline/bb7)
-add_subdirectory(online/beammonitor)
-add_subdirectory(online/bgo)
-add_subdirectory(nearline/bgo)
-# add_subdirectory(online/bplast)
-# add_subdirectory(nearline/bgo)
+if (LISA_ONLY)
+    set(SRCS
+    #online
+    ./online/lisa/LisaOnlineSpectra.cxx
+    ./online/lisa/LisaOnlineSpectraDaq.cxx
+    ./online/frs/FrsOnlineSpectra.cxx
+    ./online/frs/FrsRawSpectra.cxx
+    ./online/frs/FrsCalSpectra.cxx
 
-set(SRCS
-#online
-./online/germanium/GermaniumOnlineSpectra.cxx
-./online/germanium/GermaniumLabTest.cxx
-./nearline/germanium/GermaniumResolution.cxx
-./online/beammonitor/BeamMonitorOnlineSpectra.cxx
-./online/lisa/LisaOnlineSpectra.cxx
-./online/lisa/LisaOnlineSpectraDaq.cxx
-./online/aida/AidaOnlineSpectra.cxx
-./online/aida/AidaPulserWalkthrough.cxx
-./online/bplast/bPlastOnlineSpectra.cxx
-./online/fatima/FatimaOnlineSpectra.cxx
-./online/fatima/FatimaVmeOnlineSpectra.cxx
-./online/frs/FrsOnlineSpectra.cxx
-./online/frs/FrsRawSpectra.cxx
-./online/frs/FrsCalSpectra.cxx
-./online/bgo/BGOOnlineSpectra.cxx
-./online/timemachine/TimeMachineOnline.cxx
-./online/wr/WhiterabbitCorrelationOnline.cxx
-./online/bb7/BB7OnlineSpectra.cxx
-./online/bb7/BB7FebexOnlineSpectra.cxx
-./online/fimp/FimpOnlineSpectra.cxx
-./online/mcp/H10MCPOnlineSpectra.cxx
-./online/stefan/StefanOnlineSpectra.cxx
+    # nearline/offline
+    ./nearline/frs/FrsNearlineSpectra.cxx
+    ./nearline/frs/FrsRawNearlineSpectra.cxx
+    ./nearline/lisa/LisaNearlineSpectra.cxx
+    ./nearline/lisa/LisaNearlineSpectraDaq.cxx
+    ./nearline/lisa/LisaNearlineSpectraAna.cxx
+    ./nearline/lisa/LisaTraceAnalysis.cxx
+    ./nearline/lisa/LisaTraceCorrelation.cxx
+    ./nearline/lisa/LisaNearlineSpectra.cxx
 
-# nearline/offline
-./nearline/bplast/bPlastNearlineSpectra.cxx
-./nearline/fatima/FatimaNearlineSpectra.cxx
-./nearline/fatima/FatimaVmeNearlineSpectra.cxx
-./nearline/aida/AidaNearlineSpectra.cxx
-./nearline/frs/FrsNearlineSpectra.cxx
-./nearline/frs/FrsRawNearlineSpectra.cxx
-./nearline/germanium/GermaniumNearlineSpectra.cxx
-./nearline/bgo/BGONearlineSpectra.cxx
-./nearline/wr/WhiterabbitCorrelationNearline.cxx
-./nearline/timemachine/TimeMachineNearline.cxx
-./nearline/lisa/LisaNearlineSpectra.cxx
-./nearline/lisa/LisaNearlineSpectraDaq.cxx
-./nearline/lisa/LisaNearlineSpectraAna.cxx
-./nearline/lisa/LisaTraceAnalysis.cxx
-./nearline/lisa/LisaTraceCorrelation.cxx
-./nearline/fimp/FimpNearlineSpectra.cxx
-./nearline/bb7/BB7NearlineSpectra.cxx
-./nearline/lisa/LisaNearlineSpectra.cxx
-./nearline/mcp/H10MCPNearlineSpectra.cxx
+    ./online/onlineCorrelations/LisaFrsCorrelationsOnline.cxx
+    ./correlations/LisaFrsCorrelations.cxx
+    )
 
-## correlations ##
-./correlations/FrsAidaCorrelations.cxx
-./online/onlineCorrelations/FrsAidaCorrelationsOnline.cxx
-./correlations/FrsFatimaCorrelations.cxx
-#./correlations/FrsFatimaVmeCorrelations.cxx
-./correlations/FrsGermaniumCorrelations.cxx
-./correlations/FrsFatimaCorrelationsNearline.cxx
-./correlations/FrsGermaniumCorrelationsNearline.cxx
-./correlations/AidaFatimaCorrelations.cxx
-./nearline/fatima/FatimaTimingAnalysis.cxx
-./nearline/fatima/FatimaTimingAnalysisSummed.cxx
-./nearline/fatima/FatimaTimingAnalysisSummedGeGated.cxx
-./nearline/fatima/FatimaSinglesAnalysis.cxx
-./correlations/AidaGermaniumCorrelations.cxx
-./correlations/bPlastGermaniumCorrelations.cxx
-./online/onlineCorrelations/bPlastGermaniumCorrelationsOnline.cxx
-./online/onlineCorrelations/BB7GermaniumCorrelationsOnline.cxx
-#./correlations/FrsBplastCorrelations.cxx
-./correlations/triplePlusCorrs/BetaIonCorrelations.cxx
+    set(SRC_CLASSES
+    LisaOnlineSpectra
+    LisaOnlineSpectraDaq
+    FrsOnlineSpectra
+    FrsRawSpectra
+    FrsCalSpectra
+    FrsNearlineSpectra
+    FrsRawNearlineSpectra
+    LisaNearlineSpectra
+    LisaNearlineSpectraDaq
+    LisaNearlineSpectraAna
+    LisaTraceAnalysis
+    LisaTraceCorrelation
+    LisaNearlineSpectra
+    LisaFrsCorrelationsOnline
+    LisaFrsCorrelations
+    )
+endif()
 
+if (NOT LISA_ONLY)
+    set(SRCS
+    #online
+    ./online/germanium/GermaniumOnlineSpectra.cxx
+    ./online/germanium/GermaniumLabTest.cxx
+    ./nearline/germanium/GermaniumResolution.cxx
+    ./online/beammonitor/BeamMonitorOnlineSpectra.cxx
+    ./online/lisa/LisaOnlineSpectra.cxx
+    ./online/lisa/LisaOnlineSpectraDaq.cxx
+    ./online/aida/AidaOnlineSpectra.cxx
+    ./online/aida/AidaPulserWalkthrough.cxx
+    ./online/bplast/bPlastOnlineSpectra.cxx
+    ./online/fatima/FatimaOnlineSpectra.cxx
+    ./online/fatima/FatimaVmeOnlineSpectra.cxx
+    ./online/frs/FrsOnlineSpectra.cxx
+    ./online/frs/FrsRawSpectra.cxx
+    ./online/frs/FrsCalSpectra.cxx
+    ./online/bgo/BGOOnlineSpectra.cxx
+    ./online/timemachine/TimeMachineOnline.cxx
+    ./online/wr/WhiterabbitCorrelationOnline.cxx
+    ./online/bb7/BB7OnlineSpectra.cxx
+    ./online/bb7/BB7FebexOnlineSpectra.cxx
+    ./online/fimp/FimpOnlineSpectra.cxx
+    ./online/mcp/H10MCPOnlineSpectra.cxx
+    ./online/stefan/StefanOnlineSpectra.cxx
 
-#./correlations/FrsBplastCorrelations.cxx
-./online/onlineCorrelations/LisaFrsCorrelationsOnline.cxx
-./correlations/LisaFrsCorrelations.cxx
+    # nearline/offline
+    ./nearline/bplast/bPlastNearlineSpectra.cxx
+    ./nearline/fatima/FatimaNearlineSpectra.cxx
+    ./nearline/fatima/FatimaVmeNearlineSpectra.cxx
+    ./nearline/aida/AidaNearlineSpectra.cxx
+    ./nearline/frs/FrsNearlineSpectra.cxx
+    ./nearline/frs/FrsRawNearlineSpectra.cxx
+    ./nearline/germanium/GermaniumNearlineSpectra.cxx
+    ./nearline/bgo/BGONearlineSpectra.cxx
+    ./nearline/wr/WhiterabbitCorrelationNearline.cxx
+    ./nearline/timemachine/TimeMachineNearline.cxx
+    ./nearline/lisa/LisaNearlineSpectra.cxx
+    ./nearline/lisa/LisaNearlineSpectraDaq.cxx
+    ./nearline/lisa/LisaNearlineSpectraAna.cxx
+    ./nearline/lisa/LisaTraceAnalysis.cxx
+    ./nearline/lisa/LisaTraceCorrelation.cxx
+    ./nearline/fimp/FimpNearlineSpectra.cxx
+    ./nearline/bb7/BB7NearlineSpectra.cxx
+    ./nearline/lisa/LisaNearlineSpectra.cxx
+    ./nearline/mcp/H10MCPNearlineSpectra.cxx
 
-)
+    ## correlations ##
+    ./correlations/FrsAidaCorrelations.cxx
+    ./online/onlineCorrelations/FrsAidaCorrelationsOnline.cxx
+    ./correlations/FrsFatimaCorrelations.cxx
+    #./correlations/FrsFatimaVmeCorrelations.cxx
+    ./correlations/FrsGermaniumCorrelations.cxx
+    ./correlations/FrsFatimaCorrelationsNearline.cxx
+    ./correlations/FrsGermaniumCorrelationsNearline.cxx
+    ./correlations/AidaFatimaCorrelations.cxx
+    ./nearline/fatima/FatimaTimingAnalysis.cxx
+    ./nearline/fatima/FatimaTimingAnalysisSummed.cxx
+    ./nearline/fatima/FatimaTimingAnalysisSummedGeGated.cxx
+    ./nearline/fatima/FatimaSinglesAnalysis.cxx
+    ./correlations/AidaGermaniumCorrelations.cxx
+    ./correlations/bPlastGermaniumCorrelations.cxx
+    ./online/onlineCorrelations/bPlastGermaniumCorrelationsOnline.cxx
+    ./online/onlineCorrelations/BB7GermaniumCorrelationsOnline.cxx
+    #./correlations/FrsBplastCorrelations.cxx
+    ./correlations/triplePlusCorrs/BetaIonCorrelations.cxx
+    #./correlations/FrsBplastCorrelations.cxx
+    ./online/onlineCorrelations/LisaFrsCorrelationsOnline.cxx
+    ./correlations/LisaFrsCorrelations.cxx
+    )
+endif()
 
+# Generate LinkDef
+if (LISA_ONLY)
+    set(LINKDEF "${CMAKE_CURRENT_BINARY_DIR}/AnaLinkDef.h")
+    file(WRITE ${LINKDEF} "// Auto-generated LinkDef\n#ifdef __CINT__\n")
+    file(APPEND ${LINKDEF} "#pragma link off all globals;\n")
+    file(APPEND ${LINKDEF} "#pragma link off all classes;\n")
+    file(APPEND ${LINKDEF} "#pragma link off all functions;\n\n")
+    foreach(cls IN LISTS SRC_CLASSES)
+        file(APPEND ${LINKDEF} "#pragma link C++ class ${cls}+;\n")
+    endforeach()
+    file(APPEND ${LINKDEF} "#endif\n")
+else()
+    set(LINKDEF AnaLinkDef.h) #everything
+endif()
 
 CHANGE_FILE_EXTENSION(*.cxx *.h HEADERS "${SRCS}")
-
-Set(LINKDEF AnaLinkDef.h)
 
 Set(DEPENDENCIES
 GeoBase ParBase Base FairTools c4Base c4Data Core Geom GenVector Physics Matrix MathCore

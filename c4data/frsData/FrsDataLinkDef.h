@@ -28,6 +28,7 @@
 #pragma link C++ class TLABRParameter+;
 #pragma link C++ class TMRTOFMSParameter+;
 #pragma link C++ class FrsGate+;
+#pragma link C++ class FrsStructures+;
 
 #pragma link C++ class TFrsConfiguration+;
 

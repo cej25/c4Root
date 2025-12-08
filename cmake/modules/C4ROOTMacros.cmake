@@ -1,5 +1,4 @@
 #based on FairRoot's cmake/modules/ROOTMacros.cmake
-# macro GENERATE_ROOT_TEST_SCRIPT
 INCLUDE(ROOTMacros)
 MACRO (GENERATE_ROOTPLUS_TEST_SCRIPT SCRIPT_FULL_NAME)
   get_filename_component(path_name ${SCRIPT_FULL_NAME} PATH)
@@ -7,16 +6,9 @@ MACRO (GENERATE_ROOTPLUS_TEST_SCRIPT SCRIPT_FULL_NAME)
   get_filename_component(file_name ${SCRIPT_FULL_NAME} NAME_WE)
   set(shell_script_name "${file_name}.sh")
 
-  #MESSAGE("PATH: ${path_name}")
-  #MESSAGE("Ext: ${file_extension}")
-  #MESSAGE("Name: ${file_name}")
-  #MESSAGE("Shell Name: ${shell_script_name}")
-
   string(REPLACE ${PROJECT_SOURCE_DIR}
          ${PROJECT_BINARY_DIR} new_path ${path_name}
         )
-
-  #MESSAGE("New PATH: ${new_path}")
 
   file(MAKE_DIRECTORY ${new_path}/data)
 

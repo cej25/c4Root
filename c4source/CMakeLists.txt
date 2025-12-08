@@ -51,93 +51,168 @@ include_directories( ${INCLUDE_DIRECTORIES})
 include_directories(SYSTEM ${SYSTEM_INCLUDE_DIRECTORIES})
 link_directories( ${LINK_DIRECTORIES})
 
-add_subdirectory(base) #always
-add_subdirectory(aida)
-add_subdirectory(bb7)
-add_subdirectory(beammonitor)
-add_subdirectory(bgo)
-add_subdirectory(bplast)
-add_subdirectory(fatima)
-add_subdirectory(fimp)
-add_subdirectory(frs)
-add_subdirectory(germanium)
-add_subdirectory(mcp)
-add_subdirectory(stefan)
 
-add_subdirectory(lisa)
+if (LISA_ONLY)
+    set(SRCS
+    ./base/UcesbSource.cxx
+    ./base/UnpackReader.cxx
+    ./base/c4Reader.cxx
+    ./base/CorrelationsMap.cxx
+    ./base/GainShift.cxx
+    ./frs/FrsReader.cxx
+    ./frs/FrsRaw2Cal.cxx
+    ./frs/FrsCal2Hit.cxx
+    ./lisa/LisaReader.cxx
+    ./lisa/LisaRaw2Ana.cxx
+    ./lisa/LisaAna2Cal.cxx
+    ./lisa/LisaCal2Hit.cxx
+    )
 
-set(SRCS
-./base/UcesbSource.cxx
-./base/UnpackReader.cxx
-./base/c4Reader.cxx
-./base/CorrelationsMap.cxx
-./base/GainShift.cxx
-./aida/AidaReader.cxx
-./aida/AidaCal2Hit.cxx
-./aida/AidaUnpack2Cal.cxx
-./frs/FrsReader.cxx
-./frs/FrsRaw2Cal.cxx
-./frs/FrsCal2Hit.cxx
-./germanium/GermaniumReader.cxx
-./germanium/GermaniumTraceReader.cxx
-./lisa/LisaReader.cxx
-./lisa/LisaRaw2Ana.cxx
-./lisa/LisaAna2Cal.cxx
-./lisa/LisaCal2Hit.cxx
-./bplast/bPlastReader.cxx
-./bplast/bPlastRaw2Cal.cxx
-./beammonitor/BeamMonitorReader.cxx
-./germanium/GermaniumRaw2Cal.cxx
-./germanium/GermaniumCal2Anl.cxx
-./fatima/FatimaReader.cxx
-./fatima/FatimaRaw2Cal.cxx
-./bgo/BGOReader.cxx
-./bgo/BGORaw2Cal.cxx
-./fatima/FatimaVmeReader.cxx
-./fatima/FatimaVmeRaw2Cal.cxx
-./bb7/BB7Reader.cxx
-./bb7/BB7FebexReader.cxx
-./bb7/BB7Raw2Cal.cxx
-./bb7/BB7FebexRaw2Cal.cxx
-./bb7/BB7FebexCal2Hit.cxx
-./fimp/FimpReader.cxx
-./fimp/FimpRaw2Cal.cxx
-./mcp/H10MCPReader.cxx
-./mcp/H10MCPRaw2Cal.cxx
-./mcp/H10MCPCal2Ana.cxx
-./stefan/StefanReader.cxx
-./stefan/StefanRaw2Cal.cxx
+    Set(STRUCT_HEADERS
+    ./base/ext_h101_unpack.h
+    ./frs/ext_h101_frs.h
+    ./lisa/ext_h101_lisa.h
+    )
 
-./test/TestReader.cxx
-)
+    set(SRC_CLASSES
+    UcesbSource
+    UnpackReader
+    c4Reader
+    CorrelationsMap
+    GainShift
+    FrsReader
+    FrsRaw2Cal
+    FrsCal2Hit
+    LisaReader
+    LisaRaw2Ana
+    LisaAna2Cal
+    LisaCal2Hit
+    EXT_STR_h101_unpack_t
+    EXT_STR_h101_frs_t
+    EXT_STR_h101_lisa_t
+    )
+endif()
 
-Set(STRUCT_HEADERS
-./base/ext_h101_unpack.h
-./aida/ext_h101_aida.h
-./frs/ext_h101_frs.h
-./lisa/ext_h101_lisa.h
-./germanium/ext_h101_germanium.h
-./germanium/ext_h101_germanium_traces.h
-./bplast/ext_h101_bplast.h
-./beammonitor/ext_h101_beammonitor.h
-./fatima/ext_h101_fatima.h
-./fatima/ext_h101_fatimavme.h
-./bgo/ext_h101_bgo.h
-# ./bb7/ext_h101_bb7vme.h
-./bb7/ext_h101_bbfebex.h
-./fimp/ext_h101_fimp.h
-./mcp/ext_h101_mcp.h
-./stefan/ext_h101_stefan.h
+if (NOT LISA_ONLY)
+    set(SRCS
+    ./base/UcesbSource.cxx
+    ./base/UnpackReader.cxx
+    ./base/c4Reader.cxx
+    ./base/CorrelationsMap.cxx
+    ./base/GainShift.cxx
+    ./aida/AidaReader.cxx
+    ./aida/AidaCal2Hit.cxx
+    ./aida/AidaUnpack2Cal.cxx
+    ./frs/FrsReader.cxx
+    ./frs/FrsRaw2Cal.cxx
+    ./frs/FrsCal2Hit.cxx
+    ./germanium/GermaniumReader.cxx
+    ./germanium/GermaniumTraceReader.cxx
+    ./lisa/LisaReader.cxx
+    ./lisa/LisaRaw2Ana.cxx
+    ./lisa/LisaAna2Cal.cxx
+    ./lisa/LisaCal2Hit.cxx
+    ./bplast/bPlastReader.cxx
+    ./bplast/bPlastRaw2Cal.cxx
+    ./beammonitor/BeamMonitorReader.cxx
+    ./germanium/GermaniumRaw2Cal.cxx
+    ./germanium/GermaniumCal2Anl.cxx
+    ./fatima/FatimaReader.cxx
+    ./fatima/FatimaRaw2Cal.cxx
+    ./bgo/BGOReader.cxx
+    ./bgo/BGORaw2Cal.cxx
+    ./fatima/FatimaVmeReader.cxx
+    ./fatima/FatimaVmeRaw2Cal.cxx
+    ./bb7/BB7Reader.cxx
+    ./bb7/BB7FebexReader.cxx
+    ./bb7/BB7Raw2Cal.cxx
+    ./bb7/BB7FebexRaw2Cal.cxx
+    ./bb7/BB7FebexCal2Hit.cxx
+    ./fimp/FimpReader.cxx
+    ./fimp/FimpRaw2Cal.cxx
+    ./mcp/H10MCPReader.cxx
+    ./mcp/H10MCPRaw2Cal.cxx
+    ./mcp/H10MCPCal2Ana.cxx
+    ./stefan/StefanReader.cxx
+    ./stefan/StefanRaw2Cal.cxx
 
-./test/ext_h101_test.h
-)
+    ./test/TestReader.cxx
+    )
+
+    Set(STRUCT_HEADERS
+    ./base/ext_h101_unpack.h
+    ./aida/ext_h101_aida.h
+    ./frs/ext_h101_frs.h
+    ./lisa/ext_h101_lisa.h
+    ./germanium/ext_h101_germanium.h
+    ./germanium/ext_h101_germanium_traces.h
+    ./bplast/ext_h101_bplast.h
+    ./beammonitor/ext_h101_beammonitor.h
+    ./fatima/ext_h101_fatima.h
+    ./fatima/ext_h101_fatimavme.h
+    ./bgo/ext_h101_bgo.h
+    # ./bb7/ext_h101_bb7vme.h
+    ./bb7/ext_h101_bbfebex.h
+    ./fimp/ext_h101_fimp.h
+    ./mcp/ext_h101_mcp.h
+    ./stefan/ext_h101_stefan.h
+
+    ./test/ext_h101_test.h
+    )
+
+    set(SRCS_TO_CLASSES
+    ./base/UcesbSource.cxx;UcesbSource
+    ./base/UnpackReader.cxx;UnpackReader
+    ./frs/FrsReader.cxx;FrsReader
+    ./frs/FrsRaw2Cal.cxx;FrsRaw2Cal
+    ./frs/FrsCal2Hit.cxx;FrsCal2Hit
+    ./frs/FrsData.cxx;FrsTpatItem;FrsSciItem
+
+
+    ./base/ext_h101_unpack.h
+    ./aida/ext_h101_aida.h
+    ./frs/ext_h101_frs.h
+    ./lisa/ext_h101_lisa.h
+    ./germanium/ext_h101_germanium.h
+    ./germanium/ext_h101_germanium_traces.h
+    ./bplast/ext_h101_bplast.h
+    ./beammonitor/ext_h101_beammonitor.h
+    ./fatima/ext_h101_fatima.h
+    ./fatima/ext_h101_fatimavme.h
+    ./bgo/ext_h101_bgo.h
+    # ./bb7/ext_h101_bb7vme.h
+    ./bb7/ext_h101_bbfebex.h
+    ./fimp/ext_h101_fimp.h
+    ./mcp/ext_h101_mcp.h
+    ./stefan/ext_h101_stefan.h;EXT_STR_
+
+    ./test/ext_h101_test.h
+
+    )
+endif()
+
+# Generate LinkDef
+if (LISA_ONLY)
+    set(LINKDEF "${CMAKE_CURRENT_BINARY_DIR}/SourceLinkDef.h")
+    file(WRITE ${LINKDEF} "// Auto-generated LinkDef\n#ifdef __CINT__\n")
+    file(APPEND ${LINKDEF} "#pragma link off all globals;\n")
+    file(APPEND ${LINKDEF} "#pragma link off all classes;\n")
+    file(APPEND ${LINKDEF} "#pragma link off all functions;\n\n")
+    foreach(cls IN LISTS SRC_CLASSES)
+        file(APPEND ${LINKDEF} "#pragma link C++ class ${cls}+;\n")
+    endforeach()
+    file(APPEND ${LINKDEF} "#endif\n")
+else()
+    set(LINKDEF SourceLinkDef.h) #everything
+endif()
+
 
 # fill list of header files from list of source files
 # by exchanging the file extension
 CHANGE_FILE_EXTENSION(*.cxx *.h HEADERS "${SRCS}")
 Set(HEADERS ${STRUCT_HEADERS} ${HEADERS})
 
-set(LINKDEF SourceLinkDef.h)
+#set(LINKDEF SourceLinkDef.h)
 set(DEPENDENCIES
     GeoBase ParBase Base FairTools
     c4Base c4Data Core Geom GenVector
@@ -149,5 +224,6 @@ if (WITH_ATIMA)
 endif()
 
 set(LIBRARY_NAME c4source)
+
 
 GENERATE_LIBRARY()

@@ -19,7 +19,6 @@ find_program(GIT_CLANG_FORMAT_BIN
 )
 
 include(FindPackageHandleStandardArgs)
-#find_package_handle_standard_args(R3BClangFormat
 find_package_handle_standard_args(c4ClangFormat
   REQUIRED_VARS CLANG_FORMAT_BIN GIT_CLANG_FORMAT_BIN
 )
