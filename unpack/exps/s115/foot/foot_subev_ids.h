@@ -1,0 +1,10 @@
+#pragma once
+
+#define FOOT_CONTROL_1 10
+#define FOOT_CONTROL_2 19
+#define FOOT_CONTROL_3 17
+#define FOOT_CONTROL_4 20
+#define FOOT_CONTROL_5 22
+#define FOOT_CONTROL_6 25
+#define FOOT_CONTROL_7 23
+#define FOOT_CONTROL_8 21
