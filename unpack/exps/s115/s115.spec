@@ -6,11 +6,9 @@
 #include "../../common/vme_mesytec_mdpp16.spec"
 #include "../frs/frs_s115.spec"
 #include "../../common/general.spec"
-
+#include "foot/foot_subevents.spec"
 
 external EXT_AIDA();
-
-
 
 SUBEVENT(aida_subev)
 {
@@ -205,6 +203,20 @@ EVENT
     frstpat = frs_tpat_subev(procid = 15);
 
     frstravmus = frs_travmus_subev(procid = 35, control = 30);
+
+#define FOOT_DEF(X) \
+	foot##X##ts = foot##X##_ts(type = 10, subtype = 1, procid = 2, control = FOOT_CONTROL_##X); \
+	foot##X     = foot_subev(type = 83, subtype = 8300, procid = 2, control = FOOT_CONTROL_##X); \
+	__EMPTY_MACRO__(X) 
+
+	FOOT_DEF(1)	
+	FOOT_DEF(2)	
+	FOOT_DEF(3)	
+	FOOT_DEF(4)	
+	FOOT_DEF(5)	
+	FOOT_DEF(6)	
+	FOOT_DEF(7)	
+	FOOT_DEF(8)	
 
     ignore_unknown_subevent;
 };
