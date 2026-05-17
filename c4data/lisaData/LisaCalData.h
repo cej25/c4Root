@@ -34,8 +34,9 @@ class LisaCalItem : public TObject
     public:
         LisaCalItem();
 
-        void SetAll(uint64_t wr,
-                    uint16_t w_id,
+        void SetAll(uint64_t br,
+                    uint16_t br_id,
+                    uint64_t rn,
                     int b_id,
                     int layer,
                     TString c,
@@ -58,8 +59,9 @@ class LisaCalItem : public TObject
 
         void Reset();
 
-        uint64_t Get_wr_t() const;
-        uint16_t Get_wr_id() const;
+        uint64_t Get_br_t() const;
+        uint16_t Get_br_id() const;
+        uint64_t Get_run_number() const;
         int Get_board_id() const;
         int Get_layer_id() const;
         TString Get_city() const;
@@ -84,8 +86,9 @@ class LisaCalItem : public TObject
         // Getters
         ClassDef(LisaCalItem, 1);
     private:
-        uint64_t wr_t;
-        uint16_t wr_id;
+        uint64_t br_t;
+        uint16_t br_id;
+        uint64_t run_number;
         int board_id;
         int layer_id;
         TString city; // name
@@ -112,14 +115,19 @@ class LisaCalItem : public TObject
 
 };
 
-inline uint64_t LisaCalItem::Get_wr_t() const
+inline uint64_t LisaCalItem::Get_br_t() const
 {
-    return wr_t;
+    return br_t;
 }
 
-inline uint16_t LisaCalItem::Get_wr_id() const
+inline uint16_t LisaCalItem::Get_br_id() const
 {
-    return wr_id;
+    return br_id;
+}
+
+inline uint64_t LisaItem::Get_run_number() const
+{
+    return run_number;
 }
 
 inline int LisaCalItem::Get_board_id() const

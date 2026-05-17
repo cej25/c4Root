@@ -78,15 +78,14 @@ Bool_t LisaReader::Read()
     lisaArray->clear();
     // Reading is done in here on a per-event basis!
 
-    //::::::::::::::White Rabbit::::::::::::::
-    //WR time stamp
-    uint64_t wr_time_long = (((uint64_t)fData->lisa_ts_t[3]) << 48) + 
-    (((uint64_t)fData->lisa_ts_t[2]) << 32) + 
-    (((uint64_t)fData->lisa_ts_t[1]) << 16) + 
-    (uint64_t)(fData->lisa_ts_t[0]);
+    //::::::::::::::Black Rabbit::::::::::::::
+    //Black Rabbit time stamp
+    uint64_t br_time_long = (((uint64_t)fData->lisa_ts_t[1]) << 32) + 
+    (((uint64_t)fData->lisa_ts_t[0]));
 
-    //WR ID. It is 700 for lisa (= 1792 in decimal). From May 13 WR = 1200 for LISA
-    uint32_t wr_id = fData->lisa_ts_subsystem_id;
+    uint32_t br_id = fData->lisa_ts_subsystem_id;
+
+    uint64_t run_number = fData->lisa_ts_run;
     //::::::::::::::::::::::::::::::::::::::::
 
     const int trace_size = TRACE_SIZE;

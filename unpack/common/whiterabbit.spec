@@ -87,3 +87,31 @@ WR_MULTI()
 	}
 }
 
+TIMESTAMP_WHITERABBIT_EXTERNAL(id)
+{
+	MEMBER(DATA16 subsystem_id);
+	MEMBER(DATA32 run);
+	MEMBER(DATA32 t1);
+	MEMBER(DATA32 t2);
+
+	UINT32 header NOENCODE {
+		0_12:  id = MATCH(id);
+		13_15: 0;
+		   16: error_bit;
+		17_31: 0;
+		ENCODE(subsystem_id, (value=id));
+	};
+	UINT32 rn NOENCODE {
+		0_31:  run;
+		ENCODE(run, (value=run));
+	};
+	UINT32 d1 NOENCODE {
+		0_31:  t1;
+		ENCODE(t1, (value=t1));
+	};
+	UINT32 d2 NOENCODE {
+		0_31:  t2;
+		ENCODE(t2, (value=t2));
+	};
+}
+

@@ -25,8 +25,9 @@ LisaItem::LisaItem()
 
 }
 
-void LisaItem::SetAll(uint64_t wr,
+void LisaItem::SetAll(uint64_t br,
                     uint16_t id,
+                    uint64_t rn,
                     int b_id,
                     uint64_t ev_time,
                     int ch_id,
@@ -39,8 +40,9 @@ void LisaItem::SetAll(uint64_t wr,
                     std::vector<int16_t> tr_x
                     )
 {
-    wr_t = wr;
-    wr_id = id;
+    br_t = br;
+    br_id = id;
+    run_number = rn;
     board_id = b_id;
     board_event_time = ev_time;
     channel_id = ch_id;
@@ -55,8 +57,9 @@ void LisaItem::SetAll(uint64_t wr,
 
 void LisaItem::Reset()
 {
-    wr_t = 0;
-    wr_id = 0;
+    br_t = 0;
+    br_id = 0;
+    run_number = 0;
     board_id = 0;
     board_event_time = 0;
     channel_id = 0;

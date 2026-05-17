@@ -417,8 +417,9 @@ void LisaRaw2Ana::Exec(Option_t* option)
             
             uint64_t EVTno = header->GetEventno();
             entry.SetAll(
-                lisaItem.Get_wr_t(),
-                lisaItem.Get_wr_id(),
+                lisaItem.Get_br_t(),
+                lisaItem.Get_br_id(),
+                lisaItem.Get_run_number(),
                 lisaItem.Get_board_id(),
                 lisaItem.Get_board_event_time(),
                 lisaItem.Get_channel_id(),

@@ -29,8 +29,9 @@ class LisaItem : public TObject
     public:
         LisaItem();
 
-        void SetAll(uint64_t wr,
+        void SetAll(uint64_t br, //black rabbit -- time reference outside GSI
                     uint16_t id,
+                    uint64_t rn, //run number
                     int b_id,
                     uint64_t ev_time,
                     int ch_id,
@@ -44,8 +45,9 @@ class LisaItem : public TObject
 
         void Reset();
 
-        uint64_t Get_wr_t() const;
-        uint16_t Get_wr_id() const;
+        uint64_t Get_br_t() const;
+        uint16_t Get_br_id() const;
+        uint64_t Get_run_number() const;
         int Get_board_id() const;
         uint64_t Get_board_event_time() const;
         int Get_channel_id() const;
@@ -61,8 +63,9 @@ class LisaItem : public TObject
         ClassDefNV(LisaItem, 2);
     private:
     
-        uint64_t wr_t;
-        uint16_t wr_id;
+        uint64_t br_t;
+        uint16_t br_id;
+        uint64_t run_number;
         int board_id;
         uint64_t board_event_time;
         int channel_id;
@@ -76,14 +79,19 @@ class LisaItem : public TObject
 
 };
 
-inline uint64_t LisaItem::Get_wr_t() const
+inline uint64_t LisaItem::Get_br_t() const
 {
-    return wr_t;
+    return br_t;
 }
 
-inline uint16_t LisaItem::Get_wr_id() const
+inline uint16_t LisaItem::Get_br_id() const
 {
-    return wr_id;
+    return br_id;
+}
+
+inline uint64_t LisaItem::Get_run_number() const
+{
+    return run_number;
 }
 
 inline int LisaItem::Get_board_id() const
