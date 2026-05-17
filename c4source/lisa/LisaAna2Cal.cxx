@@ -188,8 +188,9 @@ void LisaAna2Cal::Exec(Option_t* option)
                 auto & entry = lisaCalArray->emplace_back();
 
                 entry.SetAll(
-                    lisaAnaItem.Get_wr_t(),
-                    lisaAnaItem.Get_wr_id(),
+                    lisaAnaItem.Get_br_t(),
+                    lisaAnaItem.Get_br_id(),
+                    lisaAnaItem.Get_run_number(),
                     lisaAnaItem.Get_board_id(),
                     layer_id,
                     city,

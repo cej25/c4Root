@@ -48,8 +48,9 @@ class LisaAnaItem : public TObject
     public:
         LisaAnaItem();
 
-        void SetAll(uint64_t wr,
+        void SetAll(uint64_t br,
                     uint16_t id,
+                    uint64_t rn,
                     int b_id,
                     uint64_t ev_time,
                     int ch_id,
@@ -67,8 +68,9 @@ class LisaAnaItem : public TObject
                     std::vector<int16_t> tr_x);
         void Reset();
 
-        uint64_t Get_wr_t() const;
-        uint16_t Get_wr_id() const;
+        uint64_t Get_br_t() const;
+        uint16_t Get_br_id() const;
+        uint64_t Get_run_number() const;
         int Get_board_id() const;
         uint64_t Get_board_event_time() const;
         int Get_channel_id() const;
@@ -89,8 +91,9 @@ class LisaAnaItem : public TObject
         ClassDef(LisaAnaItem, 1);
     private:
 
-        uint64_t wr_t;
-        uint16_t wr_id;
+        uint64_t br_t;
+        uint16_t br_id;
+        uint64_t run_number;
         int board_id;
         uint64_t board_event_time;
         int channel_id;
@@ -109,14 +112,19 @@ class LisaAnaItem : public TObject
 
 };
 
-inline uint64_t LisaAnaItem::Get_wr_t() const
+inline uint64_t LisaAnaItem::Get_br_t() const
 {
-    return wr_t;
+    return br_t;
 }
 
-inline uint16_t LisaAnaItem::Get_wr_id() const
+inline uint16_t LisaAnaItem::Get_br_id() const
 {
-    return wr_id;
+    return br_id;
+}
+
+inline uint64_t LisaItem::Get_run_number() const
+{
+    return run_number;
 }
 
 inline int LisaAnaItem::Get_board_id() const

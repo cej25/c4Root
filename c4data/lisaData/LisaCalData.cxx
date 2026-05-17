@@ -33,8 +33,9 @@ LisaCalItem::LisaCalItem()
 
 }
 
-void LisaCalItem::SetAll(uint64_t wr,
-                        uint16_t w_id,
+void LisaCalItem::SetAll(uint64_t br,
+                        uint16_t br_id,
+                        uint64_t rn,
                         int b_id,
                         int layer,
                         TString c,
@@ -56,8 +57,9 @@ void LisaCalItem::SetAll(uint64_t wr,
                         //int ov_MWD
                         )
 {   
-    wr_t = wr;
-    wr_id = w_id;
+    br_t = br;
+    br_id = br_id;
+    run_number = rn;
     board_id = b_id;
     layer_id = layer;
     city = c;
@@ -83,8 +85,9 @@ void LisaCalItem::SetAll(uint64_t wr,
 void LisaCalItem::Reset()
 {   
     // maybe reset stuff to -1 since 0 is used occasionally for positions
-    wr_t = 0;
-    wr_id = 0;
+    br_t = 0;
+    br_id = 0;
+    run_number = 0;
     board_id = 0; //reset to -1
     layer_id = 0;
     city = "";

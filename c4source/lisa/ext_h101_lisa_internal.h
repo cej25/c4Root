@@ -5,8 +5,8 @@
  * Do not edit - automatically generated.
  */
 
-#ifndef __GUARD_H101_LISAEXT_EXT_H101_LISAEXT_H__
-#define __GUARD_H101_LISAEXT_EXT_H101_LISAEXT_H__
+#ifndef __GUARD_H101_LISA_EXT_H101_LISA_H__
+#define __GUARD_H101_LISA_EXT_H101_LISA_H__
 
 #ifndef __CINT__
 # include <stdint.h>
@@ -26,14 +26,15 @@ typedef          int  int32_t;
  * Plain structure (layout as ntuple/root file):
  */
 
-typedef struct EXT_STR_h101_lisaext_t
+typedef struct EXT_STR_h101_lisa_t
 {
   /* UNPACK */
   uint32_t lisa_badevent_bad /* [0,255] */;
   uint32_t lisa_ts_subsystem_id /* [0,65535] */;
-  uint32_t lisa_ts_run /* [-1,-1] */;
-  uint32_t lisa_ts_t1 /* [-1,-1] */;
-  uint32_t lisa_ts_t2 /* [-1,-1] */;
+  uint32_t lisa_ts_t1 /* [0,65535] */;
+  uint32_t lisa_ts_t2 /* [0,65535] */;
+  uint32_t lisa_ts_t3 /* [0,65535] */;
+  uint32_t lisa_ts_t4 /* [0,65535] */;
   uint32_t lisa_data1trig /* [0,255] */;
   uint32_t lisa_data1event_trigger_time_hi /* [-1,-1] */;
   uint32_t lisa_data1event_trigger_time_lo /* [-1,-1] */;
@@ -815,7 +816,7 @@ typedef struct EXT_STR_h101_lisaext_t
   uint32_t lisa_data10trace_channel_id_tracesI[16 EXT_STRUCT_CTRL(lisa_data10trace_channel_id_traces)] /* [1,16] */;
   uint32_t lisa_data10trace_channel_id_tracesv[16 EXT_STRUCT_CTRL(lisa_data10trace_channel_id_traces)] /* [0,255] */;
 
-} EXT_STR_h101_lisaext;
+} EXT_STR_h101_lisa;
 
 /********************************************************
  *
@@ -823,13 +824,12 @@ typedef struct EXT_STR_h101_lisaext_t
  * recovered (recommended):
  */
 
-typedef struct EXT_STR_h101_lisaext_onion_t
+typedef struct EXT_STR_h101_lisa_onion_t
 {
   /* UNPACK */
   uint32_t lisa_badevent_bad;
   uint32_t lisa_ts_subsystem_id;
-  uint32_t lisa_ts_run;
-  uint32_t lisa_ts_t[2];
+  uint32_t lisa_ts_t[4];
   struct {
     uint32_t trig;
     uint32_t event_trigger_time_hi;
@@ -868,11 +868,11 @@ typedef struct EXT_STR_h101_lisaext_onion_t
     uint32_t trace_channel_id_tracesv[16 /* trace_channel_id_traces */];
   } lisa_data[10];
 
-} EXT_STR_h101_lisaext_onion;
+} EXT_STR_h101_lisa_onion;
 
 /*******************************************************/
 
-#define EXT_STR_h101_lisaext_ITEMS_INFO(ok,si,offset,struct_t,printerr) do { \
+#define EXT_STR_h101_lisa_ITEMS_INFO(ok,si,offset,struct_t,printerr) do { \
   ok = 1; \
   /* UNPACK */ \
   EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
@@ -881,15 +881,18 @@ typedef struct EXT_STR_h101_lisaext_onion_t
   EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
                      lisa_ts_subsystem_id,            UINT32,\
                     "lisa_ts_subsystem_id",65535,0/*flags*/); \
-  EXT_STR_ITEM_INFO2    (ok,si,offset,struct_t,printerr,\
-                     lisa_ts_run,                     UINT32,\
-                    "lisa_ts_run",0/*flags*/); \
-  EXT_STR_ITEM_INFO2    (ok,si,offset,struct_t,printerr,\
+  EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
                      lisa_ts_t1,                      UINT32,\
-                    "lisa_ts_t1",0/*flags*/); \
-  EXT_STR_ITEM_INFO2    (ok,si,offset,struct_t,printerr,\
+                    "lisa_ts_t1",65535,0/*flags*/); \
+  EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
                      lisa_ts_t2,                      UINT32,\
-                    "lisa_ts_t2",0/*flags*/); \
+                    "lisa_ts_t2",65535,0/*flags*/); \
+  EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
+                     lisa_ts_t3,                      UINT32,\
+                    "lisa_ts_t3",65535,0/*flags*/); \
+  EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
+                     lisa_ts_t4,                      UINT32,\
+                    "lisa_ts_t4",65535,0/*flags*/); \
   EXT_STR_ITEM_INFO2_LIM(ok,si,offset,struct_t,printerr,\
                      lisa_data1trig,                  UINT32,\
                     "lisa_data1trig",255,0/*flags*/); \
@@ -3233,6 +3236,6 @@ typedef struct EXT_STR_h101_lisaext_onion_t
   \
 } while (0);
 
-#endif/*__GUARD_H101_LISAEXT_EXT_H101_LISAEXT_H__*/
+#endif/*__GUARD_H101_LISA_EXT_H101_LISA_H__*/
 
 /*******************************************************/

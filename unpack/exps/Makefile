@@ -20,6 +20,7 @@ include $(UCESB_BASE_DIR)/makefile_direxist.inc
 EXPS=template \
         s452 \
 	beammonitor \
+	lisaext \
 	lisa \
 	s450 \
 	NovTest \
