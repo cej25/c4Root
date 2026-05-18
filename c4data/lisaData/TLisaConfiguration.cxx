@@ -40,8 +40,8 @@ std::vector<std::string> TLisaConfiguration::gate_ranges_MWD_files = {"blank"};
 //std::string TLisaConfiguration::gate_ranges_files = "blank";
 //std::string TLisaConfiguration::gate_ranges_MWD_file = "blank";
 
-//WR enable setting - X7 data = 0, S2 data = 1
-bool TLisaConfiguration::wr_enable = 1;
+//BR enable setting - X7 data = 0, S2 data = 1
+bool TLisaConfiguration::br_enable = 1;
 
 // ::: Trace amplitude
 int TLisaConfiguration::amplitude_bin = 1000;
@@ -65,13 +65,13 @@ int TLisaConfiguration::min_energy_MWD_GM = 0;
 int TLisaConfiguration::max_energy_MWD_GM = 10000;
 int TLisaConfiguration::bin_energy_MWD_GM = 500;
 
-// ::: WR
-long TLisaConfiguration::min_wr_diff = 0;
-long TLisaConfiguration::max_wr_diff = 200;
-int TLisaConfiguration::bin_wr_diff = 50;
-int TLisaConfiguration::min_wr_rate = 0;
-int TLisaConfiguration::max_wr_rate = 200;
-int TLisaConfiguration::bin_wr_rate = 50;
+// ::: BR
+long TLisaConfiguration::min_br_diff = 0;
+long TLisaConfiguration::max_br_diff = 200;
+int TLisaConfiguration::bin_br_diff = 50;
+int TLisaConfiguration::min_br_rate = 0;
+int TLisaConfiguration::max_br_rate = 200;
+int TLisaConfiguration::bin_br_rate = 50;
 
 // ::: Traces time 
 double TLisaConfiguration::min_traces = 0;
@@ -87,7 +87,7 @@ int TLisaConfiguration::frun_num = 0;
 int TLisaConfiguration::board_num = 0;     // number of boards for the file
 int TLisaConfiguration::event_ana = 0;     // event to analyze for MWD trace
 
-// ::: EVTno for En vs Evtno when WR is not availabòe
+// ::: EVTno for En vs Evtno when BR is not availabòe
 int TLisaConfiguration::start_evtno = 0;
 int TLisaConfiguration::stop_evtno = 0;
 

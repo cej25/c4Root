@@ -107,12 +107,12 @@ InitStatus LisaOnlineSpectra::Init()
 
     // ::: S T A T S :::
 
-    //::: White Rabbit :::
+    //::: Black Rabbit :::
     dir_stats->cd();
-    h1_wr_diff = new TH1I("h1_wr_diff", "WR Difference", lisa_config->bin_wr_diff, lisa_config->min_wr_diff, lisa_config->max_wr_diff);
-    h1_wr_diff->GetXaxis()->SetTitle("LISA WR Difference [ns]");
-    h1_wr_diff->SetLineColor(kBlack);
-    h1_wr_diff->SetFillColor(kRed-3);
+    h1_br_diff = new TH1I("h1_br_diff", "BR Difference", lisa_config->bin_br_diff, lisa_config->min_br_diff, lisa_config->max_br_diff);
+    h1_br_diff->GetXaxis()->SetTitle("LISA BR Difference [ns]");
+    h1_br_diff->SetLineColor(kBlack);
+    h1_br_diff->SetFillColor(kRed-3);
     //...................
 
     //::: Rates :::
@@ -130,7 +130,7 @@ InitStatus LisaOnlineSpectra::Init()
     for (int i = 0; i < layer_number; i++)
     {
         
-        h1_layer_rate[i] = new TH1I(Form("h1_layer_%i_rate",i), Form("LISA Rate %i",i), lisa_config->bin_wr_rate, lisa_config->min_wr_rate, lisa_config->max_wr_rate);
+        h1_layer_rate[i] = new TH1I(Form("h1_layer_%i_rate",i), Form("LISA Rate %i",i), lisa_config->bin_br_rate, lisa_config->min_br_rate, lisa_config->max_br_rate);
         h1_layer_rate[i]->GetXaxis()->SetTitle("Time [s]");
         h1_layer_rate[i]->GetYaxis()->SetTitle(Form("LISA %i Rate [Hz]", i));
         h1_layer_rate[i]->SetLineColor(kBlack);
@@ -154,7 +154,7 @@ InitStatus LisaOnlineSpectra::Init()
             {
                 c_channel_rates[i]->cd((ymax-(k+1))*xmax + j + 1);
 
-                h1_rate[i][j][k] = new TH1I(Form("h1_rate_%i%i%i",i+1,j,k), Form("Rate %i%i%i",i+1,j,k), lisa_config->bin_wr_rate, lisa_config->min_wr_rate, lisa_config->max_wr_rate);
+                h1_rate[i][j][k] = new TH1I(Form("h1_rate_%i%i%i",i+1,j,k), Form("Rate %i%i%i",i+1,j,k), lisa_config->bin_br_rate, lisa_config->min_br_rate, lisa_config->max_br_rate);
                 h1_rate[i][j][k]->GetXaxis()->SetTitle("Time [s]");
                 h1_rate[i][j][k]->GetYaxis()->SetTitle(Form("LISA %i%i%i Rate [Hz]", i+1,j,k));
                 h1_rate[i][j][k]->SetLineColor(kBlack);
@@ -185,22 +185,7 @@ InitStatus LisaOnlineSpectra::Init()
 
     // ::: Hit Pattern :::
     dir_stats->cd();
-    /* :::  too messy with too many detectors
-    //     Total 
-    // h1_hitpattern_total = new TH1I("h1_hitpattern_total", "Hit Pattern", det_number, 0, det_number);
-    // for (auto & detector : detector_mapping)
-    // {
-    //     int l = detector.second.first.first;
-    //     city = detector.second.first.second;
-    //     int x = detector.second.second.first; 
-    //     int y = detector.second.second.second;
-    //     int h_bin = (ymax - (y + 1)) * xmax + x;
-    //     int h_total_bin = (l - 1) * xmax * ymax + h_bin;
-        
-    //     h1_hitpattern_total->GetXaxis()->SetBinLabel(h_total_bin + 1 , city.Data());
-    // }
-    */
-    //....................................
+
     //      Layer
     c_hitpattern_layer = new TCanvas("c_hitpattern_layer", "Hit Pattern by Layer", 650, 350);
     c_hitpattern_layer->Divide(2, (layer_number+1)/2);
@@ -429,28 +414,7 @@ InitStatus LisaOnlineSpectra::Init()
     }
     c_energy_vs_ID->cd();
     dir_febex->Append(c_energy_vs_ID);
-    
-    //....................................
-    /* :::  too messy with too many detectors 
-    //    Febex energy vs channel ID ALL Channels - 
-    c_energy_vs_ID_total = new TCanvas("c_energy_vs_ID", "Energy vs ID", 650, 350);
-    h2_energy_vs_ID_total = new TH2F("h2_energy_vs_ID_total", "Energy vs ID", det_number, 0, det_number, lisa_config->bin_energy, lisa_config->min_energy, lisa_config->max_energy);
-    h2_energy_vs_ID_total->Draw("COLZ");
-    h2_energy_vs_ID_total->SetOption("colz");
-    for (auto & detector : detector_mapping)
-    {
-        int l = detector.second.first.first;
-        city = detector.second.first.second;
-        int x = detector.second.second.first; 
-        int y = detector.second.second.second;
-        int h_bin = (ymax - (y + 1)) * xmax + x;
-        int h_total_bin = (l - 1) * xmax * ymax + h_bin;
-        
-        h2_energy_vs_ID_total->GetXaxis()->SetBinLabel(h_total_bin + 1 , city.Data());
-    }
-    c_energy_vs_ID_total->cd();
-    dir_febex->Append(c_energy_vs_ID_total);
-     */
+
     //....................................
     //      Febex energy vs layer ID
     dir_febex->cd();
@@ -693,8 +657,8 @@ void LisaOnlineSpectra::Reset_Histo()
     c4LOG(info,"::: LISA Histos Reset on day " <<  ltm->tm_mday << "th," << " at " << ltm->tm_hour << ":" << ltm->tm_min << ":" << ltm->tm_sec );
 
     // ::: S T A T S
-    // Reset WR diff
-    h1_wr_diff->Reset();
+    // Reset BR diff
+    h1_br_diff->Reset();
     // Reset Scalers and grid 
     for (int i = 0; i < layer_number; i++)
     {
@@ -769,7 +733,7 @@ void LisaOnlineSpectra::Reset_Histo()
 
 void LisaOnlineSpectra::Exec(Option_t* option)
 {   
-    wr_time = 0;
+    br_time = 0;
     int total_multiplicity = 0;
     int multiplicity[layer_number] = {0};
 
@@ -784,11 +748,11 @@ void LisaOnlineSpectra::Exec(Option_t* option)
     for (auto const & lisaCalItem : *lisaCalArray)
     {
         
-        wr_time = lisaCalItem.Get_wr_t();
+        br_time = lisaCalItem.Get_br_t();
 
-        if (lisa_config->wr_enable == true) 
+        if (lisa_config->br_enable == true) 
         {
-            if (wr_time == 0)return; 
+            if (br_time == 0)return; 
         }
 
         // ::: Retrieve Data :::
@@ -874,66 +838,66 @@ void LisaOnlineSpectra::Exec(Option_t* option)
     //....................................
     // END OF ITEM LOOP
     //....................................
-    // Discard event without WR - ENABLE DURING BEAMTIME
-    if (lisa_config->wr_enable == true)
+    // Discard event without BR - ENABLE DURING BEAMTIME
+    if (lisa_config->br_enable == true)
     {
-        if ( wr_time == 0 ) return;
+        if ( br_time == 0 ) return;
     }
-    if ( wr_time == 0 ) return;
-    //:::::: WR Time Difference
-    if( prev_wr > 0 )
+    if ( br_time == 0 ) return;
+    //:::::: BR Time Difference
+    if( prev_br > 0 )
     {
-        wr_diff = wr_time - prev_wr; //to express wr difference in us
-        h1_wr_diff->Fill(wr_diff);
+        br_diff = br_time - prev_br; 
+        h1_br_diff->Fill(br_diff);
     }
-    prev_wr = wr_time;
+    prev_br = br_time;
     //....................................
 
     // ::: RATES
-    double rate_wr_dt_db = (wr_time - saved_wr) / 1e9;
+    double rate_br_dt_db = (br_time - saved_br) / 1e9;
 
-    if (rate_wr_dt_db > 1) 
+    if (rate_br_dt_db > 1) 
     {
-        if (saved_wr != 0 && rate_wr_dt_db < 2)
+        if (saved_br != 0 && rate_br_dt_db < 2)
         {
             for (int i = 0; i < layer; i++)
             {
-                layer_rate[i] = layer_counter[i] / rate_wr_dt_db;
+                layer_rate[i] = layer_counter[i] / rate_br_dt_db;
                 h1_layer_rate[i]->SetBinContent(rate_running_count, layer_rate[i]);
 
                 for (int j = 0; j < xmax; j++)
                 {
                     for (int k = 0; k < ymax; k++)
                     {
-                        detector_rate[i][j][k] = detector_counter[i][j][k] / rate_wr_dt_db;
+                        detector_rate[i][j][k] = detector_counter[i][j][k] / rate_br_dt_db;
                         h1_rate[i][j][k]->SetBinContent(rate_running_count, detector_rate[i][j][k]);
                     }
                 }
             }
         }
-        saved_wr = wr_time;
+        saved_br = br_time;
         rate_running_count++;
 
         for (int i = 0; i < layer; i++)
         {
-            if (rate_running_count == lisa_config->max_wr_rate) h1_layer_rate[i]->Reset();
+            if (rate_running_count == lisa_config->max_br_rate) h1_layer_rate[i]->Reset();
             layer_counter[i] = 0;
             for (int j = 0; j < xmax; j++)
             {
                 for (int k = 0; k < ymax; k++)
                 {
-                    if (rate_running_count == lisa_config->max_wr_rate) h1_rate[i][j][k]->Reset();
+                    if (rate_running_count == lisa_config->max_br_rate) h1_rate[i][j][k]->Reset();
                     detector_counter[i][j][k] = 0;
                 }
             }
         }
-        if (rate_running_count == lisa_config->max_wr_rate) rate_running_count = 0;
+        if (rate_running_count == lisa_config->max_br_rate) rate_running_count = 0;
     }
     //....................................
 
     //  Debug multiplicity
     
-    // if (multiplicity[0] + multiplicity[1] == 0) std::cout << "zero multi, wr??:: " << wr_time << std::endl;
+    // if (multiplicity[0] + multiplicity[1] == 0) std::cout << "zero multi, br??:: " << br_time << std::endl;
     // for(int i = 1; i <= layer_number; i++)
     // {
     //     c4LOG(info,"multiplicity : "<< multiplicity[i-1] << " i : " << i );

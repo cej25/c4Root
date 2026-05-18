@@ -76,7 +76,7 @@ class LisaOnlineSpectraDaq : public FairTask
         Int_t en_count3 = 0;
         Int_t en_count4 = 0;
         Int_t counter = 0;
-        uint64_t wr_time;
+        uint64_t br_time;
         Int_t layer;
         Int_t lay;
         Int_t xp;
@@ -95,8 +95,8 @@ class LisaOnlineSpectraDaq : public FairTask
         TDirectory* dir_music;
         TDirectory* dir_correlations;
 
-        int64_t prev_wr = 0;
-        int64_t wr_diff;
+        int64_t prev_br = 0;
+        int64_t br_diff;
 
         // Canvas
         TCanvas* c_hitpattern_layer;
@@ -116,7 +116,7 @@ class LisaOnlineSpectraDaq : public FairTask
     
         // Histograms
         TH1I* h1_hitpattern_total;
-        TH1I* h1_wr_diff;
+        TH1I* h1_br_diff;
         std::vector<TH1I*> h1_hitpattern_layer;
         std::vector<TH2F*> h2_hitpattern_grid;
         std::vector<TH2F*> h2_pileup_grid;

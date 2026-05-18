@@ -122,7 +122,7 @@ inline uint16_t LisaAnaItem::Get_br_id() const
     return br_id;
 }
 
-inline uint64_t LisaItem::Get_run_number() const
+inline uint64_t LisaAnaItem::Get_run_number() const
 {
     return run_number;
 }

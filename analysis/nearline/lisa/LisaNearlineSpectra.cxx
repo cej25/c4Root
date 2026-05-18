@@ -159,10 +159,10 @@ InitStatus LisaNearlineSpectra::Init()
 
     //::: White Rabbit :::
     dir_stats->cd();
-    h1_wr_diff = new TH1I("h1_wr_diff", "WR Difference", lisa_config->bin_wr_diff, lisa_config->min_wr_diff, lisa_config->max_wr_diff);
-    h1_wr_diff->GetXaxis()->SetTitle("LISA WR Difference [ns]");
-    h1_wr_diff->SetLineColor(kBlack);
-    h1_wr_diff->SetFillColor(kRed-3);
+    h1_br_diff = new TH1I("h1_br_diff", "BR Difference", lisa_config->bin_br_diff, lisa_config->min_br_diff, lisa_config->max_br_diff);
+    h1_br_diff->GetXaxis()->SetTitle("LISA BR Difference [ns]");
+    h1_br_diff->SetLineColor(kBlack);
+    h1_br_diff->SetFillColor(kRed-3);
 
     //::: Rates :::
     dir_rates->cd();
@@ -178,7 +178,7 @@ InitStatus LisaNearlineSpectra::Init()
     for (int i = 0; i < layer_number; i++)
     {
         
-        h1_lisa_layer_rate[i] = new TH1I(Form("h1_lisa_layer_%i_rate",i+1), Form("LISA Rate %i",i+1), lisa_config->bin_wr_rate, lisa_config->min_wr_rate, lisa_config->max_wr_rate);
+        h1_lisa_layer_rate[i] = new TH1I(Form("h1_lisa_layer_%i_rate",i+1), Form("LISA Rate %i",i+1), lisa_config->bin_br_rate, lisa_config->min_br_rate, lisa_config->max_br_rate);
         h1_lisa_layer_rate[i]->GetXaxis()->SetTitle("Time [s]");
         h1_lisa_layer_rate[i]->GetYaxis()->SetTitle(Form("LISA %i Rate [Hz]", i+1));
         h1_lisa_layer_rate[i]->SetLineColor(kBlack);
@@ -195,7 +195,7 @@ InitStatus LisaNearlineSpectra::Init()
 
             for (int k = 0; k < ymax; k++)
             {
-                h1_lisa_rate[i][j][k] = new TH1I(Form("h1_lisa_rate_%i%i%i",i+1,j,k), Form("LISA Rate %i%i%i",i+1,j,k), lisa_config->bin_wr_rate, lisa_config->min_wr_rate, lisa_config->max_wr_rate);
+                h1_lisa_rate[i][j][k] = new TH1I(Form("h1_lisa_rate_%i%i%i",i+1,j,k), Form("LISA Rate %i%i%i",i+1,j,k), lisa_config->bin_br_rate, lisa_config->min_br_rate, lisa_config->max_br_rate);
                 h1_lisa_rate[i][j][k]->GetXaxis()->SetTitle("Time [s]");
                 h1_lisa_rate[i][j][k]->GetYaxis()->SetTitle(Form("LISA %i%i%i Rate [Hz]", i+1,j,k));
                 h1_lisa_rate[i][j][k]->SetLineColor(kBlack);
@@ -591,26 +591,26 @@ InitStatus LisaNearlineSpectra::Init()
     //.................................... END OF TRACES
     // :::  D R I F T S :::
     //....................................
-    // ::: Febex layer vs Time (WR)
-    h2_energy_layer_vs_time.resize(layer_number);
+    // ::: Febex layer vs Time (Event Number)
+    h2_energy_layer_vs_evtno.resize(layer_number);
     dir_febex_drift->cd();
     for (int i = 0; i < layer_number; i++)
     { 
-        h2_energy_layer_vs_time[i] = MakeTH2(dir_febex_drift, "F", Form("h2_energy_layer_%i_vs_time",i+1), Form("E (Layer %i) vs WR [min]",i), drift_bin, drift_min, drift_max, lisa_config->bin_energy, lisa_config->min_energy, lisa_config->max_energy);
-        h2_energy_layer_vs_time[i]->SetTitle(Form("E (Layer %i) vs WR",i+1));
-        h2_energy_layer_vs_time[i]->GetYaxis()->SetTitle(Form("Energy Layer %i",i+1));
-        h2_energy_layer_vs_time[i]->GetXaxis()->SetTitle("WR Time [min]");  
+        h2_energy_layer_vs_evtno[i] = MakeTH2(dir_febex_drift, "F", Form("h2_energy_layer_%i_vs_evtno",i+1), Form("E (Layer %i) vs Event Number",i), drift_bin, drift_min, drift_max, lisa_config->bin_energy, lisa_config->min_energy, lisa_config->max_energy);
+        h2_energy_layer_vs_evtno[i]->SetTitle(Form("E (Layer %i) vs Event Number",i+1));
+        h2_energy_layer_vs_evtno[i]->GetYaxis()->SetTitle(Form("Energy Layer %i",i+1));
+        h2_energy_layer_vs_evtno[i]->GetXaxis()->SetTitle("Event Number");  
     }
     //....................................
-    //::: Febex channel vs WR Time
-    h2_energy_ch_vs_time.resize(layer_number);
+    //::: Febex channel vs Event Number
+    h2_energy_ch_vs_evtno.resize(layer_number);
     dir_febex_ch_drift->cd();
     for (int i = 0 ; i < layer_number; i++)
     {
-        h2_energy_ch_vs_time[i].resize(xmax);
+        h2_energy_ch_vs_evtno[i].resize(xmax);
         for (int j = 0; j < xmax; j++)
         {
-            h2_energy_ch_vs_time[i][j].resize(ymax);
+            h2_energy_ch_vs_evtno[i][j].resize(ymax);
             for (int k = 0; k < ymax; k++)
             {                   
                 city = "";
@@ -622,34 +622,34 @@ InitStatus LisaNearlineSpectra::Init()
                         break;
                     }
                 }  
-                h2_energy_ch_vs_time[i][j][k] = MakeTH2(dir_febex_ch_drift, "F", Form("h2_energy_%d%d%d_vs_time",i+1,j,k), Form("E %d%d%d vs WR [min]",i+1,j,k), drift_bin, drift_min, drift_max, lisa_config->bin_energy, lisa_config->min_energy, lisa_config->max_energy);
-                h2_energy_ch_vs_time[i][j][k]->SetTitle(Form("E (%d%d%d) vs WR",i+1,j,k));
-                h2_energy_ch_vs_time[i][j][k]->GetYaxis()->SetTitle(Form("Energy %d%d%d",i+1,j,k));
-                h2_energy_ch_vs_time[i][j][k]->GetXaxis()->SetTitle("WR Time [min]");
+                h2_energy_ch_vs_evtno[i][j][k] = MakeTH2(dir_febex_ch_drift, "F", Form("h2_energy_%d%d%d_vs_evtno",i+1,j,k), Form("E %d%d%d vs Event Number",i+1,j,k), drift_bin, drift_min, drift_max, lisa_config->bin_energy, lisa_config->min_energy, lisa_config->max_energy);
+                h2_energy_ch_vs_evtno[i][j][k]->SetTitle(Form("E (%d%d%d) vs Event Number",i+1,j,k));
+                h2_energy_ch_vs_evtno[i][j][k]->GetYaxis()->SetTitle(Form("Energy %d%d%d",i+1,j,k));
+                h2_energy_ch_vs_evtno[i][j][k]->GetXaxis()->SetTitle("Event Number");
             }
         }
     }  
     //....................................
-    // ::: MWD layer vs time (WR)
-    h2_energy_MWD_layer_vs_time.resize(layer_number);
+    // ::: MWD layer vs time (Event Number)
+    h2_energy_MWD_layer_vs_evtno.resize(layer_number);
     dir_MWD_drift->cd();
     for (int i = 0; i < layer_number; i++)
     {     
-        h2_energy_MWD_layer_vs_time[i] = MakeTH2(dir_MWD_drift, "F", Form("h2_energy_MWD_layer_%i_vs_time",i+1), Form("E_MWD (Layer %i) vs WR [min]",i+1), drift_bin, drift_min, drift_max, lisa_config->bin_energy_MWD, lisa_config->min_energy_MWD, lisa_config->max_energy_MWD);
-        h2_energy_MWD_layer_vs_time[i]->SetTitle(Form("E_MWD (Layer %i) vs WR",i+1));
-        h2_energy_MWD_layer_vs_time[i]->GetYaxis()->SetTitle(Form("Energy MWD Layer %i",i+1));
-        h2_energy_MWD_layer_vs_time[i]->GetXaxis()->SetTitle("WR Time [min]");
+        h2_energy_MWD_layer_vs_evtno[i] = MakeTH2(dir_MWD_drift, "F", Form("h2_energy_MWD_layer_%i_vs_evtno",i+1), Form("E_MWD (Layer %i) vs Event Number",i+1), drift_bin, drift_min, drift_max, lisa_config->bin_energy_MWD, lisa_config->min_energy_MWD, lisa_config->max_energy_MWD);
+        h2_energy_MWD_layer_vs_evtno[i]->SetTitle(Form("E_MWD (Layer %i) vs Event Number",i+1));
+        h2_energy_MWD_layer_vs_evtno[i]->GetYaxis()->SetTitle(Form("Energy MWD Layer %i",i+1));
+        h2_energy_MWD_layer_vs_evtno[i]->GetXaxis()->SetTitle("Event Number");
     }
     //....................................
-    //::: MWD channel vs WR Time
-    h2_energy_MWD_ch_vs_time.resize(layer_number);
-    dir_febex_ch_drift->cd();
+    //::: MWD channel vs Event Number
+    h2_energy_MWD_ch_vs_evtno.resize(layer_number);
+    dir_MWD_ch_drift->cd();
     for (int i = 0 ; i < layer_number; i++)
     {
-        h2_energy_MWD_ch_vs_time[i].resize(xmax);
+        h2_energy_MWD_ch_vs_evtno[i].resize(xmax);
         for (int j = 0; j < xmax; j++)
         {
-            h2_energy_MWD_ch_vs_time[i][j].resize(ymax);
+            h2_energy_MWD_ch_vs_evtno[i][j].resize(ymax);
             for (int k = 0; k < ymax; k++)
             {                   
                 city = "";
@@ -662,10 +662,10 @@ InitStatus LisaNearlineSpectra::Init()
                     }
                 }
                 
-                h2_energy_MWD_ch_vs_time[i][j][k] = MakeTH2(dir_MWD_ch_drift, "F", Form("h2_energy_MWD_%d%d%d_vs_time",i+1,j,k), Form("E_MWD %d%d%d vs WR [min]",i+1,j,k), drift_bin, drift_min, drift_max, lisa_config->bin_energy_MWD, lisa_config->min_energy_MWD, lisa_config->max_energy_MWD);
-                h2_energy_MWD_ch_vs_time[i][j][k]->SetTitle(Form("E_MWD (%d%d%d) vs WR",i+1,j,k));
-                h2_energy_MWD_ch_vs_time[i][j][k]->GetYaxis()->SetTitle(Form("Energy MWD %d%d%d",i+1,j,k));
-                h2_energy_MWD_ch_vs_time[i][j][k]->GetXaxis()->SetTitle("WR Time [min]");
+                h2_energy_MWD_ch_vs_evtno[i][j][k] = MakeTH2(dir_MWD_ch_drift, "F", Form("h2_energy_MWD_%d%d%d_vs_evtno",i+1,j,k), Form("E_MWD %d%d%d vs Event Number",i+1,j,k), drift_bin, drift_min, drift_max, lisa_config->bin_energy_MWD, lisa_config->min_energy_MWD, lisa_config->max_energy_MWD);
+                h2_energy_MWD_ch_vs_evtno[i][j][k]->SetTitle(Form("E_MWD (%d%d%d) vs Event Number",i+1,j,k));
+                h2_energy_MWD_ch_vs_evtno[i][j][k]->GetYaxis()->SetTitle(Form("Energy MWD %d%d%d",i+1,j,k));
+                h2_energy_MWD_ch_vs_evtno[i][j][k]->GetXaxis()->SetTitle("Event Number");
             }
         }
     } 
@@ -753,8 +753,8 @@ InitStatus LisaNearlineSpectra::Init()
 
 void LisaNearlineSpectra::Exec(Option_t* option)
 {   
-    // ::: For WR histos and experiment start
-    wr_time = 0;
+    // ::: For BR histos and experiment start
+    br_time = 0;
     Long64_t LISA_time_mins = 0;
     // .........................
     int total_multiplicity = 0;
@@ -781,15 +781,15 @@ void LisaNearlineSpectra::Exec(Option_t* option)
 
     for (auto const & lisaCalItem : *lisaCalArray)
     {
-        // For WR histos and experiment start
-        wr_time = lisaCalItem.Get_wr_t();
-        if (lisa_config->wr_enable == true) 
+        // For BR histos and experiment start
+        br_time = lisaCalItem.Get_br_t();
+        if (lisa_config->br_enable == true) 
         {
-            if (wr_time == 0)return; 
+            if (br_time == 0)return; 
         }
-        if (wr_time == 0)return;
-        if(wr_time > 0) LISA_time_mins = (wr_time - exp_config->exp_start_time)/ 60E9;
-        //c4LOG(info, "LISA_time_mins: " << LISA_time_mins << " wr time: "<< std::fixed << std::setprecision(10)<< wr_time);
+        if (br_time == 0)return;
+        if(br_time > 0) LISA_time_mins = (br_time - exp_config->exp_start_time)/ 60E9;
+        //c4LOG(info, "LISA_time_mins: " << LISA_time_mins << " br time: "<< std::fixed << std::setprecision(10)<< br_time);
 
         //::: Retrieve Data :::
         layer = lisaCalItem.Get_layer_id();
@@ -805,6 +805,8 @@ void LisaNearlineSpectra::Exec(Option_t* option)
         float energy_MWD_GM = lisaCalItem.Get_energy_MWD_GM();
 
         std::vector<float> trace = lisaCalItem.Get_trace_febex();
+
+        uint64_t evtno = header->GetEventno();
         
         //uint64_t evtno = header->GetEventno();
 
@@ -910,59 +912,59 @@ void LisaNearlineSpectra::Exec(Option_t* option)
         if (energy_GM > 0 && LISA_time_mins > 0)
         {
             //c4LOG(info, "conditions on LISA time: " << LISA_time_mins << " and energy: " << energy_GM );
-            h2_energy_layer_vs_time[layer-1]->Fill(LISA_time_mins, energy_GM);
-            h2_energy_ch_vs_time[layer-1][xpos][ypos]->Fill(LISA_time_mins, energy_GM); 
+            h2_energy_layer_vs_evtno[layer-1]->Fill(evtno, energy_GM);
+            h2_energy_ch_vs_evtno[layer-1][xpos][ypos]->Fill(evtno, energy_GM); 
         }
         // //     MWD Energy vs Time
         if (energy_MWD_GM > 0 && LISA_time_mins > 0)
         {
-            h2_energy_MWD_layer_vs_time[layer-1]->Fill(LISA_time_mins, energy_MWD_GM);
-            h2_energy_MWD_ch_vs_time[layer-1][xpos][ypos]->Fill(LISA_time_mins, energy_MWD_GM); 
+            h2_energy_MWD_layer_vs_evtno[layer-1]->Fill(evtno, energy_MWD_GM);
+            h2_energy_MWD_ch_vs_evtno[layer-1][xpos][ypos]->Fill(evtno, energy_MWD_GM); 
         }
     
     }
-    //c4LOG(info, "LISA_time_mins: " << LISA_time_mins << " wr time: "<< std::fixed << std::setprecision(10)<< wr_time);
+    //c4LOG(info, "LISA_time_mins: " << LISA_time_mins << " br time: "<< std::fixed << std::setprecision(10)<< wr_time);
 
-    // ::: WR Time Difference
+    // ::: BR Time Difference
 
-    if (lisa_config->wr_enable == true) 
+    if (lisa_config->br_enable == true) 
     {
-        if (wr_time == 0)return; 
+        if (br_time == 0)return; 
     }
-    if ( wr_time == 0 ) return;
+    if ( br_time == 0 ) return;
     
-    if( prev_wr > 0 )
+    if( prev_br > 0 )
     {
-        wr_diff = wr_time - prev_wr;
-        h1_wr_diff->Fill(wr_diff);
+        br_diff = br_time - prev_br;
+        h1_br_diff->Fill(br_diff);
     }
-    prev_wr = wr_time;
+    prev_br = br_time;
     //....................................
 
     // ::: RATES
-    double rate_wr_dt_db = (wr_time - saved_wr) / 1e9;
+    double rate_br_dt_db = (br_time - saved_br) / 1e9;
 
-    if (rate_wr_dt_db > 1) 
+    if (rate_br_dt_db > 1) 
     {
-        if (saved_wr != 0 && rate_wr_dt_db < 2)
+        if (saved_br != 0 && rate_br_dt_db < 2)
         {
             for (int i = 0; i < layer; i++)
             {
-                //c4LOG(info, " Layer : " << i << " Layer rate : " << layer_rate[i] << " Layer counter : " << layer_counter[i] << " rate_wr_dt_db : " << rate_wr_dt_db);
-                layer_rate[i] = layer_counter[i] / rate_wr_dt_db;
+                //c4LOG(info, " Layer : " << i << " Layer rate : " << layer_rate[i] << " Layer counter : " << layer_counter[i] << " rate_br_dt_db : " << rate_br_dt_db);
+                layer_rate[i] = layer_counter[i] / rate_br_dt_db;
                 h1_lisa_layer_rate[i]->SetBinContent(rate_running_count, layer_rate[i]);
                 
                 for (int j = 0; j < xmax; j++)
                 {
                     for (int k = 0; k < ymax; k++)
                     {
-                        detector_rate[i][j][k] = detector_counter[i][j][k] / rate_wr_dt_db;
+                        detector_rate[i][j][k] = detector_counter[i][j][k] / rate_br_dt_db;
                         h1_lisa_rate[i][j][k]->SetBinContent(rate_running_count, detector_rate[i][j][k]);
                     }
                 }
             }
         }
-        saved_wr = wr_time;
+        saved_br = br_time;
         rate_running_count++;
 
         for (int i = 0; i < layer; i++)

@@ -96,13 +96,13 @@ InitStatus LisaOnlineSpectraDaq::Init()
     dir_energy = dir_lisa->mkdir("Energy");
     dir_traces = dir_lisa->mkdir("Traces");
   
-    //:::::::::::White Rabbit:::::::::::::::
+    //:::::::::::Black Rabbit:::::::::::::::
     dir_stats->cd();
 
-    h1_wr_diff = new TH1I("h1_wr_diff", "WR Difference", lisa_config->bin_wr_diff, lisa_config->min_wr_diff, lisa_config->max_wr_diff);
-    h1_wr_diff->GetXaxis()->SetTitle("LISA WR Difference [ns]");
-    h1_wr_diff->SetLineColor(kBlack);
-    h1_wr_diff->SetFillColor(kRed-3);
+    h1_br_diff = new TH1I("h1_br_diff", "BR_Difference", lisa_config->bin_br_diff, lisa_config->min_br_diff, lisa_config->max_br_diff);
+    h1_br_diff->GetXaxis()->SetTitle("LISA BR Difference [ns]");
+    h1_br_diff->SetLineColor(kBlack);
+    h1_br_diff->SetFillColor(kRed-3);
 
     //:::::::::::H I T  P A T T E R N S:::::::::::::::
     //:::::::::::Total
@@ -415,8 +415,8 @@ void LisaOnlineSpectraDaq::Reset_Histo()
 
     c4LOG(info,"::: Histos Reset on day " <<  ltm->tm_mday << "th," << " at " << ltm->tm_hour << ":" << ltm->tm_min << ":" << ltm->tm_sec );
     
-    //::: Reset WR
-    h1_wr_diff->Reset();
+    //::: Reset black rabbit
+    h1_br_diff->Reset();
 
     //::: Reset Energy histos
     for (int i = 0; i < layer_number; i++) 
@@ -473,7 +473,7 @@ void LisaOnlineSpectraDaq::Reset_Histo()
 void LisaOnlineSpectraDaq::Exec(Option_t* option)
 {   
     //c4LOG(info, ":::::::beginning exec :::::::: ");
-    wr_time = 0;
+    br_time = 0;
     int multiplicity[layer_number] = {0};
     int total_multiplicity = 0;
     
@@ -486,11 +486,11 @@ void LisaOnlineSpectraDaq::Exec(Option_t* option)
     {
         
         //c4LOG(info, ":::::::beginning loop inside exec :::::::: ");
-        wr_time = lisaCalItem.Get_wr_t();
+        br_time = lisaCalItem.Get_br_t();
 
-        if (lisa_config->wr_enable == true)
+        if (lisa_config->br_enable == true)
         {
-            if (wr_time == 0)return; 
+            if (br_time == 0)return; 
         }
 
         //c4LOG(info, ":::::::beginning loop after return :::::::: ");
@@ -515,7 +515,8 @@ void LisaOnlineSpectraDaq::Exec(Option_t* option)
         h1_hitpattern_layer[layer]->Fill(hp_bin);
         //:::::::::Total
         int hp_total_bin;
-        hp_total_bin = layer * xmax * ymax + hp_bin - 3; // -3 is a fudge for uneven layers, temporary
+        hp_total_bin = (layer-1) * xmax * ymax + hp_bin; 
+        //hp_total_bin = layer * xmax * ymax + hp_bin - 3; // -3 is a fudge for uneven layers, temporary
         h1_hitpattern_total->Fill(hp_total_bin);
         //::::::::::By grid
         h2_hitpattern_grid[layer]->Fill(xpos,ypos);
@@ -571,16 +572,16 @@ void LisaOnlineSpectraDaq::Exec(Option_t* option)
 
 
     //c4LOG(info, " layer : "<<layer << " multiplicity layer : "<<multiplicity[layer]);
-    if ( wr_time == 0 ) return;
+    if ( br_time == 0 ) return;
 
-    //:::::: WR Time Difference
-    if( prev_wr > 0 )
+    //:::::: Black Rabbit Time Difference
+    if( prev_br > 0 )
     {
-        wr_diff = wr_time - prev_wr; //to express wr difference in us
-        h1_wr_diff->Fill(wr_diff);
+        br_diff = br_time - prev_br;
+        h1_br_diff->Fill(br_diff);
     }
-    prev_wr = wr_time;
-    //c4LOG(info,"wr time: " << wr_time << "   prev wr: " << prev_wr << " wr diff: " << wr_diff);
+    prev_br = br_time;
+    //c4LOG(info,"br time: " << br_time << "   prev br: " << prev_br << " br diff: " << br_diff);
 
 
     //::::::: Fill Multiplicity ::::::::::

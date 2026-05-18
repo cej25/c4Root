@@ -18,13 +18,13 @@ class LisaItem;
 
 struct EXT_STR_h101_lisa_t;
 typedef struct EXT_STR_h101_lisa_t EXT_STR_h101_lisa;
-typedef struct EXT_STR_h101_lisa_onion_t EXT_STR_h101_lisa_onion;
+typedef struct EXT_STR_h101_lisaext_onion_t EXT_STR_h101_lisaext_onion;
 class ext_data_struct_info;
 
 class LisaReader : public c4Reader
 {
     public:
-        LisaReader(EXT_STR_h101_lisa_onion*, size_t);
+        LisaReader(EXT_STR_h101_lisaext_onion*, size_t);
 
         virtual ~LisaReader();
 
@@ -42,7 +42,7 @@ class LisaReader : public c4Reader
     private:
         unsigned fNEvent;
 
-        EXT_STR_h101_lisa_onion* fData;
+        EXT_STR_h101_lisaext_onion* fData;
 
         size_t fOffset;
 

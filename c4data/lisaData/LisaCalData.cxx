@@ -34,7 +34,7 @@ LisaCalItem::LisaCalItem()
 }
 
 void LisaCalItem::SetAll(uint64_t br,
-                        uint16_t br_id,
+                        uint16_t brid,
                         uint64_t rn,
                         int b_id,
                         int layer,
@@ -58,7 +58,7 @@ void LisaCalItem::SetAll(uint64_t br,
                         )
 {   
     br_t = br;
-    br_id = br_id;
+    br_id = brid;
     run_number = rn;
     board_id = b_id;
     layer_id = layer;

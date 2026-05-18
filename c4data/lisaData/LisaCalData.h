@@ -125,7 +125,7 @@ inline uint16_t LisaCalItem::Get_br_id() const
     return br_id;
 }
 
-inline uint64_t LisaItem::Get_run_number() const
+inline uint64_t LisaCalItem::Get_run_number() const
 {
     return run_number;
 }
