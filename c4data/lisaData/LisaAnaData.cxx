@@ -52,7 +52,7 @@ void LisaAnaItem::SetAll(uint64_t br,
                     std::vector<int16_t> tr_x
                     )
 {   
-    br_t = wr;
+    br_t = br;
     br_id = id;
     run_number = rn;
     board_id = b_id;

@@ -36,7 +36,7 @@ extern "C"
     #include "ext_h101_lisa.h"
 }
 
-LisaReader::LisaReader(EXT_STR_h101_lisa_onion* data, size_t offset)
+LisaReader::LisaReader(EXT_STR_h101_lisaext_onion* data, size_t offset)
     : c4Reader("LisaReader")
     , fNEvent(0)
     , fData(data)
@@ -56,7 +56,7 @@ Bool_t LisaReader::Init(ext_data_struct_info* a_struct_info)
     Int_t ok;
     c4LOG(info, "");
 
-    EXT_STR_h101_lisa_ITEMS_INFO(ok, *a_struct_info, fOffset, EXT_STR_h101_lisa, 0);
+    EXT_STR_h101_lisaext_ITEMS_INFO(ok, *a_struct_info, fOffset, EXT_STR_h101_lisaext, 0);
 
     if (!ok)
     {
@@ -79,9 +79,11 @@ Bool_t LisaReader::Read()
     // Reading is done in here on a per-event basis!
 
     //::::::::::::::Black Rabbit::::::::::::::
-    //Black Rabbit time stamp
-    uint64_t br_time_long = (((uint64_t)fData->lisa_ts_t[1]) << 32) + 
-    (((uint64_t)fData->lisa_ts_t[0]));
+    //Black Rabbit time stamp expressed in ns  
+    // Please note that with the KINPEX firmware for outside GSI, the time unit is 10 ns.
+    
+    uint64_t br_time_long = ((((uint64_t)fData->lisa_ts_t[1]) << 32) + 
+    (((uint64_t)fData->lisa_ts_t[0])))*10; //to express BR time in ns (from 10ns unit of kinpex )
 
     uint32_t br_id = fData->lisa_ts_subsystem_id;
 
@@ -178,8 +180,9 @@ Bool_t LisaReader::Read()
 
             auto & entry = lisaArray->emplace_back();
             entry.SetAll(
-                wr_time_long,
-                wr_id, 
+                br_time_long,
+                br_id, 
+                run_number,
                 board_num,
                 event_trigger_time_long,
                 channel_id,

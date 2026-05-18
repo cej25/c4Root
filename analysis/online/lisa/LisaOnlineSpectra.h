@@ -85,11 +85,11 @@ class LisaOnlineSpectra : public FairTask
         int rate_running_count = 0;
 
         // Rate
-        Long64_t prev_wr = 0;
-        Long64_t wr_diff; 
-        Long64_t wr_rate; 
-        Long64_t saved_wr =  0; 
-        uint64_t wr_time;
+        Long64_t prev_br = 0;
+        Long64_t br_diff; 
+        Long64_t br_rate; 
+        Long64_t saved_br =  0; 
+        uint64_t br_time;
 
         TFolder* histograms;
         TDirectory* dir_lisa;
@@ -131,7 +131,7 @@ class LisaOnlineSpectra : public FairTask
         // ::: Histograms
         //     Stats
         TH1I* h1_hitpattern_total;
-        TH1I* h1_wr_diff;
+        TH1I* h1_br_diff;
         std::vector<TH1I*> h1_layer_rate;
         std::vector<std::vector<std::vector<TH1I*>>> h1_rate;
         std::vector<TH1I*> h1_hitpattern_layer;

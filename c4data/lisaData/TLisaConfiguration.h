@@ -108,16 +108,16 @@ class TLisaConfiguration
         static void SetEnergyRangeMWDGM(int min_MWD_GM, int max_MWD_GM) { min_energy_MWD_GM = min_MWD_GM; max_energy_MWD_GM = max_MWD_GM; }
         static void SetEnergyBinMWDGM(int bin_e_MWD_GM) { bin_energy_MWD_GM = bin_e_MWD_GM; }
 
-        static void SetWrDiffRange(long min_wr, long max_wr) { min_wr_diff = min_wr; max_wr_diff = max_wr; }
-        static void SetWrDiffBin(int bin_wr) { bin_wr_diff = bin_wr; }
+        static void SetBrDiffRange(long min_br, long max_br) { min_br_diff = min_br; max_br_diff = max_br; }
+        static void SetBrDiffBin(int bin_br) { bin_br_diff = bin_br; }
 
-        static void SetWrRateRange(int min_wr_r, int max_wr_r) { min_wr_rate = min_wr_r; max_wr_rate = max_wr_r; }
-        static void SetWrRateBin(int bin_wr_r) { bin_wr_rate = bin_wr_r; }
+        static void SetBrRateRange(int min_br_r, int max_br_r) { min_br_rate = min_br_r; max_br_rate = max_br_r; }
+        static void SetBrRateBin(int bin_br_r) { bin_br_rate = bin_br_r; }
 
         static void SetTracesRange(double min_tr, double max_tr) { min_traces = min_tr; max_traces = max_tr; }
         static void SetTracesBin(int bin_tr) { bin_traces = bin_tr; }
         
-        static void SetWREnable(bool wr_en) { wr_enable = wr_en; }
+        static void SetBREnable(bool br_en) { br_enable = br_en; }
 
         static void SetLISAGate(int min_de, int max_de) { fMin_dE_LISA1_gate = min_de; fMax_dE_LISA1_gate = max_de; }
 
@@ -154,12 +154,12 @@ class TLisaConfiguration
         static int min_energy_MWD_GM;
         static int max_energy_MWD_GM;
         static int bin_energy_MWD_GM;
-        static long min_wr_diff;
-        static long max_wr_diff;
-        static int bin_wr_diff;
-        static int min_wr_rate;
-        static int max_wr_rate;
-        static int bin_wr_rate;
+        static long min_br_diff;
+        static long max_br_diff;
+        static int bin_br_diff;
+        static int min_br_rate;
+        static int max_br_rate;
+        static int bin_br_rate;
         static double min_traces;
         static double max_traces;
         static int bin_traces;
@@ -176,7 +176,7 @@ class TLisaConfiguration
         static int drift_min;
         static int drift_max;
 
-        static bool wr_enable;
+        static bool br_enable;
 
         // ::: MDW parameters getters
         float Get_Smoothing_L() const { return smoothing_L; }

@@ -87,7 +87,7 @@ class LisaNearlineSpectra : public FairTask
         int xmax;
         int ymax;
         int num_layers;
-        uint64_t wr_time;
+        uint64_t br_evtno;
         Int_t layer;
         TString city = "";
         EventHeader* header;
@@ -102,10 +102,11 @@ class LisaNearlineSpectra : public FairTask
         int rate_running_count = 0; 
 
         // Rates
-        Long64_t prev_wr = 0;
-        Long64_t wr_diff; 
-        Long64_t wr_rate; 
-        Long64_t saved_wr =  0; 
+        Long64_t prev_br = 0;
+        Long64_t br_time; 
+        Long64_t br_diff; 
+        Long64_t br_rate; 
+        Long64_t saved_br =  0; 
 
         // ::: Directories
         TDirectory* dir_lisa;
@@ -139,7 +140,7 @@ class LisaNearlineSpectra : public FairTask
      
         // ::: Histograms :::
         // ::: Stats
-        TH1I* h1_wr_diff; 
+        TH1I* h1_br_diff; 
         std::vector<TH1I*> h1_lisa_layer_rate;
         std::vector<std::vector<std::vector<TH1I*>>> h1_lisa_rate; 
         TH1I* h1_hitpattern_total;
@@ -183,16 +184,15 @@ class LisaNearlineSpectra : public FairTask
         std::vector<std::vector<std::vector<TH2F*>>> h2_traces_ch;
 
         // ::: Drifts
-        std::vector<TH2*> h2_energy_layer_vs_time;
-        std::vector<TH2*> h2_energy_MWD_layer_vs_time;
-        std::vector<std::vector<std::vector<TH2*>>> h2_energy_ch_vs_time;
-        std::vector<std::vector<std::vector<TH2*>>> h2_energy_MWD_ch_vs_time;
+        std::vector<TH2*> h2_energy_layer_vs_evtno;
+        std::vector<TH2*> h2_energy_MWD_layer_vs_evtno;
+        std::vector<std::vector<std::vector<TH2*>>> h2_energy_ch_vs_evtno;
+        std::vector<std::vector<std::vector<TH2*>>> h2_energy_MWD_ch_vs_evtno;
 
 
         std::set<std::tuple<int, int, int>> excluded;
 
         
-
     public:
         ClassDef(LisaNearlineSpectra, 1)
 };

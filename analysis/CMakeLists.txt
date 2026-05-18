@@ -82,41 +82,16 @@ set(SRCS
 ./nearline/bgo/BGONearlineSpectra.cxx
 ./nearline/wr/WhiterabbitCorrelationNearline.cxx
 ./nearline/timemachine/TimeMachineNearline.cxx
-./nearline/lisa/LisaNearlineSpectra.cxx
-./nearline/lisa/LisaNearlineSpectraDaq.cxx
-./nearline/lisa/LisaNearlineSpectraAna.cxx
-./nearline/lisa/LisaTraceAnalysis.cxx
-./nearline/lisa/LisaTraceCorrelation.cxx
+#./nearline/lisa/LisaNearlineSpectraDaq.cxx
+#./nearline/lisa/LisaNearlineSpectraAna.cxx
+#./nearline/lisa/LisaTraceAnalysis.cxx
+#./nearline/lisa/LisaTraceCorrelation.cxx
 ./nearline/fimp/FimpNearlineSpectra.cxx
 ./nearline/bb7/BB7NearlineSpectra.cxx
 ./nearline/lisa/LisaNearlineSpectra.cxx
 ./nearline/mcp/H10MCPNearlineSpectra.cxx
 ./nearline/stefan/StefanNearlineSpectra.cxx
 
-## correlations ##
-./correlations/FrsAidaCorrelations.cxx
-./online/onlineCorrelations/FrsAidaCorrelationsOnline.cxx
-./correlations/FrsFatimaCorrelations.cxx
-#./correlations/FrsFatimaVmeCorrelations.cxx
-./correlations/FrsGermaniumCorrelations.cxx
-./correlations/FrsFatimaCorrelationsNearline.cxx
-./correlations/FrsGermaniumCorrelationsNearline.cxx
-./correlations/AidaFatimaCorrelations.cxx
-./nearline/fatima/FatimaTimingAnalysis.cxx
-./nearline/fatima/FatimaTimingAnalysisSummed.cxx
-./nearline/fatima/FatimaTimingAnalysisSummedGeGated.cxx
-./nearline/fatima/FatimaSinglesAnalysis.cxx
-./correlations/AidaGermaniumCorrelations.cxx
-./correlations/bPlastGermaniumCorrelations.cxx
-./online/onlineCorrelations/bPlastGermaniumCorrelationsOnline.cxx
-./online/onlineCorrelations/BB7GermaniumCorrelationsOnline.cxx
-#./correlations/FrsBplastCorrelations.cxx
-./correlations/triplePlusCorrs/BetaIonCorrelations.cxx
-
-
-#./correlations/FrsBplastCorrelations.cxx
-./online/onlineCorrelations/LisaFrsCorrelationsOnline.cxx
-./correlations/LisaFrsCorrelations.cxx
 
 )
 
