@@ -79,15 +79,14 @@ void lisaext_make_trees()
 
 
     // ::: Create run
-    //FairRunOnline* run = new FairRunOnline();
-    FairRunAna* run = new FairRunAna();
+    FairRunOnline* run = new FairRunOnline();
     EventHeader* EvtHead = new EventHeader();
     run->SetEventHeader(EvtHead);
     run->SetRunId(1);
     run->SetSink(new FairRootFileSink(outputFilename)); // don't write after termintion
     TFolder* histograms = new TFolder("Histograms", "Histograms");
     FairRootManager::Instance()->Register("Histograms", "Histogram Folder", histograms, false);
-    //run->AddObject(histograms);
+    run->AddObject(histograms);
 
     // ::: Take ucesb input and create source
     EXT_STR_h101 ucesb_struct;

@@ -65,6 +65,7 @@ LisaNearlineSpectra::LisaNearlineSpectra(std::vector<LisaGate*> lg)
     {
         if (gate->GetType() == "energy") febex_gates.emplace_back(gate); 
         else if (gate->GetType() == "energy_mwd") mwd_gates.emplace_back(gate);
+        else if (gate->GetType() == "dedx_mwd") mwd_dedx_gates.emplace_back(gate);
     }
 
 
