@@ -1191,18 +1191,6 @@ void LisaNearlineSpectra::Exec(Option_t* option)
         }    
     }
     //....................................
-    // ::: Energy MWD Layer vs Layer
-    for ( int i = 0; i < layer_number-1; i++)
-    {
-        for( int j = 0; j < energy_MWD_layer[i].size(); j++)
-        {
-            for ( int k = 0 ; k < energy_MWD_layer[i+1].size(); k++)
-            {
-                h2_energy_MWD_layer_vs_layer[i]->Fill(energy_MWD_layer[i][j], energy_MWD_layer[i+1][k]);
-            }
-        }    
-    }
-    //....................................
     // ::: Energy MWD First vs Last Layer
     for (int i = 0; i < energy_MWD_layer[0].size(); ++i)
     {

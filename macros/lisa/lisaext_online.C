@@ -4,44 +4,24 @@
 #define LISA_ON 1
 #define WR_ENABLED 1
 
-
-
-// Definition of setup and configuration files
-
-// LISA
-#define LISA_CONFIG_FILE "../../../config/shiyan/lisa/general/lisa_config_v2.C"
-
-
-// :::  Define FRS and LISA setup.C file; place in /config/shiyan/frs/setup/
 extern "C"
-{   
-    // LISA setup
-    #include LISA_CONFIG_FILE
+{
 }
 
 typedef struct EXT_STR_h101_t
 {   
     EXT_STR_h101_unpack_t eventheaders;
-    EXT_STR_h101_lisa_onion_t lisa;
+    EXT_STR_h101_lisaext_onion_t lisa;
 
 } EXT_STR_h101;
 
-std::string readFileToString(const std::string& path)
-{
-    std::ifstream file(path);
-    if (!file.is_open()) return "[Could not open file]";
-    std::stringstream buffer;
-    buffer << file.rdbuf();
-    return buffer.str();
-}
-
-void cologne_online()
+void lisaext_online()
 {   
     if (WR_ENABLED)
     {
-        TLisaConfiguration::SetWREnable(true);
+        TLisaConfiguration::SetBREnable(true);
     }else{
-        TLisaConfiguration::SetWREnable(false);
+        TLisaConfiguration::SetBREnable(false);
     } 
 
     const Int_t nev = -1; const Int_t fRunId = 1; const Int_t fExpId = 1;
@@ -73,8 +53,12 @@ void cologne_online()
     // ::: P A T H   O F   F I L E  to read
     
     // ::: ONLINE READING
-    //TString filename = "stream://x86l-166"; //lisa daq (not time sorted/stitched)
-    TString filename = "trans://lxg3107:6000"; //Set to stiched data
+    //TString filename = "stream://x86l-166"; 
+    //TString filename = "trans://lxg3107:6000"; 
+
+    // ::: OFFLINE READING - For testing
+    TString inputpath = "/u/gandolfo/data/lustre/gamma/LISA/data/ext_daq_debnik/dev_test/";                   
+    TString filename = "new_timestamp_format_0001.lmd"; 
     
     // ::: OUTPUT - does not write a tree if it is not set layer
     TString outputpath = "/u/lisa/data/test_c4/"; //testing
@@ -102,68 +86,25 @@ void cologne_online()
     run->SetSource(source);
 
     //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-    // ::: F R S parameter - Initialise
-
-    TFRSParameter* frs = new TFRSParameter();
-    TMWParameter* mw = new TMWParameter();
-    TTPCParameter* tpc = new TTPCParameter();
-    TMUSICParameter* music = new TMUSICParameter();
-    TLABRParameter* labr = new TLABRParameter();
-    TSCIParameter* sci = new TSCIParameter();
-    TIDParameter* id = new TIDParameter();
-    TSIParameter* si = new TSIParameter();
-    TMRTOFMSParameter* mrtof = new TMRTOFMSParameter();
-    TRangeParameter* range = new TRangeParameter();
-    setup(frs,mw,tpc,music,labr,sci,id,si,mrtof,range); // Function defined in frs setup.C macro
-    TFrsConfiguration::SetParameters(frs,mw,tpc,music,labr,sci,id,si,mrtof,range);
-
-    //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-    // ::: C O R R E L A T I O N S - Initialise 
-  
-    TCorrelationsConfiguration::SetCorrelationsFile(config_path + "/correlations_tight.dat");
-
-    //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
     // ::: C O N F I G    F O R   S Y S T E M S   - Load
     
-    // ::: Exp config
-    TExperimentConfiguration::SetExperimentStart(1746597600000000000);// Start for Shiyan data: May 7th, 8a.m. //including testing
-    // for S100, 3 and 4. for 2025+ 12 and 13.
-    TExperimentConfiguration::SetBOSTrig(3);
-    TExperimentConfiguration::SetEOSTrig(4);
-    TFrsConfiguration::SetConfigPath(config_path + "/frs/");
-
-    // ::: FRS config
-    TFrsConfiguration::SetConfigPath(config_path + "/frs/");
-    TFrsConfiguration::SetCrateMapFile(config_path +  "/frs/crate_map.txt");
-    TFrsConfiguration::SetTravMusDriftFile(config_path +  "/frs/TM_Drift_fragments.txt");
-    TFrsConfiguration::SetZ1DriftFile(config_path + "/frs/Z1_Drift_fragments.txt");
-    TFrsConfiguration::SetAoQDriftFile(config_path +  "/frs/AoQ_Drift_fragments.txt");
-
     // ::: Lisa config
-    if ( TEST )
-    {
-        
-        TLisaConfiguration::SetMappingFile(config_path +  "/lisa/Lisa_All_Boards.txt");
-        TLisaConfiguration::SetGMFile(config_path +  "/lisa/Lisa_GainMatching_cards.txt");
-        TLisaConfiguration::SetGMFileMWD(config_path +  "/lisa/Lisa_GainMatching_MWD_cards.txt");
-        TLisaConfiguration::SetMWDParametersFile(config_path + "/lisa/Lisa_MWD_Parameters_DAQtest.txt");
-        
-        TLisaConfiguration::SetExcludedChannels({
-        std::make_tuple(1,0,0),
-        }); 
 
-    }
-    if ( EXP )
-    {
-        TLisaConfiguration::SetMappingFile(config_path +  "/lisa/Lisa_4x4_shiyan.txt");
-        TLisaConfiguration::SetGMFile(config_path +  "/lisa/Lisa_GainMatching_shiyan.txt");
-        TLisaConfiguration::SetGMFileMWD(config_path +  "/lisa/Lisa_GainMatching_MWD_shiyan.txt");
-        TLisaConfiguration::SetMWDParametersFile(config_path + "/lisa/Lisa_MWD_Parameters_shiyan_v0.txt");
+    // ::: Mapping
+    TLisaConfiguration::SetMappingFile(config_path + "/Lisa_Mapping_All_Boards_FULL.txt");
+    
+    // ::: Gain Matching Febex, MWD, dEdX
+    TLisaConfiguration::SetGMFile(config_path + "/Lisa_GainMatching_cards.txt");
+    TLisaConfiguration::SetGMFileMWD(config_path + "/Lisa_GainMatching_MWD_cards.txt");
+    TLisaConfiguration::SetGMFiledEdX(config_path + "/Lisa_GainMatching_MWD_dEdX_cards.txt");
+    
+    // ::: MWD parameters
+    TLisaConfiguration::SetMWDParametersFile(config_path + "/Lisa_MWD_Parameters_v0.txt");
 
-        // TLisaConfiguration::SetExcludedChannels({
-        // std::make_tuple(1,0,0),
-        // });        
-    }
+    
+    TLisaConfiguration::SetExcludedChannels({
+    std::make_tuple(1,0,0),
+    }); 
 
 
     //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
@@ -177,19 +118,11 @@ void cologne_online()
 
     if (LISA_ON)
     {
-        LisaReader* unpacklisa = new LisaReader((EXT_STR_h101_lisa_onion*)&ucesb_struct.lisa, offsetof(EXT_STR_h101, lisa));
+        LisaReader* unpacklisa = new LisaReader((EXT_STR_h101_lisaext_onion*)&ucesb_struct.lisa, offsetof(EXT_STR_h101, lisa));
 
         unpacklisa->SetOnline(true); //false= write to a tree; true=doesn't write to tree
         source->AddReader(unpacklisa);
     }
-
-    if (FRS_ON)
-    {   
-        FrsReader* unpackfrs = new FrsReader((EXT_STR_h101_frs_onion*)&ucesb_struct.frs, offsetof(EXT_STR_h101, frs)); 
-        unpackfrs->SetOnline(true);
-        source->AddReader(unpackfrs);
-    }   
-
 
     // ::: CALIBRATE Subsystem  :::
 
@@ -204,23 +137,6 @@ void cologne_online()
         run->AddTask(lisaana2cal);
     }
 
-    if (FRS_ON)
-    {
-        FrsRaw2Cal* calfrs = new FrsRaw2Cal();
-        calfrs->SetOnline(true);
-        run->AddTask(calfrs);
-    }
-
-    // ::: ANALYSE FRS  :::
-
-    if (FRS_ON)
-    {
-        FrsCal2Hit* hitfrs = new FrsCal2Hit();
-        
-        hitfrs->SetOnline(true); 
-        run->AddTask(hitfrs);
-    } 
-
     //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::   
     // =========== **** SPECTRA ***** ========================================================= //
     //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::    
@@ -230,33 +146,8 @@ void cologne_online()
         LisaOnlineSpectra* onlinelisa = new LisaOnlineSpectra();
         run->AddTask(onlinelisa);
     }
-    
-    if (FRS_ON)
-    {
-        FrsOnlineSpectra* onlinefrs = new FrsOnlineSpectra();
-        //For monitoring FRS on our side
-        //FrsRawSpectra* frsrawspec = new FrsRawSpectra();
-        //FrsCalSpectra* frscalspec = new FrsCalSpectra();
-
-        run->AddTask(onlinefrs);
-        //run->AddTask(frsrawspec);
-        //run->AddTask(frscalspec);
-    }
-
-    // ::: Correlation Spectra ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-
-    if (LISA_ON && FRS_ON)
-    {
-        LisaFrsCorrelationsOnline* lisafrscorr = new LisaFrsCorrelationsOnline();
-        run->AddTask(lisafrscorr);
-    }
 
     // ::: CONFIGURATIONS FOR ONLINE HISTOS :::
-    // ::: FRS
-    TFrsConfiguration::Set_Z_range(10,60);
-    TFrsConfiguration::Set_AoQ_range(1.8,3.5);
-    TFrsConfiguration::Set_dE_music41_range(0,4000);
-    TFrsConfiguration::Set_dE_music21_range(0,4000);
 
     // ::: LISA
     //      Channel Energy 
@@ -268,10 +159,10 @@ void cologne_online()
     TLisaConfiguration::SetEnergyBinMWD(1000);
 
     //      LISA WR Time Difference 
-    TLisaConfiguration::SetWrDiffRange(0,100000000);
-    TLisaConfiguration::SetWrDiffBin(20000);
-    TLisaConfiguration::SetWrRateRange(0,900);
-    TLisaConfiguration::SetWrRateBin(900);
+    TLisaConfiguration::SetBrDiffRange(0,100000000);
+    TLisaConfiguration::SetBrDiffBin(20000);
+    TLisaConfiguration::SetBrRateRange(0,900);
+    TLisaConfiguration::SetBrRateBin(900);
 
     //      LISA Traces Ranges 
     TLisaConfiguration::SetTracesRange(0,3.9);
