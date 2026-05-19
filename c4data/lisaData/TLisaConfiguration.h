@@ -99,7 +99,6 @@ std::map<std::pair<int,int>, std::pair<std::pair<int, std::pair<int, int>>,std::
         int TM_Delayed() const;
         int SC41L() const;
         int SC41R() const;
-        std::set<int> ExtraSignals() const;
 
 
         //:::::Ranges in Histos

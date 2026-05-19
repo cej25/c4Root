@@ -52,7 +52,7 @@ void histo_config(const std::string& config_path)
     TLisaConfiguration::SetXYDetectorGate(2,1); 
 
     // L I S A 
-    /*
+    
     // 1
     LisaGate* Wide_F1 = new LisaGate("wide_feb_1", "energy", config_path + "/Gates/Febex_Gate1shiyan.txt");
     LisaGate* Wide_M1 = new LisaGate("wide_mwd_1", "energy_mwd", config_path + "/Gates/MWD_Gate1shiyan.txt");
@@ -61,6 +61,6 @@ void histo_config(const std::string& config_path)
     lgs.emplace_back(Wide_F1);
     lgs.emplace_back(Wide_M1);
     lgs.emplace_back(Wide_D1);
-    */
+    
 
 }
