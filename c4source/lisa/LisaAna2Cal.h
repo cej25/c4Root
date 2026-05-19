@@ -37,6 +37,7 @@ class LisaAna2Cal : public FairTask
 
         void PrintDetectorGainM();
         void PrintDetectorGainM_MWD();
+        void PrintDetectorGainM_dEdX();
 
     private:
         TLisaConfiguration const* lisa_config;
@@ -58,23 +59,19 @@ class LisaAna2Cal : public FairTask
         //int NBoards = 1; 
 
         //::: Mapping, GM, Calibration
-        std::map<std::pair<int, int>, std::pair<std::pair<int,std::string>, std::pair<int, int>>> detector_mapping; //Debugging.Raplace std:string-> TString ?
+        std::map<std::pair<int,int>, std::pair<std::pair<int, std::pair<int, int>>,std::pair<float,std::pair<std::string,std::string>>>> detector_mapping; //Debugging.Raplace std:string-> TString ?
+
         std::map<std::pair<int,std::pair<int,int>>, std::pair<double,double>> detector_gain_matching;
         std::map<std::pair<int,std::pair<int,int>>, std::pair<double,double>> detector_gain_matching_MWD;
-
-        //std::map<std::pair<int,std::pair<int,int>>, std::pair<double,double>> detector_calibration;
-
-        /*
-        std::vector<int> data_boards;
-        std::vector<uint32_t> data_channel;
-        std::vector<uint32_t> data_energy;
-        std::vector<uint32_t> data_traces;
-        std::vector<uint32_t> data_multiplicity;
-        */
+        std::map<std::pair<int,std::pair<int,int>>, std::pair<double,double>> detector_gain_matching_dEdX;
 
         double slope;
         double intercept;
         float energy_GM;
+        float de_dx;
+        double slope_dEdX;
+        double intercept_dEdX;
+        float de_dx_GM;
         double slope_MWD;
         double intercept_MWD;
         float energy_MWD_GM;

@@ -37,9 +37,12 @@ class TLisaConfiguration
         static void SetMappingFile(std::string fp) { mapping_file = fp; }
         static void SetGMFile(std::string fp) { gain_matching_file = fp; }
         static void SetGMFileMWD(std::string fp) { gain_matching_file_MWD = fp; }
+        static void SetGMFiledEdX(std::string fp) { gain_matching_file_dEdX = fp; }
         static void SetDetectorCoefficientFile(std::string fp) { calibration_file = fp; }
         static void SetLISAGateFebex(const std::string& file) { gate_ranges_files.emplace_back(file); }
         static void SetLISAGateMWD(const std::string& file) { gate_ranges_MWD_files.emplace_back(file); }
+        static void SetLISAGatedEdX(const std::string& file) { gate_ranges_dedx_files.emplace_back(file); }
+
         //static void SetLISAGateFebex(std::string fp) { gate_ranges_file = fp; }
         //static void SetLISAGateMWD(std::string fp) { gate_ranges_MWD_file = fp; }
         static void SetExcludedChannels(std::set<std::tuple<int, int, int>> ex) { excluded = ex; }
@@ -49,7 +52,7 @@ class TLisaConfiguration
 
         //:::: Mapping
         //std::map<std::pair<int, int>, std::pair<int, std::pair<int, int>>> Mapping() const;
-        std::map<std::pair<int,int>, std::pair<std::pair<int,std::string>, std::pair<int,int>>> Mapping() const;
+std::map<std::pair<int,int>, std::pair<std::pair<int, std::pair<int, int>>,std::pair<float,std::pair<std::string,std::string>>>> Mapping() const;
         bool MappingLoaded() const;
 
         //:::: Gain Matching
@@ -60,6 +63,11 @@ class TLisaConfiguration
         std::map<std::pair<int,std::pair<int,int>>, std::pair<double,double>> GainMatchingMWDCoefficients() const;
         bool GainMatchingMWDLoaded() const;
 
+        //:::: Gain Matching for dEdX 
+        std::map<std::pair<int,std::pair<int,int>>, std::pair<double,double>> GainMatchingdEdXCoefficients() const;
+        bool GainMatchingdEdXLoaded() const;
+
+
         // ::: Gates for LISA  - Febex
         const std::map<int, std::vector<std::tuple<std::string, double, double>>>& GatesLISAFebex() const;
         //std::map<int, std::pair<double,double>> GatesLISAFebex() const;
@@ -68,6 +76,9 @@ class TLisaConfiguration
         const std::map<int, std::vector<std::tuple<std::string, double, double>>>& GatesLISAMWD() const;
         //std::map<int, std::pair<double,double>> GatesLISAMWD() const;
         bool GatesLISAMWDLoaded() const;  
+        // ::: Gates for LISA  - dEdX
+        const std::map<int, std::vector<std::tuple<std::string, double, double>>>& GatesLISAdEdX() const;
+        bool GatesLISAdEdXLoaded() const; 
 
         void SetTraceLength(int length) { trace_length = length; }
         int GetTraceLength() { return trace_length; }
@@ -107,6 +118,9 @@ class TLisaConfiguration
 
         static void SetEnergyRangeMWDGM(int min_MWD_GM, int max_MWD_GM) { min_energy_MWD_GM = min_MWD_GM; max_energy_MWD_GM = max_MWD_GM; }
         static void SetEnergyBinMWDGM(int bin_e_MWD_GM) { bin_energy_MWD_GM = bin_e_MWD_GM; }
+
+        static void SetdEdXRange(double min_dd, double max_dd) { min_dedx = min_dd; max_dedx = max_dd; }
+        static void SetdEdXBin(int bin_dd) { bin_dedx = bin_dd; }
 
         static void SetBrDiffRange(long min_br, long max_br) { min_br_diff = min_br; max_br_diff = max_br; }
         static void SetBrDiffBin(int bin_br) { bin_br_diff = bin_br; }
@@ -154,6 +168,9 @@ class TLisaConfiguration
         static int min_energy_MWD_GM;
         static int max_energy_MWD_GM;
         static int bin_energy_MWD_GM;
+        static double min_dedx;
+        static double max_dedx;
+        static int bin_dedx;
         static long min_br_diff;
         static long max_br_diff;
         static int bin_br_diff;
@@ -200,10 +217,13 @@ class TLisaConfiguration
         static std::string mapping_file;
         static std::string gain_matching_file;
         static std::string gain_matching_file_MWD;
+        static std::string gain_matching_file_dEdX;
         static std::string calibration_file;
         //static std::string gate_ranges_file;
         static std::vector<std::string> gate_ranges_files;  // For handling different gate files
         static std::vector<std::string> gate_ranges_MWD_files;
+        static std::vector<std::string> gate_ranges_dedx_files;
+
 
         TLisaConfiguration();
 
@@ -211,6 +231,7 @@ class TLisaConfiguration
         void ReadMappingFile();
         void ReadGMFile();
         void ReadGMFileMWD();
+        void ReadGMFiledEdX();
         void ReadCalibrationCoefficients();
         void ReadLISAGateFebexFile();
         void ReadLISAGateMWDFile();
@@ -218,14 +239,20 @@ class TLisaConfiguration
         static TLisaConfiguration* instance;
 
         //std::map<std::pair<int, int>, std::pair<int, std::pair<int, int>>> detector_mapping;
-        std::map<std::pair<int,int>, std::pair<std::pair<int,std::string>, std::pair<int,int>>> detector_mapping;
+        std::map<std::pair<int,int>, std::pair<std::pair<int, std::pair<int, int>>,std::pair<float,std::pair<std::string,std::string>>>> detector_mapping;
+        //old mapping without thikcness
+        //std::map<std::pair<int,int>, std::pair<std::pair<int,std::string>, std::pair<int,int>>> detector_mapping;
+        
         std::map<std::pair<int,std::pair<int,int>>, std::pair<double,double>> gain_matching_coeffs;
         std::map<std::pair<int,std::pair<int,int>>, std::pair<double,double>> gain_matching_MWD_coeffs;
-        //std::map<std::pair<int,std::pair<int,int>>, std::pair<int,int>> calibration_coeffs;
+        std::map<std::pair<int,std::pair<int,int>>, std::pair<double,double>> gain_matching_dEdX_coeffs;
+
         std::set<int> extra_signals;
         std::map<int, std::vector<std::tuple<std::string, double, double>>> gate_LISA_febex;
         //std::map<int, std::vector<std::pair<double, double>>> gate_LISA_febex;
         std::map<int, std::vector<std::tuple<std::string, double, double>>> gate_LISA_MWD;
+        std::map<int, std::vector<std::tuple<std::string, double, double>>> gate_LISA_dEdX;
+
 
         int num_layers;   
         int xmax;
@@ -244,10 +271,12 @@ class TLisaConfiguration
         bool detector_mapping_loaded = 0;
         bool gain_matching_loaded = 0;
         bool gain_matching_MWD_loaded = 0;
+        bool gain_matching_dEdX_loaded = 0;
         bool detector_calibrations_loaded = 0;
         bool timeshift_calibration_coeffs_loaded = 0;
         bool gates_febex_loaded = 0;
         bool gates_MWD_loaded = 0;
+        bool gates_dEdX_loaded = 0;
 
         int trace_length = 4000; // default 4k
 
@@ -293,10 +322,16 @@ inline void TLisaConfiguration::Create()
 
 //::: Mapping
 //inline std::map<std::pair<int, int>, std::pair<int, std::pair<int, int>>> TLisaConfiguration::Mapping() const
-inline std::map<std::pair<int,int>, std::pair<std::pair<int,std::string>, std::pair<int,int>>> TLisaConfiguration::Mapping() const
+inline std::map<std::pair<int,int>, std::pair<std::pair<int, std::pair<int, int>>,std::pair<float,std::pair<std::string,std::string>>>> TLisaConfiguration::Mapping() const
 {
     return detector_mapping;
 }
+//Old mapping without thickness
+/*inline std::map<std::pair<int,int>, std::pair<std::pair<int,std::string>, std::pair<int,int>>> TLisaConfiguration::Mapping() const
+{
+    return detector_mapping;
+}
+*/
 
 //::: Gain Matching
 inline std::map<std::pair<int,std::pair<int,int>>, std::pair<double,double>> TLisaConfiguration::GainMatchingCoefficients() const
@@ -310,6 +345,12 @@ inline std::map<std::pair<int,std::pair<int,int>>, std::pair<double,double>> TLi
     return gain_matching_MWD_coeffs;
 }
 
+//::: Gain Matching for dEdX
+inline std::map<std::pair<int,std::pair<int,int>>, std::pair<double,double>> TLisaConfiguration::GainMatchingdEdXCoefficients() const
+{
+    return gain_matching_dEdX_coeffs;
+}
+
 //::: Gates for Lisa - Febex
 inline const std::map<int, std::vector<std::tuple<std::string, double, double>>>& TLisaConfiguration::GatesLISAFebex() const
 {
@@ -319,6 +360,11 @@ inline const std::map<int, std::vector<std::tuple<std::string, double, double>>>
 inline const std::map<int, std::vector<std::tuple<std::string, double, double>>>& TLisaConfiguration::GatesLISAMWD() const
 {
     return gate_LISA_MWD;
+}
+
+inline const std::map<int, std::vector<std::tuple<std::string, double, double>>>& TLisaConfiguration::GatesLISAdEdX() const
+{
+    return gate_LISA_dEdX;
 }
 // inline std::map<int, std::pair<double,double>> TLisaConfiguration::GatesLISAFebex() const
 // {
@@ -385,6 +431,11 @@ inline bool TLisaConfiguration::GainMatchingMWDLoaded() const
     return gain_matching_MWD_loaded;
 }
 
+inline bool TLisaConfiguration::GainMatchingdEdXLoaded() const
+{
+    return gain_matching_dEdX_loaded;
+}
+
 inline bool TLisaConfiguration::GatesLISAFebexLoaded() const
 {
     return gates_febex_loaded;
@@ -393,7 +444,10 @@ inline bool TLisaConfiguration::GatesLISAMWDLoaded() const
 {
     return gates_MWD_loaded;
 }
-
+inline bool TLisaConfiguration::GatesLISAdEdXLoaded() const
+{
+    return gates_dEdX_loaded;
+}
 /*
 inline bool TLisaConfiguration::CalibrationCoefficientsLoaded() const
 {

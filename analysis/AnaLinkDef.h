@@ -42,40 +42,15 @@
 #pragma link C++ class WhiterabbitCorrelationNearline+;
 #pragma link C++ class TimeMachineNearline+;
 #pragma link C++ class LisaNearlineSpectra+;
-#pragma link C++ class LisaNearlineSpectraDaq+;
-#pragma link C++ class LisaNearlineSpectraAna+;
-#pragma link C++ class LisaTraceCorrelation+;
-#pragma link C++ class LisaTraceAnalysis+;
 #pragma link C++ class BB7NearlineSpectra+;
 #pragma link C++ class FimpNearlineSpectra+;
 #pragma link C++ class H10MCPNearlineSpectra+;
 #pragma link C++ class StefanNearlineSpectra+;
 
-#pragma link C++ class FrsAidaCorrelations+;
-#pragma link C++ class FrsAidaCorrelationsOnline+;
-#pragma link C++ class FrsFatimaCorrelations+;
 // #pragma link C++ class FrsFatimaVmeCorrelations+;
-#pragma link C++ class FrsGermaniumCorrelations+;
-#pragma link C++ class FrsGermaniumCorrelationsNearline+;
-#pragma link C++ class FrsFatimaCorrelationsNearline+;
-#pragma link C++ class AidaFatimaCorrelations+;
-#pragma link C++ class WhiterabbitCorrelationOnline+;
-#pragma link C++ class bPlastGermaniumCorrelations+;
-#pragma link C++ class bPlastGermaniumCorrelationsOnline+;
-// #pragma link C++ class FrsBplastCorrelations+;
-#pragma link C++ class LisaFrsCorrelations+;
-#pragma link C++ class LisaFrsCorrelationsOnline+;
 
-#pragma link C++ class FatimaTimingAnalysis+;
-#pragma link C++ class FatimaTimingAnalysisSummed+;
-#pragma link C++ class FatimaTimingAnalysisSummedGeGated+;
-#pragma link C++ class FatimaSinglesAnalysis+;
-#pragma link C++ class AidaGermaniumCorrelations+;
-//#pragma link C++ class FatimaAidaSpectra+;
 
-#pragma link C++ class BetaIonCorrelations+;
 
-#pragma link C++ class BB7GermaniumCorrelationsOnline+;
 
 
 
