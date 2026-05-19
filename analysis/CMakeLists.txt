@@ -28,6 +28,7 @@ ${C4ROOT_SOURCE_DIR}/analysis/pars
 ${C4ROOT_SOURCE_DIR}/analysis/offline
 ${C4ROOT_SOURCE_DIR}/analysis/nearline
 ${C4ROOT_SOURCE_DIR}/analysis/nearline/bplast
+${C4ROOT_SOURCE_DIR}/analysis/nearline/lisa
 ${C4ROOT_SOURCE_DIR}/analysis/online
 ${C4ROOT_SOURCE_DIR}/analysis/online/frs
 ${C4ROOT_SOURCE_DIR}/correlations
@@ -82,7 +83,7 @@ set(SRCS
 ./nearline/bgo/BGONearlineSpectra.cxx
 ./nearline/wr/WhiterabbitCorrelationNearline.cxx
 ./nearline/timemachine/TimeMachineNearline.cxx
-./nearline/lisa/LisaNearlineSpectra.cxx
+# ./nearline/lisa/LisaNearlineSpectra.cxx
 #./nearline/lisa/LisaNearlineSpectraDaq.cxx
 #./nearline/lisa/LisaNearlineSpectraAna.cxx
 #./nearline/lisa/LisaTraceAnalysis.cxx
