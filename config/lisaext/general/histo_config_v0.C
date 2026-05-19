@@ -54,9 +54,9 @@ void histo_config(const std::string& config_path)
     // L I S A 
     /*
     // 1
-    LisaGate* Wide_F1 = new LisaGate("wide_feb_1", "energy", config_path + "/lisa/Gates/Febex_Gate1shiyan.txt");
-    LisaGate* Wide_M1 = new LisaGate("wide_mwd_1", "energy_mwd", config_path + "/lisa/Gates/MWD_Gate1shiyan.txt");
-    LisaGate* Wide_D1 = new LisaGate("wide_dedx_1", "dedx_mwd", config_path + "/lisa/Gates/dEdX_Gate1shiyan.txt");
+    LisaGate* Wide_F1 = new LisaGate("wide_feb_1", "energy", config_path + "/Gates/Febex_Gate1shiyan.txt");
+    LisaGate* Wide_M1 = new LisaGate("wide_mwd_1", "energy_mwd", config_path + "/Gates/MWD_Gate1shiyan.txt");
+    LisaGate* Wide_D1 = new LisaGate("wide_dedx_1", "dedx_mwd", config_path + "/Gates/dEdX_Gate1shiyan.txt");
 
     lgs.emplace_back(Wide_F1);
     lgs.emplace_back(Wide_M1);

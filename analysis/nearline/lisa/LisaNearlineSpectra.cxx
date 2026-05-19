@@ -68,7 +68,6 @@ LisaNearlineSpectra::LisaNearlineSpectra(std::vector<LisaGate*> lg)
         else if (gate->GetType() == "dedx_mwd") mwd_dedx_gates.emplace_back(gate);
     }
 
-
 }
 
 LisaNearlineSpectra::LisaNearlineSpectra(const TString& name, Int_t verbose)
