@@ -33,9 +33,11 @@ std::string TLisaConfiguration::MWD_file = "blank";
 std::string TLisaConfiguration::mapping_file = "blank";
 std::string TLisaConfiguration::gain_matching_file = "blank";
 std::string TLisaConfiguration::gain_matching_file_MWD = "blank";
+std::string TLisaConfiguration::gain_matching_file_dEdX = "blank";
 std::string TLisaConfiguration::calibration_file = "blank";
 std::vector<std::string> TLisaConfiguration::gate_ranges_files = {"blank"};
 std::vector<std::string> TLisaConfiguration::gate_ranges_MWD_files = {"blank"};
+std::vector<std::string> TLisaConfiguration::gate_ranges_dedx_files = {"blank"};
 
 //std::string TLisaConfiguration::gate_ranges_files = "blank";
 //std::string TLisaConfiguration::gate_ranges_MWD_file = "blank";
@@ -64,6 +66,10 @@ int TLisaConfiguration::bin_energy_GM = 500;
 int TLisaConfiguration::min_energy_MWD_GM = 0;
 int TLisaConfiguration::max_energy_MWD_GM = 10000;
 int TLisaConfiguration::bin_energy_MWD_GM = 500;
+
+double TLisaConfiguration::min_dedx = 0.;
+double TLisaConfiguration::max_dedx = 10000000.;
+int TLisaConfiguration::bin_dedx = 900;
 
 // ::: BR
 long TLisaConfiguration::min_br_diff = 0;
@@ -117,6 +123,7 @@ TLisaConfiguration::TLisaConfiguration()
     ReadGMFileMWD();
     ReadLISAGateFebexFile();
     ReadLISAGateMWDFile();
+    ReadGMFiledEdX();
     //ReadCalibrationCoefficients();
 
 }
@@ -171,7 +178,8 @@ void TLisaConfiguration::ReadMWDParameters()
 
 }
 
-void TLisaConfiguration::ReadMappingFile()
+// Old mapping without thickness
+/*void TLisaConfiguration::ReadMappingFile()
 {   
     std::set<int> febex_boards;
     std::set<int> layers;
@@ -259,8 +267,108 @@ void TLisaConfiguration::ReadMappingFile()
     //c4LOG(info, "Lisa Configuration File: " + mapping_file);
     return;
 
-}
+}*/
 
+void TLisaConfiguration::ReadMappingFile()
+{   
+    std::set<int> febex_boards;
+    std::set<int> layers;
+    std::set<int> x_positions;
+    std::set<int> y_positions;
+    std::set<std::string> det_names;
+    std::set<std::string> det_serial_number;
+    int detectors = 0;
+    
+    std::ifstream detector_map_file(mapping_file);
+    std::string line;
+
+    if (detector_map_file.fail()) c4LOG(warn, "Could not open Lisa mapping file"); //return;
+
+    while (std::getline(detector_map_file, line))
+    {
+        if (line.empty() || line[0] == '#') continue;
+
+        std::istringstream iss(line);
+        std::string signal;
+        std::string det_name, det_sn;
+        int febex_board, febex_channel, layer_id, x_pos, y_pos;
+        float thickness;
+        std::pair<int, int> xy;
+        std::pair<int, std::pair<int, int>> layer_xy;
+        std::pair<int, std::string> layer_det_name;
+        std::pair<std::pair<int,std::string>, std::pair<int,int>> layer_det_name_xy; //include det names
+        std::pair<int, int> febex_bc;
+        std::pair<std::string,std::string> det_name_sn;
+        std::pair<float,std::pair<std::string,std::string>> info;
+        std::pair<std::pair<int, std::pair<int, int>>,std::pair<float,std::pair<std::string,std::string>>> layer_xy_info;
+
+        iss >> signal;
+    
+
+        if (isdigit(signal[0])) // detector
+        {
+            febex_board = std::stoi(signal);
+
+            iss >> febex_channel >> layer_id >> x_pos >> y_pos >> thickness >> det_name >> det_sn;
+            //std::cout << " Mapping : l "<< layer_id << " x " << x_pos << " y " << y_pos << " thickness : " << thickness << " city: " << det_name << " serial number: " << det_sn << "\n";
+
+
+            // count only real layers, detectors
+            layers.insert(layer_id);
+            x_positions.insert(x_pos);
+            y_positions.insert(y_pos);
+            detectors++;
+
+        }
+        else
+        {
+            iss >> febex_board >> febex_channel >> layer_id >> x_pos >> y_pos >> thickness >> det_name >> det_sn;
+
+            if (signal == "TimeMachineU") tm_undelayed = layer_id;
+            else if (signal == "TimeMachineD") tm_delayed = layer_id;
+            else if (signal == "SC41L_D") sc41l_d = layer_id;
+            else if (signal == "SC41R_D") sc41r_d = layer_id;
+
+            // looking for extra signals we check if layer_id is in extra_signals
+            // so use unique layer_id for anything extra
+            extra_signals.insert(layer_id);
+        }
+        
+        // count all febex boards
+        febex_boards.insert(febex_board);
+        febex_bc = std::make_pair(febex_board, febex_channel);
+
+        xy = std::make_pair(x_pos, y_pos);
+        layer_xy = std::make_pair(layer_id, xy);
+
+        det_name_sn = std::make_pair(det_name,det_sn);
+        info = std::make_pair(thickness,det_name_sn);
+
+        layer_xy_info = std::make_pair(layer_xy,info);
+
+        layer_det_name = std::make_pair(layer_id,det_name);
+        layer_det_name_xy = std::make_pair(layer_det_name, xy);
+
+        //detector_mapping.insert(std::make_pair(febex_bc, layer_xy));
+        //detector_mapping.insert(std::make_pair(febex_bc, layer_det_name_xy));
+        detector_mapping.insert(std::make_pair(febex_bc, layer_xy_info));
+
+    }
+
+    num_layers = layers.size();
+    xmax = x_positions.size();
+    ymax = y_positions.size();
+    num_detectors = detectors;
+    num_febex_boards = febex_boards.size();
+    std::cout<<"num layers:"<<num_layers<<std::endl;
+    
+    detector_mapping_loaded = 1;
+    detector_map_file.close();
+
+    //c4LOG(info, "Lisa Configuration File: " + mapping_file);
+    return;
+
+}
 
 void TLisaConfiguration::ReadGMFile()
 {       
@@ -339,6 +447,45 @@ void TLisaConfiguration::ReadGMFileMWD()
     gain_matching_coeff_file_MWD.close();
 
     c4LOG(info, "Lisa Gain Matching MWD File: " + gain_matching_file_MWD);
+    return;
+
+}
+
+void TLisaConfiguration::ReadGMFiledEdX()
+{   
+    
+    std::ifstream gain_matching_coeff_file_dEdX (gain_matching_file_dEdX);
+    std::string line;
+
+    if (gain_matching_coeff_file_dEdX.fail()) c4LOG(warn, "Could not open LISA dEdX GM - calibration coefficients file.");
+
+    while (std::getline(gain_matching_coeff_file_dEdX, line))
+    {
+        if (line.empty() || line[0] == '#') continue;
+
+        std::istringstream iss(line);
+        int layer_id, x_pos, y_pos;
+        double slope_dEdX, intercept_dEdX;
+        std::pair<int, int> xy;
+        std::pair<int, std::pair<int, int>> layer_xy;
+        std::pair<double, double> gm_dEdX_coeff;
+
+        iss >> layer_id >> x_pos >> y_pos >> slope_dEdX >> intercept_dEdX;
+
+        gm_dEdX_coeff = std::make_pair(slope_dEdX, intercept_dEdX);
+
+        xy = std::make_pair(x_pos, y_pos);
+        layer_xy = std::make_pair(layer_id, xy);
+
+        gain_matching_dEdX_coeffs.insert(std::make_pair(layer_xy, gm_dEdX_coeff));
+
+        //std::cout << " dEdX GM -> lxy : "<< layer_id << x_pos << y_pos << " slope " << slope_dEdX << " intercept " << intercept_dEdX << "\n";
+    }
+    
+    gain_matching_dEdX_loaded = 1;
+    gain_matching_coeff_file_dEdX.close();
+
+    c4LOG(info, "Lisa Gain Matching dEdX File: " + gain_matching_file_dEdX);
     return;
 
 }
