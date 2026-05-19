@@ -10,7 +10,7 @@
 
 
 // Definition of setup and configuration files
-#define LISA_CONFIG_FILE "../../../config/cologne/general/lisa_config_v0.C"
+#define LISA_CONFIG_FILE "../../config/lisaext/general/lisa_config_v0.C"
 
 // :::  Define LISA setup.C file; place in /config/cologne/general
 extern "C"
@@ -22,8 +22,7 @@ extern "C"
 typedef struct EXT_STR_h101_t
 {   
     EXT_STR_h101_unpack_t eventheaders;
-    EXT_STR_h101_lisa_onion_t lisa;
-    EXT_STR_h101_frs_onion_t frs;
+    EXT_STR_h101_lisaext_onion_t lisa;
 
 } EXT_STR_h101;
 
@@ -37,11 +36,11 @@ std::string readFileToString(const std::string& path)
 }
 
 //void cologne_make_trees(int fileNumber)
-void cologne_make_trees()
+void lisaext_make_trees()
 {   
     const Int_t nev = -1; const Int_t fRunId = 1; const Int_t fExpId = 1;
     // ::: Experiment name
-    TString fExpName = "cologne";
+    TString fExpName = "lisaext";
 
     // ::: Here you define commonly used path
     TString c4Root_path = "/u/gandolfo/c4/c4Root";
@@ -67,15 +66,20 @@ void cologne_make_trees()
     
     // ::: FILE  PATH
     TString inputpath = "/u/gandolfo/data/lustre/gamma/LISA/data/ext_daq_debnik/dev_test/";
-    TString lmdname = "new_timestamp_format_0001.lmd"
+    TString lmdname = "new_timestamp_format_0001.lmd";
     TString filename = inputpath + lmdname;
     //TString filename = Form(inputpath + "run_%04d_*.lmd", fileNumber);
 
     // ::: OUTPUT 
-    TString outputpath = "/u/gandolfo/data/lustre/gamma/LISA/data/ext_daq_debnik/dev_test/"; 
+    //TString outputpath = "/u/gandolfo/data/lustre/gamma/LISA/data/ext_daq_debnik/dev_test/"; 
+    TString outputpath = "/u/gandolfo/data/lisaext/"; 
+
     TString outputFilename = outputpath + TString(lmdname).ReplaceAll(".lmd", "_tree.root");
 
-     
+
+
+    // ::: Create run
+    //FairRunOnline* run = new FairRunOnline();
     FairRunAna* run = new FairRunAna();
     EventHeader* EvtHead = new EventHeader();
     run->SetEventHeader(EvtHead);
@@ -83,7 +87,7 @@ void cologne_make_trees()
     run->SetSink(new FairRootFileSink(outputFilename)); // don't write after termintion
     TFolder* histograms = new TFolder("Histograms", "Histograms");
     FairRootManager::Instance()->Register("Histograms", "Histogram Folder", histograms, false);
-    run->AddObject(histograms);
+    //run->AddObject(histograms);
 
     // ::: Take ucesb input and create source
     EXT_STR_h101 ucesb_struct;
@@ -107,7 +111,7 @@ void cologne_make_trees()
 
     if (LISA_ON)
     {
-        LisaReader* unpacklisa = new LisaReader((EXT_STR_h101_lisa_onion*)&ucesb_struct.lisa, offsetof(EXT_STR_h101, lisa));
+        LisaReader* unpacklisa = new LisaReader((EXT_STR_h101_lisaext_onion*)&ucesb_struct.lisa, offsetof(EXT_STR_h101, lisa));
 
         if (LISA_RAW)
         {

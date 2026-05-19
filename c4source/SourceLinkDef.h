@@ -57,6 +57,7 @@
 #pragma link C++ class EXT_STR_h101_fatimavme_onion_t;
 #pragma link C++ class EXT_STR_h101_bgo_onion_t;
 #pragma link C++ class EXT_STR_h101_lisa_onion_t;
+#pragma link C++ class EXT_STR_h101_lisaext_onion_t;
 #pragma link C++ class EXT_STR_h101_aida_onion_t;
 #pragma link C++ class EXT_STR_h101_bplast_onion_t;
 #pragma link C++ class EXT_STR_h101_beammonitor_onion_t;
