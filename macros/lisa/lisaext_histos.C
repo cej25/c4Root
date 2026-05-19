@@ -23,7 +23,6 @@ extern "C"
     #include HISTO_FILE
 }
 
-extern std::vector<FrsGate*> fgs;
 extern std::vector<LisaGate*> lgs;
 
 typedef struct EXT_STR_h101_t

@@ -235,6 +235,7 @@ std::map<std::pair<int,int>, std::pair<std::pair<int, std::pair<int, int>>,std::
         void ReadCalibrationCoefficients();
         void ReadLISAGateFebexFile();
         void ReadLISAGateMWDFile();
+        void ReadLISAGatedEdXFile();
 
         static TLisaConfiguration* instance;
 
