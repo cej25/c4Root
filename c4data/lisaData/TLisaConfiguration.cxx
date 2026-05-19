@@ -124,6 +124,7 @@ TLisaConfiguration::TLisaConfiguration()
     ReadLISAGateFebexFile();
     ReadLISAGateMWDFile();
     ReadGMFiledEdX();
+    ReadLISAGatedEdXFile();
     //ReadCalibrationCoefficients();
 
 }
