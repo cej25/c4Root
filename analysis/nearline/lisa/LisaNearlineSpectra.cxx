@@ -48,6 +48,7 @@
 
 LisaNearlineSpectra::LisaNearlineSpectra()  :   LisaNearlineSpectra("LisaNearlineSpectra")
 {
+    c4LOG(info,"config");
     lisa_config = TLisaConfiguration::GetInstance();
     exp_config = TExperimentConfiguration::GetInstance();
 }
@@ -59,6 +60,7 @@ LisaNearlineSpectra::LisaNearlineSpectra(std::vector<LisaGate*> lg)
     , header(nullptr)
     // ranges
 {
+    c4LOG(info,"config2");
     lisa_config = TLisaConfiguration::GetInstance();
     exp_config = TExperimentConfiguration::GetInstance();
     for (auto & gate : lg) 
@@ -95,6 +97,7 @@ void LisaNearlineSpectra::SetParContainers()
 
 InitStatus LisaNearlineSpectra::Init()
 {
+    c4LOG(info,"init");
     FairRootManager* mgr = FairRootManager::Instance();
     c4LOG_IF(fatal, NULL == mgr, "FairRootManager not found");
 
