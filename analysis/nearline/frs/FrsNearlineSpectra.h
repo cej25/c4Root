@@ -274,6 +274,8 @@ class FrsNearlineSpectra : public FairTask
     
         // MHTDC 2D
         TH2I* h2_multihit_map;
+        TH2I* h2_multihit_map_selected;
+
         TH2* h2_Z41_vs_AoQs2s4_mhtdc;
         TH2* h2_Z42_vs_AoQs2s4_mhtdc;
         TH2* h2_Z41_vs_AoQs2s4_corr_mhtdc;

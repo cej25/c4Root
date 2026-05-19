@@ -106,14 +106,14 @@ InitStatus FrsRawNearlineSpectra::Init()
         found_dir_frs = false;
     }
 
-    dir_frs_raw = dir_frs->mkdir("FRS Raw Spectra");
+    dir_frs_raw = dir_frs->mkdir("FRS_Raw_Spectra");
     dir_sci = dir_frs_raw->mkdir("Scintillators");
     dir_music = dir_frs_raw->mkdir("MUSICs");
     dir_tpc = dir_frs_raw->mkdir("TPCs");
     // ::: SCI ::::: 
     dir_sci_de = dir_sci->mkdir("dE");
     dir_sci_dt = dir_sci->mkdir("dT");
-    dir_sci_mhtdc = dir_sci->mkdir("MHTDC T");
+    dir_sci_mhtdc = dir_sci->mkdir("MHTDC_T");
     
     // TAC dE
     for (int ihist = 0; ihist < 32; ihist++)

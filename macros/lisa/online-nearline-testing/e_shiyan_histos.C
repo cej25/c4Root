@@ -13,7 +13,7 @@
 #define TRACE_ON 0
 
 #define FRS_ON 1
-#define FRS_LISA_CORRELATIONS 0
+#define FRS_LISA_CORRELATIONS 1
 
 #define WR_ENABLED 1
 //................................................
@@ -67,12 +67,12 @@ void e_shiyan_histos()
     // ::: P A T H   O F   F I L E  to read
     //TString inputpath = "/u/gandolfo/data/lustre/gamma/lisa_s092/trees/";
     TString inputpath = "/u/gandolfo/data/shiyan_debug/frs_mhit/";
-    TString filename = inputpath + "run_0019_0001_tree.root";  
+    TString filename = inputpath + "run_0019_0001_tree_test_step1.root";  
     
     // ::: O U T P U T
     //TString outputpath = "/u/gandolfo/data/lustre/gamma/lisa_s092/histos/";
     TString outputpath = "/u/gandolfo/data/shiyan_debug/frs_mhit/";   //energy resolution output
-    TString outputFilename = outputpath + "run_0019_histos.root";
+    TString outputFilename = outputpath + "run_0019_histos_test_step1.root";
 
 
     FairRunAna* run = new FairRunAna();

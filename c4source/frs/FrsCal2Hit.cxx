@@ -1357,8 +1357,6 @@ void FrsCal2Hit::ProcessSci_MHTDC()
     {
         for (int k = 0; k < hits_in_11l_selected; k++)
         {
-            //count = i * hits_in_21r_selected * hits_in_11l_selected * hits_in_11r_selected + i * hits_in_11l_selected * hits_in_11r_selected + k * hits_in_11r_selected + k;
-            // EG: this is just an extra check but this condition should already be valid since we are using the selected hits
             if ( (TMath::Abs(mhtdc_sci21lr_dt_selected[i]) < frs_config->fscilr_mhtdc_limit) && ( TMath::Abs(mhtdc_sci11lr_dt_selected[k]) < frs_config->fscilr_mhtdc_limit)) 
             {
                 float tof = (0.5 * (sci21l_hits_selected[i] + sci21r_hits_selected[i]) - 0.5 * (sci11l_hits_selected[k] + sci11r_hits_selected[k])) + sci->mhtdc_offset_21_11[sci->sci11_select] + rand3()*sci->mhtdc_factor_ch_to_ns;
@@ -1379,6 +1377,7 @@ void FrsCal2Hit::ProcessSci_MHTDC()
             }
         }
     }
+
     //c4LOG(info, "---");
     //c4LOG(info,"hits in 21l 1 : " << sci21l_hits_tofs1s2_selected.size());
     //c4LOG(info,"hits in 21l 2 : " << hits_in_21l_tofs1s2_selected);

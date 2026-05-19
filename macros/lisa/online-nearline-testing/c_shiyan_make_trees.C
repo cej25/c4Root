@@ -85,7 +85,7 @@ void c_shiyan_make_trees()
 
     // ::: OUTPUT 
     TString outputpath = "./";   //testing
-    TString outputFilename = outputpath + "run_0006_mhit_ztesting.root";
+    TString outputFilename = outputpath + "run_0006_mhit_test.root";
     
     // ::: Create online run
     Int_t refresh = 10; // not needed
