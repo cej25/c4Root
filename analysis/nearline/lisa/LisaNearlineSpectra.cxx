@@ -1112,7 +1112,7 @@ void LisaNearlineSpectra::Exec(Option_t* option)
     {
         if (saved_br != 0 && rate_br_dt_db < 2)
         {
-            for (int i = 0; i < layer; i++)
+            for (int i = 0; i < layer_number; i++)
             {
                 //c4LOG(info, " Layer : " << i << " Layer rate : " << layer_rate[i] << " Layer counter : " << layer_counter[i] << " rate_br_dt_db : " << rate_br_dt_db);
                 layer_rate[i] = layer_counter[i] / rate_br_dt_db;
