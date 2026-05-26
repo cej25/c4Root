@@ -44,7 +44,8 @@ void lisaext_make_trees()
     TString fExpName = "lisaext";
 
     // ::: Here you define commonly used path
-    TString c4Root_path = "/u/gandolfo/c4/c4Root";
+    //TString c4Root_path = "/u/gandolfo/c4/c4Root";
+    TString c4Root_path = "/home/lisa/programs/c4/c4Root";
     TString ucesb_path = c4Root_path + "/unpack/exps/" + fExpName + "/" + fExpName + " --debug --input-buffer=200Mi --event-sizes --allow-errors";
     ucesb_path.ReplaceAll("//","/");
 
@@ -66,14 +67,20 @@ void lisaext_make_trees()
 
     
     // ::: FILE  PATH
+    TString inputpath = "/home/lisa/data/lmd/";
+    TString lmdname = "preamp_test_21may_0007.lmd";
+    TString filename = inputpath + lmdname;
+    /*
     TString inputpath = "/u/gandolfo/data/lustre/gamma/LISA/data/ext_daq_debnik/dev_test/";
     TString lmdname = "new_timestamp_format_0001.lmd";
     TString filename = inputpath + lmdname;
+    */
     //TString filename = Form(inputpath + "run_%04d_*.lmd", fileNumber);
 
     // ::: OUTPUT 
     //TString outputpath = "/u/gandolfo/data/lustre/gamma/LISA/data/ext_daq_debnik/dev_test/"; 
-    TString outputpath = "/u/gandolfo/data/lisaext/"; 
+    //TString outputpath = "/u/gandolfo/data/lisaext/"; 
+    TString outputpath = "/home/lisa/data/trees/";
 
     TString outputFilename = outputpath + TString(lmdname).ReplaceAll(".lmd", "_tree.root");
 
