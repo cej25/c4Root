@@ -101,7 +101,7 @@ endif()
 include(c4Macros)
 include(WriteConfigFile_c4)
 include(WriteEnvCache)
-include(Dart)
+#include(Dart) #Commenting out this part for now -- EG 26May26
 include(CheckCompiler)
 include(ROOTMacros) # This is from FR, see https://github.com/FairRootGroup/FairRoot/issues/1221
 
@@ -164,7 +164,7 @@ if("${FairRoot_VERSION}" VERSION_GREATER 18.6.4)
         APPEND
         boost_dependencies
         thread
-        system
+        #system #system is no longer a sep library since Boost 1.69+ -- EG 26May26
         timer
         program_options
         random

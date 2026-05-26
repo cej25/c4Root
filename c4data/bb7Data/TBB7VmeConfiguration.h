@@ -5,6 +5,7 @@
 #include <set>
 #include <map>
 #include <string>
+#include <cstdint>
 
 class TBB7VmeConfiguration
 {
