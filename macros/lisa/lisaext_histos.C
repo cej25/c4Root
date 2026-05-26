@@ -82,7 +82,7 @@ void lisaext_histos()
     TFile* file = TFile::Open(filename);
     TTree* eventTree = (TTree*)file->Get("evt"); 
     Int_t totEvt = eventTree->GetEntries();
-
+    histo_config(config_path);
 
     // :::: ENABLE SYSTEMS  ::::::::::::::::::::::::::::::::::::::::
     if(TRACE_ON)

@@ -93,6 +93,7 @@ class LisaNearlineSpectra : public FairTask
         int num_layers;
         uint64_t br_evtno;
         Int_t layer;
+        //std::string city = "";
         TString city = "";
         EventHeader* header;
         Int_t fNEvents;
@@ -150,6 +151,7 @@ class LisaNearlineSpectra : public FairTask
      
         // ::: Histograms :::
         // ::: Stats
+        TH1I* h1_br_time; 
         TH1I* h1_br_diff; 
         std::vector<TH1I*> h1_lisa_layer_rate;
         std::vector<std::vector<std::vector<TH1I*>>> h1_lisa_rate; 
@@ -161,6 +163,7 @@ class LisaNearlineSpectra : public FairTask
         TH1I* h1_multiplicity;
         std::vector<TH1I*> h1_multiplicity_per_layer; ;
         TH1I* h1_layer_multiplicity;
+        TH1I* h1_layer_fired;
 
         //  ::: Energy
         //      Febex

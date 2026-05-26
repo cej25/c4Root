@@ -328,16 +328,19 @@ InitStatus LisaOnlineSpectra::Init()
 
     // ::: E N E R G Y :::
     //      Febex per channel - energy gain matched and/or calibrated
+
     dir_febex_channel->cd();
     c_energy_ch.resize(layer_number);
     h1_energy_ch.resize(layer_number);
+
     for (int i = 0; i < layer_number; i++)
     {
         c_energy_ch[i] = new TCanvas(Form("c_energy_layer_%d_channels",i+1),Form("c_energy_layer_%d_channels",i+1), 650,350);
         c_energy_ch[i]->SetTitle(Form("Layer %d - Energies",i+1));
         c_energy_ch[i]->Divide(xmax,ymax); 
         h1_energy_ch[i].resize(xmax);
-        
+
+
         for (int j = 0; j < xmax; j++)
         {
             h1_energy_ch[i][j].resize(ymax);
@@ -345,26 +348,55 @@ InitStatus LisaOnlineSpectra::Init()
             {   
                 c_energy_ch[i]->cd((ymax-(k+1))*xmax + j + 1);
                 city = "";
-                int x = -9;
-                int y = -9;
                 for (auto & detector : detector_mapping)
                 {
-        
-                int l_id = detector.second.first.first;
-                if (l_id == i + 1 && ((ymax - (y + 1)) * xmax + x) == j)
-                {
-                    city = detector.second.second.second.first;
-                    break;
+                    int x    = detector.second.first.second.first;
+                    int y    = detector.second.first.second.second;
+                    int l_id = detector.second.first.first;
+                    if (l_id == i + 1 && x == j && y == k)
+                    {
+                        city = detector.second.second.second.first.c_str();
+                        break;
+                    }
                 }
-                }
-
-                h1_energy_ch[i][j][k] = new TH1F(Form("energy_%s_%i_%i_%i", city.Data(), i+1, j, k), Form("Energy Febex %s",city.Data()), lisa_config->bin_energy, lisa_config->min_energy, lisa_config->max_energy);
+                h1_energy_ch[i][j][k] = new TH1F(
+                    Form("energy_%s_%i%i%i", city.Data(), i+1, j, k),
+                    Form("Energy Febex %s", city.Data()),
+                    lisa_config->bin_energy, lisa_config->min_energy, lisa_config->max_energy);
                 h1_energy_ch[i][j][k]->GetXaxis()->SetTitle("E(LISA) [a.u.]");
                 h1_energy_ch[i][j][k]->SetLineColor(kBlue+1);
                 h1_energy_ch[i][j][k]->SetFillColor(kOrange-3);
                 h1_energy_ch[i][j][k]->Draw();
             }
         }
+
+        // for (int j = 0; j < xmax; j++)
+        // {
+        //     h1_energy_ch[i][j].resize(ymax);
+        //     for (int k = 0; k < ymax; k++)
+        //     {   
+        //         c_energy_ch[i]->cd((ymax-(k+1))*xmax + j + 1);
+        //         city = "";
+        //         int x = -9;
+        //         int y = -9;
+        //         for (auto & detector : detector_mapping)
+        //         {
+        
+        //         int l_id = detector.second.first.first;
+        //         if (l_id == i + 1 && ((ymax - (y + 1)) * xmax + x) == j)
+        //         {
+        //             city = detector.second.second.second.first;
+        //             break;
+        //         }
+        //         }
+
+        //         h1_energy_ch[i][j][k] = new TH1F(Form("energy_%s_%i_%i_%i", city.Data(), i+1, j, k), Form("Energy Febex %s",city.Data()), lisa_config->bin_energy, lisa_config->min_energy, lisa_config->max_energy);
+        //         h1_energy_ch[i][j][k]->GetXaxis()->SetTitle("E(LISA) [a.u.]");
+        //         h1_energy_ch[i][j][k]->SetLineColor(kBlue+1);
+        //         h1_energy_ch[i][j][k]->SetFillColor(kOrange-3);
+        //         h1_energy_ch[i][j][k]->Draw();
+        //     }
+        // }
         c_energy_ch[i]->cd();
         dir_febex_channel->Append(c_energy_ch[i]);
 
@@ -478,6 +510,8 @@ InitStatus LisaOnlineSpectra::Init()
     h1_energy_MWD_ch.resize(layer_number);
     for (int i = 0; i < layer_number; i++)
     {
+        
+         
         c_energy_MWD_ch[i] = new TCanvas(Form("c_energy_MWD_layer_%d_channels",i+1),Form("c_energy_MWD_layer_%d_channels",i+1), 650,350);
         c_energy_MWD_ch[i]->SetTitle(Form("Layer %d - MWD Energy",i+1));
         c_energy_MWD_ch[i]->Divide(xmax,ymax); 
@@ -488,18 +522,20 @@ InitStatus LisaOnlineSpectra::Init()
             h1_energy_MWD_ch[i][j].resize(ymax);
             for (int k = 0; k < ymax; k++)
             {   
+                                
                 c_energy_MWD_ch[i]->cd((ymax-(k+1))*xmax + j + 1);
                 city = "";
+                int x = -9;
+                int y = -9;
                 for (auto & detector : detector_mapping)
                 {
-                    int x = detector.second.first.second.first;
-                    int y = detector.second.first.second.second;
-                    int l_id = detector.second.first.first;
-                    if (l_id == i + 1 && ((ymax - (y + 1)) * xmax + x) == j)
-                    {
-                        city = detector.second.second.second.first;
-                        break;
-                    }
+        
+                int l_id = detector.second.first.first;
+                if (l_id == i + 1 && ((ymax - (y + 1)) * xmax + x) == j)
+                {
+                    city = detector.second.second.second.first;
+                    break;
+                }
                 }
                 h1_energy_MWD_ch[i][j][k] = new TH1F(Form("energy_MWD_%s_%i_%i_%i", city.Data(), i+1, j, k), Form("Energy MWD %s",city.Data()), lisa_config->bin_energy_MWD, lisa_config->min_energy_MWD, lisa_config->max_energy_MWD);
                 h1_energy_MWD_ch[i][j][k]->GetXaxis()->SetTitle("E MWD(LISA) [a.u.]");
@@ -630,16 +666,17 @@ InitStatus LisaOnlineSpectra::Init()
             {   
                 c_traces_ch[i]->cd((ymax-(k+1))*xmax + j + 1);
                 city = "";
+                int x = -9;
+                int y = -9;
                 for (auto & detector : detector_mapping)
                 {
-                    int x = detector.second.first.second.first;
-                    int y = detector.second.first.second.second;
-                    int l_id = detector.second.first.first;
-                    if (l_id == i + 1 && ((ymax - (y + 1)) * xmax + x) == j)
-                    {
-                        city = detector.second.second.second.first;
-                        break;
-                    }
+        
+                int l_id = detector.second.first.first;
+                if (l_id == i + 1 && ((ymax - (y + 1)) * xmax + x) == j)
+                {
+                    city = detector.second.second.second.first;
+                    break;
+                }
                 }
 
                 h1_traces_ch[i][j][k] = new TH1F(Form("traces_%s_%i_%i_%i", city.Data(), i+1, j, k), city.Data(), lisa_config->bin_traces, lisa_config->min_traces, lisa_config->max_traces); 
@@ -757,11 +794,13 @@ void LisaOnlineSpectra::Exec(Option_t* option)
     std::vector<std::vector<float>> energy_MWD_layer(layer_number);
     energy_MWD_layer.resize(layer_number);
     //........................................
-
+    c4LOG(info,"slowdown0");
     // ::: LOOP OVER ITEM :::
     for (auto const & lisaCalItem : *lisaCalArray)
     {
         
+        c4LOG(info,"slowdown1");
+        c4LOG(info,"slowdown2");
         br_time = lisaCalItem.Get_br_t();
 
         if (lisa_config->br_enable == true) 
@@ -866,7 +905,7 @@ void LisaOnlineSpectra::Exec(Option_t* option)
     }
     prev_br = br_time;
     //....................................
-
+    c4LOG(info,"slowdown3");
     // ::: RATES
     double rate_br_dt_db = (br_time - saved_br) / 1e9;
 
