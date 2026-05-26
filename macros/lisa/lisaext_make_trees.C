@@ -8,6 +8,7 @@
 #define LISA_ANA 0
 #define LISA_CAL 1
 
+#define WR_ENABLED 1
 
 // Definition of setup and configuration files
 #define LISA_CONFIG_FILE "../../config/lisaext/general/lisa_config_v0.C"

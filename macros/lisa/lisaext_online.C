@@ -58,10 +58,10 @@ void lisaext_online()
 
     // ::: OFFLINE READING - For testing
     TString inputpath = "/u/gandolfo/data/lustre/gamma/LISA/data/ext_daq_debnik/dev_test/";                   
-    TString filename = "new_timestamp_format_0001.lmd"; 
+    TString filename = inputpath + "new_timestamp_format_0001.lmd"; 
     
     // ::: OUTPUT - does not write a tree if it is not set layer
-    TString outputpath = "/u/lisa/data/test_c4/"; //testing
+    TString outputpath = "/u/gandolfo/data/lisaext/"; //testing
     TString outputFileName = outputpath + "output_online.root";
     
     // ::: Create online run

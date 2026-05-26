@@ -38,14 +38,14 @@ void histo_config(const std::string& config_path)
     TLisaConfiguration::SetAmplitudeMax(8500);
 
     // Black Rabbit
-    TLisaConfiguration::SetBrDiffRange(0,100000000);
+    TLisaConfiguration::SetBrDiffRange(0,10000000000000000000);
     TLisaConfiguration::SetBrDiffBin(50000);
 
     TLisaConfiguration::SetBrRateRange(0,3600);
     TLisaConfiguration::SetBrRateBin(3600);
 
     // Drift
-    TLisaConfiguration::SetDriftRange(0,10100);
+    TLisaConfiguration::SetDriftRange(10040,11040);
     //..................................................
 
     // ::: Gates
