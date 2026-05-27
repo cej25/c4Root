@@ -38,7 +38,7 @@ void histo_config(const std::string& config_path)
     TLisaConfiguration::SetAmplitudeMax(9000);
 
     // Black Rabbit
-    TLisaConfiguration::SetBrDiffRange(0,100000000000000000);
+    TLisaConfiguration::SetBrDiffRange(0,10000);
     TLisaConfiguration::SetBrDiffBin(50000);
 
     TLisaConfiguration::SetBrRateRange(0,3600);

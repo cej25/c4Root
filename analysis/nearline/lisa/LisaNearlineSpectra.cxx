@@ -164,7 +164,7 @@ InitStatus LisaNearlineSpectra::Init()
 
     //::: Black Rabbit time:::
     dir_stats->cd();
-    h1_br_time = new TH1I("h1_br_time", "BR Time", lisa_config->bin_br_diff,0, 1000000000000000000);
+    h1_br_time = new TH1I("h1_br_time", "BR Time", lisa_config->bin_br_diff,0, 100000000000000);
     h1_br_time->GetXaxis()->SetTitle("LISA BR Time [ns]");
     h1_br_time->SetLineColor(kBlack);
     h1_br_time->SetFillColor(kRed-3);   
@@ -918,7 +918,7 @@ InitStatus LisaNearlineSpectra::Init()
 
 void LisaNearlineSpectra::Exec(Option_t* option)
 {   
-    c4LOG(info, "Exec");
+    //c4LOG(info, "Exec");
     // ::: For BR histos and experiment start
     br_time = 0;
     Long64_t LISA_time_mins = 0;
@@ -998,7 +998,7 @@ void LisaNearlineSpectra::Exec(Option_t* option)
         //h1_hitpattern_total->Fill(hp_total_bin);
         //....................
         // ::: Hit Pattern by layer
-        h1_hitpattern_layer[layer]->Fill(hp_bin);
+        h1_hitpattern_layer[layer-1]->Fill(hp_bin);
         //....................
         // ::: Grids (hit pattern, pile up and overflow)
         h2_hitpattern_grid[layer-1]->Fill(xpos,ypos);
@@ -1106,6 +1106,8 @@ void LisaNearlineSpectra::Exec(Option_t* option)
         //    Febex energy vs Time
         if (energy_GM > 0 && LISA_time_mins > 0)
         {
+        	std::cout << "eventno: " << evtno << std::endl;
+        	std::cout << "header pointer: " << header << std::endl;
             //c4LOG(info, "conditions on LISA time: " << LISA_time_mins << " and energy: " << energy_GM );
             h2_energy_layer_vs_evtno[layer-1]->Fill(evtno, energy_GM);
             h2_energy_ch_vs_evtno[layer-1][xpos][ypos]->Fill(evtno, energy_GM); 
@@ -1131,6 +1133,7 @@ void LisaNearlineSpectra::Exec(Option_t* option)
     if( prev_br > 0 )
     {
         br_diff = br_time - prev_br;
+        //std::cout << "br_diff: " << br_diff << std::endl;
         h1_br_diff->Fill(br_diff);
     }
     prev_br = br_time;
@@ -1140,6 +1143,10 @@ void LisaNearlineSpectra::Exec(Option_t* option)
 
     // ::: RATES
     double rate_br_dt_db = (br_time - saved_br) / 1e9;
+    //std::cout << "br_time: " << br_time << std::endl;
+    //std::cout << "saved br time: " << saved_br << std::endl;
+    //std::cout << "rate: " << rate_br_dt_db << std::endl;
+
 
     if (rate_br_dt_db > 1) 
     {
@@ -1157,6 +1164,9 @@ void LisaNearlineSpectra::Exec(Option_t* option)
                     {
                         detector_rate[i][j][k] = detector_counter[i][j][k] / rate_br_dt_db;
                         h1_lisa_rate[i][j][k]->SetBinContent(rate_running_count, detector_rate[i][j][k]);
+                        c4LOG(info,"rate_br_dt_db: " << rate_br_dt_db << " detector counter: " << detector_counter[i][j][k]);
+                        c4LOG(info,"detector_rate: " << detector_rate[i][j][k]);
+
                     }
                 }
             }

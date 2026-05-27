@@ -18,10 +18,10 @@
 #include "TGraph.h"
 #include "TString.h"
 #include "TExperimentConfiguration.h"
+#include <Rtypes.h>
 
 
 //Debugging. Replaced std::string with TString 8nov24
-
 
 
 class LisaCalItem;
@@ -95,7 +95,7 @@ class LisaNearlineSpectra : public FairTask
         Int_t layer;
         //std::string city = "";
         TString city = "";
-        EventHeader* header;
+        EventHeader const* header; // maybe
         Int_t fNEvents;
         
         // counters
@@ -107,11 +107,11 @@ class LisaNearlineSpectra : public FairTask
         int rate_running_count = 0; 
 
         // Rates
-        Long64_t prev_br = 0;
-        Long64_t br_time; 
-        Long64_t br_diff; 
-        Long64_t br_rate; 
-        Long64_t saved_br =  0; 
+        ULong64_t prev_br = 0;
+        ULong64_t br_time; 
+        ULong64_t br_diff; // probably has 
+        ULong64_t br_rate; 
+        ULong64_t saved_br =  0; 
 
         // ::: Directories
         TDirectory* dir_lisa;
