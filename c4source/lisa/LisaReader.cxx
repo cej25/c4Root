@@ -82,12 +82,16 @@ Bool_t LisaReader::Read()
     //Black Rabbit time stamp expressed in ns  
     // Please note that with the KINPEX firmware for outside GSI, the time unit is 10 ns.
     
-    uint64_t br_time_long = ((((uint64_t)fData->lisa_ts_t[1]) << 32) + 
-    (((uint64_t)fData->lisa_ts_t[0])))*10; //to express BR time in ns (from 10ns unit of kinpex )
+    uint64_t br_time_long = ((((uint64_t)fData->lisa_ts_t[0]) << 32) + 
+    (((uint64_t)fData->lisa_ts_t[1])))*10; //to express BR time in ns (from 10ns unit of kinpex )
+    
+    //c4LOG(info,"br time from reader: " << br_time_long);
 
     uint32_t br_id = fData->lisa_ts_subsystem_id;
+    //c4LOG(info,"br id reader: " << br_id);
 
-    uint64_t run_number = fData->lisa_ts_run;
+    uint32_t run_number = fData->lisa_ts_run;
+    //c4LOG(info,"run number reader: " << run_number);
     //::::::::::::::::::::::::::::::::::::::::
 
     const int trace_size = TRACE_SIZE;
@@ -104,6 +108,7 @@ Bool_t LisaReader::Read()
         //P.S: Febex card has a 100MHz, it samples data every 10 ns (hence the unit and the *10 multiplication).
         uint64_t event_trigger_time_long = (((uint64_t)(fData->lisa_data[it_board_number].event_trigger_time_hi) << 32) + 
         (fData->lisa_data[it_board_number].event_trigger_time_lo))*10;
+        
 
         //For empty event, skip. This filters the fake boards.
         if (event_trigger_time_long == 0) 

@@ -35,8 +35,8 @@ class LisaCalItem : public TObject
         LisaCalItem();
 
         void SetAll(uint64_t br,
-                    uint16_t br_id,
-                    uint64_t rn,
+                    uint32_t br_id,
+                    uint32_t rn,
                     int b_id,
                     int layer,
                     TString c,
@@ -63,8 +63,8 @@ class LisaCalItem : public TObject
         void Reset();
 
         uint64_t Get_br_t() const;
-        uint16_t Get_br_id() const;
-        uint64_t Get_run_number() const;
+        uint32_t Get_br_id() const;
+        uint32_t Get_run_number() const;
         int Get_board_id() const;
         int Get_layer_id() const;
         TString Get_city() const;
@@ -93,8 +93,8 @@ class LisaCalItem : public TObject
         ClassDef(LisaCalItem, 1);
     private:
         uint64_t br_t;
-        uint16_t br_id;
-        uint64_t run_number;
+        uint32_t br_id;
+        uint32_t run_number;
         int board_id;
         int layer_id;
         TString city; // name
@@ -126,12 +126,12 @@ inline uint64_t LisaCalItem::Get_br_t() const
     return br_t;
 }
 
-inline uint16_t LisaCalItem::Get_br_id() const
+inline uint32_t LisaCalItem::Get_br_id() const
 {
     return br_id;
 }
 
-inline uint64_t LisaCalItem::Get_run_number() const
+inline uint32_t LisaCalItem::Get_run_number() const
 {
     return run_number;
 }

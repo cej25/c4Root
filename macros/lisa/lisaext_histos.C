@@ -63,7 +63,7 @@ void lisaext_histos()
     // ::: P A T H   O F   F I L E  to read
     //TString inputpath = "/u/gandolfo/data/lisaext/";
     TString inputpath = "/home/lisa/data/trees/";
-    TString rootname = "preamo_test_input_0011_tree.root";
+    TString rootname = "preamp_test_input_0019_tree.root";
     TString filename = inputpath + rootname;
 
     // ::: OUTPUT 

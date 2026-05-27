@@ -89,7 +89,7 @@ WR_MULTI()
 
 TIMESTAMP_WHITERABBIT_EXTERNAL(id)
 {
-	MEMBER(DATA16 subsystem_id);
+	MEMBER(DATA32 subsystem_id);
 	MEMBER(DATA32 run);
 	MEMBER(DATA32 t1);
 	MEMBER(DATA32 t2);
@@ -113,5 +113,5 @@ TIMESTAMP_WHITERABBIT_EXTERNAL(id)
 		0_31:  t2;
 		ENCODE(t2, (value=t2));
 	};
-}
+} 
 
