@@ -68,7 +68,7 @@ void lisaext_make_trees()
     
     // ::: FILE  PATH
     TString inputpath = "/home/lisa/data/lmd/";
-    TString lmdname = "preamp_test_21may_0007.lmd";
+    TString lmdname = "preamo_test_input_0011.lmd";
     TString filename = inputpath + lmdname;
     /*
     TString inputpath = "/u/gandolfo/data/lustre/gamma/LISA/data/ext_daq_debnik/dev_test/";
