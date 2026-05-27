@@ -30,7 +30,7 @@ void lisaext_online()
     TString fExpName = "lisaext";
 
     // ::: Here you define commonly used path
-    TString c4Root_path = "/u/gandolfo/c4/c4Root";
+    TString c4Root_path = "/home/lisa/programs/c4/c4Root";
     TString ucesb_path = c4Root_path + "/unpack/exps/" + fExpName + "/" + fExpName + " --debug --input-buffer=200Mi --event-sizes --allow-errors";
     ucesb_path.ReplaceAll("//","/");
 
@@ -57,11 +57,11 @@ void lisaext_online()
     //TString filename = "trans://lxg3107:6000"; 
 
     // ::: OFFLINE READING - For testing
-    TString inputpath = "/u/gandolfo/data/lustre/gamma/LISA/data/ext_daq_debnik/dev_test/";                   
-    TString filename = inputpath + "new_timestamp_format_0001.lmd"; 
+    TString inputpath = "/home/lisa/data/lmd/";                   
+    TString filename = inputpath + "preamo_test_input_0011.lmd"; 
     
     // ::: OUTPUT - does not write a tree if it is not set layer
-    TString outputpath = "/u/gandolfo/data/lisaext/"; //testing
+    TString outputpath = "/home/lisa/data/"; //testing
     TString outputFileName = outputpath + "output_online.root";
     
     // ::: Create online run
@@ -94,13 +94,12 @@ void lisaext_online()
     TLisaConfiguration::SetMappingFile(config_path + "/Lisa_Mapping_All_Boards_FULL.txt");
     
     // ::: Gain Matching Febex, MWD, dEdX
-    TLisaConfiguration::SetGMFile(config_path + "/Lisa_GainMatching_cards.txt");
-    TLisaConfiguration::SetGMFileMWD(config_path + "/Lisa_GainMatching_MWD_cards.txt");
-    TLisaConfiguration::SetGMFiledEdX(config_path + "/Lisa_GainMatching_MWD_dEdX_cards.txt");
+    TLisaConfiguration::SetGMFile(config_path + "/Lisa_GainMatching_4x4.txt");
+    TLisaConfiguration::SetGMFileMWD(config_path + "/Lisa_GainMatching_MWD_4x4.txt");
+    TLisaConfiguration::SetGMFiledEdX(config_path + "/Lisa_GainMatching_MWD_dEdX_4x4.txt");
     
     // ::: MWD parameters
     TLisaConfiguration::SetMWDParametersFile(config_path + "/Lisa_MWD_Parameters_v0.txt");
-
     
     TLisaConfiguration::SetExcludedChannels({
     std::make_tuple(1,0,0),
@@ -151,8 +150,8 @@ void lisaext_online()
 
     // ::: LISA
     //      Channel Energy 
-    TLisaConfiguration::SetEnergyRange(0,100000);
-    TLisaConfiguration::SetEnergyBin(1000);
+    TLisaConfiguration::SetEnergyRange(0,100000); 
+    TLisaConfiguration::SetEnergyBin(500); 
 
     //      MWD histos
     TLisaConfiguration::SetEnergyRangeMWD(0,500);
@@ -165,10 +164,10 @@ void lisaext_online()
     TLisaConfiguration::SetBrRateBin(900);
 
     //      LISA Traces Ranges 
-    TLisaConfiguration::SetTracesRange(0,3.9);
-    TLisaConfiguration::SetTracesBin(390);
-    //TLisaConfiguration::SetAmplitudeMin(7500);
-    //TLisaConfiguration::SetAmplitudeMax(8400);
+    TLisaConfiguration::SetTracesRange(0,25);
+    TLisaConfiguration::SetTracesBin(100);
+    //TLisaConfiguration::SetAmplitudeMin(6000);
+    //TLisaConfiguration::SetAmplitudeMax(9000);
    
     // Initialise
     run->Init();
