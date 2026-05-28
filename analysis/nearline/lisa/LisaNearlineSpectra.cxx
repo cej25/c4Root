@@ -1106,8 +1106,8 @@ void LisaNearlineSpectra::Exec(Option_t* option)
         //    Febex energy vs Time
         if (energy_GM > 0 && LISA_time_mins > 0)
         {
-        	std::cout << "eventno: " << evtno << std::endl;
-        	std::cout << "header pointer: " << header << std::endl;
+        	//std::cout << "eventno: " << evtno << std::endl;
+        	//std::cout << "header pointer: " << header << std::endl;
             //c4LOG(info, "conditions on LISA time: " << LISA_time_mins << " and energy: " << energy_GM );
             h2_energy_layer_vs_evtno[layer-1]->Fill(evtno, energy_GM);
             h2_energy_ch_vs_evtno[layer-1][xpos][ypos]->Fill(evtno, energy_GM); 
@@ -1164,8 +1164,8 @@ void LisaNearlineSpectra::Exec(Option_t* option)
                     {
                         detector_rate[i][j][k] = detector_counter[i][j][k] / rate_br_dt_db;
                         h1_lisa_rate[i][j][k]->SetBinContent(rate_running_count, detector_rate[i][j][k]);
-                        c4LOG(info,"rate_br_dt_db: " << rate_br_dt_db << " detector counter: " << detector_counter[i][j][k]);
-                        c4LOG(info,"detector_rate: " << detector_rate[i][j][k]);
+                        //c4LOG(info,"rate_br_dt_db: " << rate_br_dt_db << " detector counter: " << detector_counter[i][j][k]);
+                        //c4LOG(info,"detector_rate: " << detector_rate[i][j][k]);
 
                     }
                 }

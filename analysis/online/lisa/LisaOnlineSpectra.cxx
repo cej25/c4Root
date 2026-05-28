@@ -87,6 +87,10 @@ InitStatus LisaOnlineSpectra::Init()
 
     excluded = lisa_config->GetExcludedChannels();
 
+    int min_traces = lisa_config->min_traces;
+    int max_traces = lisa_config->max_traces;
+    int bin_traces = (max_traces - min_traces);
+
 
     histograms = (TFolder*)mgr->GetObject("Histograms");
     TDirectory::TContext ctx(nullptr);
@@ -183,6 +187,15 @@ InitStatus LisaOnlineSpectra::Init()
     }
     //...................
 
+    //::: Layer Fired :::
+    dir_stats->cd();
+    h1_layer_fired = new TH1I("h1_layer_fired", "Layer Fired", layer_number+1, -0.5, layer_number+0.5);
+    h1_layer_fired->GetXaxis()->SetTitle("Layer");
+    h1_layer_fired->SetLineColor(kBlack);
+    h1_layer_fired->SetFillColor(kRed-3);
+
+    //....................
+
     // ::: Hit Pattern :::
     dir_stats->cd();
 
@@ -200,12 +213,10 @@ InitStatus LisaOnlineSpectra::Init()
         for (int j = 0; j < xmax * ymax; j++)
         {
             city = "";
-            int x = -9;
-            int y = -9;
             for (auto & detector : detector_mapping)
             {
-                x = detector.second.first.second.first;
-                y = detector.second.first.second.second;
+                int x = detector.second.first.second.first;
+                int y = detector.second.first.second.second;
                 int l_id = detector.second.first.first;
                 if (l_id == i + 1 && ((ymax - (y + 1)) * xmax + x) == j)
                 {
@@ -213,7 +224,7 @@ InitStatus LisaOnlineSpectra::Init()
                     break;
                 }
             }
-            h1_hitpattern_layer[i]->GetXaxis()->SetBinLabel(j+1, Form("%i%i",x,y));
+            h1_hitpattern_layer[i]->GetXaxis()->SetBinLabel(j+1, city.Data());
         }
        
     }
@@ -525,19 +536,25 @@ InitStatus LisaOnlineSpectra::Init()
                                 
                 c_energy_MWD_ch[i]->cd((ymax-(k+1))*xmax + j + 1);
                 city = "";
-                int x = -9;
-                int y = -9;
                 for (auto & detector : detector_mapping)
                 {
         
-                int l_id = detector.second.first.first;
-                if (l_id == i + 1 && ((ymax - (y + 1)) * xmax + x) == j)
-                {
-                    city = detector.second.second.second.first;
-                    break;
+                    int l_id = detector.second.first.first;
+                    int x    = detector.second.first.second.first;
+                    int y    = detector.second.first.second.second;
+                    if (l_id == i + 1 && x == j && y == k)
+                    {
+                        city = detector.second.second.second.first;
+                        break;
+                    }
                 }
-                }
-                h1_energy_MWD_ch[i][j][k] = new TH1F(Form("energy_MWD_%s_%i_%i_%i", city.Data(), i+1, j, k), Form("Energy MWD %s",city.Data()), lisa_config->bin_energy_MWD, lisa_config->min_energy_MWD, lisa_config->max_energy_MWD);
+                h1_energy_MWD_ch[i][j][k] = new TH1F(
+                    Form("energy_MWD_%s_%i_%i_%i", city.Data(), i+1, j, k),
+                    Form("Energy MWD %s",city.Data()), 
+                    lisa_config->bin_energy_MWD, 
+                    lisa_config->min_energy_MWD, 
+                    lisa_config->max_energy_MWD);
+                
                 h1_energy_MWD_ch[i][j][k]->GetXaxis()->SetTitle("E MWD(LISA) [a.u.]");
                 h1_energy_MWD_ch[i][j][k]->SetLineColor(kBlue+1);
                 h1_energy_MWD_ch[i][j][k]->SetFillColor(kViolet-1);
@@ -666,21 +683,21 @@ InitStatus LisaOnlineSpectra::Init()
             {   
                 c_traces_ch[i]->cd((ymax-(k+1))*xmax + j + 1);
                 city = "";
-                int x = -9;
-                int y = -9;
                 for (auto & detector : detector_mapping)
                 {
         
                 int l_id = detector.second.first.first;
-                if (l_id == i + 1 && ((ymax - (y + 1)) * xmax + x) == j)
+                int x = detector.second.first.second.first;
+                int y = detector.second.first.second.second;
+                if (l_id == i + 1 && x == j && y == k)
                 {
                     city = detector.second.second.second.first;
                     break;
                 }
                 }
 
-                h1_traces_ch[i][j][k] = new TH1F(Form("traces_%s_%i_%i_%i", city.Data(), i+1, j, k), city.Data(), lisa_config->bin_traces, lisa_config->min_traces, lisa_config->max_traces); 
-                h1_traces_ch[i][j][k]->GetXaxis()->SetTitle("Time [us]");
+                h1_traces_ch[i][j][k] = new TH1F(Form("traces_%s_%i_%i_%i", city.Data(), i+1, j, k), city.Data(), bin_traces, min_traces, max_traces); 
+                h1_traces_ch[i][j][k]->GetXaxis()->SetTitle("Trace Length [10ns]");
                 //h1_traces_ch[i][j][k]->SetMinimum(lisa_config->amplitude_min);
                 //h1_traces_ch[i][j][k]->SetMaximum(lisa_config->amplitude_max);
                 h1_traces_ch[i][j][k]->SetStats(0);
@@ -794,13 +811,13 @@ void LisaOnlineSpectra::Exec(Option_t* option)
     std::vector<std::vector<float>> energy_MWD_layer(layer_number);
     energy_MWD_layer.resize(layer_number);
     //........................................
-    c4LOG(info,"slowdown0");
+    //c4LOG(info,"slowdown0");
     // ::: LOOP OVER ITEM :::
     for (auto const & lisaCalItem : *lisaCalArray)
     {
         
-        c4LOG(info,"slowdown1");
-        c4LOG(info,"slowdown2");
+        //c4LOG(info,"slowdown1");
+        //c4LOG(info,"slowdown2");
         br_time = lisaCalItem.Get_br_t();
 
         if (lisa_config->br_enable == true) 
@@ -905,7 +922,7 @@ void LisaOnlineSpectra::Exec(Option_t* option)
     }
     prev_br = br_time;
     //....................................
-    c4LOG(info,"slowdown3");
+    //c4LOG(info,"slowdown3");
     // ::: RATES
     double rate_br_dt_db = (br_time - saved_br) / 1e9;
 
@@ -957,6 +974,7 @@ void LisaOnlineSpectra::Exec(Option_t* option)
     // }
     
     // ::: Fill Multiplicity 
+    h1_layer_fired->Fill(layer);
     h1_multiplicity->Fill(total_multiplicity);
     for (int i = 0; i < layer_number; i++) h1_multiplicity_per_layer[i]->Fill(multiplicity[i]);
 
