@@ -53,12 +53,11 @@ void lisaext_online()
     // ::: P A T H   O F   F I L E  to read
     
     // ::: ONLINE READING
-    //TString filename = "stream://x86l-166"; 
-    //TString filename = "trans://lxg3107:6000"; 
+    TString filename = "stream://134.95.192.248:6002"; 
 
     // ::: OFFLINE READING - For testing
-    TString inputpath = "/home/lisa/data/lmd/";                   
-    TString filename = inputpath + "preamo_test_input_0011.lmd"; 
+    //TString inputpath = "/home/lisa/data/lmd/";                   
+    //TString filename = inputpath + "preamp_test_input_0019.lmd"; 
     
     // ::: OUTPUT - does not write a tree if it is not set layer
     TString outputpath = "/home/lisa/data/"; //testing
@@ -150,7 +149,7 @@ void lisaext_online()
 
     // ::: LISA
     //      Channel Energy 
-    TLisaConfiguration::SetEnergyRange(0,100000); 
+    TLisaConfiguration::SetEnergyRange(85000,100000); 
     TLisaConfiguration::SetEnergyBin(500); 
 
     //      MWD histos
@@ -164,10 +163,10 @@ void lisaext_online()
     TLisaConfiguration::SetBrRateBin(900);
 
     //      LISA Traces Ranges 
-    TLisaConfiguration::SetTracesRange(0,25);
-    TLisaConfiguration::SetTracesBin(100);
-    //TLisaConfiguration::SetAmplitudeMin(6000);
-    //TLisaConfiguration::SetAmplitudeMax(9000);
+    TLisaConfiguration::SetTracesRange(0,950);
+    //TLisaConfiguration::SetTracesBin(20);
+    //TLisaConfiguration::SetAmplitudeMin(5000);
+    //TLisaConfiguration::SetAmplitudeMax(16000);
    
     // Initialise
     run->Init();
