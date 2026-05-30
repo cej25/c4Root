@@ -1,0 +1,37 @@
+/***********************************************************************
+ *
+ * Default undef for mirror,
+ *
+ * Do not edit - automatically generated.
+ */
+
+#ifdef __DEFAULT_DEF_STRUCT_MIRROR_ITEM_CTRL
+#undef __DEFAULT_DEF_STRUCT_MIRROR_ITEM_CTRL
+#undef               STRUCT_MIRROR_ITEM_CTRL
+#endif
+
+#ifdef __DEFAULT_DEF_STRUCT_MIRROR_ITEM_CTRL_ARRAY
+#undef __DEFAULT_DEF_STRUCT_MIRROR_ITEM_CTRL_ARRAY
+#undef               STRUCT_MIRROR_ITEM_CTRL_ARRAY
+#endif
+
+#ifdef __DEFAULT_DEF_STRUCT_MIRROR_ITEM_CTRL_BASE
+#undef __DEFAULT_DEF_STRUCT_MIRROR_ITEM_CTRL_BASE
+#undef               STRUCT_MIRROR_ITEM_CTRL_BASE
+#endif
+
+#ifdef __DEFAULT_DEF_STRUCT_MIRROR_TEMPLATE
+#undef __DEFAULT_DEF_STRUCT_MIRROR_TEMPLATE
+#undef               STRUCT_MIRROR_TEMPLATE
+#endif
+
+#ifdef __DEFAULT_DEF_STRUCT_MIRROR_TYPE_TEMPLATE
+#undef __DEFAULT_DEF_STRUCT_MIRROR_TYPE_TEMPLATE
+#undef               STRUCT_MIRROR_TYPE_TEMPLATE
+#endif
+
+#ifdef __DEFAULT_DEF_STRUCT_MIRROR_TYPE_TEMPLATE_FULL
+#undef __DEFAULT_DEF_STRUCT_MIRROR_TYPE_TEMPLATE_FULL
+#undef               STRUCT_MIRROR_TYPE_TEMPLATE_FULL
+#endif
+

@@ -66,13 +66,13 @@ void e_shiyan_histos()
 
     // ::: P A T H   O F   F I L E  to read
     //TString inputpath = "/u/gandolfo/data/lustre/gamma/lisa_s092/trees/";
-    TString inputpath = "/u/gandolfo/data/shiyan_debug/frs_mhit/";
-    TString filename = inputpath + "run_0019_0001_tree_test_step1.root";  
+    TString inputpath = "/u/gandolfo/data/shiyan_HitData/";
+    TString filename = inputpath + "run_0018_0001_tree.root";  
     
     // ::: O U T P U T
     //TString outputpath = "/u/gandolfo/data/lustre/gamma/lisa_s092/histos/";
-    TString outputpath = "/u/gandolfo/data/shiyan_debug/frs_mhit/";   //energy resolution output
-    TString outputFilename = outputpath + "run_0019_histos_test_step1.root";
+    TString outputpath = "/u/gandolfo/data/shiyan_HitData/";   //energy resolution output
+    TString outputFilename = outputpath + "run_0018_0001_histos.root";
 
 
     FairRunAna* run = new FairRunAna();
@@ -85,7 +85,7 @@ void e_shiyan_histos()
     
     //Read tree evt
     TFile* file = TFile::Open(filename);
-    TTree* eventTree = (TTree*)file->Get("evt"); 
+    TTree* eventTree = (TTree*)file->Get("cbmsim"); 
     Int_t totEvt = eventTree->GetEntries();
 
     //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::

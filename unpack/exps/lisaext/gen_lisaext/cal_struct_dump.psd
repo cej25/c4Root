@@ -1,0 +1,115 @@
+
+/** BEGIN_INPUT_DEFINITION *********************************************
+ *
+ * All specifications as seen by the parser.
+ *
+ * Do not edit - automatically generated.
+ */
+
+/**********************************************************
+ * Dump of all structures:
+ */
+
+class cal_event : public cal_event_base
+{
+  ;
+} ;
+/**********************************************************/
+
+/** END_INPUT_DEFINITION **********************************************/
+
+
+/** BEGIN_MIRROR_STRUCT ************************************************
+ *
+ * Mirror (1 to 1) structure.
+ *
+ * Do not edit - automatically generated.
+ */
+
+#include "gen/default_mirror_define.hh"
+
+#ifndef USER_DEF_cal_event
+STRUCT_MIRROR_TEMPLATE
+class STRUCT_MIRROR_STRUCT(cal_event) : public STRUCT_MIRROR_BASE(cal_event_base)
+{
+public:
+  STRUCT_MIRROR_ITEM_CTRL_BASE(cal_event_base);
+  STRUCT_MIRROR_FCNS_DECL(cal_event);
+};
+#endif//USER_DEF_cal_event
+
+#include "gen/default_mirror_undef.hh"
+
+
+/** END_MIRROR_STRUCT *************************************************/
+
+
+/** BEGIN_MIRROR_DECL_STRUCT *******************************************
+ *
+ * Mirror structure names.
+ *
+ * Do not edit - automatically generated.
+ */
+
+#include "gen/default_mirror_define.hh"
+
+STRUCT_MIRROR_TEMPLATE
+struct STRUCT_MIRROR_STRUCT(cal_event);
+
+#include "gen/default_mirror_undef.hh"
+
+
+/** END_MIRROR_DECL_STRUCT ********************************************/
+
+
+/** BEGIN_FUNCTION_CALL_PER_MEMBER *************************************
+ *
+ * Recursive function calls per member.
+ *
+ * Do not edit - automatically generated.
+ */
+
+#include "gen/default_fcncall_define.hh"
+
+#ifndef USER_DEF_cal_event
+FCNCALL_TEMPLATE
+FCNCALL_RET_TYPE FCNCALL_CLASS_NAME(cal_event)::FCNCALL_NAME(cal_event)
+{
+  FCNCALL_INIT;
+  FCNCALL_CALL_CTRL_WRAP(cal_event_base,FCNCALL_CLASS_NAME(cal_event_base)::FCNCALL_CALL_BASE());
+  FCNCALL_RET;
+}
+#endif//USER_DEF_cal_event
+
+#include "gen/default_fcncall_undef.hh"
+
+
+/** END_FUNCTION_CALL_PER_MEMBER **************************************/
+
+
+/** BEGIN_CORR_STRUCT **************************************************
+ *
+ * Correlation structure.
+ *
+ * Do not edit - automatically generated.
+ */
+
+// Corr struct for: cal_event
+//  : public cal_event_base
+// ---
+// 
+// size= 1  chunks=  1  mem=   1  line=2  total=2
+// 
+// corr structure: cal_event
+// .cal_event// 
+// size= 1  chunks=  1  mem=   1  line=2  total=2
+// 
+// corr structure: cal_event
+// .cal_event// 
+// size= 1  chunks=  1  mem=   1  line=2  total=2
+// 
+// corr structure: cal_event
+// .cal_event
+
+/** END_CORR_STRUCT ***************************************************/
+
