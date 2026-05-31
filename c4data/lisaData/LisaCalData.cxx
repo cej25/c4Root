@@ -34,8 +34,8 @@ LisaCalItem::LisaCalItem()
 }
 
 void LisaCalItem::SetAll(uint64_t br,
-                        uint16_t brid,
-                        uint64_t rn,
+                        uint32_t brid,
+                        uint32_t rn,
                         int b_id,
                         int layer,
                         TString c,

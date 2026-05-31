@@ -48,7 +48,7 @@
 
 LisaNearlineSpectra::LisaNearlineSpectra()  :   LisaNearlineSpectra("LisaNearlineSpectra")
 {
-    c4LOG(info,"config");
+    //c4LOG(info,"config");
     lisa_config = TLisaConfiguration::GetInstance();
     exp_config = TExperimentConfiguration::GetInstance();
 }
@@ -60,7 +60,7 @@ LisaNearlineSpectra::LisaNearlineSpectra(std::vector<LisaGate*> lg)
     , header(nullptr)
     // ranges
 {
-    c4LOG(info,"config2");
+    //c4LOG(info,"config2");
     lisa_config = TLisaConfiguration::GetInstance();
     exp_config = TExperimentConfiguration::GetInstance();
     for (auto & gate : lg) 
@@ -97,7 +97,6 @@ void LisaNearlineSpectra::SetParContainers()
 
 InitStatus LisaNearlineSpectra::Init()
 {
-    c4LOG(info,"init");
     FairRootManager* mgr = FairRootManager::Instance();
     c4LOG_IF(fatal, NULL == mgr, "FairRootManager not found");
 
@@ -155,14 +154,22 @@ InitStatus LisaNearlineSpectra::Init()
     dir_lisa_gates = dir_lisa->mkdir("Gates-LISA");
 
     
-    //c4LOG(info, "INIT Layer number" << layer_number);
+    //c4LOG(info, "Stats for layer number" << layer_number);
+    //c4LOG(info, "Stats for layer number" << layer);
+
     //c4LOG(info, "det_number :" << det_number << " layer number : " << layer_number);
     //....................................
   
     // ::: S T A T S :::
 
+    //::: Black Rabbit time:::
+    dir_stats->cd();
+    h1_br_time = new TH1I("h1_br_time", "BR Time", lisa_config->bin_br_diff,0, 100000000000000);
+    h1_br_time->GetXaxis()->SetTitle("LISA BR Time [ns]");
+    h1_br_time->SetLineColor(kBlack);
+    h1_br_time->SetFillColor(kRed-3);   
 
-    //::: Black Rabbit :::
+    //::: Black Rabbit difference:::
     dir_stats->cd();
     h1_br_diff = new TH1I("h1_br_diff", "BR Difference", lisa_config->bin_br_diff, lisa_config->min_br_diff, lisa_config->max_br_diff);
     h1_br_diff->GetXaxis()->SetTitle("LISA BR Difference [ns]");
@@ -224,14 +231,21 @@ InitStatus LisaNearlineSpectra::Init()
         }
     }
 
+    //::: Layer Fired :::
+    dir_stats->cd();
+    h1_layer_fired = new TH1I("h1_layer_fired", "Layer Fired", layer_number+1, -0.5, layer_number+0.5);
+    h1_layer_fired->GetXaxis()->SetTitle("Layer");
+    h1_layer_fired->SetLineColor(kBlack);
+    h1_layer_fired->SetFillColor(kRed-3);
+
     //::: Hit Patterns :::
     dir_stats->cd();
 
     //      Layer
-    h1_hitpattern_layer.resize(layer_number+1);
-    for (int i = 1; i <= layer_number; i++)
+    h1_hitpattern_layer.resize(layer_number);
+    for (int i = 0; i < layer_number; i++)
     {   
-        h1_hitpattern_layer[i] = new TH1I(Form("h1_hitpattern_layer_%i", i), Form("Hit Pattern - Layer: %i", i), xmax * ymax, 0, xmax * ymax);
+        h1_hitpattern_layer[i] = new TH1I(Form("h1_hitpattern_layer_%i", i+1), Form("Hit Pattern - Layer: %i", i+1), xmax * ymax, 0, xmax * ymax);
 
         for (int j = 0; j < xmax * ymax; j++)
         {
@@ -247,6 +261,7 @@ InitStatus LisaNearlineSpectra::Init()
                     break;
                 }
             }
+
             h1_hitpattern_layer[i]->GetXaxis()->SetBinLabel(j+1, city.Data());
         }
        
@@ -324,6 +339,7 @@ InitStatus LisaNearlineSpectra::Init()
     //      Layer Multiplicity
     h1_layer_multiplicity = new TH1I("h1_layer_multiplicity", "Layer Multiplicity", layer_number+1, -0.5, layer_number+0.5);
     //...................................END OF STATS   
+    //c4LOG(info, "Energy");
 
     // ::: E N E R G Y :::
     dir_energy->cd();
@@ -357,7 +373,7 @@ InitStatus LisaNearlineSpectra::Init()
             }
         }
     }
-
+    //c4LOG(info, "A");
     //      Febex energy by layer
     h1_energy_layer.resize(layer_number);
     for (int i = 0; i < layer_number; i++)
@@ -396,7 +412,6 @@ InitStatus LisaNearlineSpectra::Init()
         }
        
     }
-
     //....................................
     //      Febex energy vs layer ID
     dir_febex->cd();
@@ -432,9 +447,10 @@ InitStatus LisaNearlineSpectra::Init()
     h2_energy_first_vs_last->GetYaxis()->SetTitle("E(Layer 1) [a.u.]");
     h2_energy_first_vs_last->SetOption("COLZ");
     //....................................
+    //c4LOG(info, "B");
+
     // ::: E N E R G Y    M W D :::
     dir_MWD_channel->cd();
-    //      MWD per channel
     h1_energy_MWD_ch.resize(layer_number);
     for (int i = 0; i < layer_number; i++)
     {
@@ -443,20 +459,29 @@ InitStatus LisaNearlineSpectra::Init()
         {
             h1_energy_MWD_ch[i][j].resize(ymax);
             for (int k = 0; k < ymax; k++)
-            {   
+            {
                 city = "";
                 for (auto & detector : detector_mapping)
                 {
-                    int x = detector.second.first.second.first;
-                    int y = detector.second.first.second.second;
                     int l_id = detector.second.first.first;
-                    if (l_id == i + 1 &&  x == j && y == k)
+                    int x    = detector.second.first.second.first;
+                    int y    = detector.second.first.second.second;
+                    if (l_id == i + 1 && x == j && y == k)
                     {
-                        city = detector.second.second.second.first;
+                        city = detector.second.second.second.first;  // det_name
                         break;
                     }
                 }
-                h1_energy_MWD_ch[i][j][k] = new TH1F(Form("energy_MWD_%s_%i%i%i", city.Data(), i+1, j, k), Form("Energy MWD %s",city.Data()), lisa_config->bin_energy_MWD, lisa_config->min_energy_MWD, lisa_config->max_energy_MWD);
+
+                // Name:  energy_MWD_<det_name>_zxy  e.g. energy_MWD_ch0_0_100
+                // Title: Energy MWD <det_name>       e.g. Energy MWD ch0_0
+                h1_energy_MWD_ch[i][j][k] = new TH1F(
+                    Form("energy_MWD_%s_%i%i%i", city.Data(), i+1, j, k),
+                    Form("Energy MWD %s", city.Data()),
+                    lisa_config->bin_energy_MWD,
+                    lisa_config->min_energy_MWD,
+                    lisa_config->max_energy_MWD
+                );
                 h1_energy_MWD_ch[i][j][k]->GetXaxis()->SetTitle("E_MWD (LISA) [a.u.]");
                 h1_energy_MWD_ch[i][j][k]->SetLineColor(kBlue+1);
                 h1_energy_MWD_ch[i][j][k]->SetFillColor(kViolet-1);
@@ -538,6 +563,8 @@ InitStatus LisaNearlineSpectra::Init()
     h2_energy_MWD_first_vs_last->GetYaxis()->SetTitle("E MWD (Layer 1) [a.u.]");
     h2_energy_MWD_first_vs_last->SetOption("COLZ");
     //....................................
+    //c4LOG(info, "C");
+
     //      dEdX per channel
     dir_dedx_channel->cd();
     h1_dedx_ch.resize(layer_number);
@@ -607,6 +634,7 @@ InitStatus LisaNearlineSpectra::Init()
        
     }
     //....................................
+    //c4LOG(info, "D");
     //      DeDx vs layer ID
     dir_dedx->cd();
     h2_dedx_vs_layer = new TH2F("h2_dedx_vs_layer", "dEdX vs Layer ID",layer_number, 0.5, layer_number + 0.5,lisa_config->bin_dedx, lisa_config->min_dedx, lisa_config->max_dedx);
@@ -641,9 +669,9 @@ InitStatus LisaNearlineSpectra::Init()
     h2_dedx_first_vs_last->GetYaxis()->SetTitle("dEdX(Layer 1) [a.u.]");
     h2_dedx_first_vs_last->SetOption("COLZ");
     //....................................
-
     //.................................... END OF ENERGY
     // ::: T R A C E S
+    //c4LOG(info, "E");
     if(lisa_config->trace_on)
     {
         h2_traces_ch.resize(layer_number);
@@ -684,6 +712,7 @@ InitStatus LisaNearlineSpectra::Init()
     //.................................... END OF TRACES
     // :::  D R I F T S :::
     //....................................
+    //c4LOG(info, "F");
     // ::: Febex layer vs Time (Event Number)
     h2_energy_layer_vs_evtno.resize(layer_number);
     dir_febex_drift->cd();
@@ -769,7 +798,7 @@ InitStatus LisaNearlineSpectra::Init()
         }
     } 
     //....................................END OF DRIFTS 
-
+    //c4LOG(info, "G");
     // ::: Febex Gated
     dir_gated_febex = dir_lisa_gates->mkdir("Febex");
     dir_gated_mwd = dir_lisa_gates->mkdir("MWD");
@@ -889,6 +918,7 @@ InitStatus LisaNearlineSpectra::Init()
 
 void LisaNearlineSpectra::Exec(Option_t* option)
 {   
+    //c4LOG(info, "Exec");
     // ::: For BR histos and experiment start
     br_time = 0;
     Long64_t LISA_time_mins = 0;
@@ -968,7 +998,7 @@ void LisaNearlineSpectra::Exec(Option_t* option)
         //h1_hitpattern_total->Fill(hp_total_bin);
         //....................
         // ::: Hit Pattern by layer
-        h1_hitpattern_layer[layer]->Fill(hp_bin);
+        h1_hitpattern_layer[layer-1]->Fill(hp_bin);
         //....................
         // ::: Grids (hit pattern, pile up and overflow)
         h2_hitpattern_grid[layer-1]->Fill(xpos,ypos);
@@ -1021,6 +1051,7 @@ void LisaNearlineSpectra::Exec(Option_t* option)
         {
             if (gate->PassedGate(layer, energy_GM))
             {
+                //c4LOG(info,"fill gated energy");
                 energy_layer_gated[g][layer-1].push_back(energy_GM);
                 energy_xy_gated[g][layer-1][xpos][ypos].push_back(energy_GM);
             }
@@ -1075,6 +1106,8 @@ void LisaNearlineSpectra::Exec(Option_t* option)
         //    Febex energy vs Time
         if (energy_GM > 0 && LISA_time_mins > 0)
         {
+        	//std::cout << "eventno: " << evtno << std::endl;
+        	//std::cout << "header pointer: " << header << std::endl;
             //c4LOG(info, "conditions on LISA time: " << LISA_time_mins << " and energy: " << energy_GM );
             h2_energy_layer_vs_evtno[layer-1]->Fill(evtno, energy_GM);
             h2_energy_ch_vs_evtno[layer-1][xpos][ypos]->Fill(evtno, energy_GM); 
@@ -1100,19 +1133,26 @@ void LisaNearlineSpectra::Exec(Option_t* option)
     if( prev_br > 0 )
     {
         br_diff = br_time - prev_br;
+        //std::cout << "br_diff: " << br_diff << std::endl;
         h1_br_diff->Fill(br_diff);
     }
     prev_br = br_time;
     //....................................
+    // ::: BR time
+    h1_br_time->Fill(br_time);
 
     // ::: RATES
     double rate_br_dt_db = (br_time - saved_br) / 1e9;
+    //std::cout << "br_time: " << br_time << std::endl;
+    //std::cout << "saved br time: " << saved_br << std::endl;
+    //std::cout << "rate: " << rate_br_dt_db << std::endl;
+
 
     if (rate_br_dt_db > 1) 
     {
         if (saved_br != 0 && rate_br_dt_db < 2)
         {
-            for (int i = 0; i < layer_number; i++)
+            for (int i = 0; i < layer; i++)
             {
                 //c4LOG(info, " Layer : " << i << " Layer rate : " << layer_rate[i] << " Layer counter : " << layer_counter[i] << " rate_br_dt_db : " << rate_br_dt_db);
                 layer_rate[i] = layer_counter[i] / rate_br_dt_db;
@@ -1124,6 +1164,9 @@ void LisaNearlineSpectra::Exec(Option_t* option)
                     {
                         detector_rate[i][j][k] = detector_counter[i][j][k] / rate_br_dt_db;
                         h1_lisa_rate[i][j][k]->SetBinContent(rate_running_count, detector_rate[i][j][k]);
+                        //c4LOG(info,"rate_br_dt_db: " << rate_br_dt_db << " detector counter: " << detector_counter[i][j][k]);
+                        //c4LOG(info,"detector_rate: " << detector_rate[i][j][k]);
+
                     }
                 }
             }
@@ -1131,7 +1174,7 @@ void LisaNearlineSpectra::Exec(Option_t* option)
         saved_br = br_time;
         rate_running_count++;
 
-        for (int i = 0; i < layer; i++)
+        for (int i = 0; i < layer_number; i++)
         {
             layer_counter[i] = 0;
             for (int j = 0; j < xmax; j++)
@@ -1146,6 +1189,7 @@ void LisaNearlineSpectra::Exec(Option_t* option)
     //....................................
 
     // ::: Multiplicity
+    h1_layer_fired->Fill(layer);
     h1_multiplicity->Fill(total_multiplicity);
     for (int i = 0; i < layer_number; i++) h1_multiplicity_per_layer[i]->Fill(multiplicity[i]);
 
@@ -1226,6 +1270,7 @@ void LisaNearlineSpectra::Exec(Option_t* option)
     // ::: Layer
     for (int g = 0; g < gate_number; ++g)  
     {
+        //c4LOG(info,"In gate number loop");
         for (int l = 0; l < layer_number; ++l) 
         {
             if (energy_layer_gated[g][l].size() == 0) break;  
@@ -1233,6 +1278,7 @@ void LisaNearlineSpectra::Exec(Option_t* option)
             for (int i = 0; i < energy_layer_gated[g][l].size(); ++i)
             {
                 h1_energy_layer_gated[g][l]->Fill(energy_layer_gated[g][l].at(i));
+                //c4LOG(info,"In gated loop");
             }
         }
     }
