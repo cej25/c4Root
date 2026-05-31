@@ -2616,86 +2616,67 @@ void FrsCal2Hit::ProcessIDs_MHTDC()
 
     // EG. Beta s1s2 selected = for same s2 hits in s1s2 and s2s4 (with position selection as for s1s2 and s2s4)
     // This is a two ways selection. We take only s2s4 hits that pass through s2. Then we look at s2s4 and we take only s2 hits that have arrived to s4.
-    //c4LOG(info, " 2ways selection");
-    //c4LOG(info, " size of sci21: " << sci21l_hits_tofs2s4_pos_selected.size());
-    //c4LOG(info, " sci21l_hits_tofs1s2_pos_selected: " << sci21l_hits_tofs1s2_pos_selected.size());
-    //c4LOG(info, " sci21l_hits_tofs2s4_pos_selected: " << sci21l_hits_tofs2s4_pos_selected.size());
-    //c4LOG(info, " sci21r_hits_tofs1s2_pos_selected: " << sci21r_hits_tofs1s2_pos_selected.size());
-    //c4LOG(info, " sci21r_hits_tofs2s4_pos_selected: " << sci21r_hits_tofs2s4_pos_selected.size());
+    // The hit s1-s2-s4 has to be a physical chain of event. Meaning that s2 which is selected in s1s2 HAS to be the starting point for the solection in s2s4.
+    // For the reaction identification in lisa what is important is that I am able to get the pair os s1s2 & s2s4 hits for which the is a known correspondence between s2 hits.
+    // We can not throw away hits which are valid for s1s2, but weird in s2s4 because it's still physical data in s1s2 relevant for xsection measurements.
+    // c4LOG(info, " 2ways selection");
+    c4LOG(info, " size of sci21: " << sci21l_hits_tofs2s4_pos_selected.size());
+    c4LOG(info, " sci21l_hits_tofs1s2_pos_selected: " << sci21l_hits_tofs1s2_pos_selected.size());
+    c4LOG(info, " sci21l_hits_tofs2s4_pos_selected: " << sci21l_hits_tofs2s4_pos_selected.size());
+    c4LOG(info, " sci21r_hits_tofs1s2_pos_selected: " << sci21r_hits_tofs1s2_pos_selected.size());
+    c4LOG(info, " sci21r_hits_tofs2s4_pos_selected: " << sci21r_hits_tofs2s4_pos_selected.size());
+    //if(sci21l_hits_tofs2s4_selected.size()>1) c4LOG(info, "!!size of sci21l (s2s4) not pos selected" << sci21l_hits_tofs2s4_selected.size());
+    //if(sci21l_hits_tofs1s2_selected.size()>1) c4LOG(info, "!!size of sci21l (s2s4) not pos selected" << sci21l_hits_tofs1s2_selected.size());
+    //if(sci21l_hits_tofs2s4_pos_selected.size()>1) c4LOG(info, "size of sci21l (s2s4)" << sci21l_hits_tofs2s4_pos_selected.size());
+    //if(sci21l_hits_tofs1s2_pos_selected.size()>1) c4LOG(info, "size of sci21l (s2s4)" << sci21l_hits_tofs1s2_pos_selected.size());
 
-    // EG: !!!!!!!New version checking sizes of vectors and matching positions. This is not correct
-    // for (size_t j = 0; j < sci21l_hits_tofs2s4_pos_selected.size(); j++)
-    // {
-    //     // Search for this s2s4 sci21 hit in the s1s2 selected list
-    //     bool found = false;
-    //     size_t matched_i = 0;
-    //     for (size_t i = 0; i < sci21l_hits_tofs1s2_pos_selected.size(); i++)
-    //     {
-    //         if ((sci21l_hits_tofs1s2_pos_selected[i] == sci21l_hits_tofs2s4_pos_selected[j]) &&
-    //             (sci21r_hits_tofs1s2_pos_selected[i] == sci21r_hits_tofs2s4_pos_selected[j]))
-    //         {
-    //             found = true;
-    //             matched_i = i;
-    //             break;
-    //         }
-    //     }
-
-    //     if (found)
-    //     {
-    //         // matched_i must be valid for the temp arrays (sized to hits_in_s1s2)
-    //         if (matched_i >= (size_t)hits_in_s1s2) continue;
-    //         //  must be valid for the temp s2s4 arrays (sized to hits_in_s2s4)
-    //         if (j >= (size_t)hits_in_s2s4) continue;
-
-    //         id_mhtdc_beta_s1s2_selected.emplace_back(temp_id_mhtdc_beta_s1s2[matched_i]);
-    //         id_mhtdc_aoq_corr_s1s2_selected.emplace_back(
-    //             (mean_brho_s1s2 * (1. + id_mhtdc_delta_s1s2[matched_i]) * temp_tm_to_MeV /
-    //             (temp_mu * temp_id_mhtdc_beta_s1s2[matched_i] * id_mhtdc_gamma_s1s2[matched_i]))
-    //             - id->a1AoQCorr * id_a2);
-
-    //         id_mhtdc_beta_s2s4_selected.emplace_back(temp_id_mhtdc_beta_s2s4[j]);
-    //         id_mhtdc_aoq_corr_s2s4_selected.emplace_back(
-    //             mean_brho_s2s4 * (1. + id_mhtdc_delta_s2s4[j]) * temp_tm_to_MeV /
-    //             (temp_mu * temp_id_mhtdc_beta_s2s4[j] * temp_id_mhtdc_gamma_s2s4[j])
-    //             - id->a2AoQCorr * id_a2);
-    //     }
-    // }
-
-    for (size_t j = 0; j < sci21l_hits_tofs2s4_pos_selected.size();j++)
+    c4LOG(info,":::");
+    // EG and CJ (31/may/26: this is looping over all the hits in s1s2 and s2s4 and take only the ones for which s21L/R have the same value in s1s2 and s2s4
+    for (size_t i = 0; i < sci21l_hits_tofs1s2_pos_selected.size(); i++)
     {
-        //c4LOG(info,"prob before if");
-        if((sci21l_hits_tofs1s2_pos_selected[j] == sci21l_hits_tofs2s4_pos_selected[j]) && (sci21r_hits_tofs1s2_pos_selected[j] == sci21r_hits_tofs2s4_pos_selected[j]))
+        c4LOG(info,"prob before for");
+        for (size_t j = 0; j < sci21l_hits_tofs2s4_pos_selected.size();j++)
         {
-            //c4LOG(info,"prob in if");
-            id_mhtdc_beta_s1s2_selected.emplace_back(temp_id_mhtdc_beta_s1s2[j]);
-            id_mhtdc_aoq_corr_s1s2_selected.emplace_back((mean_brho_s1s2 * (1. + id_mhtdc_delta_s1s2[j]) * temp_tm_to_MeV / (temp_mu * temp_id_mhtdc_beta_s1s2[j] * id_mhtdc_gamma_s1s2[j])) - id->a1AoQCorr * id_a2);
-                
-            id_mhtdc_beta_s2s4_selected.emplace_back(temp_id_mhtdc_beta_s2s4[j]);
-            id_mhtdc_aoq_corr_s2s4_selected.emplace_back(mean_brho_s2s4 * (1. + id_mhtdc_delta_s2s4[j]) * temp_tm_to_MeV / (temp_mu * temp_id_mhtdc_beta_s2s4[j] * temp_id_mhtdc_gamma_s2s4[j]) - id->a2AoQCorr * id_a2);
+            c4LOG(info,"prob before if");
+
+            if((sci21l_hits_tofs1s2_pos_selected[i] == sci21l_hits_tofs2s4_pos_selected[j]) && (sci21r_hits_tofs1s2_pos_selected[i] == sci21r_hits_tofs2s4_pos_selected[j]))
+            {
+                //c4LOG(info,"prob in if");
+                id_mhtdc_beta_s1s2_selected.emplace_back(temp_id_mhtdc_beta_s1s2[i]);
+                id_mhtdc_aoq_corr_s1s2_selected.emplace_back((mean_brho_s1s2 * (1. + id_mhtdc_delta_s1s2[i]) * temp_tm_to_MeV / (temp_mu * temp_id_mhtdc_beta_s1s2[i] * id_mhtdc_gamma_s1s2[i])) - id->a1AoQCorr * id_a2);
+                    
+                id_mhtdc_beta_s2s4_selected.emplace_back(temp_id_mhtdc_beta_s2s4[j]);
+                id_mhtdc_aoq_corr_s2s4_selected.emplace_back(mean_brho_s2s4 * (1. + id_mhtdc_delta_s2s4[j]) * temp_tm_to_MeV / (temp_mu * temp_id_mhtdc_beta_s2s4[j] * temp_id_mhtdc_gamma_s2s4[j]) - id->a2AoQCorr * id_a2);
+            }
         }
+
     }
-    // c4LOG(info,"out of sciloop");
+    //c4LOG(info,"out of sciloop");
 
+    // EG - older version bugged(changed on 31st of may)
+    // this is doing this in extreme cases
+    // s2(s1) = 1.5, 3.4, 8.7, 9.6
+    // s2(s4) = 3.4, 9.6
 
-    // EG - older version bugged
-    // for (int i = 0; i < hits_in_s1s2; i++)
+    // 0 = 3.4
+    // 1 = 9.6
+
+    // j = 0, 1.5 == 3.4 ? --> false
+    // j = 1, 3.4 == 9.6 ? --> false
+    // for (size_t j = 0; j < sci21l_hits_tofs2s4_pos_selected.size();j++)
     // {
-    //     if((sci21l_hits_tofs1s2_pos_selected[i] == sci21l_hits_tofs2s4_pos_selected[i]) && (sci21r_hits_tofs1s2_pos_selected[i] == sci21r_hits_tofs2s4_pos_selected[i]))
+    //     c4LOG(info,"prob before if");
+
+    //     if((sci21l_hits_tofs1s2_pos_selected[j] == sci21l_hits_tofs2s4_pos_selected[j]) && (sci21r_hits_tofs1s2_pos_selected[j] == sci21r_hits_tofs2s4_pos_selected[j]))
     //     {
-    //         for(size_t j = 0; j < sci21l_hits_tofs2s4_pos_selected.size();j++) 
-    //         {
-    //             id_mhtdc_beta_s1s2_selected.emplace_back(temp_id_mhtdc_beta_s1s2[j]);
-    //             id_mhtdc_aoq_corr_s1s2_selected.emplace_back((mean_brho_s1s2 * (1. + id_mhtdc_delta_s1s2[j]) * temp_tm_to_MeV / (temp_mu * temp_id_mhtdc_beta_s1s2[j] * id_mhtdc_gamma_s1s2[j])) - id->a1AoQCorr * id_a2);
+    //         c4LOG(info,"prob in if");
+    //         id_mhtdc_beta_s1s2_selected.emplace_back(temp_id_mhtdc_beta_s1s2[j]);
+    //         id_mhtdc_aoq_corr_s1s2_selected.emplace_back((mean_brho_s1s2 * (1. + id_mhtdc_delta_s1s2[j]) * temp_tm_to_MeV / (temp_mu * temp_id_mhtdc_beta_s1s2[j] * id_mhtdc_gamma_s1s2[j])) - id->a1AoQCorr * id_a2);
                 
-    //             id_mhtdc_beta_s2s4_selected.emplace_back(temp_id_mhtdc_beta_s2s4[j]);
-    //             id_mhtdc_aoq_corr_s2s4_selected.emplace_back(mean_brho_s2s4 * (1. + id_mhtdc_delta_s2s4[j]) * temp_tm_to_MeV / (temp_mu * temp_id_mhtdc_beta_s2s4[j] * temp_id_mhtdc_gamma_s2s4[j]) - id->a2AoQCorr * id_a2);
-    //         }
+    //         id_mhtdc_beta_s2s4_selected.emplace_back(temp_id_mhtdc_beta_s2s4[j]);
+    //         id_mhtdc_aoq_corr_s2s4_selected.emplace_back(mean_brho_s2s4 * (1. + id_mhtdc_delta_s2s4[j]) * temp_tm_to_MeV / (temp_mu * temp_id_mhtdc_beta_s2s4[j] * temp_id_mhtdc_gamma_s2s4[j]) - id->a2AoQCorr * id_a2);
     //     }
     // }
-
-    //c4LOG(info, " hits in s1s2 : " << sci21l_hits_tofs2s4_pos_selected.size());
-    //c4LOG(info, " hits in s2s4 : " << sci41l_hits_tofs2s4_selected.size());
-    //c4LOG(info, " ------ ");
 
 
     for (int i = 0; i < id_mhtdc_beta_s1s2_selected.size();  i++)

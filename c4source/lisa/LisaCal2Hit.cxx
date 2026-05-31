@@ -183,6 +183,14 @@ void LisaCal2Hit::Exec(Option_t* option)
 
             #if WITH_ATIMA
 
+                // Check against invalid inputs to catima
+                if (std::round(z_i_s[i]) <= 0 || std::round(A_i_s[i]) <= 0 || beta_en_i_s[i] <= 0)
+                {
+                    beta_before_lisa.emplace_back(0);
+                    copy_beta_before_lisa.emplace_back(0);
+                    continue;
+                }
+
                 // Projectile has to have A and Z int
                 catima::Projectile beam(std::round(A_i_s[i]), std::round(z_i_s[i]));
                 Float_t Ein = beta_en_i_s[i]/A_i_s[i];

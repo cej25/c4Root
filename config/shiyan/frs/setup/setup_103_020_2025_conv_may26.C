@@ -11,7 +11,7 @@ void setup(TFRSParameter* frs,
         TMRTOFMSParameter* mrtof,
         TRangeParameter* range)
 {
-
+  id->sci11_in = 1; // 1 = SCI11 used for analysis - SCI11 in beamline since 2025
   frs->rho0[0]   = 1.; //TA-S2
   frs->rho0[1]   = 1.; //S2-S4
   frs->rho0[2]   = 1.; //S4-S8

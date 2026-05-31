@@ -19,11 +19,11 @@
 // FRS
 //#define FRS_SETUP_FILE "../../../config/shiyan/frs/setup/setup_103_016_2025_run6_conv.C" //run6
 //#define FRS_SETUP_FILE "../../../config/shiyan/frs/setup/setup_103_016_2025_setting10_conv.C" //run18
-#define FRS_SETUP_FILE "../../../config/shiyan/frs/setup/setup_103_016_2025_setting13_conv_nov25.C" //run19
-//#define FRS_SETUP_FILE "../../../config/shiyan/frs/setup/setup_103_020_2025_conv.C" //setting 20
+//#define FRS_SETUP_FILE "../../../config/shiyan/frs/setup/setup_103_016_2025_setting13_conv_nov25.C" //run19
+#define FRS_SETUP_FILE "../../../config/shiyan/frs/setup/setup_103_020_2025_conv_may26.C" //setting 20
 
 //#define FRS_CONFIG_FILE "../../../config/shiyan/frs/general/frs_config_v6.C"
-#define FRS_CONFIG_FILE "../../../config/shiyan/frs/general/frs_config_test.C"
+#define FRS_CONFIG_FILE "../../../config/shiyan/frs/general/frs_config_test_fragment.C"
 #define LISA_CONFIG_FILE "../../../config/shiyan/lisa/general/lisa_config_v2.C"
 
 //pareeksha
@@ -98,12 +98,12 @@ void e_shiyan_make_trees()
 
     // Shiyan
     TString inputpath = "/u/gandolfo/data/lustre/gamma/s092_s103_files/ts/";                       // Data from LISA
-    TString filename = inputpath + "run_0018_0001.lmd";
+    TString filename = inputpath + "run_0143_0001.lmd";
 
     // ::: OUTPUT 
     TString outputpath = "/u/gandolfo/data/shiyan_HitData/";   //shiyan
     //TString outputpath = "/u/gandolfo/data/pareeksha_debug/";  
-    TString outputFilename = outputpath + "run_0018_0001_tree.root";
+    TString outputFilename = outputpath + "run_0143_0001_tree_debug.root";
     
     // ::: Create online run
     Int_t refresh = 10; // not needed
