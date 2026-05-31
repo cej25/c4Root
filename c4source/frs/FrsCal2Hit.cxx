@@ -1077,6 +1077,7 @@ void FrsCal2Hit::ProcessSci_MHTDC()
         std::cout << "beta s2s4: " << PID.Betas_S1S2S4.at(i).second << std::endl;
     }
     */
+    // SCI 11 L and R - For Sc11 a "select" is used, there are 4 options?
 
     // here use the select.. 
     if (sci->sci11_select == 0) sci11l_hits = calSciItem.Get_mhtdc_sci11la_hits();
