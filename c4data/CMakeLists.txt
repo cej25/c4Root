@@ -60,7 +60,7 @@ if (LISA_ONLY)
     FrsMultiHitItem
     FrsGate
     Scintillator
-    TimeOfFlight
+    ParticleID
     TFrsConfiguration
     TFRSParameter
     TMWParameter

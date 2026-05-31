@@ -79,6 +79,8 @@
 #pragma link C++ class TLABRParameter+;
 #pragma link C++ class TMRTOFMSParameter+;
 #pragma link C++ class FrsGate+;
+#pragma link C++ class Scintillator+;
+#pragma link C++ class ParticleID+;
 
 // Germanium
 #pragma link C++ class GermaniumFebexData+;
