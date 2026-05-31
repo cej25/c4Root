@@ -18,10 +18,10 @@
 #include "TGraph.h"
 #include "TString.h"
 #include "TExperimentConfiguration.h"
+#include <Rtypes.h>
 
 
 //Debugging. Replaced std::string with TString 8nov24
-
 
 
 class LisaCalItem;
@@ -93,8 +93,9 @@ class LisaNearlineSpectra : public FairTask
         int num_layers;
         uint64_t br_evtno;
         Int_t layer;
+        //std::string city = "";
         TString city = "";
-        EventHeader* header;
+        EventHeader const* header; // maybe
         Int_t fNEvents;
         
         // counters
@@ -106,11 +107,11 @@ class LisaNearlineSpectra : public FairTask
         int rate_running_count = 0; 
 
         // Rates
-        Long64_t prev_br = 0;
-        Long64_t br_time; 
-        Long64_t br_diff; 
-        Long64_t br_rate; 
-        Long64_t saved_br =  0; 
+        ULong64_t prev_br = 0;
+        ULong64_t br_time; 
+        ULong64_t br_diff; // probably has 
+        ULong64_t br_rate; 
+        ULong64_t saved_br =  0; 
 
         // ::: Directories
         TDirectory* dir_lisa;
@@ -150,6 +151,7 @@ class LisaNearlineSpectra : public FairTask
      
         // ::: Histograms :::
         // ::: Stats
+        TH1I* h1_br_time; 
         TH1I* h1_br_diff; 
         std::vector<TH1I*> h1_lisa_layer_rate;
         std::vector<std::vector<std::vector<TH1I*>>> h1_lisa_rate; 
@@ -161,6 +163,7 @@ class LisaNearlineSpectra : public FairTask
         TH1I* h1_multiplicity;
         std::vector<TH1I*> h1_multiplicity_per_layer; ;
         TH1I* h1_layer_multiplicity;
+        TH1I* h1_layer_fired;
 
         //  ::: Energy
         //      Febex

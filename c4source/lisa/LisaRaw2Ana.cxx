@@ -109,9 +109,14 @@ void LisaRaw2Ana::Exec(Option_t* option)
         // ::: Calculate energy with MWD algorithm ::: 
         //     - Calculation of trapezoidal shape using moving windows (MWD trace)
         //     - Extraction of energy as amplitude to the flat top of the trapezoid (MWD energy) 
+        
+        
 
         if (lisa_config->MWDParametersLoaded())
         {
+            
+            
+            //c4LOG(info,"br time from raw2ana: " << lisaItem.Get_br_t());
             
             energy_sum = 0.0;
             amp_count = 0;

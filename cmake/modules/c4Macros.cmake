@@ -51,6 +51,7 @@ Macro (c4_Generate_Version_Info)
 
   #Add_Custom_Command(TARGET svnr3bheader
   Add_Custom_Command(TARGET svnc4header
+  		     POST_BUILD #EG change to fix for new fairroot version -- EG 26May26
                      COMMAND ${CMAKE_COMMAND} -DSOURCE_DIR=${CMAKE_SOURCE_DIR}
                      -DBINARY_DIR=${CMAKE_BINARY_DIR}
                      -DINCLUDE_OUTPUT_DIRECTORY=${INCLUDE_OUTPUT_DIRECTORY}

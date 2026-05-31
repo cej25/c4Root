@@ -21,7 +21,7 @@ void histo_config(const std::string& config_path)
 
     // ::: LISA ranges
     //  Channel Energy 
-    TLisaConfiguration::SetEnergyRange(0,10000); 
+    TLisaConfiguration::SetEnergyRange(0,100000); 
     TLisaConfiguration::SetEnergyBin(500); 
 
     //  MWD histos
@@ -32,20 +32,20 @@ void histo_config(const std::string& config_path)
     TLisaConfiguration::SetdEdXBin(500); 
 
     //  Traces Time and Amplitude Ranges 
-    TLisaConfiguration::SetTracesRange(0,4);
-    TLisaConfiguration::SetTracesBin(400);
+    TLisaConfiguration::SetTracesRange(0,25);
+    TLisaConfiguration::SetTracesBin(100);
     TLisaConfiguration::SetAmplitudeMin(6000);
-    TLisaConfiguration::SetAmplitudeMax(8500);
+    TLisaConfiguration::SetAmplitudeMax(9000);
 
     // Black Rabbit
-    TLisaConfiguration::SetBrDiffRange(0,100000000);
+    TLisaConfiguration::SetBrDiffRange(0,10000);
     TLisaConfiguration::SetBrDiffBin(50000);
 
     TLisaConfiguration::SetBrRateRange(0,3600);
     TLisaConfiguration::SetBrRateBin(3600);
 
     // Drift
-    TLisaConfiguration::SetDriftRange(0,10100);
+    TLisaConfiguration::SetDriftRange(0,14500);
     //..................................................
 
     // ::: Gates

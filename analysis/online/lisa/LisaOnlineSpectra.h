@@ -132,6 +132,7 @@ class LisaOnlineSpectra : public FairTask
         //     Stats
         TH1I* h1_hitpattern_total;
         TH1I* h1_br_diff;
+        TH1I* h1_layer_fired;
         std::vector<TH1I*> h1_layer_rate;
         std::vector<std::vector<std::vector<TH1I*>>> h1_rate;
         std::vector<TH1I*> h1_hitpattern_layer;

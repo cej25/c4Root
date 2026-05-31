@@ -26,8 +26,8 @@ LisaItem::LisaItem()
 }
 
 void LisaItem::SetAll(uint64_t br,
-                    uint16_t id,
-                    uint64_t rn,
+                    uint32_t id,
+                    uint32_t rn,
                     int b_id,
                     uint64_t ev_time,
                     int ch_id,

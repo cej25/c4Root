@@ -141,6 +141,9 @@ void LisaAna2Cal::Exec(Option_t* option)
         {
             if (detector_mapping.count(unmapped_channel) > 0)
             {
+                
+                //c4LOG(info,"br time from ana2cal: " << lisaAnaItem.Get_br_t());
+                
                 int layer_id = detector_mapping.at(unmapped_channel).first.first;                        
                 int xpos     = detector_mapping.at(unmapped_channel).first.second.first;                 
                 int ypos     = detector_mapping.at(unmapped_channel).first.second.second;                
