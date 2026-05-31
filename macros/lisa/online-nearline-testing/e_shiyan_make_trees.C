@@ -98,12 +98,12 @@ void e_shiyan_make_trees()
 
     // Shiyan
     TString inputpath = "/u/gandolfo/data/lustre/gamma/s092_s103_files/ts/";                       // Data from LISA
-    TString filename = inputpath + "run_0019_0001.lmd";
+    TString filename = inputpath + "run_0018_0001.lmd";
 
     // ::: OUTPUT 
-    TString outputpath = "/u/gandolfo/data/shiyan_debug/frs_mhit/";   //shiyan
+    TString outputpath = "/u/gandolfo/data/shiyan_HitData/";   //shiyan
     //TString outputpath = "/u/gandolfo/data/pareeksha_debug/";  
-    TString outputFilename = outputpath + "run_0019_0001_tree_test_step1.root";
+    TString outputFilename = outputpath + "run_0018_0001_tree.root";
     
     // ::: Create online run
     Int_t refresh = 10; // not needed
@@ -112,7 +112,10 @@ void e_shiyan_make_trees()
     EventHeader* EvtHead = new EventHeader();
     run->SetEventHeader(EvtHead);
     run->SetRunId(1);
-    run->SetSink(new FairRootFileSink(outputFilename)); // don't write after termintion
+    FairRootFileSink* sink = new FairRootFileSink(outputFilename);
+    run->SetSink(sink);
+    //run->SetSink(new FairRootFileSink(outputFilename)); // don't write after termintion
+    
     //run->ActivateHttpServer(refresh, port);
     TFolder* histograms = new TFolder("Histograms", "Histograms");
     FairRootManager::Instance()->Register("Histograms", "Histogram Folder", histograms, false);
@@ -226,12 +229,12 @@ void e_shiyan_make_trees()
         run->AddTask(hitfrs);
     } 
 
-    // if (LISA_ON && LISA_HIT)
-    // {
-    //     LisaCal2Hit* lisacal2hit = new LisaCal2Hit();
-    //     lisacal2hit->SetOnline(false);
-    //     run->AddTask(lisacal2hit);
-    // }
+    if (LISA_ON && FRS_ON && LISA_HIT)
+    {
+        LisaCal2Hit* lisacal2hit = new LisaCal2Hit();
+        lisacal2hit->SetOnline(false);
+        run->AddTask(lisacal2hit);
+    }
 
     // Write information on setup and config in a "info" tree
     TString frsSetupFile = FRS_SETUP_FILE;
