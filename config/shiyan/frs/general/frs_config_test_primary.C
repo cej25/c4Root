@@ -18,7 +18,7 @@ void frs_config(const std::string& config_path)
     // Limit for Scintillator time difference left-right
     TFrsConfiguration::Set_scilr_mhtdc_limit(20);
 
-     // Ranges for scintillator L and R
+    // Ranges for scintillator L and R
     TFrsConfiguration::Set_sci_limit_11la(43000,47000); //run6 42-47, run18 43-47 , run19 43-47
     TFrsConfiguration::Set_sci_limit_11lb(43000,47000); //run6 42-47, run18 43-47 , run19 43-47
     TFrsConfiguration::Set_sci_limit_11lc(43000,47000); //run6 42-47, run18 43-47 , run19 43-47

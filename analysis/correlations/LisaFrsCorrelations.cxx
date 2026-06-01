@@ -1108,7 +1108,7 @@ InitStatus LisaFrsCorrelations::Init()
     h2_multihit_map_correlated->GetYaxis()->SetTitle("# s2s4_mhtdc");
     h2_multihit_map_correlated->SetOption("COLZ");
 
-    h2_multihit_map_ref = new TH2I("h2_multihit_map_ref", "MHit_s2s4 vs MHit_s1s2 ==1",
+    h2_multihit_map_ref = new TH2I("h2_multihit_map_ref", "MHit_s2s4 vs MHit_s1s2",
                                10, 0, 10,   
                                10, 0, 10);  
     h2_multihit_map_ref->GetXaxis()->SetTitle("# s1s2_mhtdc");
@@ -1223,7 +1223,7 @@ void LisaFrsCorrelations::Exec(Option_t* option)
     std::vector<Float_t> z41_mhtdc = multihitItem.Get_ID_z41_mhtdc();
     std::vector<Float_t> z42_mhtdc = multihitItem.Get_ID_z42_mhtdc();
     std::vector<Float_t> AoQ_s1s2_mhtdc = multihitItem.Get_ID_AoQ_corr_s1s2_mhtdc();
-    std::vector<Float_t> AoQ_s2s4_mhtdc = multihitItem.Get_ID_AoQ_corr_s2s4_mhtdc();
+    std::vector<Float_t> AoQ_s2s4_mhtdc = multihitItem.Get_ID_AoQ_corr_s2s4_mhtdc(); // use the selected quantities
     if (AoQ_s2s4_mhtdc.size() > 0) aoq++;
     std::vector<Float_t> dEdeg_z41_mhtdc = multihitItem.Get_ID_dEdeg_z41_mhtdc();
     Float_t x2_position = frsHitItem.Get_ID_x2();
