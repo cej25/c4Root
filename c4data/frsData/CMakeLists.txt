@@ -22,7 +22,7 @@ FrsHitData.cxx
 TFRSParameter.cxx
 TFrsConfiguration.cxx
 FrsGate.cxx
-FrsStructures.cxx
+# FrsStructures.cxx
 )
 
 # fill list of header files from list of source files by exchanging the file extension

@@ -29,6 +29,8 @@ class Scintillator : public TObject
         // Averages of pairs of hits
         std::vector<Float_t> hit_times; 
 
+        ClassDef(Scintillator, 1);
+
 };
 
 class MUSIC : public TObject
@@ -98,7 +100,7 @@ class Particle
         Double_t z_music21;
         Double_t z_music41;
         Double_t z_music42;
-}
+};
 
 class MultihitPID
 {

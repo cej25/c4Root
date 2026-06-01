@@ -41,7 +41,7 @@ if (LISA_ONLY)
     frsData/TFRSParameter.cxx
     frsData/TFrsConfiguration.cxx
     frsData/FrsGate.cxx
-    frsData/FrsStructures.cxx
+    # frsData/FrsStructures.cxx
     baseData/TCorrelationsConfiguration.cxx
     baseData/TExperimentConfiguration.cxx
     lisaData/TLisaConfiguration.cxx
@@ -132,7 +132,7 @@ if (NOT LISA_ONLY)
     frsData/TFRSParameter.cxx
     frsData/TFrsConfiguration.cxx
     frsData/FrsGate.cxx
-    frsData/FrsStructures.cxx
+    # frsData/FrsStructures.cxx
     baseData/TCorrelationsConfiguration.cxx
     baseData/TExperimentConfiguration.cxx
     lisaData/TLisaConfiguration.cxx
