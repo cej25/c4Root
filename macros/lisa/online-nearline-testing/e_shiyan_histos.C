@@ -19,7 +19,7 @@
 //................................................
 
 // Definition of histo ranges for lisa and frs
-#define HISTO_FILE "../../../config/shiyan/lisa/general/histo_config_v1.C"
+#define HISTO_FILE "../../../config/shiyan/lisa/general/histo_config_v2.C"
 
 extern "C"
 {

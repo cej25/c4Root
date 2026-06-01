@@ -2661,25 +2661,26 @@ void FrsCal2Hit::ProcessIDs_MHTDC()
     // The hit s1-s2-s4 has to be a physical chain of event. Meaning that s2 which is selected in s1s2 HAS to be the starting point for the solection in s2s4.
     // For the reaction identification in lisa what is important is that I am able to get the pair os s1s2 & s2s4 hits for which the is a known correspondence between s2 hits.
     // We can not throw away hits which are valid for s1s2, but weird in s2s4 because it's still physical data in s1s2 relevant for xsection measurements.
+    
     // c4LOG(info, " 2ways selection");
-    c4LOG(info, " size of sci21: " << sci21l_hits_tofs2s4_pos_selected.size());
-    c4LOG(info, " sci21l_hits_tofs1s2_pos_selected: " << sci21l_hits_tofs1s2_pos_selected.size());
-    c4LOG(info, " sci21l_hits_tofs2s4_pos_selected: " << sci21l_hits_tofs2s4_pos_selected.size());
-    c4LOG(info, " sci21r_hits_tofs1s2_pos_selected: " << sci21r_hits_tofs1s2_pos_selected.size());
-    c4LOG(info, " sci21r_hits_tofs2s4_pos_selected: " << sci21r_hits_tofs2s4_pos_selected.size());
+    //c4LOG(info, " size of sci21: " << sci21l_hits_tofs2s4_pos_selected.size());
+    //c4LOG(info, " sci21l_hits_tofs1s2_pos_selected: " << sci21l_hits_tofs1s2_pos_selected.size());
+    //c4LOG(info, " sci21l_hits_tofs2s4_pos_selected: " << sci21l_hits_tofs2s4_pos_selected.size());
+    //c4LOG(info, " sci21r_hits_tofs1s2_pos_selected: " << sci21r_hits_tofs1s2_pos_selected.size());
+    //c4LOG(info, " sci21r_hits_tofs2s4_pos_selected: " << sci21r_hits_tofs2s4_pos_selected.size());
     //if(sci21l_hits_tofs2s4_selected.size()>1) c4LOG(info, "!!size of sci21l (s2s4) not pos selected" << sci21l_hits_tofs2s4_selected.size());
     //if(sci21l_hits_tofs1s2_selected.size()>1) c4LOG(info, "!!size of sci21l (s2s4) not pos selected" << sci21l_hits_tofs1s2_selected.size());
     //if(sci21l_hits_tofs2s4_pos_selected.size()>1) c4LOG(info, "size of sci21l (s2s4)" << sci21l_hits_tofs2s4_pos_selected.size());
     //if(sci21l_hits_tofs1s2_pos_selected.size()>1) c4LOG(info, "size of sci21l (s2s4)" << sci21l_hits_tofs1s2_pos_selected.size());
 
-    c4LOG(info,":::");
+    //c4LOG(info,":::");
     // EG and CJ (31/may/26: this is looping over all the hits in s1s2 and s2s4 and take only the ones for which s21L/R have the same value in s1s2 and s2s4
     for (size_t i = 0; i < sci21l_hits_tofs1s2_pos_selected.size(); i++)
     {
-        c4LOG(info,"prob before for");
+        //c4LOG(info,"prob before for");
         for (size_t j = 0; j < sci21l_hits_tofs2s4_pos_selected.size();j++)
         {
-            c4LOG(info,"prob before if");
+            //c4LOG(info,"prob before if");
 
             if((sci21l_hits_tofs1s2_pos_selected[i] == sci21l_hits_tofs2s4_pos_selected[j]) && (sci21r_hits_tofs1s2_pos_selected[i] == sci21r_hits_tofs2s4_pos_selected[j]))
             {

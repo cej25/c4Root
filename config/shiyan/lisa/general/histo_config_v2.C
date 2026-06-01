@@ -66,7 +66,6 @@ void histo_config(const std::string& config_path)
     FrsGate* Mn_1p = new FrsGate("Mn_1p",config_path + "/frs/Gates/Mn_1p_may26.root");
 
     fgs.emplace_back(Mn_1p);
-    fgs.emplace_back(Mn_1p1n);
 
     // L I S A 
     // 1
