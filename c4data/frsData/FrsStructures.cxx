@@ -200,19 +200,19 @@ void ParticleID::CalculateAoQs()
             else c4LOG(fatal, "Invalid SciS1_X use selection. Check FRS setup file!");
 
             // beta conditional already true - tof condition already true
-            S1_x
-            S1_a
-            S2_S1S2_x
-            S2_S1S2_a
-            TOF_S1S2
-            BETA_S1S2
-            AoQ = mean_brho_s1s2 * (1. + id_mhtdc_delta_s1s2[i]) * temp_tm_to_MeV / (temp_mu * temp_id_mhtdc_beta_s1s2[i] * id_mhtdc_gamma_s1s2[i])
-            AoQ_corr = AoQ - id->a1AoQCorr * id_a2;
-            selected L/R hits --> can we strip based on beta selections? 
+            // S1_x
+            // S1_a
+            // S2_S1S2_x
+            // S2_S1S2_a
+            // TOF_S1S2
+            // BETA_S1S2
+            // AoQ = mean_brho_s1s2 * (1. + id_mhtdc_delta_s1s2[i]) * temp_tm_to_MeV / (temp_mu * temp_id_mhtdc_beta_s1s2[i] * id_mhtdc_gamma_s1s2[i])
+            // AoQ_corr = AoQ - id->a1AoQCorr * id_a2;
+            // selected L/R hits --> can we strip based on beta selections? 
         }
     }
 
-for (int i = 0; i < hits_in_s1s2; i++)
+    for (int i = 0; i < hits_in_s1s2; i++)
     {
         //int count = i * hits_in_s1x_tofs1s2_selected + j;
 
@@ -240,12 +240,12 @@ for (int i = 0; i < hits_in_s1s2; i++)
         }  
     }
 
-}
+};
 
-void ParticleID::CalculateZs()
-{
+// void ParticleID::CalculateZs()
+// {
 
-}
+// }
 
 
 // we need to hold the X associated with correct positions.. 

@@ -29,6 +29,8 @@ class Scintillator : public TObject
         // Averages of pairs of hits
         std::vector<Float_t> hit_times; 
 
+        ClassDef(Scintillator, 1);
+
 };
 
 class MUSIC : public TObject
