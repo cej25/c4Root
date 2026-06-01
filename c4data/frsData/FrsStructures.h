@@ -98,7 +98,7 @@ class Particle
         Double_t z_music21;
         Double_t z_music41;
         Double_t z_music42;
-}
+};
 
 class MultihitPID
 {
