@@ -65,6 +65,7 @@ LisaNearlineSpectra::LisaNearlineSpectra(std::vector<LisaGate*> lg)
     {
         if (gate->GetType() == "energy") febex_gates.emplace_back(gate); 
         else if (gate->GetType() == "energy_mwd") mwd_gates.emplace_back(gate);
+        else if (gate->GetType() == "dedx_mwd") mwd_dedx_gates.emplace_back(gate);
     }
 
 
@@ -116,6 +117,7 @@ InitStatus LisaNearlineSpectra::Init()
 
     gate_number = febex_gates.size();
     mwd_gate_number = mwd_gates.size();
+    mwd_dedx_gate_number = mwd_dedx_gates.size();
 
     xmax = lisa_config->XMax();
     ymax = lisa_config->YMax();
@@ -137,6 +139,8 @@ InitStatus LisaNearlineSpectra::Init()
     dir_febex_channel = dir_febex->mkdir("Channels");
     dir_energy_MWD = dir_energy->mkdir("MWD");
     dir_MWD_channel = dir_energy_MWD->mkdir("Channels");
+    dir_dedx = dir_energy->mkdir("dEdX");
+    dir_dedx_channel = dir_dedx->mkdir("Channels");
 
     dir_traces = dir_lisa->mkdir("Traces");
 
@@ -246,11 +250,12 @@ InitStatus LisaNearlineSpectra::Init()
             city = "";
             for (auto & detector : detector_mapping)
             {
-                int x = detector.second.second.first; 
-                int y = detector.second.second.second;
-                if (detector.second.first.first == i && ((ymax-(y+1))*xmax + x) == j)
+                int x = detector.second.first.second.first;
+                int y = detector.second.first.second.second;
+                int l_id = detector.second.first.first;
+                if (l_id == i + 1 && ((ymax - (y + 1)) * xmax + x) == j)
                 {
-                    city = detector.second.first.second;
+                    city = detector.second.second.second.first;
                     break;
                 }
             }
@@ -348,9 +353,12 @@ InitStatus LisaNearlineSpectra::Init()
                 city = "";
                 for (auto & detector : detector_mapping)
                 {
-                    if (detector.second.first.first == i+1 && detector.second.second.first == j && detector.second.second.second == k)
+                    int x = detector.second.first.second.first;
+                    int y = detector.second.first.second.second;
+                    int l_id = detector.second.first.first;
+                    if (l_id == i + 1 && x == j && y == k)
                     {
-                        city = detector.second.first.second;
+                        city = detector.second.second.second.first;
                         break;
                     }
                 }
@@ -387,11 +395,12 @@ InitStatus LisaNearlineSpectra::Init()
             int y = -9;
             for (auto & detector : detector_mapping)
             {
-                x = detector.second.second.first; 
-                y = detector.second.second.second;
-                if (detector.second.first.first == i+1 && ((ymax-(y+1))*xmax + x) == j)
+                x = detector.second.first.second.first;
+                y = detector.second.first.second.second;
+                int l_id = detector.second.first.first;
+                if (l_id == i + 1 && ((ymax - (y + 1)) * xmax + x) == j)
                 {
-                    city = detector.second.first.second;
+                    city = detector.second.second.second.first;
                     break;
                 }
             }
@@ -466,9 +475,12 @@ InitStatus LisaNearlineSpectra::Init()
                 city = "";
                 for (auto & detector : detector_mapping)
                 {
-                    if (detector.second.first.first == i+1 && detector.second.second.first == j && detector.second.second.second == k)
+                    int x = detector.second.first.second.first;
+                    int y = detector.second.first.second.second;
+                    int l_id = detector.second.first.first;
+                    if (l_id == i + 1 &&  x == j && y == k)
                     {
-                        city = detector.second.first.second;
+                        city = detector.second.second.second.first;
                         break;
                     }
                 }
@@ -507,11 +519,12 @@ InitStatus LisaNearlineSpectra::Init()
             city = "";
             for (auto & detector : detector_mapping)
             {
-                x = detector.second.second.first; 
-                y = detector.second.second.second;
-                if (detector.second.first.first == i+1 && ((ymax-(y+1))*xmax + x) == j)
+                x = detector.second.first.second.first;
+                y = detector.second.first.second.second;
+                int l_id = detector.second.first.first;
+                if (l_id == i + 1 && ((ymax - (y + 1)) * xmax + x) == j)
                 {
-                    city = detector.second.first.second;
+                    city = detector.second.second.second.first;
                     break;
                 }
             }
@@ -552,6 +565,111 @@ InitStatus LisaNearlineSpectra::Init()
     h2_energy_MWD_first_vs_last->GetXaxis()->SetTitle(Form("E MWD (Layer %d) [a.u.]", layer_number));
     h2_energy_MWD_first_vs_last->GetYaxis()->SetTitle("E MWD (Layer 1) [a.u.]");
     h2_energy_MWD_first_vs_last->SetOption("COLZ");
+    //....................................
+    //      dEdX per channel
+    dir_dedx_channel->cd();
+    h1_dedx_ch.resize(layer_number);
+    for (int i = 0; i < layer_number; i++)
+    {
+        h1_dedx_ch[i].resize(xmax);
+        for (int j = 0; j < xmax; j++)
+        {
+            h1_dedx_ch[i][j].resize(ymax);
+            for (int k = 0; k < ymax; k++)
+            {   
+                city = "";
+                for (auto & detector : detector_mapping)
+                {
+                    int x = detector.second.first.second.first;
+                    int y = detector.second.first.second.second;
+                    int l_id = detector.second.first.first;
+                    if (l_id == i + 1 && x == j && y == k)
+                    {
+                        city = detector.second.second.second.first;
+                        break;
+                    }
+                }
+                h1_dedx_ch[i][j][k] = new TH1F(Form("dedx_%s_%i%i%i", city.Data(), i+1, j, k), Form("dEdX %s",city.Data()), lisa_config->bin_dedx, lisa_config->min_dedx, lisa_config->max_dedx);
+                h1_dedx_ch[i][j][k]->GetXaxis()->SetTitle("dEdX [MeV/um]");
+                h1_dedx_ch[i][j][k]->SetLineColor(kBlue+1);
+                h1_dedx_ch[i][j][k]->SetFillColor(kViolet-1);
+            }
+        }
+    }
+
+    //      dedx by layer
+    h1_dedx_layer.resize(layer_number);
+    for (int i = 0; i < layer_number; i++)
+    {   
+        h1_dedx_layer[i] = MakeTH1(dir_dedx, "F",
+            Form("h1_dedx_layer_%i", i+1), Form("dEdX - Layer %i", i+1), 
+            lisa_config->bin_dedx, lisa_config->min_dedx, lisa_config->max_dedx,
+            Form("dEdX (LISA %i) [MeV/um]", i+1), kViolet+10, kBlue+1);
+    }
+    //....................................
+    //      dedx vs channel ID per Layer
+    dir_dedx->cd();
+    h2_dedx_vs_ID.resize(layer_number);
+    for (int i = 0; i < layer_number; i++)
+    {   
+        h2_dedx_vs_ID[i] = new TH2F(Form("h2_dedx_vs_ID_%i", i+1), Form("dEdX vs ID - Layer %i", i+1), xmax * ymax, 0, xmax * ymax, lisa_config->bin_dedx, lisa_config->min_dedx, lisa_config->max_dedx);
+        h2_dedx_vs_ID[i]->SetOption("COLZ");
+        
+        for (int j = 0; j < xmax * ymax; j++)
+        {
+            city = "";
+            int x = -9;
+            int y = -9;
+            for (auto & detector : detector_mapping)
+            {
+                x = detector.second.first.second.first;
+                y = detector.second.first.second.second;
+                int l_id = detector.second.first.first;
+                if (l_id == i + 1 && ((ymax - (y + 1)) * xmax + x) == j)
+                {
+                    city = detector.second.second.second.first;
+                    break;
+                }
+            }
+            h2_dedx_vs_ID[i]->GetXaxis()->SetBinLabel(j+1, Form("%i%i",x,y));
+        }
+       
+    }
+    //....................................
+    //      DeDx vs layer ID
+    dir_dedx->cd();
+    h2_dedx_vs_layer = new TH2F("h2_dedx_vs_layer", "dEdX vs Layer ID",layer_number, 0.5, layer_number + 0.5,lisa_config->bin_dedx, lisa_config->min_dedx, lisa_config->max_dedx);
+    h2_dedx_vs_layer->GetXaxis()->SetTitle("Layer ID");
+    h2_dedx_vs_layer->GetYaxis()->SetTitle("dEdX [MeV/um]");
+    h2_dedx_vs_layer->SetOption("COLZ");
+    //....................................
+    // dedx Layer vs Layer
+    dir_dedx->cd();
+    h2_dedx_layer_vs_layer.resize(layer_number - 1);
+
+    for (int i = 0; i < layer_number - 1; i++)
+    {
+        h2_dedx_layer_vs_layer[i] = new TH2F(Form("h2_dedx_layer_%i_vs_layer_%i", i + 2, i + 1),
+                                            Form("dEdX(Layer %i) vs dEdX(Layer %i)", i + 2, i + 1),
+                                            lisa_config->bin_dedx, lisa_config->min_dedx, lisa_config->max_dedx,
+                                            lisa_config->bin_dedx, lisa_config->min_dedx, lisa_config->max_dedx);
+
+        h2_dedx_layer_vs_layer[i]->GetXaxis()->SetTitle(Form("dEdX(Layer %i) [MeV/um]", i + 1));  
+        h2_dedx_layer_vs_layer[i]->GetYaxis()->SetTitle(Form("dEdX(Layer %i) [MeV/um]", i + 2));  
+        h2_dedx_layer_vs_layer[i]->SetOption("COLZ");
+    }
+    //....................................
+    // ::: dedx First vs Last Layer
+    dir_dedx->cd();
+    h2_dedx_first_vs_last = new TH2F("h2_dedx_first_vs_last",
+                                    Form("dEdX(Layer 1) vs dEdX(Layer %d)", layer_number),
+                                    lisa_config->bin_dedx, lisa_config->min_dedx, lisa_config->max_dedx,
+                                    lisa_config->bin_dedx, lisa_config->min_dedx, lisa_config->max_dedx);
+
+    h2_dedx_first_vs_last->GetXaxis()->SetTitle(Form("dEdX(Layer %d) [a.u.]", layer_number));
+    h2_dedx_first_vs_last->GetYaxis()->SetTitle("dEdX(Layer 1) [a.u.]");
+    h2_dedx_first_vs_last->SetOption("COLZ");
+    //....................................
     //.................................... END OF ENERGY
     // ::: T R A C E S
     if(lisa_config->trace_on)
@@ -569,9 +687,12 @@ InitStatus LisaNearlineSpectra::Init()
                     city = "";
                     for (auto & detector : detector_mapping)
                     {
-                        if (detector.second.first.first == i+1 && detector.second.second.first == j && detector.second.second.second == k)
+                        int x = detector.second.first.second.first;
+                        int y = detector.second.first.second.second;
+                        int l_id = detector.second.first.first;
+                        if (l_id == i + 1 &&  x == j && y == k)
                         {
-                            city = detector.second.first.second;
+                            city = detector.second.second.second.first;
                             break;
                         }
                     }
@@ -579,7 +700,7 @@ InitStatus LisaNearlineSpectra::Init()
                     h2_traces_ch[i][j][k] = new TH2F(Form("h2_traces_%i%i%i", i+1, j, k), Form("%i%i%i_%s",i+1,j,k,city.Data()), lisa_config->bin_traces, lisa_config->min_traces, lisa_config->max_traces,traces_bin,traces_min,traces_max);
                     h2_traces_ch[i][j][k]->GetXaxis()->SetTitle("Time [us]");
                     h2_traces_ch[i][j][k]->SetLineColor(kBlue+1);
-                    h2_traces_ch[i][j][k]->SetFillColor(kOrange-3);
+                    h2_traces_ch[i][j][k]->SetFillColor(kViolet-1);
                     h2_traces_ch[i][j][k]->SetOption("colz");
 
                     
@@ -616,13 +737,16 @@ InitStatus LisaNearlineSpectra::Init()
                 city = "";
                 for (auto & detector : detector_mapping)
                 {
-                    if (detector.second.first.first == i+1 && detector.second.second.first == j && detector.second.second.second == k)
+                    int x = detector.second.first.second.first;
+                    int y = detector.second.first.second.second;
+                    int l_id = detector.second.first.first;
+                    if (l_id == i + 1 &&  x == j && y == k)
                     {
-                        city = detector.second.first.second;
+                        city = detector.second.second.second.first;
                         break;
                     }
                 }  
-                h2_energy_ch_vs_time[i][j][k] = MakeTH2(dir_febex_ch_drift, "F", Form("h2_energy_%d%d%d_vs_time",i+1,j,k), Form("E %d%d%d vs WR [min]",i+1,j,k), drift_bin, drift_min, drift_max, lisa_config->bin_energy, lisa_config->min_energy, lisa_config->max_energy);
+                h2_energy_ch_vs_time[i][j][k] = MakeTH2(dir_febex_ch_drift, "F", Form("h2_energy_%d%d%d_%s_vs_time",i+1,j,k, city.Data()), Form("E %d%d%d vs WR [min]",i+1,j,k), drift_bin, drift_min, drift_max, lisa_config->bin_energy, lisa_config->min_energy, lisa_config->max_energy);
                 h2_energy_ch_vs_time[i][j][k]->SetTitle(Form("E (%d%d%d) vs WR",i+1,j,k));
                 h2_energy_ch_vs_time[i][j][k]->GetYaxis()->SetTitle(Form("Energy %d%d%d",i+1,j,k));
                 h2_energy_ch_vs_time[i][j][k]->GetXaxis()->SetTitle("WR Time [min]");
@@ -655,14 +779,17 @@ InitStatus LisaNearlineSpectra::Init()
                 city = "";
                 for (auto & detector : detector_mapping)
                 {
-                    if (detector.second.first.first == i + 1 && detector.second.second.first == j && detector.second.second.second == k)
-                    {
-                        city = detector.second.first.second;
-                        break;
-                    }
+                int x = detector.second.first.second.first;
+                int y = detector.second.first.second.second;
+                int l_id = detector.second.first.first;
+                if (l_id == i + 1 &&  x == j && y == k)
+                {
+                    city = detector.second.second.second.first;
+                    break;
+                }
                 }
                 
-                h2_energy_MWD_ch_vs_time[i][j][k] = MakeTH2(dir_MWD_ch_drift, "F", Form("h2_energy_MWD_%d%d%d_vs_time",i+1,j,k), Form("E_MWD %d%d%d vs WR [min]",i+1,j,k), drift_bin, drift_min, drift_max, lisa_config->bin_energy_MWD, lisa_config->min_energy_MWD, lisa_config->max_energy_MWD);
+                h2_energy_MWD_ch_vs_time[i][j][k] = MakeTH2(dir_MWD_ch_drift, "F", Form("h2_energy_MWD_%d%d%d_%s_vs_time",i+1,j,k,city.Data()), Form("E_MWD %d%d%d vs WR [min]",i+1,j,k), drift_bin, drift_min, drift_max, lisa_config->bin_energy_MWD, lisa_config->min_energy_MWD, lisa_config->max_energy_MWD);
                 h2_energy_MWD_ch_vs_time[i][j][k]->SetTitle(Form("E_MWD (%d%d%d) vs WR",i+1,j,k));
                 h2_energy_MWD_ch_vs_time[i][j][k]->GetYaxis()->SetTitle(Form("Energy MWD %d%d%d",i+1,j,k));
                 h2_energy_MWD_ch_vs_time[i][j][k]->GetXaxis()->SetTitle("WR Time [min]");
@@ -671,18 +798,26 @@ InitStatus LisaNearlineSpectra::Init()
     } 
     //....................................END OF DRIFTS 
 
-    // ::: Febex Gated
+    // ::: Febex and MWD Gated
     dir_gated_febex = dir_lisa_gates->mkdir("Febex");
     dir_gated_mwd = dir_lisa_gates->mkdir("MWD");
+    dir_gated_dedx = dir_lisa_gates->mkdir("dEdX");
+
     dir_febex_gates = new TDirectory*[gate_number];
     dir_febex_gates_channel = new TDirectory*[gate_number];
+
     dir_mwd_gates = new TDirectory*[mwd_gate_number];
     dir_mwd_gates_channel = new TDirectory*[mwd_gate_number];
+
+    dir_mwd_dedx_gates = new TDirectory*[mwd_dedx_gate_number];
+    dir_mwd_dedx_gates_channel = new TDirectory*[mwd_dedx_gate_number];
 
     h1_energy_layer_gated.resize(gate_number);
     h1_energy_xy_gated.resize(gate_number);
     h1_energy_MWD_layer_gated.resize(mwd_gate_number);
     h1_energy_MWD_xy_gated.resize(mwd_gate_number);
+    h1_dedx_MWD_layer_gated.resize(mwd_dedx_gate_number);
+    h1_dedx_MWD_xy_gated.resize(mwd_dedx_gate_number);
 
     // Febex Gated
     for (int gate = 0; gate < febex_gates.size(); gate++)
@@ -742,6 +877,36 @@ InitStatus LisaNearlineSpectra::Init()
             );
         }
     }
+
+    // MWD dedx Gated
+    for (int gate = 0; gate < mwd_dedx_gates.size(); gate++)
+    {   
+        dir_mwd_dedx_gates[gate] = dir_gated_dedx->mkdir(TString(mwd_dedx_gates.at(gate)->GetName()));
+        h1_dedx_MWD_layer_gated[gate].resize(layer_number); 
+
+        for (int i = 0; i < layer_number; ++i)
+        {
+            h1_dedx_MWD_layer_gated[gate][i] = MakeTH1(dir_mwd_dedx_gates[gate], "F",
+                Form("h1_dedx_MWD_layer_%i_gated", i+1),
+                Form("LISA-Gated dEdx MWD - Layer %i", i+1),
+                lisa_config->bin_dedx, lisa_config->min_dedx, lisa_config->max_dedx,
+                Form("dEdx MWD (LISA %i) [a.u.]", i+1), kViolet+10, kBlue+1
+            );
+        }
+
+        dir_mwd_dedx_gates_channel[gate] = dir_mwd_dedx_gates[gate]->mkdir("Channel");
+        h1_dedx_MWD_xy_gated[gate].resize(layer_number);
+        for (int i = 0; i < layer_number; ++i)
+        {
+            h1_dedx_MWD_xy_gated[gate][i] = MakeTH1(dir_mwd_dedx_gates_channel[gate], "F",
+                Form("h1_dedx_MWD_%i%i%i_gated", i+1, lisa_config->xpos_gate, lisa_config->ypos_gate),
+                Form("LISA-Gated dEdx MWD - %i%i%i", i+1, lisa_config->xpos_gate, lisa_config->ypos_gate),
+                lisa_config->bin_dedx, lisa_config->min_dedx, lisa_config->max_dedx,
+                Form("dEdx MWD (LISA %i%i%i) [a.u.]", i+1, lisa_config->xpos_gate, lisa_config->ypos_gate), kViolet-1, kBlue+1
+            );
+        }
+    }
+
     //....................................
 
 
@@ -767,17 +932,23 @@ void LisaNearlineSpectra::Exec(Option_t* option)
     energy_layer.resize(layer_number);
 
     std::vector<std::vector<float>> energy_MWD_layer(layer_number);
-    energy_MWD_layer.resize(layer_number);  
+    energy_MWD_layer.resize(layer_number); 
+
+    std::vector<std::vector<float>> de_dx_layer(layer_number);
+    de_dx_layer.resize(layer_number); 
 
     // ::: Energy gated - Layer
 
     std::vector<float> energy_layer_gated[gate_number][layer_number];
     std::vector<float> energy_MWD_layer_gated[mwd_gate_number][layer_number];
+    std::vector<float> de_dx_layer_gated[mwd_dedx_gate_number][layer_number];
+
 
     // ::: Energy gated - Channel
     std::vector<float> energy_xy_gated[gate_number][layer_number][xmax][ymax];
     std::vector<float> energy_MWD_xy_gated[mwd_gate_number][layer_number][xmax][ymax];
-    
+    std::vector<float> de_dx_xy_gated[mwd_dedx_gate_number][layer_number][xmax][ymax];
+
 
     for (auto const & lisaCalItem : *lisaCalArray)
     {
@@ -800,6 +971,7 @@ void LisaNearlineSpectra::Exec(Option_t* option)
         int overflow = lisaCalItem.Get_overflow();
         float energy = lisaCalItem.Get_energy();
         float energy_GM = lisaCalItem.Get_energy_GM();
+        float de_dx_GM = lisaCalItem.Get_de_dx_GM();
     
         float energy_MWD = lisaCalItem.Get_energy_MWD();
         float energy_MWD_GM = lisaCalItem.Get_energy_MWD_GM();
@@ -848,10 +1020,15 @@ void LisaNearlineSpectra::Exec(Option_t* option)
         //     MWD
         // ::: Energy MWD per channel
         h1_energy_MWD_ch[layer-1][xpos][ypos]->Fill(energy_MWD_GM);
+        //     dEdX
+        // ::: dedx per channel
+        h1_dedx_ch[layer-1][xpos][ypos]->Fill(de_dx_GM);
         // ::: Energy vs ID
         h2_energy_vs_ID[layer-1]->Fill(hp_bin, energy_GM);
         // ::: Energy MWD vs ID
         h2_energy_MWD_vs_ID_layer[layer-1]->Fill(hp_bin, energy_MWD_GM);
+        // ::: Energy vs ID
+        h2_dedx_vs_ID[layer-1]->Fill(hp_bin, de_dx_GM);
 
 
         // ::: Exclude channels but keep multiplicity :::
@@ -864,7 +1041,7 @@ void LisaNearlineSpectra::Exec(Option_t* option)
 
         energy_layer[layer-1].emplace_back(energy_GM);
         energy_MWD_layer[layer-1].emplace_back(energy_MWD_GM);
-
+        de_dx_layer[layer-1].emplace_back(de_dx_GM);
         
         // Loop over gates for LISA FEBEX
         int g = 0;
@@ -877,7 +1054,7 @@ void LisaNearlineSpectra::Exec(Option_t* option)
             }
             g++;
         }
-
+        // MWD
         g = 0;
         for (auto & gate : mwd_gates)
         {   
@@ -885,6 +1062,17 @@ void LisaNearlineSpectra::Exec(Option_t* option)
             {
                 energy_MWD_layer_gated[g][layer-1].push_back(energy_MWD_GM);
                 energy_MWD_xy_gated[g][layer-1][xpos][ypos].push_back(energy_MWD_GM);
+            }
+            g++;
+        }
+        // dEdX
+        g = 0;
+        for (auto & gate : mwd_dedx_gates)
+        {   
+            if (gate->PassedGate(layer, de_dx_GM))
+            {
+                de_dx_layer_gated[g][layer-1].push_back(de_dx_GM);
+                de_dx_xy_gated[g][layer-1][xpos][ypos].push_back(de_dx_GM);
             }
             g++;
         }
@@ -902,6 +1090,11 @@ void LisaNearlineSpectra::Exec(Option_t* option)
         //....................
         // ::: Layer Energy MWD  vs ID
         h2_energy_MWD_vs_layer->Fill(layer,energy_MWD_GM); 
+        //     dedx
+        // ::: dedx per layer
+        h1_dedx_layer[layer-1]->Fill(de_dx_GM);
+        // ::: Layer Energy vs ID
+        h2_dedx_vs_layer->Fill(layer,de_dx_GM); 
             
 
         //c4LOG(info, "layer -1 " << layer-1 << " LISA_time_mins: " << LISA_time_mins << " energy : "<<  energy_GM);
@@ -1025,24 +1218,33 @@ void LisaNearlineSpectra::Exec(Option_t* option)
         }    
     }
     //....................................
-    // ::: Energy MWD Layer vs Layer
-    for ( int i = 0; i < layer_number-1; i++)
-    {
-        for( int j = 0; j < energy_MWD_layer[i].size(); j++)
-        {
-            for ( int k = 0 ; k < energy_MWD_layer[i+1].size(); k++)
-            {
-                h2_energy_MWD_layer_vs_layer[i]->Fill(energy_MWD_layer[i][j], energy_MWD_layer[i+1][k]);
-            }
-        }    
-    }
-    //....................................
     // ::: Energy MWD First vs Last Layer
     for (int i = 0; i < energy_MWD_layer[0].size(); ++i)
     {
         for (int j = 0; j < energy_MWD_layer[layer_number-1].size(); ++j)
         {
             h2_energy_MWD_first_vs_last->Fill(energy_MWD_layer[layer_number-1][j], energy_MWD_layer[0][i]);
+        }
+    }
+    //....................................
+    // ::: dedx Layer vs Layer
+    for ( int i = 0; i < layer_number-1; i++)
+    {
+        for( int j = 0; j < de_dx_layer[i].size(); j++)
+        {
+            for ( int k = 0 ; k < de_dx_layer[i+1].size(); k++)
+            {
+                h2_dedx_layer_vs_layer[i]->Fill(de_dx_layer[i][j], de_dx_layer[i+1][k]);
+            }
+        }    
+    }
+    //....................................
+    // ::: dedx First vs Last Layer
+    for (int i = 0; i < de_dx_layer[0].size(); ++i)
+    {
+        for (int j = 0; j < de_dx_layer[layer_number-1].size(); ++j)
+        {
+            h2_dedx_first_vs_last->Fill(de_dx_layer[layer_number-1][j], de_dx_layer[0][i]);
         }
     }
     //....................................
@@ -1096,6 +1298,32 @@ void LisaNearlineSpectra::Exec(Option_t* option)
             for ( int i = 0; i < energy_MWD_xy_gated[g][l][xpos_gate][ypos_gate].size(); i++)
             {
                 h1_energy_MWD_xy_gated[g][l]->Fill(energy_MWD_xy_gated[g][l][xpos_gate][ypos_gate].at(i));
+            }
+        }
+    }
+    //....................................
+    // ::: LISA dEdX Gated on LISA-only 
+    // ::: Layer
+    for (int g = 0; g < mwd_dedx_gate_number; g++)
+    {
+        for (int l = 0; l < layer_number; l++)
+        {
+            if (de_dx_layer_gated[g][l].size() == 0) break;
+            for ( int i = 0; i < de_dx_layer_gated[g][l].size(); i++)
+            {
+                h1_dedx_MWD_layer_gated[g][l]->Fill(de_dx_layer_gated[g][l].at(i));
+            }
+        }
+    }
+    // ::: Channel
+    for (int g = 0; g < mwd_dedx_gate_number; g++)
+    {
+        for (int l = 0; l < layer_number; l++)
+        {
+            if (de_dx_xy_gated[g][l][xpos_gate][ypos_gate].size() == 0) break;
+            for ( int i = 0; i < de_dx_xy_gated[g][l][xpos_gate][ypos_gate].size(); i++)
+            {
+                h1_dedx_MWD_xy_gated[g][l]->Fill(de_dx_xy_gated[g][l][xpos_gate][ypos_gate].at(i));
             }
         }
     }

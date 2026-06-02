@@ -19,14 +19,9 @@ MACRO (ROOT_GENERATE_DICTIONARY_OLD_EXTRA INFILES LINKDEF_FILE OUTFILE INCLUDE_D
     set(INCLUDE_DIRS ${INCLUDE_DIRS} -I${_current_FILE})
   endforeach (_current_FILE ${INCLUDE_DIRS_IN})
 
-#  Message("Definitions: ${DEFINITIONS}")
-#  MESSAGE("INFILES: ${INFILES}")
-#  MESSAGE("OutFILE: ${OUTFILE}")
-#  MESSAGE("LINKDEF_FILE: ${LINKDEF_FILE}")
-#  MESSAGE("INCLUDE_DIRS: ${INCLUDE_DIRS}")
+
 
   STRING(REGEX REPLACE "^(.*)\\.(.*)$" "\\1.h" bla "${OUTFILE}")
-#  MESSAGE("BLA: ${bla}")
   SET (OUTFILES ${OUTFILE} ${bla})
 
   if (CMAKE_SYSTEM_NAME MATCHES Linux)
@@ -44,18 +39,13 @@ MACRO (ROOT_GENERATE_DICTIONARY_OLD_EXTRA INFILES LINKDEF_FILE OUTFILE INCLUDE_D
 ENDMACRO (ROOT_GENERATE_DICTIONARY_OLD_EXTRA)
 
 
-#Macro (R3B_Generate_Version_Info)
 Macro (c4_Generate_Version_Info)
-  #Add_Custom_Target(svnr3bheader ALL)
   Add_Custom_Target(svnc4header ALL)
 
-  #Add_Custom_Command(TARGET svnr3bheader
   Add_Custom_Command(TARGET svnc4header
                      COMMAND ${CMAKE_COMMAND} -DSOURCE_DIR=${CMAKE_SOURCE_DIR}
                      -DBINARY_DIR=${CMAKE_BINARY_DIR}
                      -DINCLUDE_OUTPUT_DIRECTORY=${INCLUDE_OUTPUT_DIRECTORY}
-                     #-P ${CMAKE_SOURCE_DIR}/cmake/modules/R3BGenerateVersionInfo.cmake
                      -P ${CMAKE_SOURCE_DIR}/cmake/modules/c4GenerateVersionInfo.cmake
                     )
-#EndMacro (R3B_Generate_Version_Info)
 EndMacro (c4_Generate_Version_Info)

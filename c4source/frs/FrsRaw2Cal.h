@@ -6,8 +6,10 @@
 #include "TFRSParameter.h"
 #include "FrsData.h"
 #include "FrsCalData.h"
+#include "FairTask.h"
 
 #include <vector>
+#include <TRandom3.h>
 
 
 class TClonesArray;
@@ -34,6 +36,8 @@ class FrsRaw2Cal : public FairTask
         void FinishEvent();
         void FinishTask();
 
+        Float_t rand3();
+
         void SetOnline(Bool_t set_online) { fOnline = set_online; }
 
 
@@ -45,6 +49,7 @@ class FrsRaw2Cal : public FairTask
         TFrsConfiguration const* frs_config;
         TFRSParameter* frs;
         TTPCParameter* tpc;
+        TSCIParameter* sci;
 
         // Arrays
         std::vector<FrsTpatItem> const* tpatArray;
@@ -98,28 +103,62 @@ class FrsRaw2Cal : public FairTask
 
         // MHTDC
         const std::vector<Int_t>* sciMHTDC; // up to 24 channels
-        std::vector<Int_t> sci11la_hits;
-        std::vector<Int_t> sci11lb_hits;
-        std::vector<Int_t> sci11lc_hits;
-        std::vector<Int_t> sci11ld_hits;
-        std::vector<Int_t> sci11ra_hits;
-        std::vector<Int_t> sci11rb_hits;
-        std::vector<Int_t> sci11rc_hits;
-        std::vector<Int_t> sci11rd_hits;
-        std::vector<Int_t> sci21l_hits;
-        std::vector<Int_t> sci21r_hits;
-        std::vector<Int_t> sci22l_hits;
-        std::vector<Int_t> sci22r_hits;
-        std::vector<Int_t> sci31l_hits;
-        std::vector<Int_t> sci31r_hits;
-        std::vector<Int_t> sci41l_hits;
-        std::vector<Int_t> sci41r_hits;
-        std::vector<Int_t> sci42l_hits;
-        std::vector<Int_t> sci42r_hits;
-        std::vector<Int_t> sci43l_hits;
-        std::vector<Int_t> sci43r_hits;
-        std::vector<Int_t> sci81l_hits;
-        std::vector<Int_t> sci81r_hits;
+        std::vector<Float_t> sci11la_hits;
+        std::vector<Float_t> sci11lb_hits;
+        std::vector<Float_t> sci11lc_hits;
+        std::vector<Float_t> sci11ld_hits;
+        std::vector<Float_t> sci11ra_hits;
+        std::vector<Float_t> sci11rb_hits;
+        std::vector<Float_t> sci11rc_hits;
+        std::vector<Float_t> sci11rd_hits;
+        std::vector<Float_t> sci21l_hits;
+        std::vector<Float_t> sci21r_hits;
+        std::vector<Float_t> sci22l_hits;
+        std::vector<Float_t> sci22r_hits;
+        std::vector<Float_t> sci31l_hits;
+        std::vector<Float_t> sci31r_hits;
+        std::vector<Float_t> sci41l_hits;
+        std::vector<Float_t> sci41r_hits;
+        std::vector<Float_t> sci42l_hits;
+        std::vector<Float_t> sci42r_hits;
+        std::vector<Float_t> sci43l_hits;
+        std::vector<Float_t> sci43r_hits;
+        std::vector<Float_t> sci81l_hits;
+        std::vector<Float_t> sci81r_hits;
+        std::vector<Float_t> dt11la_11ra_hits;
+        std::vector<Float_t> dt11lb_11rb_hits;
+        std::vector<Float_t> dt11lc_11rc_hits;
+        std::vector<Float_t> dt11ld_11rd_hits;
+        std::vector<Float_t> dt21l_21r_hits;
+        std::vector<Float_t> dt22l_22r_hits;
+        std::vector<Float_t> dt31l_31r_hits;
+        std::vector<Float_t> dt41l_41r_hits;
+        std::vector<Float_t> dt42l_42r_hits;
+        std::vector<Float_t> dt43l_43r_hits;
+        std::vector<Float_t> dt81l_81r_hits;
+        std::vector<Float_t> x_11lra_hits;
+        std::vector<Float_t> x_11lrb_hits;
+        std::vector<Float_t> x_11lrc_hits;
+        std::vector<Float_t> x_11lrd_hits;
+        std::vector<Float_t> x_21lr_hits;
+        std::vector<Float_t> x_22lr_hits;
+        std::vector<Float_t> x_31lr_hits;
+        std::vector<Float_t> x_41lr_hits;
+        std::vector<Float_t> x_42lr_hits;
+        std::vector<Float_t> x_43lr_hits;
+        std::vector<Float_t> x_81lr_hits;
+
+        int hits_in_11lra; 
+        int hits_in_11lrb; 
+        int hits_in_11lrc; 
+        int hits_in_11lrd;
+        int hits_in_21lr;
+        int hits_in_22lr;
+        int hits_in_31lr;
+        int hits_in_41lr;
+        int hits_in_42lr;
+        int hits_in_43lr;
+        int hits_in_81lr;
 
         // MUSIC
         const UInt_t (*musicE)[8]; // 5, 8
@@ -279,7 +318,7 @@ class FrsRaw2Cal : public FairTask
         Float_t music1_y4 = -999; /* parameters to calibrate  */
         Float_t music2_x = -999;  /* MUSIC1,2 positions */
 
-
+        TRandom3 random3;
 
     public:
         ClassDef(FrsRaw2Cal, 1);

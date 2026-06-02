@@ -11,7 +11,7 @@
  * or submit itself to any jurisdiction.                                      *
  ******************************************************************************
  *                       E.M. Gandolfo, C.E. Jones                            *
- *                               25.11.24                                     *
+ *                                 08.25                                      *
  ******************************************************************************/
 
 #include "LisaCalData.h"
@@ -26,8 +26,6 @@
 //Debugging. Replaced std::string with TString nov24
 
 
-
-
 LisaCalItem::LisaCalItem()
 {
 
@@ -40,6 +38,7 @@ void LisaCalItem::SetAll(uint64_t wr,
                         TString c,
                         int xpos,
                         int ypos,
+                        float thick,
                         float e,
                         float e_MWD,
                         std::vector<float> tr,
@@ -47,6 +46,8 @@ void LisaCalItem::SetAll(uint64_t wr,
                         std::vector<int16_t> tr_x,
                         float e_GM,
                         float e_MWD_GM,
+                        float dedx,
+                        float dedx_GM,
                         uint64_t evt_t,
                         uint64_t ch_t,
                         uint64_t evtno,
@@ -63,6 +64,7 @@ void LisaCalItem::SetAll(uint64_t wr,
     city = c;
     xposition = xpos;
     yposition = ypos;
+    thickness = thick;
     energy = e;
     energy_MWD = e_MWD;
     trace_febex = tr;
@@ -70,6 +72,8 @@ void LisaCalItem::SetAll(uint64_t wr,
     trace_x = tr_x;
     energy_GM = e_GM;
     energy_MWD_GM = e_MWD_GM;
+    de_dx = dedx;
+    de_dx_GM = dedx_GM;
     board_event_time = evt_t;
     ch_event_time = ch_t;
     event_no = evtno;
@@ -90,6 +94,7 @@ void LisaCalItem::Reset()
     city = "";
     xposition = 0;
     yposition = 0;
+    thickness = 0;
     energy = 0;
     energy_MWD = 0;
     trace_febex = {};
@@ -98,13 +103,14 @@ void LisaCalItem::Reset()
     event_no = 0;
     energy_GM = 0;
     energy_MWD_GM = 0;
+    de_dx = 0;
+    de_dx_GM = 0;
     board_event_time = 0;
     ch_event_time = 0;
     pileup = 0;
     //pileup_MWD = 0; //-1
     overflow = 0;
     //overflow_MWD = 0; //-1
-
 }
 
 ClassImp(LisaCalItem)

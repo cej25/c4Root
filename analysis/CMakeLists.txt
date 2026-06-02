@@ -4,7 +4,6 @@ ${BASE_INCLUDE_DIRECTORIES}
 )
 
 set(INCLUDE_DIRECTORIES
-#put here all directories where header files are located
 ${C4ROOT_SOURCE_DIR}/c4base
 ${C4ROOT_SOURCE_DIR}/c4data
 ${C4ROOT_SOURCE_DIR}/c4data/frsData
@@ -46,93 +45,136 @@ include_directories(SYSTEM ${SYSTEM_INCLUDE_DIRECTORIES})
 
 link_directories(${FAIRROOT_LIBRARY_DIR} ${ROOT_LIBRARY_DIR})
 
-set(SRCS
-#online
-./online/germanium/GermaniumOnlineSpectra.cxx
-./online/germanium/GermaniumLabTest.cxx
-./nearline/germanium/GermaniumResolution.cxx
-./online/beammonitor/BeamMonitorOnlineSpectra.cxx
-./online/lisa/LisaOnlineSpectra.cxx
-./online/lisa/LisaOnlineSpectraDaq.cxx
-./online/aida/AidaOnlineSpectra.cxx
-./online/aida/AidaPulserWalkthrough.cxx
-./online/bplast/bPlastOnlineSpectra.cxx
-./online/fatima/FatimaOnlineSpectra.cxx
-./online/fatima/FatimaVmeOnlineSpectra.cxx
-./online/frs/FrsOnlineSpectra.cxx
-./online/frs/FrsRawSpectra.cxx
-./online/frs/FrsCalSpectra.cxx
-./online/bgo/BGOOnlineSpectra.cxx
-./online/timemachine/TimeMachineOnline.cxx
-./online/wr/WhiterabbitCorrelationOnline.cxx
-./online/bb7/BB7OnlineSpectra.cxx
-./online/bb7/BB7FebexOnlineSpectra.cxx
-./online/fimp/FimpOnlineSpectra.cxx
-./online/mcp/H10MCPOnlineSpectra.cxx
-./online/stefan/StefanOnlineSpectra.cxx
+if (LISA_ONLY)
+    set(SRCS
+    #online
+    ./online/lisa/LisaOnlineSpectra.cxx
+    ./online/lisa/LisaOnlineSpectraDaq.cxx
+    ./online/frs/FrsOnlineSpectra.cxx
+    ./online/frs/FrsRawSpectra.cxx
+    ./online/frs/FrsCalSpectra.cxx
 
-# nearline/offline
-./nearline/bplast/bPlastNearlineSpectra.cxx
-./nearline/fatima/FatimaNearlineSpectra.cxx
-./nearline/fatima/FatimaVmeNearlineSpectra.cxx
-./nearline/aida/AidaNearlineSpectra.cxx
-./nearline/frs/FrsNearlineSpectra.cxx
-./nearline/frs/FrsRawNearlineSpectra.cxx
-./nearline/germanium/GermaniumNearlineSpectra.cxx
-./nearline/bgo/BGONearlineSpectra.cxx
-./nearline/wr/WhiterabbitCorrelationNearline.cxx
-./nearline/timemachine/TimeMachineNearline.cxx
-./nearline/lisa/LisaNearlineSpectra.cxx
-./nearline/lisa/LisaNearlineSpectraDaq.cxx
-./nearline/lisa/LisaNearlineSpectraAna.cxx
-./nearline/lisa/LisaTraceAnalysis.cxx
-./nearline/lisa/LisaTraceCorrelation.cxx
-./nearline/fimp/FimpNearlineSpectra.cxx
-./nearline/bb7/BB7NearlineSpectra.cxx
-./nearline/lisa/LisaNearlineSpectra.cxx
-./nearline/mcp/H10MCPNearlineSpectra.cxx
-./nearline/stefan/StefanNearlineSpectra.cxx
+    # nearline/offline
+    ./nearline/frs/FrsNearlineSpectra.cxx
+    ./nearline/frs/FrsRawNearlineSpectra.cxx
+    ./nearline/lisa/LisaNearlineSpectra.cxx
+    ./nearline/lisa/LisaNearlineSpectraDaq.cxx
+    ./nearline/lisa/LisaNearlineSpectraAna.cxx
+    ./nearline/lisa/LisaTraceAnalysis.cxx
+    ./nearline/lisa/LisaTraceCorrelation.cxx
+    ./nearline/lisa/LisaNearlineSpectra.cxx
 
-## correlations ##
-./correlations/FrsAidaCorrelations.cxx
-./online/onlineCorrelations/FrsAidaCorrelationsOnline.cxx
-./correlations/FrsFatimaCorrelations.cxx
-#./correlations/FrsFatimaVmeCorrelations.cxx
-./correlations/FrsGermaniumCorrelations.cxx
-./correlations/FrsFatimaCorrelationsNearline.cxx
-./correlations/FrsGermaniumCorrelationsNearline.cxx
-./correlations/AidaFatimaCorrelations.cxx
-./nearline/fatima/FatimaTimingAnalysis.cxx
-./nearline/fatima/FatimaTimingAnalysisSummed.cxx
-./nearline/fatima/FatimaTimingAnalysisSummedGeGated.cxx
-./nearline/fatima/FatimaSinglesAnalysis.cxx
-./correlations/AidaGermaniumCorrelations.cxx
-./correlations/bPlastGermaniumCorrelations.cxx
-./online/onlineCorrelations/bPlastGermaniumCorrelationsOnline.cxx
-./online/onlineCorrelations/BB7GermaniumCorrelationsOnline.cxx
-#./correlations/FrsBplastCorrelations.cxx
-./correlations/triplePlusCorrs/BetaIonCorrelations.cxx
+    ./online/onlineCorrelations/LisaFrsCorrelationsOnline.cxx
+    ./correlations/LisaFrsCorrelations.cxx
+    )
 
+    set(SRC_CLASSES
+    LisaOnlineSpectra
+    LisaOnlineSpectraDaq
+    FrsOnlineSpectra
+    FrsRawSpectra
+    FrsCalSpectra
+    FrsNearlineSpectra
+    FrsRawNearlineSpectra
+    LisaNearlineSpectra
+    LisaNearlineSpectraDaq
+    LisaNearlineSpectraAna
+    LisaTraceAnalysis
+    LisaTraceCorrelation
+    LisaNearlineSpectra
+    LisaFrsCorrelationsOnline
+    LisaFrsCorrelations
+    )
+endif()
 
-#./correlations/FrsBplastCorrelations.cxx
-./online/onlineCorrelations/LisaFrsCorrelationsOnline.cxx
-./correlations/LisaFrsCorrelations.cxx
+if (NOT LISA_ONLY)
+    set(SRCS
+    #online
+    ./online/germanium/GermaniumOnlineSpectra.cxx
+    ./online/germanium/GermaniumLabTest.cxx
+    ./nearline/germanium/GermaniumResolution.cxx
+    ./online/beammonitor/BeamMonitorOnlineSpectra.cxx
+    ./online/lisa/LisaOnlineSpectra.cxx
+    ./online/lisa/LisaOnlineSpectraDaq.cxx
+    ./online/aida/AidaOnlineSpectra.cxx
+    ./online/aida/AidaPulserWalkthrough.cxx
+    ./online/bplast/bPlastOnlineSpectra.cxx
+    ./online/fatima/FatimaOnlineSpectra.cxx
+    ./online/fatima/FatimaVmeOnlineSpectra.cxx
+    ./online/frs/FrsOnlineSpectra.cxx
+    ./online/frs/FrsRawSpectra.cxx
+    ./online/frs/FrsCalSpectra.cxx
+    ./online/bgo/BGOOnlineSpectra.cxx
+    ./online/timemachine/TimeMachineOnline.cxx
+    ./online/wr/WhiterabbitCorrelationOnline.cxx
+    ./online/bb7/BB7OnlineSpectra.cxx
+    ./online/bb7/BB7FebexOnlineSpectra.cxx
+    ./online/fimp/FimpOnlineSpectra.cxx
+    ./online/mcp/H10MCPOnlineSpectra.cxx
+    ./online/stefan/StefanOnlineSpectra.cxx
 
-)
+    # nearline/offline
+    ./nearline/bplast/bPlastNearlineSpectra.cxx
+    ./nearline/fatima/FatimaNearlineSpectra.cxx
+    ./nearline/fatima/FatimaVmeNearlineSpectra.cxx
+    ./nearline/aida/AidaNearlineSpectra.cxx
+    ./nearline/frs/FrsNearlineSpectra.cxx
+    ./nearline/frs/FrsRawNearlineSpectra.cxx
+    ./nearline/germanium/GermaniumNearlineSpectra.cxx
+    ./nearline/bgo/BGONearlineSpectra.cxx
+    ./nearline/wr/WhiterabbitCorrelationNearline.cxx
+    ./nearline/timemachine/TimeMachineNearline.cxx
+    ./nearline/lisa/LisaNearlineSpectra.cxx
+    ./nearline/lisa/LisaNearlineSpectraDaq.cxx
+    ./nearline/lisa/LisaNearlineSpectraAna.cxx
+    ./nearline/lisa/LisaTraceAnalysis.cxx
+    ./nearline/lisa/LisaTraceCorrelation.cxx
+    ./nearline/fimp/FimpNearlineSpectra.cxx
+    ./nearline/bb7/BB7NearlineSpectra.cxx
+    ./nearline/lisa/LisaNearlineSpectra.cxx
+    ./nearline/mcp/H10MCPNearlineSpectra.cxx
 
+    ## correlations ##
+    ./correlations/FrsAidaCorrelations.cxx
+    ./online/onlineCorrelations/FrsAidaCorrelationsOnline.cxx
+    ./correlations/FrsFatimaCorrelations.cxx
+    #./correlations/FrsFatimaVmeCorrelations.cxx
+    ./correlations/FrsGermaniumCorrelations.cxx
+    ./correlations/FrsFatimaCorrelationsNearline.cxx
+    ./correlations/FrsGermaniumCorrelationsNearline.cxx
+    ./correlations/AidaFatimaCorrelations.cxx
+    ./nearline/fatima/FatimaTimingAnalysis.cxx
+    ./nearline/fatima/FatimaTimingAnalysisSummed.cxx
+    ./nearline/fatima/FatimaTimingAnalysisSummedGeGated.cxx
+    ./nearline/fatima/FatimaSinglesAnalysis.cxx
+    ./correlations/AidaGermaniumCorrelations.cxx
+    ./correlations/bPlastGermaniumCorrelations.cxx
+    ./online/onlineCorrelations/bPlastGermaniumCorrelationsOnline.cxx
+    ./online/onlineCorrelations/BB7GermaniumCorrelationsOnline.cxx
+    #./correlations/FrsBplastCorrelations.cxx
+    ./correlations/triplePlusCorrs/BetaIonCorrelations.cxx
+    #./correlations/FrsBplastCorrelations.cxx
+    ./online/onlineCorrelations/LisaFrsCorrelationsOnline.cxx
+    ./correlations/LisaFrsCorrelations.cxx
+    )
+endif()
 
-#file(GLOB SRCS ./online/*.cxx ./offline/*.cxx ./pars/*.cxx)
+# Generate LinkDef
+if (LISA_ONLY)
+    set(LINKDEF "${CMAKE_CURRENT_BINARY_DIR}/AnaLinkDef.h")
+    file(WRITE ${LINKDEF} "// Auto-generated LinkDef\n#ifdef __CINT__\n")
+    file(APPEND ${LINKDEF} "#pragma link off all globals;\n")
+    file(APPEND ${LINKDEF} "#pragma link off all classes;\n")
+    file(APPEND ${LINKDEF} "#pragma link off all functions;\n\n")
+    foreach(cls IN LISTS SRC_CLASSES)
+        file(APPEND ${LINKDEF} "#pragma link C++ class ${cls}+;\n")
+    endforeach()
+    file(APPEND ${LINKDEF} "#endif\n")
+else()
+    set(LINKDEF AnaLinkDef.h) #everything
+endif()
 
-# fill list of header files from list of source files
-# by exchanging the file extension
 CHANGE_FILE_EXTENSION(*.cxx *.h HEADERS "${SRCS}")
-
-Set(LINKDEF AnaLinkDef.h)
-
-# Set(DEPENDENCIES
-# GeoBase ParBase MbsAPI Base FairTools c4Base c4Data Core Geom GenVector Physics Matrix MathCore
-
-# )
 
 Set(DEPENDENCIES
 GeoBase ParBase Base FairTools c4Base c4Data Core Geom GenVector Physics Matrix MathCore

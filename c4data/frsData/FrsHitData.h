@@ -457,54 +457,84 @@ class FrsMultiHitItem : public TObject
                     std::vector<Float_t> s1a,
                     std::vector<Float_t> s2x_s1s2,
                     std::vector<Float_t> s2a_s1s2,
+                    std::vector<Float_t> sci21l_s1s2_selected,
+                    std::vector<Float_t> sci21r_s1s2_selected,
                     std::vector<Float_t> tof_s1s2,
                     std::vector<Float_t> beta_s1s2,
+                    std::vector<Float_t> beta_s1s2_selected, //this is beta with a selection on hits so s2 hits is the same in s1s2 ans s2s4
                     std::vector<Float_t> AoQ_s1s2,
                     std::vector<Float_t> AoQ_corr_s1s2,
+                    std::vector<Float_t> AoQ_corr_s1s2_selected, //same as for beta_selected
                     std::vector<Float_t> z21,
+                    std::vector<Float_t> z21_selected,
                     std::vector<Float_t> z22); // is there dEdeg ? 
-
+        
+        void SetTOFs1s2Full(std::vector<Float_t> tof_s1s2_full);
 
         // vectors?
         void SetS2S4(std::vector<Float_t> s2x_s2s4,
                     std::vector<Float_t> s2a_s2s4,
                     std::vector<Float_t> s4x,
                     std::vector<Float_t> s4a,
+                    std::vector<Float_t> sci21l_s2s4_selected,
+                    std::vector<Float_t> sci21r_s2s4_selected,
                     std::vector<Float_t> tof_s2s4,
                     std::vector<Float_t> beta_s2s4,
+                    std::vector<Float_t> beta_s2s4_selected, //this is beta s2s4 with the same hit selection of beta_s1s2_selected
                     std::vector<Float_t> AoQ_s2s4,
                     std::vector<Float_t> AoQ_corr_s2s4,
+                    std::vector<Float_t> AoQ_corr_s2s4_selected, //same for beta_selected
                     std::vector<Float_t> z41,
+                    std::vector<Float_t> z41_selected,
                     std::vector<Float_t> z42,
+                    std::vector<Float_t> z42_selected,
                     std::vector<Float_t> z43,
                     std::vector<Float_t> dEdegoQ,
                     std::vector<Float_t> dEdeg_z41);
+        
+        void SetTOFs2s4Full(std::vector<Float_t> tof_s2s4_full);
 
         std::vector<Float_t> Get_ID_s1x_mhtdc() const { return fID_s1x_mhtdc; }
         std::vector<Float_t> Get_ID_s1a_mhtdc() const { return fID_s1a_mhtdc; }
         std::vector<Float_t> Get_ID_s2x_s1s2_mhtdc() const { return fID_s2x_s1s2_mhtdc; }
         std::vector<Float_t> Get_ID_s2a_s1s2_mhtdc() const { return fID_s2a_s1s2_mhtdc; }
+        std::vector<Float_t> Get_ID_sci21l_s1s2_selected_mhtdc() const { return fID_sc21l_tofs1s2_pos_selected_mhtdc; }
+        std::vector<Float_t> Get_ID_sci21r_s1s2_selected_mhtdc() const { return fID_sc21r_tofs1s2_pos_selected_mhtdc; }
         std::vector<Float_t> Get_ID_tof_s1s2_mhtdc() const { return fID_tof_s1s2_mhtdc; }
         std::vector<Float_t> Get_ID_beta_s1s2_mhtdc() const { return fID_beta_s1s2_mhtdc; }
+        std::vector<Float_t> Get_ID_beta_s1s2_selected_mhtdc() const { return fID_beta_s1s2_selected_mhtdc; }
         std::vector<Float_t> Get_ID_AoQ_s1s2_mhtdc() const { return fID_AoQ_s1s2_mhtdc; }
         std::vector<Float_t> Get_ID_AoQ_corr_s1s2_mhtdc() const { return fID_AoQ_corr_s1s2_mhtdc; }
+        std::vector<Float_t> Get_ID_AoQ_corr_s1s2_selected_mhtdc() const { return fID_AoQ_corr_s1s2_selected_mhtdc; }
         std::vector<Float_t> Get_ID_z21_mhtdc() const { return fID_z21_mhtdc; }
+        std::vector<Float_t> Get_ID_z21_selected_mhtdc() const { return fID_z21_selected_mhtdc; }
         std::vector<Float_t> Get_ID_z22_mhtdc() const { return fID_z22_mhtdc; }
+
+        std::vector<Float_t> Get_ID_tof_s1s2_mhtdc_full() const { return fID_tof_s1s2_mhtdc_full; }
 
         // S2S4
         std::vector<Float_t> Get_ID_s2x_s2s4_mhtdc() const { return fID_s2x_s2s4_mhtdc; }
         std::vector<Float_t> Get_ID_s2a_s2s4_mhtdc() const { return fID_s2a_s2s4_mhtdc; }
         std::vector<Float_t> Get_ID_s4x_mhtdc() const { return fID_s4x_mhtdc; }
         std::vector<Float_t> Get_ID_s4a_mhtdc() const { return fID_s4a_mhtdc; }
+        std::vector<Float_t> Get_ID_sci21l_s2s4_selected_mhtdc() const { return fID_sc21l_tofs2s4_pos_selected_mhtdc; }
+        std::vector<Float_t> Get_ID_sci21r_s2s4_selected_mhtdc() const { return fID_sc21r_tofs2s4_pos_selected_mhtdc; }
         std::vector<Float_t> Get_ID_tof_s2s4_mhtdc() const { return fID_tof_s2s4_mhtdc; }
         std::vector<Float_t> Get_ID_beta_s2s4_mhtdc() const { return fID_beta_s2s4_mhtdc; }
+        std::vector<Float_t> Get_ID_beta_s2s4_selected_mhtdc() const { return fID_beta_s2s4_selected_mhtdc; }
         std::vector<Float_t> Get_ID_AoQ_s2s4_mhtdc() const { return fID_AoQ_s2s4_mhtdc; }
         std::vector<Float_t> Get_ID_AoQ_corr_s2s4_mhtdc() const { return fID_AoQ_corr_s2s4_mhtdc; }
+        std::vector<Float_t> Get_ID_AoQ_corr_s2s4_selected_mhtdc() const { return fID_AoQ_corr_s2s4_selected_mhtdc; }
         std::vector<Float_t> Get_ID_z41_mhtdc() const { return fID_z41_mhtdc; }
+        std::vector<Float_t> Get_ID_z41_selected_mhtdc() const { return fID_z41_selected_mhtdc; }
         std::vector<Float_t> Get_ID_z42_mhtdc() const { return fID_z42_mhtdc; }
+        std::vector<Float_t> Get_ID_z42_selected_mhtdc() const { return fID_z42_selected_mhtdc; }
         std::vector<Float_t> Get_ID_z43_mhtdc() const { return fID_z43_mhtdc; }
         std::vector<Float_t> Get_ID_dEdegoQ_mhtdc() const { return fID_dEdegoQ_mhtdc; }
         std::vector<Float_t> Get_ID_dEdeg_z41_mhtdc() const { return fID_dEdeg_z41_mhtdc; }
+
+        std::vector<Float_t> Get_ID_tof_s2s4_mhtdc_full() const { return fID_tof_s2s4_mhtdc_full; }
+
       
         ClassDef(FrsMultiHitItem, 1);
 
@@ -515,27 +545,42 @@ class FrsMultiHitItem : public TObject
         std::vector<Float_t> fID_s1a_mhtdc;
         std::vector<Float_t> fID_s2x_s1s2_mhtdc;
         std::vector<Float_t> fID_s2a_s1s2_mhtdc;
+        std::vector<Float_t> fID_sc21l_tofs1s2_pos_selected_mhtdc;
+        std::vector<Float_t> fID_sc21r_tofs1s2_pos_selected_mhtdc;
         std::vector<Float_t> fID_tof_s1s2_mhtdc;
         std::vector<Float_t> fID_beta_s1s2_mhtdc;
+        std::vector<Float_t> fID_beta_s1s2_selected_mhtdc;
         std::vector<Float_t> fID_AoQ_s1s2_mhtdc;
         std::vector<Float_t> fID_AoQ_corr_s1s2_mhtdc;
+        std::vector<Float_t> fID_AoQ_corr_s1s2_selected_mhtdc;
         std::vector<Float_t> fID_z21_mhtdc;
+        std::vector<Float_t> fID_z21_selected_mhtdc;
         std::vector<Float_t> fID_z22_mhtdc;
+
+        std::vector<Float_t> fID_tof_s1s2_mhtdc_full;
 
         // S2S4
         std::vector<Float_t> fID_s2x_s2s4_mhtdc;
         std::vector<Float_t> fID_s2a_s2s4_mhtdc;
         std::vector<Float_t> fID_s4x_mhtdc;
         std::vector<Float_t> fID_s4a_mhtdc;
+        std::vector<Float_t> fID_sc21l_tofs2s4_pos_selected_mhtdc;
+        std::vector<Float_t> fID_sc21r_tofs2s4_pos_selected_mhtdc;
         std::vector<Float_t> fID_tof_s2s4_mhtdc;
         std::vector<Float_t> fID_beta_s2s4_mhtdc;
+        std::vector<Float_t> fID_beta_s2s4_selected_mhtdc;
         std::vector<Float_t> fID_AoQ_s2s4_mhtdc;
         std::vector<Float_t> fID_AoQ_corr_s2s4_mhtdc;
+        std::vector<Float_t> fID_AoQ_corr_s2s4_selected_mhtdc;
         std::vector<Float_t> fID_z41_mhtdc;
+        std::vector<Float_t> fID_z41_selected_mhtdc;
         std::vector<Float_t> fID_z42_mhtdc;
+        std::vector<Float_t> fID_z42_selected_mhtdc;
         std::vector<Float_t> fID_z43_mhtdc;
         std::vector<Float_t> fID_dEdegoQ_mhtdc;
         std::vector<Float_t> fID_dEdeg_z41_mhtdc;
+
+        std::vector<Float_t> fID_tof_s2s4_mhtdc_full;
 
 };
 

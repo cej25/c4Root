@@ -7,6 +7,7 @@
 #include "FrsData.h"
 #include "FrsCalData.h"
 #include "FrsHitData.h"
+#include "FrsStructures.h"
 #include "EventHeader.h"
 #include "GainShift.h"
 
@@ -46,7 +47,6 @@ class FrsCal2Hit : public FairTask
 
         void FinishEvent();
         void FinishTask();
-
 
         void SetMusic41TACGainShift(GainShift * p) {music41_tac_z_gain_shifts = p;}
         void SetMusic42TACGainShift(GainShift * p) {music42_tac_z_gain_shifts = p;}
@@ -242,72 +242,173 @@ class FrsCal2Hit : public FairTask
         Float_t sci_tof_22_81_calib = 0.;
 
         // ::: SCI MHTDC ::: //
-        Int_t hits_in_11lr = 0;
-        Int_t hits_in_21lr = 0;
-        Int_t hits_in_22lr = 0;
-        Int_t hits_in_41lr = 0;
-        Int_t hits_in_42lr = 0;
-        Int_t hits_in_tof2111 = 0;
-        Int_t hits_in_tof4121 = 0;
-        Int_t hits_in_tof4122 = 0;
-        Int_t hits_in_tof4221 = 0;
+        Int_t hits_in_11l_selected = 0;
+        Int_t hits_in_11r_selected = 0;
+        Int_t hits_in_21l_selected = 0;
+        Int_t hits_in_21r_selected = 0;
+        Int_t hits_in_22l_selected = 0;
+        Int_t hits_in_22r_selected = 0;
+        Int_t hits_in_31l_selected = 0;
+        Int_t hits_in_31r_selected = 0;
+        Int_t hits_in_41l_selected = 0;
+        Int_t hits_in_41r_selected = 0;
+        Int_t hits_in_42l_selected = 0;
+        Int_t hits_in_42r_selected = 0;
+        Int_t hits_in_43l_selected = 0;
+        Int_t hits_in_43r_selected = 0;
+        Int_t hits_in_81l_selected = 0;
+        Int_t hits_in_81r_selected = 0;
+
+        Int_t hits_in_11l_tofs1s2_selected = 0;
+        Int_t hits_in_11r_tofs1s2_selected = 0;
+        Int_t hits_in_21l_tofs1s2_selected = 0;
+        Int_t hits_in_21r_tofs1s2_selected = 0;
+        Int_t hits_in_21l_tofs2s4_selected = 0;
+        Int_t hits_in_21r_tofs2s4_selected = 0;
+        Int_t hits_in_41l_tofs2s4_selected = 0;
+        Int_t hits_in_41r_tofs2s4_selected = 0;
+
+        Int_t hits_in_11lr_tofs1s2_selected = 0;
+        Int_t hits_in_21lr_tofs1s2_selected = 0;
+        Int_t hits_in_21lr_tofs2s4_selected = 0;
+        Int_t hits_in_41lr_tofs2s4_selected = 0;
+
+        Int_t hits_in_11lr_selected = 0;
+        Int_t hits_in_21lr_selected = 0;
+        Int_t hits_in_22lr_selected = 0;
+        Int_t hits_in_31lr_selected = 0;
+        Int_t hits_in_41lr_selected = 0;
+        Int_t hits_in_42lr_selected = 0;
+        Int_t hits_in_43lr_selected = 0;
+        Int_t hits_in_tof2111_selected = 0;
+        Int_t hits_in_tof2211_selected = 0;
+        Int_t hits_in_tof4121_selected = 0;
+        Int_t hits_in_tof4122_selected = 0;
+        Int_t hits_in_tof4221_selected = 0;
 
         Int_t hits_in_s1x = 0;
         Int_t hits_in_s2x = 0;
         Int_t hits_in_s4x = 0;
         Int_t hits_in_s1s2 = 0;
+        Int_t hits_in_s1s2_selected = 0;
         Int_t hits_in_s2s4 = 0;
+        Int_t hits_in_s2s4_selected = 0;
+
+        Int_t hits_in_s1x_tofs1s2_selected = 0;
+        Int_t hits_in_s2x_tofs1s2_selected = 0;
+        Int_t hits_in_s2x_tofs2s4_selected = 0;
+        Int_t hits_in_s4x_tofs2s4_selected = 0;
 
         Float_t temp_a1;
         Float_t temp_a2;
         Float_t temp_a4;
 
         //std::vector<Int_t> 
-        std::vector<Int_t> sci11l_hits;
-        std::vector<Int_t> sci11r_hits;
-        std::vector<Int_t> sci21l_hits;
-        std::vector<Int_t> sci21r_hits;
-        std::vector<Int_t> sci22l_hits;
-        std::vector<Int_t> sci22r_hits;
-        std::vector<Int_t> sci31l_hits;
-        std::vector<Int_t> sci31r_hits;
-        std::vector<Int_t> sci41l_hits;
-        std::vector<Int_t> sci41r_hits;
-        std::vector<Int_t> sci42l_hits;
-        std::vector<Int_t> sci42r_hits;
-        std::vector<Int_t> sci43l_hits;
-        std::vector<Int_t> sci43r_hits;
-        std::vector<Int_t> sci81l_hits;
-        std::vector<Int_t> sci81r_hits;
+        std::vector<Float_t> sci11l_hits;
+        std::vector<Float_t> sci11r_hits;
+        std::vector<Float_t> sci21l_hits;
+        std::vector<Float_t> sci21r_hits;
+        std::vector<Float_t> sci22l_hits;
+        std::vector<Float_t> sci22r_hits;
+        std::vector<Float_t> sci31l_hits;
+        std::vector<Float_t> sci31r_hits;
+        std::vector<Float_t> sci41l_hits;
+        std::vector<Float_t> sci41r_hits;
+        std::vector<Float_t> sci42l_hits;
+        std::vector<Float_t> sci42r_hits;
+        std::vector<Float_t> sci43l_hits;
+        std::vector<Float_t> sci43r_hits;
+        std::vector<Float_t> sci81l_hits;
+        std::vector<Float_t> sci81r_hits;
 
-        // it is encouraged that these become vectors, 
-        // so perhaps in the future.
-        Float_t* mhtdc_sc11lr_dt = nullptr;
-        Float_t* mhtdc_sc21lr_dt = nullptr;
-        Float_t* mhtdc_sc22lr_dt = nullptr;
-        Float_t* mhtdc_sc41lr_dt = nullptr;
-        Float_t* mhtdc_sc31lr_dt = nullptr;
-        Float_t* mhtdc_sc42lr_dt = nullptr;
-        Float_t* mhtdc_sc43lr_dt = nullptr;
-        Float_t* mhtdc_sc81lr_dt = nullptr;
+        std::vector<Float_t> sci11l_hits_selected; 
+        std::vector<Float_t> sci11r_hits_selected;
+        std::vector<Float_t> sci21l_hits_selected;
+        std::vector<Float_t> sci21r_hits_selected;
+        std::vector<Float_t> sci22l_hits_selected;
+        std::vector<Float_t> sci22r_hits_selected;
+        std::vector<Float_t> sci31l_hits_selected;
+        std::vector<Float_t> sci31r_hits_selected;
+        std::vector<Float_t> sci41l_hits_selected;
+        std::vector<Float_t> sci41r_hits_selected;
+        std::vector<Float_t> sci42l_hits_selected;
+        std::vector<Float_t> sci42r_hits_selected;
+        std::vector<Float_t> sci43l_hits_selected;
+        std::vector<Float_t> sci43r_hits_selected;
+        std::vector<Float_t> sci81l_hits_selected;
+        std::vector<Float_t> sci81r_hits_selected;
 
-        Float_t* mhtdc_sc11lr_x = nullptr;
-        Float_t* mhtdc_sc21lr_x = nullptr;
-        Float_t* mhtdc_sc22lr_x = nullptr;
-        Float_t* mhtdc_sc41lr_x = nullptr;
-        Float_t* mhtdc_sc31lr_x = nullptr;
-        Float_t* mhtdc_sc81lr_x = nullptr;
-        Float_t* mhtdc_sc42lr_x = nullptr;
-        Float_t* mhtdc_sc43lr_x = nullptr;
-        Float_t* mhtdc_tof2111 = nullptr;
-        // std::vector<Float_t> mhtdc_tof2111;
-        Float_t* mhtdc_tof2211 = nullptr;
-        Float_t* mhtdc_tof4121 = nullptr;
-        Float_t* mhtdc_tof4122 = nullptr;
-        Float_t* mhtdc_tof4221 = nullptr;
-        Float_t* mhtdc_tof4321 = nullptr;
-        Float_t* mhtdc_tof8121 = nullptr;
-        Float_t* mhtdc_tof3121 = nullptr;
+        std::vector<Float_t> sci11l_hits_tofs1s2_selected;
+        std::vector<Float_t> sci11r_hits_tofs1s2_selected;
+        std::vector<Float_t> sci21l_hits_tofs1s2_selected;
+        std::vector<Float_t> sci21r_hits_tofs1s2_selected;
+        std::vector<Float_t> sci21l_hits_tofs2s4_selected;
+        std::vector<Float_t> sci21r_hits_tofs2s4_selected;
+        std::vector<Float_t> sci41l_hits_tofs2s4_selected;
+        std::vector<Float_t> sci41r_hits_tofs2s4_selected;
+
+        std::vector<Float_t> sci21l_hits_tofs1s2_pos_selected;
+        std::vector<Float_t> sci21r_hits_tofs1s2_pos_selected;
+        std::vector<Float_t> sci21l_hits_tofs2s4_pos_selected;
+        std::vector<Float_t> sci21r_hits_tofs2s4_pos_selected;
+
+        std::vector<Float_t> mhtdc_sci11lr_dt;
+        std::vector<Float_t> mhtdc_sci21lr_dt;
+        std::vector<Float_t> mhtdc_sci22lr_dt;
+        std::vector<Float_t> mhtdc_sci41lr_dt;
+        std::vector<Float_t> mhtdc_sci31lr_dt;
+        std::vector<Float_t> mhtdc_sci42lr_dt;
+        std::vector<Float_t> mhtdc_sci43lr_dt;
+        std::vector<Float_t> mhtdc_sci81lr_dt;
+        std::vector<Float_t> mhtdc_sci11lr_x;
+        std::vector<Float_t> mhtdc_sci21lr_x;
+        std::vector<Float_t> mhtdc_sci22lr_x;
+        std::vector<Float_t> mhtdc_sci41lr_x;
+        std::vector<Float_t> mhtdc_sci31lr_x;
+        std::vector<Float_t> mhtdc_sci81lr_x;
+        std::vector<Float_t> mhtdc_sci42lr_x;
+        std::vector<Float_t> mhtdc_sci43lr_x;
+
+        std::vector<Float_t> mhtdc_sci11lr_dt_selected;
+        std::vector<Float_t> mhtdc_sci21lr_dt_selected;
+        std::vector<Float_t> mhtdc_sci21lr_dt_tofs1s2_selected;
+        std::vector<Float_t> mhtdc_sci22lr_dt_selected;
+        std::vector<Float_t> mhtdc_sci41lr_dt_selected;
+        std::vector<Float_t> mhtdc_sci31lr_dt_selected;
+        std::vector<Float_t> mhtdc_sci42lr_dt_selected;
+        std::vector<Float_t> mhtdc_sci43lr_dt_selected;
+        std::vector<Float_t> mhtdc_sci81lr_dt_selected;
+        std::vector<Float_t> mhtdc_sci11lr_x_selected;
+        std::vector<Float_t> mhtdc_sci21lr_x_selected;
+        std::vector<Float_t> mhtdc_sci22lr_x_selected;
+        std::vector<Float_t> mhtdc_sci41lr_x_selected;
+        std::vector<Float_t> mhtdc_sci31lr_x_selected;
+        std::vector<Float_t> mhtdc_sci81lr_x_selected;
+        std::vector<Float_t> mhtdc_sci42lr_x_selected;
+        std::vector<Float_t> mhtdc_sci43lr_x_selected;
+
+        std::vector<Float_t> mhtdc_sci11lr_x_tofs1s2_selected;
+        std::vector<Float_t> mhtdc_sci21lr_x_tofs1s2_selected;
+        std::vector<Float_t> mhtdc_sci21lr_x_tofs2s4_selected;
+        std::vector<Float_t> mhtdc_sci41lr_x_tofs2s4_selected;
+        
+        std::vector<Float_t> mhtdc_tof2111;
+        std::vector<Float_t> mhtdc_tof2211;
+        std::vector<Float_t> mhtdc_tof4121;
+        std::vector<Float_t> mhtdc_tof4122;
+        std::vector<Float_t> mhtdc_tof4221;
+        std::vector<Float_t> mhtdc_tof4321;
+        std::vector<Float_t> mhtdc_tof8121;
+        std::vector<Float_t> mhtdc_tof3121;
+
+        std::vector<Float_t> mhtdc_tof2111_selected;
+        std::vector<Float_t> mhtdc_tof2211_selected;
+        std::vector<Float_t> mhtdc_tof4121_selected;
+        std::vector<Float_t> mhtdc_tof4122_selected;
+        std::vector<Float_t> mhtdc_tof4221_selected;
+        std::vector<Float_t> mhtdc_tof4321_selected;
+        std::vector<Float_t> mhtdc_tof8121_selected;
+        std::vector<Float_t> mhtdc_tof3121_selected;
 
         Float_t temp_s4x = -999.;
         Float_t* temp_s1x_mhtdc = nullptr;
@@ -479,13 +580,18 @@ class FrsCal2Hit : public FairTask
         // std::vector<Float_t> temp_id_mhtdc_beta_s1s2;
         // std::vector<Float_t> temp_id_mhtdc_tof_s1s2;
         std::vector<Float_t> id_mhtdc_beta_s1s2;
+        std::vector<Float_t> id_mhtdc_beta_s1s2_selected;
+        std::vector<Float_t> id_mhtdc_beta_s2s4_selected;
         std::vector<Float_t> id_mhtdc_tof_s1s2;
         // std::vector<Float_t> id_mhtdc_gamma_s1s2;
         // std::vector<Float_t> id_mhtdc_delta_s1s2;
         std::vector<Float_t> id_mhtdc_aoq_s1s2;
         std::vector<Float_t> id_mhtdc_aoq_corr_s1s2;
+        std::vector<Float_t> id_mhtdc_aoq_corr_s1s2_selected;
         // std::vector<Float_t> id_mhtdc_v_cor_music21;
         std::vector<Float_t> id_mhtdc_z_music21;
+        std::vector<Float_t> id_mhtdc_z_music21_selected;
+
         std::vector<Float_t> id_mhtdc_z_shifted_music21;
         // std::vector<Float_t> id_mhtdc_v_cor_music22;
         std::vector<Float_t> id_mhtdc_z_music22;
@@ -500,9 +606,12 @@ class FrsCal2Hit : public FairTask
         std::vector<Float_t> id_mhtdc_tof_s2s4;
         std::vector<Float_t> id_mhtdc_aoq_s2s4;
         std::vector<Float_t> id_mhtdc_aoq_corr_s2s4;
+        std::vector<Float_t> id_mhtdc_aoq_corr_s2s4_selected;
         std::vector<Float_t> id_mhtdc_z_music41;
+        std::vector<Float_t> id_mhtdc_z_music41_selected;
         std::vector<Float_t> id_mhtdc_z_shifted_music41;
         std::vector<Float_t> id_mhtdc_z_music42;
+        std::vector<Float_t> id_mhtdc_z_music42_selected;
         std::vector<Float_t> id_mhtdc_z_shifted_music42;
         std::vector<Float_t> id_mhtdc_z_music43;
         std::vector<Float_t> id_mhtdc_z_shifted_music43;

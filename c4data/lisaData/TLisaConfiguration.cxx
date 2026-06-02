@@ -33,9 +33,12 @@ std::string TLisaConfiguration::MWD_file = "blank";
 std::string TLisaConfiguration::mapping_file = "blank";
 std::string TLisaConfiguration::gain_matching_file = "blank";
 std::string TLisaConfiguration::gain_matching_file_MWD = "blank";
+std::string TLisaConfiguration::gain_matching_file_dEdX = "blank";
+std::string TLisaConfiguration::z_calibration_file = "blank";
 std::string TLisaConfiguration::calibration_file = "blank";
 std::vector<std::string> TLisaConfiguration::gate_ranges_files = {"blank"};
 std::vector<std::string> TLisaConfiguration::gate_ranges_MWD_files = {"blank"};
+std::vector<std::string> TLisaConfiguration::gate_ranges_dedx_files = {"blank"};
 
 //std::string TLisaConfiguration::gate_ranges_files = "blank";
 //std::string TLisaConfiguration::gate_ranges_MWD_file = "blank";
@@ -64,6 +67,10 @@ int TLisaConfiguration::bin_energy_GM = 500;
 int TLisaConfiguration::min_energy_MWD_GM = 0;
 int TLisaConfiguration::max_energy_MWD_GM = 10000;
 int TLisaConfiguration::bin_energy_MWD_GM = 500;
+
+double TLisaConfiguration::min_dedx = 0.;
+double TLisaConfiguration::max_dedx = 10000000.;
+int TLisaConfiguration::bin_dedx = 900;
 
 // ::: WR
 long TLisaConfiguration::min_wr_diff = 0;
@@ -117,6 +124,8 @@ TLisaConfiguration::TLisaConfiguration()
     ReadGMFileMWD();
     ReadLISAGateFebexFile();
     ReadLISAGateMWDFile();
+    ReadGMFiledEdX();
+    ReadZCalibrationFile();
     //ReadCalibrationCoefficients();
 
 }
@@ -178,6 +187,7 @@ void TLisaConfiguration::ReadMappingFile()
     std::set<int> x_positions;
     std::set<int> y_positions;
     std::set<std::string> det_names;
+    std::set<std::string> det_serial_number;
     int detectors = 0;
     
     std::ifstream detector_map_file(mapping_file);
@@ -191,13 +201,17 @@ void TLisaConfiguration::ReadMappingFile()
 
         std::istringstream iss(line);
         std::string signal;
-        std::string det_name;
+        std::string det_name, det_sn;
         int febex_board, febex_channel, layer_id, x_pos, y_pos;
+        float thickness;
         std::pair<int, int> xy;
         std::pair<int, std::pair<int, int>> layer_xy;
         std::pair<int, std::string> layer_det_name;
         std::pair<std::pair<int,std::string>, std::pair<int,int>> layer_det_name_xy; //include det names
         std::pair<int, int> febex_bc;
+        std::pair<std::string,std::string> det_name_sn;
+        std::pair<float,std::pair<std::string,std::string>> info;
+        std::pair<std::pair<int, std::pair<int, int>>,std::pair<float,std::pair<std::string,std::string>>> layer_xy_info;
 
         iss >> signal;
     
@@ -206,8 +220,8 @@ void TLisaConfiguration::ReadMappingFile()
         {
             febex_board = std::stoi(signal);
 
-            iss >> febex_channel >> layer_id >> x_pos >> y_pos >> det_name;
-            //std::cout << " Mapping : l "<< layer_id << " x " << x_pos << " y " << y_pos << "\n";
+            iss >> febex_channel >> layer_id >> x_pos >> y_pos >> thickness >> det_name >> det_sn;
+            //std::cout << " Mapping : l "<< layer_id << " x " << x_pos << " y " << y_pos << " thickness : " << thickness << " city: " << det_name << " serial number: " << det_sn << "\n";
 
 
             // count only real layers, detectors
@@ -219,7 +233,7 @@ void TLisaConfiguration::ReadMappingFile()
         }
         else
         {
-            iss >> febex_board >> febex_channel >> layer_id >> x_pos >> y_pos >>det_name;
+            iss >> febex_board >> febex_channel >> layer_id >> x_pos >> y_pos >> thickness >> det_name >> det_sn;
 
             if (signal == "TimeMachineU") tm_undelayed = layer_id;
             else if (signal == "TimeMachineD") tm_delayed = layer_id;
@@ -231,18 +245,24 @@ void TLisaConfiguration::ReadMappingFile()
             extra_signals.insert(layer_id);
         }
         
-        // count all febex boards, useful scaler monitor?
+        // count all febex boards
         febex_boards.insert(febex_board);
-
         febex_bc = std::make_pair(febex_board, febex_channel);
 
         xy = std::make_pair(x_pos, y_pos);
         layer_xy = std::make_pair(layer_id, xy);
+
+        det_name_sn = std::make_pair(det_name,det_sn);
+        info = std::make_pair(thickness,det_name_sn);
+
+        layer_xy_info = std::make_pair(layer_xy,info);
+
         layer_det_name = std::make_pair(layer_id,det_name);
         layer_det_name_xy = std::make_pair(layer_det_name, xy);
 
         //detector_mapping.insert(std::make_pair(febex_bc, layer_xy));
-        detector_mapping.insert(std::make_pair(febex_bc, layer_det_name_xy));
+        //detector_mapping.insert(std::make_pair(febex_bc, layer_det_name_xy));
+        detector_mapping.insert(std::make_pair(febex_bc, layer_xy_info));
 
     }
 
@@ -343,6 +363,84 @@ void TLisaConfiguration::ReadGMFileMWD()
 
 }
 
+void TLisaConfiguration::ReadGMFiledEdX()
+{   
+    
+    std::ifstream gain_matching_coeff_file_dEdX (gain_matching_file_dEdX);
+    std::string line;
+
+    if (gain_matching_coeff_file_dEdX.fail()) c4LOG(warn, "Could not open LISA dEdX GM - calibration coefficients file.");
+
+    while (std::getline(gain_matching_coeff_file_dEdX, line))
+    {
+        if (line.empty() || line[0] == '#') continue;
+
+        std::istringstream iss(line);
+        int layer_id, x_pos, y_pos;
+        double slope_dEdX, intercept_dEdX;
+        std::pair<int, int> xy;
+        std::pair<int, std::pair<int, int>> layer_xy;
+        std::pair<double, double> gm_dEdX_coeff;
+
+        iss >> layer_id >> x_pos >> y_pos >> slope_dEdX >> intercept_dEdX;
+
+        gm_dEdX_coeff = std::make_pair(slope_dEdX, intercept_dEdX);
+
+        xy = std::make_pair(x_pos, y_pos);
+        layer_xy = std::make_pair(layer_id, xy);
+
+        gain_matching_dEdX_coeffs.insert(std::make_pair(layer_xy, gm_dEdX_coeff));
+
+        //std::cout << " dEdX GM -> lxy : "<< layer_id << x_pos << y_pos << " slope " << slope_dEdX << " intercept " << intercept_dEdX << "\n";
+    }
+    
+    gain_matching_dEdX_loaded = 1;
+    gain_matching_coeff_file_dEdX.close();
+
+    c4LOG(info, "Lisa Gain Matching dEdX File: " + gain_matching_file_dEdX);
+    return;
+
+}
+
+void TLisaConfiguration::ReadZCalibrationFile()
+{   
+    
+    std::ifstream z_calibration_coeff_file (z_calibration_file);
+    std::string line;
+
+    if (z_calibration_coeff_file.fail()) c4LOG(warn, "Could not open LISA Z calibration file.");
+
+    while (std::getline(z_calibration_coeff_file, line))
+    {
+        if (line.empty() || line[0] == '#') continue;
+
+        std::istringstream iss(line);
+        int layer_id, x_pos, y_pos;
+        double slope_z, intercept_z;
+        std::pair<int, int> xy;
+        std::pair<int, std::pair<int, int>> layer_xy;
+        std::pair<double, double> z_coeff;
+
+        iss >> layer_id >> x_pos >> y_pos >> slope_z >> intercept_z;
+
+        z_coeff = std::make_pair(slope_z, intercept_z);
+
+        xy = std::make_pair(x_pos, y_pos);
+        layer_xy = std::make_pair(layer_id, xy);
+
+        z_calibration_coeffs.insert(std::make_pair(layer_xy, z_coeff));
+
+        //std::cout << " Z calibration -> lxy : "<< layer_id << x_pos << y_pos << " slope " << slope_z << " intercept " << intercept_z << "\n";
+    }
+    
+    z_calibration_loaded = 1;
+    z_calibration_coeff_file.close();
+
+    c4LOG(info, "Loaded Lisa Z Calibration File: " + z_calibration_file);
+    return;
+
+}
+
 void TLisaConfiguration::ReadLISAGateFebexFile()
 {       
     gate_LISA_febex.clear(); 
@@ -414,6 +512,43 @@ void TLisaConfiguration::ReadLISAGateMWDFile()
         c4LOG(info, "Loaded LISA MWD Gates from file: " + gate_file);  
     }
     gates_MWD_loaded = 1;
+    return;
+}
+
+void TLisaConfiguration::ReadLISAGatedEdXFile()
+{       
+    gate_LISA_dEdX.clear(); 
+
+    for (const auto& gate_file : gate_ranges_dedx_files)
+    {
+        std::ifstream gate_ranges(gate_file);
+        std::string line;
+        if (gate_ranges.fail()) 
+        {
+            c4LOG(warn, "Could not open LISA dEdX Gates file: " + gate_file);
+            continue;
+        }
+        while (std::getline(gate_ranges, line))
+        {
+            if (line.empty() || line[0] == '#') continue;
+
+            std::istringstream iss(line);
+            int layer_id;
+            double gate_min, gate_max;
+
+            iss >> layer_id >> gate_min >> gate_max;
+
+            gate_LISA_dEdX[layer_id].emplace_back(gate_file, gate_min, gate_max);
+
+            std::cout << "File dEdX: " << gate_file
+                      << " | Layer ID: " << layer_id 
+                      << " | Gate dEdX Min: " << gate_min 
+                      << " | Gate dEdX Max: " << gate_max << "\n";
+        }
+        gate_ranges.close();
+        c4LOG(info, "Loaded LISA dEdX Gates from file: " + gate_file);  
+    }
+    gates_dEdX_loaded = 1;
     return;
 }
 

@@ -35,6 +35,9 @@ class LisaHitItem : public TObject
                     TString c,
                     int xpos,
                     int ypos,
+                    float tpc_x_on_lisa,
+                    float tpc_y_on_lisa,
+                    float thick,
                     float e, 
                     float e_MWD,
                     std::vector<float> tr,
@@ -42,13 +45,26 @@ class LisaHitItem : public TObject
                     std::vector<int16_t> tr_x,
                     float e_GM,
                     float e_MWD_GM,
-                    float z,
+                    float dedx,
+                    float dedx_GM,
+                    std::vector<float> z,
+                    std::vector<float> b0,
+                    std::vector<float> b_l,
+                    std::vector<float> b1,
+                    std::vector<float> b2,
+                    std::vector<float> b3,
+                    std::vector<float> b4,
+                    std::vector<float> b5,
                     uint64_t evt_t,
                     uint64_t ch_t,
                     uint64_t evtno,
                     int pu,
                     //int pu_MWD,
-                    int ov);
+                    int ov,
+                    int greact,
+                    int greact_on_lisa_z,
+                    int lreact_z,
+                    int afterl_react_z);
                     //int ov_MWD);
 
         void Reset();
@@ -60,6 +76,9 @@ class LisaHitItem : public TObject
         TString Get_city() const;
         int Get_xposition() const;
         int Get_yposition() const;
+        float Get_tpc_x_on_lisa() const;
+        float Get_tpc_y_on_lisa() const;
+        float Get_thickness() const;
         float Get_energy() const;
         float Get_energy_MWD() const;
         std::vector<float> Get_trace_febex() const;
@@ -67,7 +86,16 @@ class LisaHitItem : public TObject
         std::vector<int16_t> Get_trace_x() const;
         float Get_energy_GM() const;
         float Get_energy_MWD_GM() const;
-        float Get_Z_lisa() const;
+        float Get_de_dx() const;
+        float Get_de_dx_GM() const;
+        std::vector<float> Get_Z_lisa() const;
+        std::vector<float> Get_beta_s1s2_correlated() const;
+        std::vector<float> Get_beta_before_L1() const;
+        std::vector<float> Get_beta_after_L1() const;
+        std::vector<float> Get_beta_after_L2() const;
+        std::vector<float> Get_beta_after_L3() const;
+        std::vector<float> Get_beta_after_L4() const;
+        std::vector<float> Get_beta_after_L5() const;
         uint64_t Get_board_event_time() const;
         uint64_t Get_channel_event_time() const;
         uint64_t Get_evtno();
@@ -75,6 +103,10 @@ class LisaHitItem : public TObject
         //int Get_pileup_MWD() const;
         int Get_overflow() const;
         //int Get_overflow_MWD() const;
+        int Get_Global_Reactions() const;
+        int Get_Global_Reactions_on_lisa_z() const;
+        int Get_Lisa_Reactions_z() const;
+        int Get_After_Lisa_Reactions_z() const;
 
 
         // Getters
@@ -87,9 +119,9 @@ class LisaHitItem : public TObject
         TString city; // name
         int xposition;
         int yposition;
-        double xposition_mm;
-        double yposition_mm;
-        double zposition_mm;
+        float tpc_x_on_lisa;
+        float tpc_y_on_lisa;
+        float thickness;
         float energy; // double? int?
         float energy_MWD; // double? int?
         std::vector<float> trace_febex;
@@ -97,7 +129,16 @@ class LisaHitItem : public TObject
         std::vector<int16_t> trace_x;
         float energy_GM;
         float energy_MWD_GM;
-        float z_lisa;
+        float de_dx;
+        float de_dx_GM;
+        std::vector<float> z_lisa;
+        std::vector<float> beta0;
+        std::vector<float> beta_before_lisa;
+        std::vector<float> beta1;
+        std::vector<float> beta2;
+        std::vector<float> beta3;
+        std::vector<float> beta4;
+        std::vector<float> beta5;
         uint64_t board_event_time;
         uint64_t ch_event_time;
         uint64_t event_no;
@@ -105,6 +146,10 @@ class LisaHitItem : public TObject
         //int pileup_MWD;
         int overflow;
         //int overflow_MWD;
+        int global_reactions;
+        int global_reactions_on_lisa_z;
+        int lisa_reactions_z;
+        int after_lisa_reactions_z;
         // timing info for correlations
 
 };
@@ -144,6 +189,21 @@ inline int LisaHitItem::Get_yposition() const
     return yposition;
 }
 
+inline float LisaHitItem::Get_tpc_x_on_lisa() const
+{
+    return tpc_x_on_lisa;
+}
+
+inline float LisaHitItem::Get_tpc_y_on_lisa() const
+{
+    return tpc_y_on_lisa;
+}
+
+inline float LisaHitItem::Get_thickness() const
+{
+    return thickness;
+}
+
 inline float LisaHitItem::Get_energy() const
 {
     return energy;
@@ -179,9 +239,54 @@ inline float LisaHitItem::Get_energy_MWD_GM() const
     return energy_MWD_GM;
 }
 
-inline float LisaHitItem::Get_Z_lisa() const
+inline float LisaHitItem::Get_de_dx() const
+{
+    return de_dx;
+}
+
+inline float LisaHitItem::Get_de_dx_GM() const
+{
+    return de_dx_GM;
+}
+
+inline std::vector<float> LisaHitItem::Get_Z_lisa() const
 {
     return z_lisa;
+}
+
+inline std::vector<float> LisaHitItem::Get_beta_s1s2_correlated() const
+{
+    return beta0;
+}
+
+inline std::vector<float> LisaHitItem::Get_beta_before_L1() const
+{
+    return beta_before_lisa;
+}
+
+inline std::vector<float> LisaHitItem::Get_beta_after_L1() const
+{
+    return beta1;
+}
+
+inline std::vector<float> LisaHitItem::Get_beta_after_L2() const
+{
+    return beta2;
+}
+
+inline std::vector<float> LisaHitItem::Get_beta_after_L3() const
+{
+    return beta3;
+}
+
+inline std::vector<float> LisaHitItem::Get_beta_after_L4() const
+{
+    return beta4;
+}
+
+inline std::vector<float> LisaHitItem::Get_beta_after_L5() const
+{
+    return beta5;
 }
 
 inline uint64_t LisaHitItem::Get_board_event_time() const
@@ -213,6 +318,26 @@ inline int LisaHitItem::Get_overflow() const
 // {
 //     return overflow_MWD;
 // }
+
+inline int LisaHitItem::Get_Global_Reactions() const
+{
+    return global_reactions;
+}
+
+inline int LisaHitItem::Get_Global_Reactions_on_lisa_z() const
+{
+    return global_reactions_on_lisa_z;
+}
+
+inline int LisaHitItem::Get_Lisa_Reactions_z() const
+{
+    return lisa_reactions_z;
+}
+
+inline int LisaHitItem::Get_After_Lisa_Reactions_z() const
+{
+    return after_lisa_reactions_z;
+}
 
 
 #endif

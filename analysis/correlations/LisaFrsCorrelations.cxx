@@ -159,6 +159,8 @@ InitStatus LisaFrsCorrelations::Init()
     excluded = lisa_config->GetExcludedChannels();
 
     dir_corr = gDirectory->mkdir("Correlations");
+
+    dir_hits = dir_corr->mkdir("HitMap");
     dir_time = dir_corr->mkdir("Time");
 
     dir_position = dir_corr->mkdir("Position");
@@ -258,6 +260,7 @@ InitStatus LisaFrsCorrelations::Init()
             lisa_config->bin_energy, lisa_config->min_energy, lisa_config->max_energy,
             Form("E MWD(LISA %i) Corr sci41 [a.u.]", i+1), kViolet+10, kBlue+1);
     }
+
     //...........................................
     //c4LOG(info, "::::::::::::::::::end of sci histo");
     // :::   E N E R G Y  LISA vs MUSIC  C O R R E L A T I O N S   :::
@@ -1096,6 +1099,23 @@ InitStatus LisaFrsCorrelations::Init()
     //..........................
     //c4LOG(info, "::::::::::::::::::end of position ");
 
+    // :::: Hit map for FRS for event in correlations with LISA and for event not in correlations
+    dir_hits->cd();
+    h2_multihit_map_correlated = new TH2I("h2_multihit_map_correlated", "MHit_s2s4 vs MHit_s1s2 corr. with LISA",
+                               10, 0, 10,   
+                               10, 0, 10);  
+    h2_multihit_map_correlated->GetXaxis()->SetTitle("# s1s2_mhtdc");
+    h2_multihit_map_correlated->GetYaxis()->SetTitle("# s2s4_mhtdc");
+    h2_multihit_map_correlated->SetOption("COLZ");
+
+    h2_multihit_map_ref = new TH2I("h2_multihit_map_ref", "MHit_s2s4 vs MHit_s1s2",
+                               10, 0, 10,   
+                               10, 0, 10);  
+    h2_multihit_map_ref->GetXaxis()->SetTitle("# s1s2_mhtdc");
+    h2_multihit_map_ref->GetYaxis()->SetTitle("# s2s4_mhtdc");
+    h2_multihit_map_ref->SetOption("COLZ");
+
+
     mh_counter_passed_s1s2_seq = new int*[pair_count];
     mh_counter_passed_s2s4_seq = new int*[pair_count];
     for (int pair = 0; pair < pair_count; pair++)
@@ -1169,19 +1189,18 @@ InitStatus LisaFrsCorrelations::Init()
 
     //c4LOG(info, "::::::::::::::::::end of init");
     return kSUCCESS;
-    
+    //c4LOG(info, "::::::::::::::::::0");  
 
 }
 
 
-
 void LisaFrsCorrelations::Exec(Option_t* option)
 {   
-    // -> Reject events without both subsystems <-
-    if (frsHitArray->size() <= 0 || lisaCalArray->size() <= 0) return;  // frs, lisa and travmus subevent exists
-    
-    
 
+    // -> Reject events without both subsystems <-
+    if (frsHitArray->size() <= 0 || lisaCalArray->size() <= 0 || multihitArray->size() <= 0) return;  // frs, lisa and travmus subevent exists
+    
+    //c4LOG(info, "::::::::::::::::::1");
     const auto & frsHitItem = frsHitArray->at(0);                       // *should* only be 1 FRS subevent per event
     const auto & multihitItem = multihitArray->at(0);                 // *should* only be 1 FRS subevent per event
 
@@ -1194,7 +1213,7 @@ void LisaFrsCorrelations::Exec(Option_t* option)
     int lisa_total_multiplicity = 0;
 
     //................
-
+    //c4LOG(info, "::::::::::::::::::2");
     // ::: MUSIC energies
     energy_MUSIC_21 = frsHitItem.Get_music21_dE();
     energy_MUSIC_41 = frsHitItem.Get_music41_dE(); 
@@ -1204,20 +1223,26 @@ void LisaFrsCorrelations::Exec(Option_t* option)
     std::vector<Float_t> z41_mhtdc = multihitItem.Get_ID_z41_mhtdc();
     std::vector<Float_t> z42_mhtdc = multihitItem.Get_ID_z42_mhtdc();
     std::vector<Float_t> AoQ_s1s2_mhtdc = multihitItem.Get_ID_AoQ_corr_s1s2_mhtdc();
-    std::vector<Float_t> AoQ_s2s4_mhtdc = multihitItem.Get_ID_AoQ_corr_s2s4_mhtdc();
+    std::vector<Float_t> AoQ_s2s4_mhtdc = multihitItem.Get_ID_AoQ_corr_s2s4_mhtdc(); // use the selected quantities
     if (AoQ_s2s4_mhtdc.size() > 0) aoq++;
     std::vector<Float_t> dEdeg_z41_mhtdc = multihitItem.Get_ID_dEdeg_z41_mhtdc();
     Float_t x2_position = frsHitItem.Get_ID_x2();
     Float_t x4_position = frsHitItem.Get_ID_x4();
     Float_t sci42e = frsHitItem.Get_sci_e_42();
 
-    if (AoQ_s1s2_mhtdc.size()!=1 || AoQ_s2s4_mhtdc.size() !=1 ) return;   // this is a quick fix to avoid getting any event with multihits (just pick 1)
+    //c4LOG(info, "::::::::::::::::::3");
+
+    // ::: MultiHit Map correlated
+    h2_multihit_map_correlated->Fill(AoQ_s1s2_mhtdc.size(), AoQ_s2s4_mhtdc.size());
+
+    //if (AoQ_s1s2_mhtdc.size() != 1 || AoQ_s2s4_mhtdc.size() != 1) return;   // this is a quick fix to avoid getting any event with multihits (just pick 1)
     ncorr++;
     
+    //c4LOG(info, "::::::::::::::::::getting data");
     // CEJ :: Process FRS Gate info here first.
     for (int gate = 0; gate < FrsGates.size(); gate++)
     {
-        if (AoQ_s1s2_mhtdc.size()!=1 || AoQ_s2s4_mhtdc.size() !=1 )break; // this is a quick fix to reject all the events with multihits - redundant
+        //if (AoQ_s1s2_mhtdc.size()!=1 || AoQ_s2s4_mhtdc.size() !=1 )break; // this is a quick fix to reject all the events with multihits - redundant
         for (int i = 0; i < AoQ_s1s2_mhtdc.size(); i++)
         {
             
@@ -1241,7 +1266,7 @@ void LisaFrsCorrelations::Exec(Option_t* option)
         }
     }
 
-
+    //c4LOG(info, "::::::::::::::::::def of frs gate");
     layer1seen = false;
     layer2seen = false;
 
@@ -1301,6 +1326,8 @@ void LisaFrsCorrelations::Exec(Option_t* option)
         energy_layer[layer-1].emplace_back(energy_LISA_febex);
         energy_MWD_layer[layer-1].emplace_back(energy_LISA_MWD);
 
+        //c4LOG(info, ":::::::::::::::::: getting lisa data");
+
         // Loop over gates for LISA FEBEX
         for (int g = 0; g < febex_gates.size(); g++)
         {
@@ -1326,7 +1353,7 @@ void LisaFrsCorrelations::Exec(Option_t* option)
             g++;
         }
         //...........................
-
+        //c4LOG(info, "::::::::::::::::::lisa gate");
 
         // ::: FRS applied on LISA (FRS_ON_LISA Directory)
         //int mh_counter_passed_s1s2[FrsGates.size()] = {0};
@@ -1677,6 +1704,10 @@ void LisaFrsCorrelations::Exec(Option_t* option)
     } 
     //............................
 
+    // ::: Hit map
+    h2_multihit_map_ref->Fill(AoQ_s1s2_mhtdc.size(), AoQ_s2s4_mhtdc.size());
+
+
 
     fNEvents++;
 
@@ -1684,6 +1715,7 @@ void LisaFrsCorrelations::Exec(Option_t* option)
 
 void LisaFrsCorrelations::FinishEvent()
 {
+    //std::cout << "::::: FE 1 " << std::endl;
     for (int pair = 0; pair < pair_count; pair++)
     {
         for (int i = 0; i < layer_number; i++)
@@ -1692,6 +1724,7 @@ void LisaFrsCorrelations::FinishEvent()
             mh_counter_passed_s2s4_seq[pair][i] = 0;
         }
     }
+    //std::cout << "::::: FE 2 " << std::endl;
     for (int pair = 0; pair < pair_count_MWD; pair++)
     {
         for (int i = 0; i < layer_number; i++)
@@ -1700,30 +1733,52 @@ void LisaFrsCorrelations::FinishEvent()
             mh_counter_passed_s2s4_seq_mwd[pair][i] = 0;
         }
     }
-
+    //std::cout << "::::: FE 3 " << std::endl;
     for (int l = 0; l < layer_number; l++)
     {
         energy_layer[l].clear();
         energy_MWD_layer[l].clear();
     }
-
-    for (int g = 0; g < gate_number; g++)
+    //std::cout << "::::: FE 4 " << std::endl;
+    for (int g = 0; g < energy_layer_gated.size(); g++)
     {
-        for (int l = 0; l < layer_number; l++)
+        //std::cout << "::::: FE 5 " << std::endl;
+        for (int l = 0; l < energy_layer_gated[g].size(); l++)
         {
+            //std::cout << "::::: FE 6 " << std::endl;
             energy_layer_gated[g][l].clear();
-            energy_MWD_layer_gated[g][l].clear();
-            for (int x = 0; x < xmax; x++)
+            //energy_MWD_layer_gated[g][l].clear();
+            for (int x = 0; x < energy_xy_gated[g][l].size(); x++)
             {
-                for (int y = 0; y < ymax; y++)
+                //std::cout << "::::: FE 7 " << std::endl;
+                for (int y = 0; y < energy_xy_gated[g][l][x].size(); y++)
                 {
                     energy_xy_gated[g][l][x][y].clear();
-                    energy_MWD_xy_gated[g][l][x][y].clear();
+                    //energy_MWD_xy_gated[g][l][x][y].clear();
                 }
             }
         }
     }
 
+    //std::cout << "::::: FE 8 " << std::endl;
+    for (int g = 0; g < energy_MWD_layer_gated.size(); g++)
+    {
+        //std::cout << "::::: FE 9 " << std::endl;
+        for (int l = 0; l < energy_MWD_layer_gated[g].size(); l++)
+        {
+            //std::cout << "::::: FE 10 " << std::endl;
+            energy_MWD_layer_gated[g][l].clear();
+            for (int x = 0; x < energy_MWD_xy_gated[g][l].size(); x++)
+            {
+                //std::cout << "::::: FE 11 " << std::endl;
+                for (int y = 0; y < energy_MWD_xy_gated[g][l][x].size(); y++)
+                {
+                    energy_xy_gated[g][l][x][y].clear();
+                }
+            }
+        }
+    }
+    //std::cout << "::::: before vectors " << std::endl;
     for (int gate = 0; gate < FrsGates.size(); gate++)
     {
         z21_passed[gate].clear();

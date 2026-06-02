@@ -6,6 +6,7 @@
 #include "BB7VmeData.h"
 #include "BB7VmeCalData.h"
 #include "TBB7VmeConfiguration.h"
+#include "FairTask.h"
 
 #include <map>
 

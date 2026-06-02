@@ -24,6 +24,7 @@
 #include "LisaAnaData.h"
 #include <map>
 #include <vector>
+#include "FairTask.h"
 
 // This is the adjustment to use TVectors instead of std::vector
 //This was to try to read vectors of vectors form external macro without sourcing c4. It does not work.

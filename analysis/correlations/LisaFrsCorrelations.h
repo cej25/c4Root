@@ -113,6 +113,8 @@ class LisaFrsCorrelations : public FairTask
         TDirectory* dir_corr;
         TDirectory* dir_lisa_frs;
 
+        TDirectory* dir_hits;
+
         TDirectory* dir_time;
         
         TDirectory* dir_position;
@@ -183,6 +185,11 @@ class LisaFrsCorrelations : public FairTask
         TH1I* h1_wr_diff_tpat2;
         TH1I* h1_wr_diff_tpat6;
 
+        // ::: Hit Map
+        TH2I* h2_multihit_map_correlated;
+        TH2I* h2_multihit_map_ref;
+        TH2I* h2_multihit_map;
+
         // ::: Position
         std::vector<TH2F*> h2_TPC_vs_LISA_x;
         std::vector<TH2F*> h2_TPC_vs_LISA_y;
@@ -192,6 +199,7 @@ class LisaFrsCorrelations : public FairTask
         std::vector<TH1*> h1_energy_layer_corr_sci41;
         std::vector<TH1*> h1_energy_MWD_layer_corr_sci21;
         std::vector<TH1*> h1_energy_MWD_layer_corr_sci41;
+        std::vector<TH1*> h1_energy_MWD_layer_corr_sci41_multihit;
 
         // ::: Energy - LISA-MUSICs
         std::vector<TH2F*> h2_MUSIC21_vs_LISA_febex;

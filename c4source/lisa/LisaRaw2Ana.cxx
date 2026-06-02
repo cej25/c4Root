@@ -39,6 +39,12 @@
 #include "LisaRaw2Ana.h"
 #include "c4Logger.h"
 
+// atima
+#ifdef WITH_ATIMA
+    #include "Atima.h"
+#endif
+
+
 // ROOT
 
 #include <vector>
@@ -103,6 +109,12 @@ void LisaRaw2Ana::Exec(Option_t* option)
     int baseline_count;
     double baseline_avg;
 
+
+    // Test
+    #ifdef WITH_ATIMA
+        Atima at;
+    #endif
+    
     for (auto const & lisaItem : *lisaArray)
     {
                
@@ -388,10 +400,14 @@ void LisaRaw2Ana::Exec(Option_t* option)
             // 5. ::: Calculate MWD |energy value|
             energy_MWD = energy_avg - baseline_avg;
 
-            if (energy_MWD < 0) 
-            {
-                energy_MWD = - energy_MWD;
-            }            
+            // !!!!!The following should be always done but for shiyan we have positive signal we don't understand
+            // these signals are covering part of the spectra at low energies so we avoid to flip the sign to move them
+            //if (energy_MWD < 0) 
+            //{
+            energy_MWD = - energy_MWD;
+            //}
+
+            //........        
         
             //std::cout<<" energy MWD : " << energy_MWD << "\n";
 
@@ -412,6 +428,9 @@ void LisaRaw2Ana::Exec(Option_t* option)
             //     std::cout<<"ID : " << channel_ID_trace << " ___ energy MWD : "<< energy_MWD << " ___ size of trace MWD : " << trace_MWD.size() << "\n";
 
             // }
+
+            //c4LOG(info, " LISA energy : " << energy_MWD);
+            //c4LOG(info, " End event lisa");
 
             auto & entry = lisaAnaArray->emplace_back();    
             

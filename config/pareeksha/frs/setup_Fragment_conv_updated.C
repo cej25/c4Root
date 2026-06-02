@@ -63,11 +63,14 @@ void setup(TFRSParameter* frs,
   
   //=============switches=============//
   id->x_s2_select   = 1; //1=tpc,2=sc21,3=sc22
+  id->tof_s2_select = 0; //1=sci11-21, 2=sci11-22; 0=no sci11
   id->tof_s4_select = 1; //1=sc21-41, 2=sc21-42, 3=sc22-41 used for TAC and MHTDC
   id->tof_s8_select = 1; //1=sc21-81, 2=sc22-81
   
   id->tof_HTM_select = 1; //1=sc21-M01, 2=sc22-M01
   id->Z_HTM_select = 3; //1=sc21, 2=sc22, 3=scM01
+
+  id->use_sc11x = 0; // 1=sci11 in, 0=no sci11
   
   //=============primary Z and plot ranges=============//
   frs->primary_z = 42.;   

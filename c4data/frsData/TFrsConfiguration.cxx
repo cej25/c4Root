@@ -41,6 +41,29 @@ TString TFrsConfiguration::setup_file = "";
 
 Bool_t TFrsConfiguration::old_beta_cal = false;
 
+Double_t TFrsConfiguration::fsci11la_min = 0., TFrsConfiguration::fsci11la_max = 60000.;
+Double_t TFrsConfiguration::fsci11ra_min = 0., TFrsConfiguration::fsci11ra_max = 60000.;
+Double_t TFrsConfiguration::fsci11lb_min = 0., TFrsConfiguration::fsci11lb_max = 60000.;
+Double_t TFrsConfiguration::fsci11rb_min = 0., TFrsConfiguration::fsci11rb_max = 60000.;
+Double_t TFrsConfiguration::fsci11lc_min = 0., TFrsConfiguration::fsci11lc_max = 60000.;
+Double_t TFrsConfiguration::fsci11rc_min = 0., TFrsConfiguration::fsci11rc_max = 60000.;
+Double_t TFrsConfiguration::fsci11ld_min = 0., TFrsConfiguration::fsci11ld_max = 60000.;
+Double_t TFrsConfiguration::fsci11rd_min = 0., TFrsConfiguration::fsci11rd_max = 60000.;
+Double_t TFrsConfiguration::fsci21l_min = 0., TFrsConfiguration::fsci21l_max = 60000.;
+Double_t TFrsConfiguration::fsci21r_min = 0., TFrsConfiguration::fsci21r_max = 60000.;
+Double_t TFrsConfiguration::fsci22l_min = 0., TFrsConfiguration::fsci22l_max = 60000.;
+Double_t TFrsConfiguration::fsci22r_min = 0., TFrsConfiguration::fsci22r_max = 60000.;
+Double_t TFrsConfiguration::fsci31l_min = 0., TFrsConfiguration::fsci31l_max = 60000.;
+Double_t TFrsConfiguration::fsci31r_min = 0., TFrsConfiguration::fsci31r_max = 60000.;
+Double_t TFrsConfiguration::fsci41l_min = 0., TFrsConfiguration::fsci41l_max = 60000.;
+Double_t TFrsConfiguration::fsci41r_min = 0., TFrsConfiguration::fsci41r_max = 60000.;
+Double_t TFrsConfiguration::fsci42l_min = 0., TFrsConfiguration::fsci42l_max = 60000.;
+Double_t TFrsConfiguration::fsci42r_min = 0., TFrsConfiguration::fsci42r_max = 60000.;
+Double_t TFrsConfiguration::fsci43l_min = 0., TFrsConfiguration::fsci43l_max = 60000.;
+Double_t TFrsConfiguration::fsci43r_min = 0., TFrsConfiguration::fsci43r_max = 60000.;
+Double_t TFrsConfiguration::fsci81l_min = 0., TFrsConfiguration::fsci81l_max = 60000.;
+Double_t TFrsConfiguration::fsci81r_min = 0., TFrsConfiguration::fsci81r_max = 60000.;
+
 Double_t TFrsConfiguration::fMin_Z = 0., TFrsConfiguration::fMax_Z = 100.;
 Double_t TFrsConfiguration::fMin_AoQ = 2., TFrsConfiguration::fMax_AoQ = 3.;
 Double_t TFrsConfiguration::fMin_x2 = -100., TFrsConfiguration::fMax_x2 = 100.;
@@ -59,7 +82,18 @@ Double_t TFrsConfiguration::fMin_dE_music42 = 0., TFrsConfiguration::fMax_dE_mus
 Double_t TFrsConfiguration::tof_gate_low = 0., TFrsConfiguration::tof_gate_high = 40000000.; // no gate by default
 Double_t TFrsConfiguration::fMin_dE_travMus_gate = 0., TFrsConfiguration::fMax_dE_travMus_gate = 30000.;
 
+Int_t TFrsConfiguration::fscilr_mhtdc_limit = 40;
+
+Int_t TFrsConfiguration::ftof_2111_min = 0., TFrsConfiguration::ftof_2111_max = 400.;
+Int_t TFrsConfiguration::ftof_4121_min = 0., TFrsConfiguration::ftof_4121_max = 400.;
+Int_t TFrsConfiguration::ftof_4122_min = 0., TFrsConfiguration::ftof_4122_max = 400.;
+Int_t TFrsConfiguration::ftof_4221_min = 0., TFrsConfiguration::ftof_4221_max = 400.;
+Int_t TFrsConfiguration::ftof_4321_min = 0., TFrsConfiguration::ftof_4321_max = 400.;
+Int_t TFrsConfiguration::ftof_3121_min = 0., TFrsConfiguration::ftof_3121_max = 400.;
+
 int TFrsConfiguration::frun_num = 0;
+
+bool TFrsConfiguration::s2_degrader_in = 1;
 
 TFrsConfiguration::TFrsConfiguration()
 {
@@ -326,7 +360,137 @@ void TFrsConfiguration::ReadCrateMapFile()
 
 
 //:::
+void TFrsConfiguration::Set_sci_limit_11la(Double_t min, Double_t max)
+{
+    fsci11la_min = min;
+    fsci11la_max = max;
+}
 
+void TFrsConfiguration::Set_sci_limit_11ra(Double_t min, Double_t max)
+{
+    fsci11ra_min = min;
+    fsci11ra_max = max;
+}
+
+void TFrsConfiguration::Set_sci_limit_11lb(Double_t min, Double_t max)
+{
+    fsci11lb_min = min;
+    fsci11lb_max = max;
+}
+
+void TFrsConfiguration::Set_sci_limit_11rb(Double_t min, Double_t max)
+{
+    fsci11rb_min = min;
+    fsci11rb_max = max;
+}
+
+void TFrsConfiguration::Set_sci_limit_11lc(Double_t min, Double_t max)
+{
+    fsci11lc_min = min;
+    fsci11lc_max = max;
+}
+
+void TFrsConfiguration::Set_sci_limit_11rc(Double_t min, Double_t max)
+{
+    fsci11rc_min = min;
+    fsci11rc_max = max;
+}
+
+void TFrsConfiguration::Set_sci_limit_11ld(Double_t min, Double_t max)
+{
+    fsci11ld_min = min;
+    fsci11ld_max = max;
+}
+
+void TFrsConfiguration::Set_sci_limit_11rd(Double_t min, Double_t max)
+{
+    fsci11rd_min = min;
+    fsci11rd_max = max;
+}
+
+void TFrsConfiguration::Set_sci_limit_21l(Double_t min, Double_t max)
+{
+    fsci21l_min = min;
+    fsci21l_max = max;
+}
+
+void TFrsConfiguration::Set_sci_limit_21r(Double_t min, Double_t max)
+{
+    fsci21r_min = min;
+    fsci21r_max = max;
+}
+
+void TFrsConfiguration::Set_sci_limit_22l(Double_t min, Double_t max)
+{
+    fsci22l_min = min;
+    fsci22l_max = max;
+}
+
+void TFrsConfiguration::Set_sci_limit_22r(Double_t min, Double_t max)
+{
+    fsci22r_min = min;
+    fsci22r_max = max;
+}
+
+void TFrsConfiguration::Set_sci_limit_31l(Double_t min, Double_t max)
+{
+    fsci31l_min = min;
+    fsci31l_max = max;
+}
+
+void TFrsConfiguration::Set_sci_limit_31r(Double_t min, Double_t max)
+{
+    fsci31r_min = min;
+    fsci31r_max = max;
+}
+
+void TFrsConfiguration::Set_sci_limit_41l(Double_t min, Double_t max)
+{
+    fsci41l_min = min;
+    fsci41l_max = max;
+}
+
+void TFrsConfiguration::Set_sci_limit_41r(Double_t min, Double_t max)
+{
+    fsci41r_min = min;
+    fsci41r_max = max;
+}
+
+void TFrsConfiguration::Set_sci_limit_42l(Double_t min, Double_t max)
+{
+    fsci42l_min = min;
+    fsci42l_max = max;
+}
+
+void TFrsConfiguration::Set_sci_limit_42r(Double_t min, Double_t max)
+{
+    fsci42r_min = min;
+    fsci42r_max = max;
+}
+
+void TFrsConfiguration::Set_sci_limit_43l(Double_t min, Double_t max)
+{
+    fsci43l_min = min;
+    fsci43l_max = max;
+}
+
+void TFrsConfiguration::Set_sci_limit_43r(Double_t min, Double_t max)
+{
+    fsci43r_min = min;
+    fsci43r_max = max;
+}
+
+void TFrsConfiguration::Set_sci_limit_81l(Double_t min, Double_t max)
+{
+    fsci81l_min = min;
+    fsci81l_max = max;
+}
+
+void TFrsConfiguration::Set_sci_limit_81r(Double_t min, Double_t max)
+{
+    fsci81r_min = min;
+    fsci81r_max = max;
+}
 
 void TFrsConfiguration::Set_Z_range(Double_t min, Double_t max)
 {
@@ -429,6 +593,44 @@ void TFrsConfiguration::Set_dE_travMusic_gate(Double_t min, Double_t max)
     fMax_dE_travMus_gate = max;
 }
 
+void TFrsConfiguration::Set_scilr_mhtdc_limit(Int_t lim)
+{
+    fscilr_mhtdc_limit = lim;
+}
 
+void TFrsConfiguration::Set_tof_limit_2111(Int_t min, Int_t max)
+{
+    ftof_2111_min = min;
+    ftof_2111_max = max;
+}
 
+void TFrsConfiguration::Set_tof_limit_4121(Int_t min, Int_t max)
+{
+    ftof_4121_min = min;
+    ftof_4121_max = max;
+}
+
+void TFrsConfiguration::Set_tof_limit_4122(Int_t min, Int_t max)
+{
+    ftof_4122_min = min;
+    ftof_4122_max = max;
+}
+
+void TFrsConfiguration::Set_tof_limit_4221(Int_t min, Int_t max)
+{
+    ftof_4221_min = min;
+    ftof_4221_max = max;
+}
+
+void TFrsConfiguration::Set_tof_limit_4321(Int_t min, Int_t max)
+{
+    ftof_4321_min = min;
+    ftof_4321_max = max;
+}
+
+void TFrsConfiguration::Set_tof_limit_3121(Int_t min, Int_t max)
+{
+    ftof_3121_min = min;
+    ftof_3121_max = max;
+}
 // read files and stuff

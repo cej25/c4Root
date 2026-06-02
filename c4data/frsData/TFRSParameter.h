@@ -389,6 +389,7 @@ public:
   Int_t         tof_HTM_select; //1=sc21-M01, 2=sc22-M01
   Int_t         Z_HTM_select; //1=sc21, 2=sc22, 3=scM01
 
+  Int_t         sci11_in = 0;
   Int_t         use_sc11x = 0; //1 = use x position from sc11lr, 0 = set s1 x position to 0
   Int_t         brho_select_s1; // 0 = use brho ta-s2 for aoq, 1 = only use s1-s2 brho (D1) for aoq
 

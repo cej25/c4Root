@@ -323,8 +323,8 @@ void FrsCalSpectra::Exec(Option_t* option)
 
     // getting the first hit only: mapping to int32 signed is okay since the max value is 2^20:
 
-    std::vector<Int_t> sci11l_times;
-    std::vector<Int_t> sci11r_times;
+    std::vector<Float_t> sci11l_times;
+    std::vector<Float_t> sci11r_times;
     if (sci->sci11_select == 0)
     {
         sci11l_times = calSciItem.Get_mhtdc_sci11la_hits();
@@ -346,18 +346,18 @@ void FrsCalSpectra::Exec(Option_t* option)
         sci11r_times = calSciItem.Get_mhtdc_sci11rd_hits();
     } 
 
-    std::vector<Int_t> sci21l_times = calSciItem.Get_mhtdc_sci21l_hits();
-    std::vector<Int_t> sci21r_times = calSciItem.Get_mhtdc_sci21r_hits();
-    std::vector<Int_t> sci22l_times = calSciItem.Get_mhtdc_sci22l_hits();
-    std::vector<Int_t> sci22r_times = calSciItem.Get_mhtdc_sci22r_hits();
-    std::vector<Int_t> sci41l_times = calSciItem.Get_mhtdc_sci41l_hits();
-    std::vector<Int_t> sci41r_times = calSciItem.Get_mhtdc_sci41r_hits();
-    std::vector<Int_t> sci42l_times = calSciItem.Get_mhtdc_sci42l_hits();
-    std::vector<Int_t> sci42r_times = calSciItem.Get_mhtdc_sci42r_hits();
-    std::vector<Int_t> sci43l_times = calSciItem.Get_mhtdc_sci43l_hits();
-    std::vector<Int_t> sci43r_times = calSciItem.Get_mhtdc_sci43r_hits();
-    std::vector<Int_t> sci81l_times = calSciItem.Get_mhtdc_sci81l_hits();
-    std::vector<Int_t> sci81r_times = calSciItem.Get_mhtdc_sci81r_hits();
+    std::vector<Float_t> sci21l_times = calSciItem.Get_mhtdc_sci21l_hits();
+    std::vector<Float_t> sci21r_times = calSciItem.Get_mhtdc_sci21r_hits();
+    std::vector<Float_t> sci22l_times = calSciItem.Get_mhtdc_sci22l_hits();
+    std::vector<Float_t> sci22r_times = calSciItem.Get_mhtdc_sci22r_hits();
+    std::vector<Float_t> sci41l_times = calSciItem.Get_mhtdc_sci41l_hits();
+    std::vector<Float_t> sci41r_times = calSciItem.Get_mhtdc_sci41r_hits();
+    std::vector<Float_t> sci42l_times = calSciItem.Get_mhtdc_sci42l_hits();
+    std::vector<Float_t> sci42r_times = calSciItem.Get_mhtdc_sci42r_hits();
+    std::vector<Float_t> sci43l_times = calSciItem.Get_mhtdc_sci43l_hits();
+    std::vector<Float_t> sci43r_times = calSciItem.Get_mhtdc_sci43r_hits();
+    std::vector<Float_t> sci81l_times = calSciItem.Get_mhtdc_sci81l_hits();
+    std::vector<Float_t> sci81r_times = calSciItem.Get_mhtdc_sci81r_hits();
 
     if (sci11l_times.size() > 0) h1_sci_mhtdc_t_11l->Fill(sci11l_times.at(0));
     if (sci11r_times.size() > 0) h1_sci_mhtdc_t_11r->Fill(sci11r_times.at(0));

@@ -38,6 +38,17 @@
 FrsRawNearlineSpectra::FrsRawNearlineSpectra()
     :   FrsRawNearlineSpectra("FrsRawNearlineSpectra", 1)
 {
+    frs_config = TFrsConfiguration::GetInstance();
+    frs = frs_config->FRS();
+    mw = frs_config->MW();
+    tpc = frs_config->TPC();
+    music = frs_config->MUSIC();
+    labr = frs_config->LABR();
+    sci = frs_config->SCI();
+    id = frs_config->ID();
+    si = frs_config->SI();
+    mrtof = frs_config->MRTOF();
+    range = frs_config->Range();
 }
 
 FrsRawNearlineSpectra::FrsRawNearlineSpectra(const TString& name, Int_t iVerbose)
@@ -48,6 +59,18 @@ FrsRawNearlineSpectra::FrsRawNearlineSpectra(const TString& name, Int_t iVerbose
     ,   musicArray(nullptr)
     ,   tpcArray(nullptr)
 {
+    exp_config = TExperimentConfiguration::GetInstance();
+    frs_config = TFrsConfiguration::GetInstance();
+    frs = frs_config->FRS();
+    mw = frs_config->MW();
+    tpc = frs_config->TPC();
+    music = frs_config->MUSIC();
+    labr = frs_config->LABR();
+    sci = frs_config->SCI();
+    id = frs_config->ID();
+    si = frs_config->SI();
+    mrtof = frs_config->MRTOF();
+    range = frs_config->Range();
 }
 
 FrsRawNearlineSpectra::~FrsRawNearlineSpectra()
@@ -83,87 +106,85 @@ InitStatus FrsRawNearlineSpectra::Init()
         found_dir_frs = false;
     }
 
-    dir_frs_raw = dir_frs->mkdir("FRS Raw Spectra");
+    dir_frs_raw = dir_frs->mkdir("FRS_Raw_Spectra");
     dir_sci = dir_frs_raw->mkdir("Scintillators");
     dir_music = dir_frs_raw->mkdir("MUSICs");
     dir_tpc = dir_frs_raw->mkdir("TPCs");
-
     // ::: SCI ::::: 
     dir_sci_de = dir_sci->mkdir("dE");
     dir_sci_dt = dir_sci->mkdir("dT");
-    dir_sci_mhtdc = dir_sci->mkdir("MHTDC T");
+    dir_sci_mhtdc = dir_sci->mkdir("MHTDC_T");
     
     // TAC dE
-    // c_sci_de = new TCanvas("c_sci_de", "Scintillator dE spectra", 650, 350);
-    // c_sci_de->Divide(4, 8);
     for (int ihist = 0; ihist < 32; ihist++)
     {
-        // c_sci_de->cd(ihist+1);
         h1_sci_de[ihist] = MakeTH1(dir_sci_de, "F", Form("h1_sci_de_%i", ihist), Form("Scintillator dE Channel %i", ihist), 4096, 0, 4096);
-        // h1_sci_de[ihist]->Draw();
     }
-    // c_sci_de->cd(0);
-    // dir_sci_de->Append(c_sci_de);
 
     // TAC dT
-    // c_sci_dt = new TCanvas("c_sci_dt", "Scintillator dT spectra", 650, 350);
-    // c_sci_dt->Divide(4, 8);
     for (int ihist = 0; ihist < 32; ihist++)
     {
-        // c_sci_dt->cd(ihist+1);
         h1_sci_dt[ihist] = MakeTH1(dir_sci_dt, "F", Form("h1_sci_dt_%i", ihist), Form("Scintillator dT Channel %i", ihist), 4096, 0, 4096); // need to figure out ranges
-        // h1_sci_dt[ihist]->Draw();
     }
-    // c_sci_dt->cd(0);
-    // dir_sci_dt->Append(c_sci_dt);
 
-    // MHTDC T
-    // c_sci_mhtdc = new TCanvas("c_sci_mhtdc", "Scintillator MHTDC T spectra", 650, 350);
-    // c_sci_mhtdc->Divide(4, 8);
-    for (int ihist = 0; ihist < 32; ihist++)
-    {
-        // c_sci_mhtdc->cd(ihist+1);
-        h1_sci_mhtdc[ihist] = MakeTH1(dir_sci_mhtdc, "F", Form("h1_sci_mhtdc_%i", ihist), Form("Scintillator MHTDC T Channel %i", ihist), 4000, 0, 100000); // need to figure out ranges
-        // h1_sci_mhtdc[ihist]->Draw();
-    }
-    // c_sci_mhtdc->cd(0);
-    // dir_sci_mhtdc->Append(c_sci_mhtdc);
+    // MHTDC SCI
+    h1_sci_mhtdc_11la = MakeTH1(dir_sci_mhtdc,"F","h1_sci_mhtdc_11la","MHTDC 11LA", 4000, 0, 100000);
+    h1_sci_mhtdc_11lb = MakeTH1(dir_sci_mhtdc,"F","h1_sci_mhtdc_11lb","MHTDC 11LB", 4000, 0, 100000);
+    h1_sci_mhtdc_11lc = MakeTH1(dir_sci_mhtdc,"F","h1_sci_mhtdc_11lc","MHTDC 11LC", 4000, 0, 100000);
+    h1_sci_mhtdc_11ld = MakeTH1(dir_sci_mhtdc,"F","h1_sci_mhtdc_11ld","MHTDC 11LD", 4000, 0, 100000);
+    h1_sci_mhtdc_21l = MakeTH1(dir_sci_mhtdc,"F","h1_sci_mhtdc_21l","MHTDC 21L", 4000, 0, 100000);
+    h1_sci_mhtdc_22l = MakeTH1(dir_sci_mhtdc,"F","h1_sci_mhtdc_22l","MHTDC 22L", 4000, 0, 100000);
+    h1_sci_mhtdc_31l = MakeTH1(dir_sci_mhtdc,"F","h1_sci_mhtdc_31l","MHTDC 31L", 4000, 0, 100000);
+    h1_sci_mhtdc_41l = MakeTH1(dir_sci_mhtdc,"F","h1_sci_mhtdc_41l","MHTDC 41L", 4000, 0, 100000);
+    h1_sci_mhtdc_42l = MakeTH1(dir_sci_mhtdc,"F","h1_sci_mhtdc_42l","MHTDC 42L", 4000, 0, 100000);
+    h1_sci_mhtdc_43l = MakeTH1(dir_sci_mhtdc,"F","h1_sci_mhtdc_43l","MHTDC 43L", 4000, 0, 100000);
+    h1_sci_mhtdc_81l = MakeTH1(dir_sci_mhtdc,"F","h1_sci_mhtdc_81l","MHTDC 81L", 4000, 0, 100000);
+
+    h1_sci_mhtdc_11ra = MakeTH1(dir_sci_mhtdc,"F","h1_sci_mhtdc_11ra","MHTDC 11RA", 4000, 0, 100000);
+    h1_sci_mhtdc_11rb = MakeTH1(dir_sci_mhtdc,"F","h1_sci_mhtdc_11rb","MHTDC 11RB", 4000, 0, 100000);
+    h1_sci_mhtdc_11rc = MakeTH1(dir_sci_mhtdc,"F","h1_sci_mhtdc_11rc","MHTDC 11RC", 4000, 0, 100000);
+    h1_sci_mhtdc_11rd = MakeTH1(dir_sci_mhtdc,"F","h1_sci_mhtdc_11rd","MHTDC 11RD", 4000, 0, 100000);
+    h1_sci_mhtdc_21r = MakeTH1(dir_sci_mhtdc,"F","h1_sci_mhtdc_21r","MHTDC 21R", 4000, 0, 100000);
+    h1_sci_mhtdc_22r = MakeTH1(dir_sci_mhtdc,"F","h1_sci_mhtdc_22r","MHTDC 22R", 4000, 0, 100000);
+    h1_sci_mhtdc_31r = MakeTH1(dir_sci_mhtdc,"F","h1_sci_mhtdc_31r","MHTDC 31R", 4000, 0, 100000);
+    h1_sci_mhtdc_41r = MakeTH1(dir_sci_mhtdc,"F","h1_sci_mhtdc_41r","MHTDC 41R", 4000, 0, 100000);
+    h1_sci_mhtdc_42r = MakeTH1(dir_sci_mhtdc,"F","h1_sci_mhtdc_42r","MHTDC 42R", 4000, 0, 100000);
+    h1_sci_mhtdc_43r = MakeTH1(dir_sci_mhtdc,"F","h1_sci_mhtdc_43r","MHTDC 43R", 4000, 0, 100000);
+    h1_sci_mhtdc_81r = MakeTH1(dir_sci_mhtdc,"F","h1_sci_mhtdc_81r","MHTDC 81R", 4000, 0, 100000);
+
+
+
+    // // MHTDC T
+    // for (int ihist = 0; ihist < 32; ihist++)
+    // {
+    //     h1_sci_mhtdc[ihist] = MakeTH1(dir_sci_mhtdc, "F", Form("h1_sci_mhtdc_%i", ihist), Form("Scintillator MHTDC T Channel %i", ihist), 4000, 0, 100000); // need to figure out ranges
+    // }
+
 
     
     // ::: MUSIC :::::: 
-    dir_music_e = dir_music->mkdir("E");
-    dir_music_t = dir_music->mkdir("T");
+    // dir_music_e = dir_music->mkdir("E");
+    // dir_music_t = dir_music->mkdir("T");
+    // c4LOG(info,"4");
+    // for (int j = 0; j < 5; j++)
+    // {
+    //     dir_music_n_e[j] = dir_music_e->mkdir(Form("MUSIC %i", j));
 
-    for (int j = 0; j < 5; j++)
-    {
-        dir_music_n_e[j] = dir_music_e->mkdir(Form("MUSIC %i", j));
+    //     c4LOG(info,"5");
+    //     for (int ihist = 0; ihist < 8; ihist++)
+    //     {
+    //         h1_music_anode_e[j][ihist] = MakeTH1(dir_music_n_e[j], "F", Form("h1_music_%i_e_anode_%i", j, ihist), Form("MUSIC %i Anode %i", j, ihist), 4096, 0, 4096); // need to figure out ranges
+    //     }
+    //     dir_music_n_t[j] = dir_music_t->mkdir(Form("MUSIC %i", j));
 
-        // c_music_n_e[j] = new TCanvas(Form("c_music_%i_e", j), Form("MUSIC %i Anode E spectra", j), 650, 350);
-        // c_music_n_e[j]->Divide(5, 4);
-        for (int ihist = 0; ihist < 8; ihist++)
-        {
-            // c_music_n_e[j]->cd(ihist+1);
-            h1_music_anode_e[j][ihist] = MakeTH1(dir_music_n_e[j], "F", Form("h1_music_%i_e_anode_%i", j, ihist), Form("MUSIC %i Anode %i", j, ihist), 4096, 0, 4096); // need to figure out ranges
-            // h1_music_anode_e[j][ihist]->Draw();
-        }
-        // c_music_n_e[j]->cd(0);
-        // dir_music_n_e[j]->Append(c_music_n_e[j]);
+    //     c4LOG(info,"6");
+    //     for (int ihist = 0; ihist < 8; ihist++)
+    //     {
+    //         c4LOG(info,"7");
+    //         h1_music_anode_t[j][ihist] = MakeTH1(dir_music_n_t[j], "F", Form("h1_music_%i_t_anode_%i", j, ihist), Form("MUSIC %i Anode %i", j, ihist), 4000, 0, 100000); // need to figure out ranges
+    //     }
+    // }
 
-        dir_music_n_t[j] = dir_music_t->mkdir(Form("MUSIC %i", j));
-
-        // c_music_n_t[j] = new TCanvas(Form("c_music_%i_t", j), Form("MUSIC %i Anode T spectra", j), 650, 350);
-        // c_music_n_t[j]->Divide(5, 4);
-        for (int ihist = 0; ihist < 8; ihist++)
-        {
-            // c_music_n_t[j]->cd(ihist+1);
-            h1_music_anode_t[j][ihist] = MakeTH1(dir_music_n_t[j], "F", Form("h1_music_%i_t_anode_%i", j, ihist), Form("MUSIC %i Anode %i", j, ihist), 4000, 0, 100000); // need to figure out ranges
-            // h1_music_anode_t[j][ihist]->Draw();
-        }
-        // c_music_n_t[j]->cd(0);
-        // dir_music_n_t[j]->Append(c_music_n_t[j]);
-    }
-
-    
     // ::: TPCs :::::
     dir_tpc_adc = dir_tpc->mkdir("ADC");
     dir_tpc_tdc = dir_tpc->mkdir("TPC");
@@ -207,7 +228,6 @@ void FrsRawNearlineSpectra::Exec(Option_t* option)
 {
     if (sciArray->size() == 0) return;
 
-
     auto const & sciItem = sciArray->at(0);
     sciDE = sciItem.Get_de_array();
     sciDT = sciItem.Get_dt_array();
@@ -217,22 +237,45 @@ void FrsRawNearlineSpectra::Exec(Option_t* option)
     {
         h1_sci_de[i]->Fill(sciDE[i]);
         h1_sci_dt[i]->Fill(sciDT[i]);
-        for (int j = 0; j < sciMHTDC[i].size(); j++) h1_sci_mhtdc[i]->Fill(sciMHTDC[i][j]);
-    }
-    
-    auto const & musicItem = musicArray->at(0);
-    musicE = musicItem.Get_music_e();
-    musicT = musicItem.Get_music_t();
-
-    for (int i = 0; i < 5; i++)
-    {
-        for (int j = 0; j < 8; j++)
-        {
-            h1_music_anode_e[i][j]->Fill(musicE[i][j]);
-            h1_music_anode_t[i][j]->Fill(musicT[i][j]);
-        }
     }
 
+    for (int j = 0; j < sciMHTDC[frs_config->Get_mhtdc_11LA_chan()].size(); j++)h1_sci_mhtdc_11la->Fill(sciMHTDC[frs_config->Get_mhtdc_11LA_chan()][j]);
+    for (int j = 0; j < sciMHTDC[frs_config->Get_mhtdc_11LB_chan()].size(); j++)h1_sci_mhtdc_11lb->Fill(sciMHTDC[frs_config->Get_mhtdc_11LB_chan()][j]);
+    for (int j = 0; j < sciMHTDC[frs_config->Get_mhtdc_11LC_chan()].size(); j++)h1_sci_mhtdc_11lc->Fill(sciMHTDC[frs_config->Get_mhtdc_11LC_chan()][j]);
+    for (int j = 0; j < sciMHTDC[frs_config->Get_mhtdc_11LD_chan()].size(); j++)h1_sci_mhtdc_11ld->Fill(sciMHTDC[frs_config->Get_mhtdc_11LD_chan()][j]);
+    for (int j = 0; j < sciMHTDC[frs_config->Get_mhtdc_21L_chan()].size(); j++)h1_sci_mhtdc_21l->Fill(sciMHTDC[frs_config->Get_mhtdc_21L_chan()][j]);
+    for (int j = 0; j < sciMHTDC[frs_config->Get_mhtdc_22L_chan()].size(); j++)h1_sci_mhtdc_22l->Fill(sciMHTDC[frs_config->Get_mhtdc_22L_chan()][j]);
+    for (int j = 0; j < sciMHTDC[frs_config->Get_mhtdc_31L_chan()].size(); j++)h1_sci_mhtdc_31l->Fill(sciMHTDC[frs_config->Get_mhtdc_31L_chan()][j]);
+    for (int j = 0; j < sciMHTDC[frs_config->Get_mhtdc_41L_chan()].size(); j++)h1_sci_mhtdc_41l->Fill(sciMHTDC[frs_config->Get_mhtdc_41L_chan()][j]);
+    for (int j = 0; j < sciMHTDC[frs_config->Get_mhtdc_42L_chan()].size(); j++)h1_sci_mhtdc_42l->Fill(sciMHTDC[frs_config->Get_mhtdc_42L_chan()][j]);
+    for (int j = 0; j < sciMHTDC[frs_config->Get_mhtdc_43L_chan()].size(); j++)h1_sci_mhtdc_43l->Fill(sciMHTDC[frs_config->Get_mhtdc_43L_chan()][j]);
+    for (int j = 0; j < sciMHTDC[frs_config->Get_mhtdc_81L_chan()].size(); j++)h1_sci_mhtdc_81l->Fill(sciMHTDC[frs_config->Get_mhtdc_81L_chan()][j]);
+
+    for (int j = 0; j < sciMHTDC[frs_config->Get_mhtdc_11RA_chan()].size(); j++)h1_sci_mhtdc_11ra->Fill(sciMHTDC[frs_config->Get_mhtdc_11RA_chan()][j]);
+    for (int j = 0; j < sciMHTDC[frs_config->Get_mhtdc_11RB_chan()].size(); j++)h1_sci_mhtdc_11rb->Fill(sciMHTDC[frs_config->Get_mhtdc_11RB_chan()][j]);
+    for (int j = 0; j < sciMHTDC[frs_config->Get_mhtdc_11RC_chan()].size(); j++)h1_sci_mhtdc_11rc->Fill(sciMHTDC[frs_config->Get_mhtdc_11RC_chan()][j]);
+    for (int j = 0; j < sciMHTDC[frs_config->Get_mhtdc_11RD_chan()].size(); j++)h1_sci_mhtdc_11rd->Fill(sciMHTDC[frs_config->Get_mhtdc_11RD_chan()][j]);
+    for (int j = 0; j < sciMHTDC[frs_config->Get_mhtdc_21R_chan()].size(); j++)h1_sci_mhtdc_21r->Fill(sciMHTDC[frs_config->Get_mhtdc_21R_chan()][j]);
+    for (int j = 0; j < sciMHTDC[frs_config->Get_mhtdc_22R_chan()].size(); j++)h1_sci_mhtdc_22r->Fill(sciMHTDC[frs_config->Get_mhtdc_22R_chan()][j]);
+    for (int j = 0; j < sciMHTDC[frs_config->Get_mhtdc_31R_chan()].size(); j++)h1_sci_mhtdc_31r->Fill(sciMHTDC[frs_config->Get_mhtdc_31R_chan()][j]);
+    for (int j = 0; j < sciMHTDC[frs_config->Get_mhtdc_41R_chan()].size(); j++)h1_sci_mhtdc_41r->Fill(sciMHTDC[frs_config->Get_mhtdc_41R_chan()][j]);
+    for (int j = 0; j < sciMHTDC[frs_config->Get_mhtdc_42R_chan()].size(); j++)h1_sci_mhtdc_42r->Fill(sciMHTDC[frs_config->Get_mhtdc_42R_chan()][j]);
+    for (int j = 0; j < sciMHTDC[frs_config->Get_mhtdc_43R_chan()].size(); j++)h1_sci_mhtdc_43r->Fill(sciMHTDC[frs_config->Get_mhtdc_43R_chan()][j]);
+    for (int j = 0; j < sciMHTDC[frs_config->Get_mhtdc_81R_chan()].size(); j++)h1_sci_mhtdc_81r->Fill(sciMHTDC[frs_config->Get_mhtdc_81R_chan()][j]);
+
+
+    // auto const & musicItem = musicArray->at(0);
+    // musicE = musicItem.Get_music_e();
+    // musicT = musicItem.Get_music_t();
+
+    // for (int i = 0; i < 5; i++)
+    // {
+    //     for (int j = 0; j < 8; j++)
+    //     {
+    //         h1_music_anode_e[i][j]->Fill(musicE[i][j]);
+    //         h1_music_anode_t[i][j]->Fill(musicT[i][j]);
+    //     }
+    // }
 
 
     auto const & tpcItem = tpcArray->at(0);

@@ -11,6 +11,7 @@
 #include <map>
 #include <vector>
 #include "TVector.h"
+#include "FairTask.h"
 
 class EventHeader;
 // class LisaData;
@@ -37,6 +38,7 @@ class LisaAna2Cal : public FairTask
 
         void PrintDetectorGainM();
         void PrintDetectorGainM_MWD();
+        void PrintDetectorGainM_dEdX();
 
     private:
         TLisaConfiguration const* lisa_config;
@@ -58,9 +60,13 @@ class LisaAna2Cal : public FairTask
         //int NBoards = 1; 
 
         //::: Mapping, GM, Calibration
-        std::map<std::pair<int, int>, std::pair<std::pair<int,std::string>, std::pair<int, int>>> detector_mapping; //Debugging.Raplace std:string-> TString ?
+        //std::map<std::pair<int, int>, std::pair<std::pair<int,std::string>, std::pair<int, int>>> detector_mapping; //Debugging.Raplace std:string-> TString ?
+        std::map<std::pair<int,int>, std::pair<std::pair<int, std::pair<int, int>>,std::pair<float,std::pair<std::string,std::string>>>> detector_mapping; //Debugging.Raplace std:string-> TString ?
+
         std::map<std::pair<int,std::pair<int,int>>, std::pair<double,double>> detector_gain_matching;
         std::map<std::pair<int,std::pair<int,int>>, std::pair<double,double>> detector_gain_matching_MWD;
+        std::map<std::pair<int,std::pair<int,int>>, std::pair<double,double>> detector_gain_matching_dEdX;
+
 
         //std::map<std::pair<int,std::pair<int,int>>, std::pair<double,double>> detector_calibration;
 
@@ -75,10 +81,13 @@ class LisaAna2Cal : public FairTask
         double slope;
         double intercept;
         float energy_GM;
+        float de_dx;
+        double slope_dEdX;
+        double intercept_dEdX;
+        float de_dx_GM;
         double slope_MWD;
         double intercept_MWD;
         float energy_MWD_GM;
-
 
     public:
         ClassDef(LisaAna2Cal, 1)

@@ -1,4 +1,8 @@
 #include <TROOT.h>
+#include <TNamed.h>
+#include <TObjString.h>
+#include <fstream>
+#include <sstream>
 
 // !!! Switch all tasks related to {subsystem} on (1)/off (0)
 #define LISA_ON 1
@@ -8,16 +12,37 @@
 #define LISA_RAW 0
 #define LISA_ANA 0
 #define LISA_CAL 1
+#define LISA_HIT 1
+//...................................................
 
-// Define for online if testing or during experient
-#define TEST 0
-#define EXP 1
+// Definition of setup and configuration files
+// FRS
+//#define FRS_SETUP_FILE "../../../config/shiyan/frs/setup/setup_103_016_2025_run6_conv.C" //run6
+//#define FRS_SETUP_FILE "../../../config/shiyan/frs/setup/setup_103_016_2025_setting10_conv.C" //run18
+//#define FRS_SETUP_FILE "../../../config/shiyan/frs/setup/setup_103_016_2025_setting13_conv_nov25.C" //run19
+#define FRS_SETUP_FILE "../../../config/shiyan/frs/setup/setup_103_020_2025_conv_may26.C" //setting 20
 
-// :::  Define FRS setup.C file - FRS should provide; place in /config/shiyan/frs/setup/
+//#define FRS_CONFIG_FILE "../../../config/shiyan/frs/general/frs_config_v6.C"
+#define FRS_CONFIG_FILE "../../../config/shiyan/frs/general/frs_config_test_fragment.C"
+#define LISA_CONFIG_FILE "../../../config/shiyan/lisa/general/lisa_config_v2.C"
+
+//pareeksha
+//#define FRS_SETUP_FILE "../../../config/pareeksha/frs/setup_Fragment_conv_updated.C"
+
+//#define FRS_CONFIG_FILE "../../../config/pareeksha/frs/general/frs_config_v0.C"
+// LISA
+//#define LISA_CONFIG_FILE "../../../config/pareeksha/lisa/general/lisa_config_pareeksha.C"
+
+
+// :::  Define FRS and LISA setup.C file; place in /config/shiyan/frs/setup/
 extern "C"
 {
-    //#include "../../config/pareeksha/frs/setup_Fragment_conv_updated.C" //pareeksha data
-    #include "../../../config/shiyan/frs/setup/setup_103_016_2025_conv.C" //shiyan
+    // FRS setup
+    #include FRS_SETUP_FILE
+    #include FRS_CONFIG_FILE
+    
+    // LISA setup
+    #include LISA_CONFIG_FILE
 }
 
 typedef struct EXT_STR_h101_t
@@ -28,11 +53,21 @@ typedef struct EXT_STR_h101_t
 
 } EXT_STR_h101;
 
+std::string readFileToString(const std::string& path)
+{
+    std::ifstream file(path);
+    if (!file.is_open()) return "[Could not open file]";
+    std::stringstream buffer;
+    buffer << file.rdbuf();
+    return buffer.str();
+}
+
 void e_shiyan_make_trees()
 {   
     const Int_t nev = -1; const Int_t fRunId = 1; const Int_t fExpId = 1;
     // ::: Experiment name
     TString fExpName = "shiyan";
+    //TString fExpName = "pareeksha";
 
     // ::: Here you define commonly used path
     TString c4Root_path = "/u/gandolfo/c4/c4Root";
@@ -57,23 +92,19 @@ void e_shiyan_make_trees()
 
     
     // ::: FILE  PATH
-    //TString inputpath = "/u/gandolfo/data/lustre/despec/lisa/S092_shiyan/";
+    //Test with pareeksha
+    //TString inputpath = "/u/gandolfo/data/lustre/gamma/s092_s143_files/ts/";
+    //TString filename = inputpath + "run_0033_0001.lmd";
+
+    // Shiyan
     TString inputpath = "/u/gandolfo/data/lustre/gamma/s092_s103_files/ts/";                       // Data from LISA
-    //TString inputpath = "/u/gandolfo/data/lustre/nustar/profi/sec_s160feb25/stitched/";           // Data from FRS with S2 PID
- 
-    TString filename = inputpath + "run_0109_0001.lmd";
-    //TString filename = inputpath + "test_0003_0001.lmd";
-    //TString filename = inputpath + "Ag101_withSC11a_s2trig_0121_0001_stitched.lmd";
+    TString filename = inputpath + "run_0143_0001.lmd";
 
     // ::: OUTPUT 
-    //TString outputpath = "/u/gandolfo/data/lustre/gamma/LISA/data/noise_test_may25/";   //testing
-    TString outputpath = "/u/gandolfo/data/shiyan_debug/";   //energy resolution data
+    TString outputpath = "/u/gandolfo/data/shiyan_HitData/";   //shiyan
+    //TString outputpath = "/u/gandolfo/data/pareeksha_debug/";  
+    TString outputFilename = outputpath + "run_0143_0001_tree_debug.root";
     
-    //TString outputFilename = outputpath + "test_run_0075.root";
-    TString outputFilename = outputpath + "run_0109_0001_tree.root"; 
-    //TString outputFilename = outputpath + "Ag101_withSC11a_s2trig_0121_0001_stitched_tree.root";  // Data from FRS with S2 PID
-
-
     // ::: Create online run
     Int_t refresh = 10; // not needed
      
@@ -81,12 +112,15 @@ void e_shiyan_make_trees()
     EventHeader* EvtHead = new EventHeader();
     run->SetEventHeader(EvtHead);
     run->SetRunId(1);
-    run->SetSink(new FairRootFileSink(outputFilename)); // don't write after termintion
+    FairRootFileSink* sink = new FairRootFileSink(outputFilename);
+    run->SetSink(sink);
+    //run->SetSink(new FairRootFileSink(outputFilename)); // don't write after termintion
+    
     //run->ActivateHttpServer(refresh, port);
     TFolder* histograms = new TFolder("Histograms", "Histograms");
     FairRootManager::Instance()->Register("Histograms", "Histogram Folder", histograms, false);
     run->AddObject(histograms);
-     
+
     // ::: Take ucesb input and create source
     EXT_STR_h101 ucesb_struct;
     TString ntuple_options = "UNPACK,RAW"; //level of unpacked data (UNPACK,RAW,CAL)
@@ -109,64 +143,17 @@ void e_shiyan_make_trees()
     TRangeParameter* range = new TRangeParameter();
     setup(frs,mw,tpc,music,labr,sci,id,si,mrtof,range); // Function defined in frs setup.C macro
     TFrsConfiguration::SetParameters(frs,mw,tpc,music,labr,sci,id,si,mrtof,range);
+    frs_config(config_path);
+
+    // ::: L I S A parameter - Initialise
+    lisa_config(config_path);
 
     //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
     // :::C O R R E L A T I O N S - Initialise 
     TCorrelationsConfiguration::SetCorrelationsFile(config_path + "/correlations_tight.dat");
-
-    //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-    // ::: C O N F I G    F O R   D E T E C T O R - Load
-    // ::: Exp config
-    TExperimentConfiguration::SetExperimentStart(1746597600000000000); // Start for Shiyan data: May 7th, 8a.m. //including testing
-    //TExperimentConfiguration::SetExperimentStart(1715727045000000000);//Start of pareeksha with primary beam: 15 May 00:50
-    //TExperimentConfiguration::SetExperimentStart(1746172830000000000);
-    // for S100, 3 and 4. for 2025+ 12 and 13.
-    TExperimentConfiguration::SetBOSTrig(3);
-    TExperimentConfiguration::SetEOSTrig(4);
     
-    // ::: FRS config
-    TFrsConfiguration::SetConfigPath(config_path +  "/frs/");
-    TFrsConfiguration::SetCrateMapFile(config_path +  "/frs/crate_map.txt");
-    TFrsConfiguration::SetTravMusDriftFile(config_path +  "/frs/TM_Drift_fragments.txt");
-    TFrsConfiguration::SetZ1DriftFile(config_path +  "/frs/Z1_Drift_fragments.txt");
-    TFrsConfiguration::SetAoQDriftFile(config_path +  "/frs/AoQ_Drift_fragments.txt");
-
-    // ::: Lisa config
-    if ( TEST )
-    {
-        // shiyan 
-        
-        TLisaConfiguration::SetMappingFile(config_path +  "/lisa/Lisa_4x4_shiyan.txt");
-        TLisaConfiguration::SetGMFile(config_path +  "/lisa/Lisa_GainMatching_shiyan.txt");
-        TLisaConfiguration::SetGMFileMWD(config_path +  "/lisa/Lisa_GainMatching_MWD_shiyan.txt");
-        TLisaConfiguration::SetMWDParametersFile(config_path + "/lisa/Lisa_MWD_Parameters_shiyan_v0.txt");
-        
-        /*
-        //for testing with pareeksha data 
-        TLisaConfiguration::SetMappingFile(config_path +  "/lisa/Lisa_Detector_Map_names.txt");
-        TLisaConfiguration::SetGMFile(config_path +  "/lisa/Lisa_GainMatching.txt");
-        TLisaConfiguration::SetGMFileMWD(config_path +  "/lisa/Lisa_GainMatching_MWD.txt");
-        TLisaConfiguration::SetMWDParametersFile(config_path + "/lisa/Lisa_MWD_Parameters.txt");
-        */
-    }
-    if ( EXP )
-    {
-        
-        TLisaConfiguration::SetMappingFile(config_path +  "/lisa/Lisa_4x4_shiyan.txt");
-        TLisaConfiguration::SetGMFile(config_path +  "/lisa/Lisa_GainMatching_shiyan.txt");
-        TLisaConfiguration::SetGMFileMWD(config_path +  "/lisa/Lisa_GainMatching_MWD_shiyan.txt");
-        TLisaConfiguration::SetMWDParametersFile(config_path + "/lisa/Lisa_MWD_Parameters_shiyan_v0.txt");
-
-        // //for testing with pareeksha data 
-        // TLisaConfiguration::SetMappingFile(config_path +  "/lisa/Lisa_Detector_Map_names.txt");
-        // TLisaConfiguration::SetGMFile(config_path +  "/lisa/Lisa_GainMatching.txt");
-        // TLisaConfiguration::SetGMFileMWD(config_path +  "/lisa/Lisa_GainMatching_MWD.txt");
-        // TLisaConfiguration::SetMWDParametersFile(config_path + "/lisa/Lisa_MWD_Parameters.txt");
-    }
-
     //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
     // S U B S Y S T E M S
-    //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
    
     // ::: READ Subsystem  :::
 
@@ -198,8 +185,7 @@ void e_shiyan_make_trees()
 
 
     // ::: CALIBRATE Subsystem  :::
-
-    if (LISA_ANA && !LISA_CAL)
+    if (LISA_ON && LISA_ANA && !LISA_CAL)
     {
         LisaRaw2Ana* lisaraw2ana = new LisaRaw2Ana();
 
@@ -207,7 +193,7 @@ void e_shiyan_make_trees()
         run->AddTask(lisaraw2ana);  
     } 
 
-    if (LISA_CAL)
+    if (LISA_ON && LISA_CAL)
     {
         LisaRaw2Ana* lisaraw2ana = new LisaRaw2Ana();
         if(LISA_ANA)
@@ -234,9 +220,7 @@ void e_shiyan_make_trees()
 
     }
 
-
-    // ::: ANALYSE Subsystem  :::
-
+    //::: ANALYSE Subsystem  :::
     if (FRS_ON)
     {
         FrsCal2Hit* hitfrs = new FrsCal2Hit();
@@ -245,10 +229,28 @@ void e_shiyan_make_trees()
         run->AddTask(hitfrs);
     } 
 
+    if (LISA_ON && FRS_ON && LISA_HIT)
+    {
+        LisaCal2Hit* lisacal2hit = new LisaCal2Hit();
+        lisacal2hit->SetOnline(false);
+        run->AddTask(lisacal2hit);
+    }
 
-    // Initialise
-    run->Init();
+    // Write information on setup and config in a "info" tree
+    TString frsSetupFile = FRS_SETUP_FILE;
+    TString frsConfigFile = FRS_CONFIG_FILE;
+    TString lisaConfigFile = LISA_CONFIG_FILE;
 
+    TTree* metaTree = new TTree("info", "Setup file and config info");
+    metaTree->Branch("FRS_setup", &frsSetupFile);
+    metaTree->Branch("FRS_config", &frsConfigFile);
+    metaTree->Branch("LISA_config", &lisaConfigFile);
+    metaTree->Fill();
+    
+
+    run->Init();  
+    metaTree->Write(); 
+    
     // Information about portnumber and main data stream
     cout << "\n\n" << endl;
     cout << "Data stream is: " << filename << endl;
@@ -257,7 +259,7 @@ void e_shiyan_make_trees()
 
     // Run
     run->Run((nev < 0) ? nev : 0, (nev < 0) ? 0 : nev);
-
+    
     // Finish
     timer.Stop();
     Double_t rtime = timer.RealTime();

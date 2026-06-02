@@ -108,12 +108,30 @@ void LisaAna2Cal::PrintDetectorGainM_MWD()
         c4LOG(info, "Gain matching MWD parameters are not loaded");
     }
 }  
+
+void LisaAna2Cal::PrintDetectorGainM_dEdX()
+{
+    if (lisa_config->GainMatchingdEdXLoaded())
+    {
+        for (const auto& entry : lisa_config->GainMatchingdEdXCoefficients())
+        {
+            std::cout << "Detector (#layer,#x,#y): " << entry.first.first << " " << entry.first.second.first << " " << entry.first.second.second << "\n";
+            std::cout << " slope dEdX : " << entry.second.first << " intercept dEdX : " << entry.second.second << "\n";
+        }
+    }
+    else
+    {
+        c4LOG(info, "Gain matching dEdX parameters are not loaded");
+    }
+} 
 //:::
 
 
 void LisaAna2Cal::Exec(Option_t* option)
 {
+
     lisaCalArray->clear();
+
 
     for (auto const & lisaAnaItem : *lisaAnaArray)
     {          
@@ -125,14 +143,25 @@ void LisaAna2Cal::Exec(Option_t* option)
         {
             if (detector_mapping.count(unmapped_channel) > 0)
             {
-                int layer_id = detector_mapping.at(unmapped_channel).first.first;
-                TString city = detector_mapping.at(unmapped_channel).first.second; //Debugging. std::string to Tstring 
-                int xpos = detector_mapping.at(unmapped_channel).second.first;
-                int ypos = detector_mapping.at(unmapped_channel).second.second;
+                int layer_id = detector_mapping.at(unmapped_channel).first.first;                        
+                int xpos     = detector_mapping.at(unmapped_channel).first.second.first;                 
+                int ypos     = detector_mapping.at(unmapped_channel).first.second.second;                
+                std::string city = detector_mapping.at(unmapped_channel).second.second.first;        
+                std::string det_sn   = detector_mapping.at(unmapped_channel).second.second.second;       
+                float thickness      = detector_mapping.at(unmapped_channel).second.first; 
+
                 uint64_t EVTno = header->GetEventno();
 
-                //std::cout << "Layer, x , y: (" << layer_id << ", (" << xpos << ", " << ypos << "))"<< std::endl;
+                // std::cout << "Event " << EVTno << ": Layer " << layer_id 
+                //         << ", x=" << xpos << ", y=" << ypos 
+                //         << ", Name=" << city << ", SN=" << det_sn 
+                //         << ", Thickness=" << thickness << std::endl;
+                
+                de_dx = 0;
+                de_dx = lisaAnaItem.Get_channel_energy_MWD()/thickness;
 
+                
+                //std::cout << " Energy : " << lisaAnaItem.Get_channel_energy_MWD() << " thickness : " << thickness << " dedx : " << de_dx << std::endl;
 
                 if (lisa_config->GainMatchingLoaded())
                 {
@@ -182,9 +211,27 @@ void LisaAna2Cal::Exec(Option_t* option)
                     
                 }
 
-                // std::cout << "LAYER :: " << layer_id << std::endl;
-                // std::cout << "LISA X pos :: " << xpos << std::endl;
-                // std::cout << "LISA Y pos :: " << ypos << std::endl;
+                if (lisa_config->GainMatchingdEdXLoaded())
+                {
+                    de_dx_GM = 0;
+                    std::map<std::pair<int,std::pair<int,int>>, std::pair<double,double>> GM_dEdX_coeffs = lisa_config->GainMatchingdEdXCoefficients();
+                    std::pair< int, std::pair<int,int> > detector_lxy = std::make_pair( layer_id, std::make_pair(xpos, ypos) );
+                    
+
+                    if (auto result_find_GM_dEdX = GM_dEdX_coeffs.find(detector_lxy); result_find_GM_dEdX != GM_dEdX_coeffs.end()) 
+                    {
+                        std::pair<double,double> coeffs = result_find_GM_dEdX->second;
+                        slope_dEdX = coeffs.first;
+                        intercept_dEdX = coeffs.second;
+                        
+                        de_dx_GM = intercept_dEdX + slope_dEdX*de_dx; 
+
+                        //std::cout<< " Energy dedx - in loop " << "\n";
+                    }
+                    //std::cout << " de_dx : " << de_dx << " de_dx_gm : " << de_dx_GM << "\n";
+                
+                }
+
                 auto & entry = lisaCalArray->emplace_back();
 
                 entry.SetAll(
@@ -195,6 +242,7 @@ void LisaAna2Cal::Exec(Option_t* option)
                     city,
                     xpos,
                     ypos,
+                    thickness,
                     lisaAnaItem.Get_channel_energy(),
                     lisaAnaItem.Get_channel_energy_MWD(),
                     lisaAnaItem.Get_trace_febex(),
@@ -202,6 +250,8 @@ void LisaAna2Cal::Exec(Option_t* option)
                     lisaAnaItem.Get_trace_x(),
                     energy_GM,
                     energy_MWD_GM,
+                    de_dx,
+                    de_dx_GM,
                     lisaAnaItem.Get_board_event_time(),
                     lisaAnaItem.Get_channel_time(),
                     EVTno,

@@ -58,6 +58,31 @@ class TFrsConfiguration
 
 
         // Analysis / Histograms
+        // Limit for SCI raw data L and R
+        static Double_t fsci11la_min, fsci11la_max;
+        static Double_t fsci11lb_min, fsci11lb_max;
+        static Double_t fsci11lc_min, fsci11lc_max;
+        static Double_t fsci11ld_min, fsci11ld_max;
+        static Double_t fsci11ra_min, fsci11ra_max;
+        static Double_t fsci11rb_min, fsci11rb_max;
+        static Double_t fsci11rc_min, fsci11rc_max;
+        static Double_t fsci11rd_min, fsci11rd_max;
+        static Double_t fsci21l_min, fsci21l_max;
+        static Double_t fsci21r_min, fsci21r_max;
+        static Double_t fsci22l_min, fsci22l_max;
+        static Double_t fsci22r_min, fsci22r_max;
+        static Double_t fsci31l_min, fsci31l_max;
+        static Double_t fsci31r_min, fsci31r_max;
+        static Double_t fsci41l_min, fsci41l_max;
+        static Double_t fsci41r_min, fsci41r_max;
+        static Double_t fsci42l_min, fsci42l_max;
+        static Double_t fsci42r_min, fsci42r_max;
+        static Double_t fsci43l_min, fsci43l_max;
+        static Double_t fsci43r_min, fsci43r_max;
+        static Double_t fsci81l_min, fsci81l_max;
+        static Double_t fsci81r_min, fsci81r_max;
+
+
         static Double_t fMin_Z, fMax_Z;
         static Double_t fMin_AoQ, fMax_AoQ;
         static Double_t fMin_x2, fMax_x2;
@@ -74,6 +99,13 @@ class TFrsConfiguration
         static Double_t fMin_dE_music41, fMax_dE_music41;
         static Double_t fMin_dE_music42, fMax_dE_music42;
         static Double_t fMin_dE_travMus_gate, fMax_dE_travMus_gate;
+        static Int_t fscilr_mhtdc_limit;
+        static Int_t ftof_2111_min, ftof_2111_max;
+        static Int_t ftof_4121_min, ftof_4121_max;
+        static Int_t ftof_4122_min, ftof_4122_max;
+        static Int_t ftof_4221_min, ftof_4221_max;
+        static Int_t ftof_4321_min, ftof_4321_max;
+        static Int_t ftof_3121_min, ftof_3121_max;
         static Double_t tof_gate_low, tof_gate_high;
         static int frun_num;
 
@@ -81,6 +113,30 @@ class TFrsConfiguration
 
         // pre 2025. Calibrated to beta, instead of 1/beta^2
         static Bool_t old_beta_cal;
+
+
+        static void Set_sci_limit_11la(Double_t, Double_t);
+        static void Set_sci_limit_11ra(Double_t, Double_t);
+        static void Set_sci_limit_11lb(Double_t, Double_t);
+        static void Set_sci_limit_11rb(Double_t, Double_t);
+        static void Set_sci_limit_11lc(Double_t, Double_t);
+        static void Set_sci_limit_11rc(Double_t, Double_t);
+        static void Set_sci_limit_11ld(Double_t, Double_t);
+        static void Set_sci_limit_11rd(Double_t, Double_t);
+        static void Set_sci_limit_21l(Double_t, Double_t);
+        static void Set_sci_limit_21r(Double_t, Double_t);
+        static void Set_sci_limit_22l(Double_t, Double_t);
+        static void Set_sci_limit_22r(Double_t, Double_t);
+        static void Set_sci_limit_31l(Double_t, Double_t);
+        static void Set_sci_limit_31r(Double_t, Double_t);
+        static void Set_sci_limit_41l(Double_t, Double_t);
+        static void Set_sci_limit_41r(Double_t, Double_t);
+        static void Set_sci_limit_42l(Double_t, Double_t);
+        static void Set_sci_limit_42r(Double_t, Double_t);
+        static void Set_sci_limit_43l(Double_t, Double_t);
+        static void Set_sci_limit_43r(Double_t, Double_t);
+        static void Set_sci_limit_81l(Double_t, Double_t);
+        static void Set_sci_limit_81r(Double_t, Double_t);
 
         static void Set_Z_range(Double_t, Double_t);
         static void Set_AoQ_range(Double_t, Double_t);
@@ -101,6 +157,14 @@ class TFrsConfiguration
         static void Set_TOF_gate(Double_t min, Double_t max);
 
         static void Set_dE_travMusic_gate(Double_t, Double_t);
+
+        static void Set_scilr_mhtdc_limit(Int_t);
+        static void Set_tof_limit_2111(Int_t, Int_t);
+        static void Set_tof_limit_4121(Int_t, Int_t);
+        static void Set_tof_limit_4122(Int_t, Int_t);
+        static void Set_tof_limit_4221(Int_t, Int_t);
+        static void Set_tof_limit_4321(Int_t, Int_t);
+        static void Set_tof_limit_3121(Int_t, Int_t);
 
         void Plot_TAC_1D(bool option) { plot_tac_1d = option; }
         void Plot_TAC_2D(bool option) { plot_tac_2d = option; }
@@ -127,6 +191,10 @@ class TFrsConfiguration
         bool AoQDriftLoaded() const;
         std::map<int, std::pair<double,double>> Z1DriftCoefficients() const;
         bool Z1DriftLoaded() const;
+
+        //Degrader in s2 area 
+        static void SetS2DegraderIn(bool s2_deg_in) { s2_degrader_in = s2_deg_in; }
+        static bool s2_degrader_in;
 
         Int_t Get_music_e_geo() const;
 
@@ -192,7 +260,6 @@ class TFrsConfiguration
         Int_t Get_mhtdc_43R_chan() const;
         Int_t Get_mhtdc_81L_chan() const;
         Int_t Get_mhtdc_81R_chan() const;
-
 
     private:
 

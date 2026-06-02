@@ -22,6 +22,7 @@ class TFrsConfiguration;
 class TExperimentConfiguration;
 class EventHeader;
 class FrsHitData;
+class FrsCalData;
 class FrsGate;
 class TFile;
 class TDirectory;
@@ -72,8 +73,10 @@ class FrsNearlineSpectra : public FairTask
         EventHeader const* header;
         
         std::vector<FrsHitItem> const* hitArray;
+        std::vector<FrsCalSciItem> const* calsciArray;
         std::vector<FrsMultiHitItem> const* multihitArray;
         FrsHitItem hitItem;
+        FrsCalSciItem calItem;
         FrsMultiHitItem multiHitItem;
         Long64_t wr_frs = 0;
         Long64_t trav_mus_wr = 0;
@@ -115,6 +118,11 @@ class FrsNearlineSpectra : public FairTask
         TDirectory* dir_sci_e;
         TDirectory* dir_sci_x;
         TDirectory* dir_sci_tof;
+        TDirectory* dir_sci_mhtdc;
+        TDirectory* dir_sci_mhtdc_e;
+        TDirectory* dir_sci_mhtdc_dt;
+        TDirectory* dir_sci_mhtdc_x;
+        TDirectory* dir_sci_mhtdc_tof;
         TDirectory* dir_music;
         TDirectory* dir_music_e;
         TDirectory* dir_monitors;
@@ -265,6 +273,9 @@ class FrsNearlineSpectra : public FairTask
         TH2** h2_tpc_xy_at_LISA;
     
         // MHTDC 2D
+        TH2I* h2_multihit_map;
+        TH2I* h2_multihit_map_selected;
+
         TH2* h2_Z41_vs_AoQs2s4_mhtdc;
         TH2* h2_Z42_vs_AoQs2s4_mhtdc;
         TH2* h2_Z41_vs_AoQs2s4_corr_mhtdc;
@@ -313,6 +324,63 @@ class FrsNearlineSpectra : public FairTask
         TH1* h1_Z43_mhtdc;
         TH1* h1_dEdegoQ_mhtdc;
         TH1* h1_dEdegZ41_mhtdc;
+
+        // :::: MHTDC SCI ::::
+        // ::: Sci position
+        TH1* h1_mhtdc_sci_x_11a;
+        TH1* h1_mhtdc_sci_x_11b;
+        TH1* h1_mhtdc_sci_x_11c;
+        TH1* h1_mhtdc_sci_x_11d;
+        TH1* h1_mhtdc_sci_x_21;
+        TH1* h1_mhtdc_sci_x_22;
+        TH1* h1_mhtdc_sci_x_31;
+        TH1* h1_mhtdc_sci_x_41;
+        TH1* h1_mhtdc_sci_x_42;
+        TH1* h1_mhtdc_sci_x_43;
+        TH1* h1_mhtdc_sci_x_81;
+
+        // ::: Single sci time
+        TH1* h1_mhtdc_sci_11la;
+        TH1* h1_mhtdc_sci_11ra;
+        TH1* h1_mhtdc_sci_11lb;
+        TH1* h1_mhtdc_sci_11rb;
+        TH1* h1_mhtdc_sci_11lc;
+        TH1* h1_mhtdc_sci_11rc;
+        TH1* h1_mhtdc_sci_11ld;
+        TH1* h1_mhtdc_sci_11rd;
+        TH1* h1_mhtdc_sci_21l;
+        TH1* h1_mhtdc_sci_21r;
+        TH1* h1_mhtdc_sci_22l;
+        TH1* h1_mhtdc_sci_22r;
+        TH1* h1_mhtdc_sci_31l;
+        TH1* h1_mhtdc_sci_31r;
+        TH1* h1_mhtdc_sci_41l;
+        TH1* h1_mhtdc_sci_41r;
+        TH1* h1_mhtdc_sci_42l;
+        TH1* h1_mhtdc_sci_42r;
+        TH1* h1_mhtdc_sci_43l;
+        TH1* h1_mhtdc_sci_43r;
+        TH1* h1_mhtdc_sci_81l;
+        TH1* h1_mhtdc_sci_81r;
+
+        // ::: DT L-R 
+        TH1* h1_mhtdc_sci_dt_11lra;
+        TH1* h1_mhtdc_sci_dt_11lrb;
+        TH1* h1_mhtdc_sci_dt_11lrc;
+        TH1* h1_mhtdc_sci_dt_11lrd;
+        TH1* h1_mhtdc_sci_dt_21lr;
+        TH1* h1_mhtdc_sci_dt_22lr;
+        TH1* h1_mhtdc_sci_dt_31lr;
+        TH1* h1_mhtdc_sci_dt_41lr;
+        TH1* h1_mhtdc_sci_dt_42lr;
+        TH1* h1_mhtdc_sci_dt_43lr;
+        TH1* h1_mhtdc_sci_dt_81lr;
+
+        // ::: TOF
+        TH1* h1_mhtdc_sci_tof_s1s2_full;
+        TH1* h1_mhtdc_sci_tof_s2s4_full;
+        TH1* h1_mhtdc_sci_tof_s1s2;
+        TH1* h1_mhtdc_sci_tof_s2s4;
 
         // :::: MHTDC Gated :::: 
         // ---------2D ---------

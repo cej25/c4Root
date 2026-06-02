@@ -59,28 +59,50 @@ void FrsCalSciItem::SetAll(UInt_t de11l,
                         UInt_t dt22r_41r,
                         UInt_t dt22l_81l,
                         UInt_t dt22r_81r,
-                        std::vector<Int_t> sci11la_hits,
-                        std::vector<Int_t> sci11lb_hits,
-                        std::vector<Int_t> sci11lc_hits,
-                        std::vector<Int_t> sci11ld_hits,
-                        std::vector<Int_t> sci11ra_hits,
-                        std::vector<Int_t> sci11rb_hits,
-                        std::vector<Int_t> sci11rc_hits,
-                        std::vector<Int_t> sci11rd_hits,
-                        std::vector<Int_t> sci21l_hits,
-                        std::vector<Int_t> sci21r_hits,
-                        std::vector<Int_t> sci22l_hits,
-                        std::vector<Int_t> sci22r_hits,
-                        std::vector<Int_t> sci31l_hits,
-                        std::vector<Int_t> sci31r_hits,
-                        std::vector<Int_t> sci41l_hits,
-                        std::vector<Int_t> sci41r_hits,
-                        std::vector<Int_t> sci42l_hits,
-                        std::vector<Int_t> sci42r_hits,
-                        std::vector<Int_t> sci43l_hits,
-                        std::vector<Int_t> sci43r_hits,
-                        std::vector<Int_t> sci81l_hits,
-                        std::vector<Int_t> sci81r_hits)
+                        std::vector<Float_t> sci11la_hits,
+                        std::vector<Float_t> sci11lb_hits,
+                        std::vector<Float_t> sci11lc_hits,
+                        std::vector<Float_t> sci11ld_hits,
+                        std::vector<Float_t> sci11ra_hits,
+                        std::vector<Float_t> sci11rb_hits,
+                        std::vector<Float_t> sci11rc_hits,
+                        std::vector<Float_t> sci11rd_hits,
+                        std::vector<Float_t> sci21l_hits,
+                        std::vector<Float_t> sci21r_hits,
+                        std::vector<Float_t> sci22l_hits,
+                        std::vector<Float_t> sci22r_hits,
+                        std::vector<Float_t> sci31l_hits,
+                        std::vector<Float_t> sci31r_hits,
+                        std::vector<Float_t> sci41l_hits,
+                        std::vector<Float_t> sci41r_hits,
+                        std::vector<Float_t> sci42l_hits,
+                        std::vector<Float_t> sci42r_hits,
+                        std::vector<Float_t> sci43l_hits,
+                        std::vector<Float_t> sci43r_hits,
+                        std::vector<Float_t> sci81l_hits,
+                        std::vector<Float_t> sci81r_hits,
+                        std::vector<Float_t> dt11la_11ra_hits,
+                        std::vector<Float_t> dt11lb_11rb_hits,
+                        std::vector<Float_t> dt11lc_11rc_hits,
+                        std::vector<Float_t> dt11ld_11rd_hits,
+                        std::vector<Float_t> dt21l_21r_hits,
+                        std::vector<Float_t> dt22l_22r_hits,
+                        std::vector<Float_t> dt31l_31r_hits,
+                        std::vector<Float_t> dt41l_41r_hits,
+                        std::vector<Float_t> dt42l_42r_hits,
+                        std::vector<Float_t> dt43l_43r_hits,
+                        std::vector<Float_t> dt81l_81r_hits,
+                        std::vector<Float_t> x_11lra_hits,
+                        std::vector<Float_t> x_11lrb_hits,
+                        std::vector<Float_t> x_11lrc_hits,
+                        std::vector<Float_t> x_11lrd_hits,
+                        std::vector<Float_t> x_21lr_hits,
+                        std::vector<Float_t> x_22lr_hits,
+                        std::vector<Float_t> x_31lr_hits,
+                        std::vector<Float_t> x_41lr_hits,
+                        std::vector<Float_t> x_42lr_hits,
+                        std::vector<Float_t> x_43lr_hits,
+                        std::vector<Float_t> x_81lr_hits)
 {
     de_11l = de11l;
     de_11r = de11r;
@@ -139,6 +161,29 @@ void FrsCalSciItem::SetAll(UInt_t de11l,
     mhtdc_sci43r_hits = sci43r_hits;
     mhtdc_sci81l_hits = sci81l_hits;
     mhtdc_sci81r_hits = sci81r_hits;
+    mhtdc_dt11la_11ra = dt11la_11ra_hits;
+    mhtdc_dt11lb_11rb = dt11lb_11rb_hits;
+    mhtdc_dt11lc_11rc = dt11lc_11rc_hits;
+    mhtdc_dt11ld_11rd = dt11ld_11rd_hits;
+    mhtdc_dt21l_21r = dt21l_21r_hits;
+    mhtdc_dt22l_22r = dt22l_22r_hits;
+    mhtdc_dt31l_31r = dt31l_31r_hits;
+    mhtdc_dt41l_41r = dt41l_41r_hits;
+    mhtdc_dt42l_42r = dt42l_42r_hits;
+    mhtdc_dt43l_43r = dt43l_43r_hits;
+    mhtdc_dt81l_81r = dt81l_81r_hits;
+    mhtdc_x_11lra = x_11lra_hits;
+    mhtdc_x_11lrb = x_11lrb_hits;
+    mhtdc_x_11lrc = x_11lrc_hits;
+    mhtdc_x_11lrd = x_11lrd_hits;
+    mhtdc_x_21lr = x_21lr_hits;
+    mhtdc_x_22lr = x_22lr_hits;
+    mhtdc_x_31lr = x_31lr_hits;
+    mhtdc_x_41lr = x_41lr_hits;
+    mhtdc_x_42lr = x_42lr_hits;
+    mhtdc_x_43lr = x_43lr_hits;
+    mhtdc_x_81lr = x_81lr_hits;
+    
 }
 
 ClassImp(FrsCalSciItem)

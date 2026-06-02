@@ -157,7 +157,7 @@ void setup_160_49_2025()
   id->Z_HTM_select = 3; //1=sc21, 2=sc22, 3=scM01
 
   //S1S2 PID options
-  id->use_sc11x = 0; //0 = brho from TA-S2, no s1 x used, 1 = x from sc11 lr dt
+  id->use_sci11x = 0; //0 = brho from TA-S2, no s1 x used, 1 = x from sc11 lr dt
   
   //=============primary Z and plot ranges=============//
   frs->primary_z = 47.;

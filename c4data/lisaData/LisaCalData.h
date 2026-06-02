@@ -11,7 +11,7 @@
  * or submit itself to any jurisdiction.                                      *
  ******************************************************************************
  *                       E.M. Gandolfo, C.E. Jones                            *
- *                               25.11.24                                     *
+ *                               08.25                                        *
  ******************************************************************************/
 
 #ifndef LisaCalData_H
@@ -41,6 +41,7 @@ class LisaCalItem : public TObject
                     TString c,
                     int xpos,
                     int ypos,
+                    float thick,
                     float e, 
                     float e_MWD,
                     std::vector<float> tr,
@@ -48,6 +49,8 @@ class LisaCalItem : public TObject
                     std::vector<int16_t> tr_x,
                     float e_GM,
                     float e_MWD_GM,
+                    float dedx,
+                    float dedx_GM,
                     uint64_t evt_t,
                     uint64_t ch_t,
                     uint64_t evtno,
@@ -65,6 +68,7 @@ class LisaCalItem : public TObject
         TString Get_city() const;
         int Get_xposition() const;
         int Get_yposition() const;
+        float Get_thickness() const;
         float Get_energy() const;
         float Get_energy_MWD() const;
         std::vector<float> Get_trace_febex() const;
@@ -72,6 +76,8 @@ class LisaCalItem : public TObject
         std::vector<int16_t> Get_trace_x() const;
         float Get_energy_GM() const;
         float Get_energy_MWD_GM() const;
+        float Get_de_dx() const;
+        float Get_de_dx_GM() const;
         uint64_t Get_board_event_time() const;
         uint64_t Get_channel_event_time() const;
         uint64_t Get_evtno();
@@ -79,7 +85,6 @@ class LisaCalItem : public TObject
         //int Get_pileup_MWD() const;
         int Get_overflow() const;
         //int Get_overflow_MWD() const;
-
 
         // Getters
         ClassDef(LisaCalItem, 1);
@@ -91,9 +96,7 @@ class LisaCalItem : public TObject
         TString city; // name
         int xposition;
         int yposition;
-        double xposition_mm;
-        double yposition_mm;
-        double zposition_mm;
+        float thickness;
         float energy; // double? int?
         float energy_MWD; // double? int?
         std::vector<float> trace_febex;
@@ -101,6 +104,8 @@ class LisaCalItem : public TObject
         std::vector<int16_t> trace_x;
         float energy_GM;
         float energy_MWD_GM;
+        float de_dx;
+        float de_dx_GM;
         uint64_t board_event_time;
         uint64_t ch_event_time;
         uint64_t event_no;
@@ -108,8 +113,6 @@ class LisaCalItem : public TObject
         //int pileup_MWD;
         int overflow;
         //int overflow_MWD;
-        // timing info for correlations
-
 };
 
 inline uint64_t LisaCalItem::Get_wr_t() const
@@ -147,6 +150,11 @@ inline int LisaCalItem::Get_yposition() const
     return yposition;
 }
 
+inline float LisaCalItem::Get_thickness() const
+{
+    return thickness;
+}
+
 inline float LisaCalItem::Get_energy() const
 {
     return energy;
@@ -180,6 +188,16 @@ inline float LisaCalItem::Get_energy_GM() const
 inline float LisaCalItem::Get_energy_MWD_GM() const
 {
     return energy_MWD_GM;
+}
+
+inline float LisaCalItem::Get_de_dx() const
+{
+    return de_dx;
+}
+
+inline float LisaCalItem::Get_de_dx_GM() const
+{
+    return de_dx_GM;
 }
 
 inline uint64_t LisaCalItem::Get_board_event_time() const
