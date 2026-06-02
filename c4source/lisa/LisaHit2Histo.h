@@ -9,10 +9,10 @@
 #include "LisaData.h"
 #include "LisaCalData.h"
 #include "LisaAnaData.h"
+#include "LisaHitData.h"
 #include "LisaHistoData.h"
 #include "FrsData.h"
 #include "FrsCalData.h"
-#include "FrsHistoData.h"
 #include <map>
 #include <vector>
 #include "TVector.h"
@@ -32,7 +32,6 @@ class FrsMultiHitItem;
 class LisaHit2Histo : public FairTask
 {
     public:
-        LisaHit2Histo();
         LisaHit2Histo();
         LisaHit2Histo(std::vector<FrsGate*> fg);
         LisaHit2Histo(std::vector<LisaGate*> lg);
@@ -93,9 +92,9 @@ class LisaHit2Histo : public FairTask
 
         std::vector<LisaItem> const* lisaArray;
         std::vector<LisaAnaItem> const* lisaAnaArray;
-        std::vector<LisaCalItem> const* lisaCalArray;
+        std::vector<LisaCalItem> const* lisaCalArray; // needed?
         std::vector<LisaHitItem>* lisaHitArray;
-        std::vector<LisaHistoItem>* lisaHistoArray;
+        std::vector<std::vector<LisaHistoItem>*> lisaHistoArray;
         std::vector<FrsHitItem> const* frsHitArray;
         std::vector<FrsMultiHitItem> const* multihitArray;
       

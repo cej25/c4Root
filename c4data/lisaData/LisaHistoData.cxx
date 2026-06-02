@@ -25,129 +25,83 @@ LisaHistoItem::LisaHistoItem()
 
 }
 
-void LisaHistoItem::SetAll(uint64_t wr,
-                        uint16_t w_id,
-                        int b_id,
-                        int layer,
-                        TString c,
-                        int xpos,
-                        int ypos,
-                        float tpc_x,
-                        float tpc_y,
-                        float thick,
-                        float e,
-                        float e_MWD,
-                        std::vector<float> tr,
-                        //std::vector<int16_t> tr_MWD,
-                        std::vector<int16_t> tr_x,
-                        float e_GM,
-                        float e_MWD_GM,
-                        float dedx,
-                        float dedx_GM,
-                        std::vector<float> z,
-                        std::vector<float> b0,
-                        std::vector<float> b_l,
-                        std::vector<float> b1,
-                        std::vector<float> b2,
-                        std::vector<float> b3,
-                        std::vector<float> b4,
-                        std::vector<float> b5,
-                        uint64_t evt_t,
-                        uint64_t ch_t,
-                        uint64_t evtno,
-                        int pu,
-                        //int pu_MWD,
-                        int ov,
-                        //int ov_MWD
-                        int greact,
-                        int greact_z,
-                        int lreact_z,
-                        int afterl_react_z
-                        )
-{   
-    wr_t = wr;
-    wr_id = w_id;
-    board_id = b_id;
-    layer_id = layer;
-    city = c;
-    xposition = xpos;
-    yposition = ypos;
-    tpc_x_on_lisa = tpc_x;
-    tpc_y_on_lisa = tpc_y;
-    thickness = thick;
-    energy = e;
-    energy_MWD = e_MWD;
-    trace_febex = tr;
-    //trace_MWD = tr_MWD;
-    trace_x = tr_x;
-    energy_GM = e_GM;
-    energy_MWD_GM = e_MWD_GM;
-    de_dx = dedx;
-    de_dx_GM = dedx_GM;
-    z_lisa = z;
-    beta0 = b0;
-    beta_before_lisa = b_l;
-    beta1 = b1;
-    beta2 = b2;
-    beta3 = b3;
-    beta4 = b4;
-    beta5 = b5;
-    board_event_time = evt_t;
-    ch_event_time = ch_t;
-    event_no = evtno;
-    pileup = pu;
-    //pileup_MWD = pu;
-    overflow = ov;
-    //overflow_MWD = ov_MWD;
-    global_reactions = greact;
-    global_reactions_on_lisa_z = greact_z;
-    lisa_reactions_z = lreact_z;
-    after_lisa_reactions_z = afterl_react_z;
+void LisaHistoItem::SetNonGated(std::vector<Float_t> aoq_s1s2_mhtdc,
+                            std::vector<Float_t> aoq_s2s4_mhtdc,
+                            std::vector<Float_t> aoq_s1s2_mhtdc_selected,
+                            std::vector<Float_t> aoq_s2s4_mhtdc_selected)
+{
+    AoQ_s1s2_mhtdc = aoq_s1s2_mhtdc;
+    AoQ_s2s4_mhtdc = aoq_s2s4_mhtdc;
+    AoQ_s1s2_mhtdc_selected = aoq_s1s2_mhtdc_selected;
+    AoQ_s2s4_mhtdc_selected = aoq_s2s4_mhtdc_selected;
+};
+
+void LisaHistoItem::SetGated(std::vector<Float_t> aoqs1s2_s1s2_mhtdc,
+                    std::vector<Float_t> aoqs1s2_s1s2s4_mhtdc,
+                    std::vector<Float_t> aoqs2s4_s1s2s4_mhtdc,
+                    std::vector<Float_t> z21_s1s2_mhtdc,
+                    std::vector<Float_t> z21_s1s2s4_mhtdc,
+                    std::vector<Float_t> z42_s1s2s4_mhtdc, 
+                    std::vector<Float_t> aoqs1s2_selected_s1s2_mhtdc,
+                    std::vector<Float_t> aoqs1s2_selected_s1s2s4_mhtdc,
+                    std::vector<Float_t> aoqs2s4_selected_s1s2s4_mhtdc,
+                    std::vector<Float_t> z21_selected_s1s2_mhtdc,
+                    std::vector<Float_t> z21_selected_s1s2s4_mhtdc,
+                    std::vector<Float_t> z42_selected_s1s2s4_mhtdc,
+                    Float_t e_layer,
+                    Float_t e_layer_gated,
+                    Float_t e_MWD_layer,
+                    Float_t e_MWD_layer_gated)
+{
+    AoQs1s2_s1s2_mhtdc = aoqs1s2_s1s2_mhtdc;
+    AoQs1s2_s1s2s4_mhtdc = aoqs1s2_s1s2s4_mhtdc;
+    AoQs2s4_s1s2s4_mhtdc = aoqs2s4_s1s2s4_mhtdc;
+    Z21_s1s2_mhtdc = z21_s1s2_mhtdc;
+    Z21_s1s2s4_mhtdc = z21_s1s2s4_mhtdc;
+    Z42_s1s2s4_mhtdc = z42_s1s2s4_mhtdc;
+
+    AoQs1s2_selected_s1s2_mhtdc = aoqs1s2_selected_s1s2_mhtdc;
+    AoQs1s2_selected_s1s2s4_mhtdc = aoqs1s2_selected_s1s2s4_mhtdc;
+    AoQs2s4_selected_s1s2s4_mhtdc = aoqs2s4_selected_s1s2s4_mhtdc;
+    Z21_selected_s1s2_mhtdc = z21_selected_s1s2_mhtdc;
+    Z21_selected_s1s2s4_mhtdc = z21_selected_s1s2s4_mhtdc;
+    Z42_selected_s1s2s4_mhtdc = z42_selected_s1s2s4_mhtdc;
+
+    energy_layer = e_layer;
+    energy_layer_gated = e_layer_gated;
+    energy_MWD_layer = e_MWD_layer;
+    energy_MWD_layer_gated = e_MWD_layer_gated;
 }
 
 
-void LisaHistoItem::Reset()
+void LisaHistoItem::ResetNonGated()
 {   
-    // maybe reset stuff to -1 since 0 is used occasionally for positions
-    wr_t = 0;
-    wr_id = 0;
-    board_id = 0; //reset to -1
-    layer_id = 0;
-    city = "";
-    xposition = 0;
-    yposition = 0;
-    tpc_x_on_lisa = 0;
-    tpc_y_on_lisa = 0;
-    thickness = 0;
-    energy = 0;
-    energy_MWD = 0;
-    trace_febex = {};
-    //trace_MWD = {};
-    trace_x = {};
-    event_no = 0;
-    energy_GM = 0;
-    energy_MWD_GM = 0;
-    de_dx = 0;
-    de_dx_GM = 0;
-    z_lisa = {};
-    beta0 = {};
-    beta_before_lisa = {};
-    beta1 = {};
-    beta2 = {};
-    beta3 = {};
-    beta4 = {};
-    beta5 = {};
-    board_event_time = 0;
-    ch_event_time = 0;
-    pileup = 0;
-    //pileup_MWD = 0; //-1
-    overflow = 0;
-    //overflow_MWD = 0; //-1
-    global_reactions = -5;
-    global_reactions_on_lisa_z = -5;
-    lisa_reactions_z = -5;
-    after_lisa_reactions_z = -5;
+    AoQ_s1s2_mhtdc = {};
+    AoQ_s2s4_mhtdc = {};
+    AoQ_s1s2_mhtdc_selected = {};
+    AoQ_s2s4_mhtdc_selected = {};
+};
 
-}
+void LisaHistoItem::ResetGated()
+{   
+    AoQs1s2_s1s2_mhtdc = {};
+    AoQs1s2_s1s2s4_mhtdc = {};
+    AoQs2s4_s1s2s4_mhtdc = {};
+    Z21_s1s2_mhtdc = {};
+    Z21_s1s2s4_mhtdc = {};
+    Z42_s1s2s4_mhtdc = {};
+
+    AoQs1s2_selected_s1s2_mhtdc = {};
+    AoQs1s2_selected_s1s2s4_mhtdc = {};
+    AoQs2s4_selected_s1s2s4_mhtdc = {};
+    Z21_selected_s1s2_mhtdc = {};
+    Z21_selected_s1s2s4_mhtdc = {};
+    Z42_selected_s1s2s4_mhtdc = {};
+
+    energy_layer = 0;
+    energy_layer_gated = 0;
+    energy_MWD_layer = 0;
+    energy_MWD_layer_gated = 0;
+};
 
 ClassImp(LisaHistoItem)

@@ -35,6 +35,7 @@ LisaReader.cxx
 LisaRaw2Ana.cxx
 LisaAna2Cal.cxx
 LisaCal2Hit.cxx
+LisaHit2Histo.cxx
 )
 
 Set(STRUCT_HEADERS
