@@ -30,8 +30,13 @@ class LisaHistoItem : public TObject
 
         void SetNonGated(std::vector<Float_t> aoq_s1s2_mhtdc,
                     std::vector<Float_t> aoq_s2s4_mhtdc,
-                    std::vector<Float_t> aoq_s1s2_mhtdc_selected,
-                    std::vector<Float_t> aoq_s2s4_mhtdc_selected);
+                    std::vector<Float_t> aoq_s1s2_selected_mhtdc,
+                    std::vector<Float_t> aoq_s2s4_selected_mhtdc,
+                    std::vector<Float_t> z21_mhtdc,
+                    std::vector<Float_t> z41_mhtdc,
+                    std::vector<Float_t> z42_mhtdc,
+                    std::vector<Float_t> z21_selected_mhtdc,
+                    std::vector<Float_t> z42_selected_mhtdc);
 
         void SetGated(std::vector<Float_t> aoqs1s2_s1s2_mhtdc,
                     std::vector<Float_t> aoqs1s2_s1s2s4_mhtdc,
@@ -54,16 +59,18 @@ class LisaHistoItem : public TObject
         void ResetNonGated();
         void ResetGated();
      
-    
         
-        // just gonna keep everything public so it can be accessed directly cus who cares
-    
 
         // Ungated but still in corrleations with LISA!
         std::vector<Float_t> AoQ_s1s2_mhtdc;
         std::vector<Float_t> AoQ_s2s4_mhtdc;
-        std::vector<Float_t> AoQ_s1s2_mhtdc_selected;
-        std::vector<Float_t> AoQ_s2s4_mhtdc_selected;
+        std::vector<Float_t> AoQ_s1s2_selected_mhtdc;
+        std::vector<Float_t> AoQ_s2s4_selected_mhtdc;
+        std::vector<Float_t> Z21_mhtdc;
+        std::vector<Float_t> Z41_mhtdc;
+        std::vector<Float_t> Z42_mhtdc;
+        std::vector<Float_t> Z21_selected_mhtdc;
+        std::vector<Float_t> Z42_selected_mhtdc;
    
         // FRS Gated
         std::vector<Float_t> AoQs1s2_s1s2_mhtdc;

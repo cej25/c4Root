@@ -104,27 +104,35 @@ class LisaHit2Histo : public FairTask
         Int_t fNEvents;
 
         uint64_t wr_t;
+        int64_t wr_LISA;
+        int64_t wr_FRS;
+        int64_t wr_travMUSIC;
+        int64_t wr_LISA_FRS;
+        int64_t wr_LISA_travMUSIC;
+        int64_t wr_travMUSIC_FRS;
 
         int layer_number;
 
         std::map<std::pair<int,int>, std::pair<std::pair<int, std::pair<int, int>>,std::pair<float,std::pair<std::string,std::string>>>> detector_mapping; //Debugging.Raplace std:string-> TString ?
         std::map<std::pair<int,std::pair<int,int>>, std::pair<double,double>> detector_z_calibration;
 
+        Float_t energy_MUSIC_21;
+        Float_t energy_MUSIC_41;
+        Float_t energy_MUSIC_42;
 
         std::vector<Float_t> sci21l_s1s2_selected;
         std::vector<Float_t> sci21r_s1s2_selected;
         std::vector<Float_t> sci21l_s2s4_selected;
         std::vector<Float_t> sci21r_s2s4_selected;
 
-        std::vector<std::vector<Float_t>> z21_passed;
-        std::vector<std::vector<Float_t>> z21_selected_passed;
+        std::vector<std::vector<Float_t>> Z21_passed;
+        std::vector<std::vector<Float_t>> Z21_selected_passed;
         std::vector<std::vector<Float_t>> AoQ_s1s2_passed;
-        std::vector<std::vector<Float_t>> z41_passed;
-        std::vector<std::vector<Float_t>> z42_passed;
+        std::vector<std::vector<Float_t>> Z41_passed;
+        std::vector<std::vector<Float_t>> Z42_passed;
         std::vector<std::vector<Float_t>> AoQ_s2s4_passed;
         std::vector<std::vector<Float_t>> AoQ_s1s2_selected_passed;
-        std::vector<std::vector<Float_t>> z41_selected_passed;
-        std::vector<std::vector<Float_t>> z42_selected_passed;
+        std::vector<std::vector<Float_t>> Z42_selected_passed;
         std::vector<std::vector<Float_t>> AoQ_s2s4_selected_passed;
         std::vector<std::vector<Float_t>> dEdeg_z41_passed;
 
@@ -139,6 +147,9 @@ class LisaHit2Histo : public FairTask
         double slope_z;
         double intercept_z;
         float de_dx_corr;
+
+        std::set<std::tuple<int, int, int>> excluded;
+
 
 
 

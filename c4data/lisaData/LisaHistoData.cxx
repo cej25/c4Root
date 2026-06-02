@@ -27,13 +27,23 @@ LisaHistoItem::LisaHistoItem()
 
 void LisaHistoItem::SetNonGated(std::vector<Float_t> aoq_s1s2_mhtdc,
                             std::vector<Float_t> aoq_s2s4_mhtdc,
-                            std::vector<Float_t> aoq_s1s2_mhtdc_selected,
-                            std::vector<Float_t> aoq_s2s4_mhtdc_selected)
+                            std::vector<Float_t> aoq_s1s2_selected_mhtdc,
+                            std::vector<Float_t> aoq_s2s4_selected_mhtdc,
+                            std::vector<Float_t> z21_mhtdc,
+                            std::vector<Float_t> z41_mhtdc,
+                            std::vector<Float_t> z42_mhtdc,
+                            std::vector<Float_t> z21_selected_mhtdc,
+                            std::vector<Float_t> z42_selected_mhtdc)
 {
     AoQ_s1s2_mhtdc = aoq_s1s2_mhtdc;
     AoQ_s2s4_mhtdc = aoq_s2s4_mhtdc;
-    AoQ_s1s2_mhtdc_selected = aoq_s1s2_mhtdc_selected;
-    AoQ_s2s4_mhtdc_selected = aoq_s2s4_mhtdc_selected;
+    AoQ_s1s2_selected_mhtdc = aoq_s1s2_selected_mhtdc;
+    AoQ_s2s4_selected_mhtdc = aoq_s2s4_selected_mhtdc;
+    Z21_mhtdc = z21_mhtdc;
+    Z41_mhtdc = z41_mhtdc;
+    Z42_mhtdc = z42_mhtdc;
+    Z21_selected_mhtdc = z21_selected_mhtdc;
+    Z42_selected_mhtdc = z42_selected_mhtdc;
 };
 
 void LisaHistoItem::SetGated(std::vector<Float_t> aoqs1s2_s1s2_mhtdc,
@@ -78,8 +88,13 @@ void LisaHistoItem::ResetNonGated()
 {   
     AoQ_s1s2_mhtdc = {};
     AoQ_s2s4_mhtdc = {};
-    AoQ_s1s2_mhtdc_selected = {};
-    AoQ_s2s4_mhtdc_selected = {};
+    AoQ_s1s2_selected_mhtdc = {};
+    AoQ_s2s4_selected_mhtdc = {};
+    Z21_mhtdc = {};
+    Z41_mhtdc = {};
+    Z42_mhtdc = {};
+    Z21_selected_mhtdc = {}; 
+    Z42_selected_mhtdc = {}; 
 };
 
 void LisaHistoItem::ResetGated()
