@@ -82,7 +82,7 @@ class LisaHit2Histo : public FairTask
         int mwd_gate_number = 0;
 
         int pair_count = 0;
-        int pair_count_MWD = 0;
+        //int pair_count_MWD = 0;
 
 
         int** mh_counter_passed_s1s2_seq;
@@ -112,6 +112,8 @@ class LisaHit2Histo : public FairTask
         int64_t wr_travMUSIC_FRS;
 
         int layer_number;
+        int xmax;
+        int ymax;
 
         std::map<std::pair<int,int>, std::pair<std::pair<int, std::pair<int, int>>,std::pair<float,std::pair<std::string,std::string>>>> detector_mapping; //Debugging.Raplace std:string-> TString ?
         std::map<std::pair<int,std::pair<int,int>>, std::pair<double,double>> detector_z_calibration;
@@ -125,9 +127,9 @@ class LisaHit2Histo : public FairTask
         std::vector<Float_t> sci21l_s2s4_selected;
         std::vector<Float_t> sci21r_s2s4_selected;
 
-        std::vector<std::vector<Float_t>> Z21_passed;
+        std::vector<std::vector<Float_t>> Z21_passed; //z21 s1s2 selected
         std::vector<std::vector<Float_t>> Z21_selected_passed;
-        std::vector<std::vector<Float_t>> AoQ_s1s2_passed;
+        std::vector<std::vector<Float_t>> AoQ_s1s2_passed; //aoqs1s2 s1s2 selected
         std::vector<std::vector<Float_t>> Z41_passed;
         std::vector<std::vector<Float_t>> Z42_passed;
         std::vector<std::vector<Float_t>> AoQ_s2s4_passed;
@@ -135,6 +137,16 @@ class LisaHit2Histo : public FairTask
         std::vector<std::vector<Float_t>> Z42_selected_passed;
         std::vector<std::vector<Float_t>> AoQ_s2s4_selected_passed;
         std::vector<std::vector<Float_t>> dEdeg_z41_passed;
+        std::vector<std::vector<Float_t>> Z21_s1s2s4_passed; //z21 s1s2s4 selected (sequential gate)
+        std::vector<std::vector<Float_t>> AoQs1s2_s1s2s4_passed; //aoqs1s2 s1s2 selected
+        std::vector<std::vector<Float_t>> Z41_s1s2s4_passed;
+        std::vector<std::vector<Float_t>> Z42_s1s2s4_passed;
+        std::vector<std::vector<Float_t>> AoQs2s4_s1s2s4_passed;
+        std::vector<std::vector<Float_t>> Z41_s1s2s4_selected_passed;
+        std::vector<std::vector<Float_t>> Z21_s1s2s4_selected_passed;
+        std::vector<std::vector<Float_t>> Z42_s1s2s4_selected_passed;
+        std::vector<std::vector<Float_t>> AoQs2s4_s1s2s4_selected_passed;
+        std::vector<std::vector<Float_t>> AoQs1s2_s1s2s4_selected_passed;
 
         std::vector<std::vector<float>> energy_layer;
         std::vector<std::vector<float>> energy_MWD_layer;

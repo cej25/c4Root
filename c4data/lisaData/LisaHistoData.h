@@ -36,24 +36,24 @@ class LisaHistoItem : public TObject
                     std::vector<Float_t> z41_mhtdc,
                     std::vector<Float_t> z42_mhtdc,
                     std::vector<Float_t> z21_selected_mhtdc,
-                    std::vector<Float_t> z42_selected_mhtdc);
+                    std::vector<Float_t> z42_selected_mhtdc,
+                    std::vector<std::vector<float>> e_layer,
+                    std::vector<std::vector<float>> e_MWD_layer);
 
-        void SetGated(std::vector<Float_t> aoqs1s2_s1s2_mhtdc,
-                    std::vector<Float_t> aoqs1s2_s1s2s4_mhtdc,
-                    std::vector<Float_t> aoqs2s4_s1s2s4_mhtdc,
-                    std::vector<Float_t> z21_s1s2_mhtdc,
-                    std::vector<Float_t> z21_s1s2s4_mhtdc,
-                    std::vector<Float_t> z42_s1s2s4_mhtdc, 
-                    std::vector<Float_t> aoqs1s2_selected_s1s2_mhtdc,
-                    std::vector<Float_t> aoqs1s2_selected_s1s2s4_mhtdc,
-                    std::vector<Float_t> aoqs2s4_selected_s1s2s4_mhtdc,
-                    std::vector<Float_t> z21_selected_s1s2_mhtdc,
-                    std::vector<Float_t> z21_selected_s1s2s4_mhtdc,
-                    std::vector<Float_t> z42_selected_s1s2s4_mhtdc,
-                    Float_t e_layer,
-                    Float_t e_layer_gated,
-                    Float_t e_MWD_layer,
-                    Float_t e_MWD_layer_gated);
+        void SetGated(std::vector<std::vector<Float_t>> aoqs1s2_s1s2_mhtdc,
+                    std::vector<std::vector<Float_t>> aoqs1s2_s1s2s4_mhtdc,
+                    std::vector<std::vector<Float_t>> aoqs2s4_s1s2s4_mhtdc,
+                    std::vector<std::vector<Float_t>> z21_s1s2_mhtdc,
+                    std::vector<std::vector<Float_t>> z21_s1s2s4_mhtdc,
+                    std::vector<std::vector<Float_t>> z42_s1s2s4_mhtdc, 
+                    std::vector<std::vector<Float_t>> aoqs1s2_selected_s1s2_mhtdc,
+                    std::vector<std::vector<Float_t>> aoqs1s2_selected_s1s2s4_mhtdc,
+                    std::vector<std::vector<Float_t>> aoqs2s4_selected_s1s2s4_mhtdc,
+                    std::vector<std::vector<Float_t>> z21_selected_s1s2_mhtdc,
+                    std::vector<std::vector<Float_t>> z21_selected_s1s2s4_mhtdc,
+                    std::vector<std::vector<Float_t>> z42_selected_s1s2s4_mhtdc,
+                    std::vector<std::vector<std::vector<float>>> e_layer_gated,
+                    std::vector<std::vector<std::vector<float>>> e_MWD_layer_gated);
 
 
         void ResetNonGated();
@@ -73,24 +73,24 @@ class LisaHistoItem : public TObject
         std::vector<Float_t> Z42_selected_mhtdc;
    
         // FRS Gated
-        std::vector<Float_t> AoQs1s2_s1s2_mhtdc;
-        std::vector<Float_t> AoQs1s2_s1s2s4_mhtdc;
-        std::vector<Float_t> AoQs2s4_s1s2s4_mhtdc;
-        std::vector<Float_t> Z21_s1s2_mhtdc;
-        std::vector<Float_t> Z21_s1s2s4_mhtdc;
-        std::vector<Float_t> Z42_s1s2s4_mhtdc;
+        std::vector<std::vector<Float_t>> AoQs1s2_s1s2_mhtdc;
+        std::vector<std::vector<Float_t>> AoQs1s2_s1s2s4_mhtdc;
+        std::vector<std::vector<Float_t>> AoQs2s4_s1s2s4_mhtdc;
+        std::vector<std::vector<Float_t>> Z21_s1s2_mhtdc;
+        std::vector<std::vector<Float_t>> Z21_s1s2s4_mhtdc;
+        std::vector<std::vector<Float_t>> Z42_s1s2s4_mhtdc;
 
-        std::vector<Float_t> AoQs1s2_selected_s1s2_mhtdc;
-        std::vector<Float_t> AoQs1s2_selected_s1s2s4_mhtdc;
-        std::vector<Float_t> AoQs2s4_selected_s1s2s4_mhtdc;
-        std::vector<Float_t> Z21_selected_s1s2_mhtdc;
-        std::vector<Float_t> Z21_selected_s1s2s4_mhtdc;
-        std::vector<Float_t> Z42_selected_s1s2s4_mhtdc;
+        std::vector<std::vector<Float_t>> AoQs1s2_selected_s1s2_mhtdc;
+        std::vector<std::vector<Float_t>> AoQs1s2_selected_s1s2s4_mhtdc;
+        std::vector<std::vector<Float_t>> AoQs2s4_selected_s1s2s4_mhtdc;
+        std::vector<std::vector<Float_t>> Z21_selected_s1s2_mhtdc;
+        std::vector<std::vector<Float_t>> Z21_selected_s1s2s4_mhtdc;
+        std::vector<std::vector<Float_t>> Z42_selected_s1s2s4_mhtdc;
 
-        Float_t energy_layer;
-        Float_t energy_layer_gated;
-        Float_t energy_MWD_layer;
-        Float_t energy_MWD_layer_gated;
+        std::vector<std::vector<float>> energy_layer;
+        std::vector<std::vector<std::vector<float>>> energy_layer_gated;
+        std::vector<std::vector<float>> energy_MWD_layer;
+        std::vector<std::vector<std::vector<float>>> energy_MWD_layer_gated;
 
         ClassDef(LisaHistoItem, 1);
 
