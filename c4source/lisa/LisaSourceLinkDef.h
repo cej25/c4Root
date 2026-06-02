@@ -10,6 +10,7 @@
 #pragma link C++ class LisaAna2Cal+;
 #pragma link C++ class LisaCal2Hit+;
 #pragma link C++ class LisaRaw2Ana+;
+#pragma link C++ class LisaHit2Histo+;
 
 #pragma link C++ class EXT_STR_h101_lisa_onion_t;
 

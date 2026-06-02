@@ -26,7 +26,7 @@
 #include "TString.h"
 
 // c4
-#include "LisaCal2Hit.h"
+#include "LisaHit2Histo.h"
 #include "FrsHitData.h"
 #include "LisaCalData.h"
 #include "c4Logger.h"
@@ -70,8 +70,7 @@ LisaHit2Histo::LisaHit2Histo()
     ,   lisaCalArray(nullptr)
     ,   frsHitArray(nullptr)
     ,   multihitArray(nullptr)
-    ,   lisaHistoArray(new std::vector<LisaHistoItem>)
-
+    // ,   lisaHistoArray(new  std::vector<std::vector<LisaHistoItem>>)
 {
     lisa_config = TLisaConfiguration::GetInstance();
     frs_config = TFrsConfiguration::GetInstance();
@@ -125,12 +124,12 @@ LisaHit2Histo::~LisaHit2Histo()
     delete lisaArray;
     delete lisaAnaArray;
     delete lisaCalArray;
-    delete lisaHistoArray;
+    // delete lisaHistoArray;
     delete frsHitArray;
     delete multihitArray;
 }
 
-InitStatus LisaCal2Hit::Init()
+InitStatus LisaHit2Histo::Init()
 {
     FairRootManager* mgr = FairRootManager::Instance();
     c4LOG_IF(fatal, NULL == mgr, "FairRootManager not found");
@@ -149,10 +148,23 @@ InitStatus LisaCal2Hit::Init()
 
     multihitArray = mgr->InitObjectAs<decltype(multihitArray)>("FrsMultiHitData");
     c4LOG_IF(fatal, !multihitArray, "Branch FrsMultiHitData not found!");
+
+    lisaHistoArray.resize(1 + std::min(febex_gates.size(), FrsGates.size()));
+
+    if (lisaHistoArray.size() > 0)
+    {
+        mgr->RegisterAny("LisaHistoData_NoGate", lisaHistoArray.at(0), !fOnline);
+
+        for (int i = 0; i < lisaHistoArray.size(); i++)
+        {
+            std::string branchName = "LisaHistoData_" + FrsGates.at(i)->GetName();
+            mgr->RegisterAny(branchName.c_str(), lisaHistoArray.at(i+1), !fOnline);
+        }
+    }
     
     mgr->RegisterAny("LisaHitData", lisaHitArray, !fOnline);
 
-    layer_number = lisa_config->NLayers();
+    /*layer_number = lisa_config->NLayers();
     xmax = lisa_config->XMax();
     ymax = lisa_config->YMax();
     auto const & detector_mapping = lisa_config->Mapping();
@@ -280,13 +292,18 @@ InitStatus LisaCal2Hit::Init()
     AoQ_s2s4_passed.resize(FrsGates.size());
     dEdeg_z41_passed.resize(FrsGates.size());
 
+
+    // cej:: commented all this out to stop errors
+    */
+
     return kSUCCESS;
 }
 
 
-void LisaCal2Hit::Exec(Option_t* option)
+void LisaHit2Histo::Exec(Option_t* option)
 {
-    
+    /*
+    // cej commenting all this out to prevent errors 
 
     lisaHistoArray->clear();
     // -> Reject events without both subsystems <-
@@ -294,6 +311,10 @@ void LisaCal2Hit::Exec(Option_t* option)
     
     const auto & frsHitItem = frsHitArray->at(0);
     const auto & multihitItem = multihitArray->at(0);
+
+
+
+
 
     // ::: FRS WR
     Int_t count_wr = 0;
@@ -700,11 +721,17 @@ void LisaCal2Hit::Exec(Option_t* option)
         }
     }
 
+    */
+
     //c4LOG(info, " LISA end of event");
 }
 
-void LisaCal2Hit::FinishEvent()
+void LisaHit2Histo::FinishEvent()
 {
+    /*
+    // cej commenting all this out to prevent errors
+
+
     //std::cout << "::::: FE 1 " << std::endl;
     for (int pair = 0; pair < pair_count; pair++)
     {
@@ -778,8 +805,10 @@ void LisaCal2Hit::FinishEvent()
         AoQ_s2s4_passed[gate].clear();
         dEdeg_z41_passed[gate].clear(); 
     }
+
+    */
 }
 
-void LisaCal2Hit::FinishTask()
+void LisaHit2Histo::FinishTask()
 {
 }

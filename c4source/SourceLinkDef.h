@@ -17,6 +17,7 @@
 #pragma link C++ class LisaAna2Cal+;
 #pragma link C++ class LisaCal2Hit+;
 #pragma link C++ class LisaRaw2Ana+;
+#pragma link C++ class LisaHit2Histo+;
 
 #pragma link C++ class FrsReader+;
 #pragma link C++ class FrsRaw2Cal+;

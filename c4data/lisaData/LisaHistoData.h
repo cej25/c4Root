@@ -28,316 +28,65 @@ class LisaHistoItem : public TObject
     public:
         LisaHistoItem();
 
-        void SetAll(uint64_t wr,
-                    uint16_t w_id,
-                    int b_id,
-                    int layer,
-                    TString c,
-                    int xpos,
-                    int ypos,
-                    float tpc_x_on_lisa,
-                    float tpc_y_on_lisa,
-                    float thick,
-                    float e, 
-                    float e_MWD,
-                    std::vector<float> tr,
-                    //std::vector<int16_t> tr_MWD,
-                    std::vector<int16_t> tr_x,
-                    float e_GM,
-                    float e_MWD_GM,
-                    float dedx,
-                    float dedx_GM,
-                    std::vector<float> z,
-                    std::vector<float> b0,
-                    std::vector<float> b_l,
-                    std::vector<float> b1,
-                    std::vector<float> b2,
-                    std::vector<float> b3,
-                    std::vector<float> b4,
-                    std::vector<float> b5,
-                    uint64_t evt_t,
-                    uint64_t ch_t,
-                    uint64_t evtno,
-                    int pu,
-                    //int pu_MWD,
-                    int ov,
-                    int greact,
-                    int greact_on_lisa_z,
-                    int lreact_z,
-                    int afterl_react_z);
-                    //int ov_MWD);
+        void SetNonGated(std::vector<Float_t> aoq_s1s2_mhtdc,
+                    std::vector<Float_t> aoq_s2s4_mhtdc,
+                    std::vector<Float_t> aoq_s1s2_mhtdc_selected,
+                    std::vector<Float_t> aoq_s2s4_mhtdc_selected);
 
-        void Reset();
-
-        uint64_t Get_wr_t() const;
-        uint16_t Get_wr_id() const;
-        int Get_board_id() const;
-        int Get_layer_id() const;
-        TString Get_city() const;
-        int Get_xposition() const;
-        int Get_yposition() const;
-        float Get_tpc_x_on_lisa() const;
-        float Get_tpc_y_on_lisa() const;
-        float Get_thickness() const;
-        float Get_energy() const;
-        float Get_energy_MWD() const;
-        std::vector<float> Get_trace_febex() const;
-        //std::vector<int16_t> Get_trace_MWD() const;
-        std::vector<int16_t> Get_trace_x() const;
-        float Get_energy_GM() const;
-        float Get_energy_MWD_GM() const;
-        float Get_de_dx() const;
-        float Get_de_dx_GM() const;
-        std::vector<float> Get_Z_lisa() const;
-        std::vector<float> Get_beta_s1s2_correlated() const;
-        std::vector<float> Get_beta_before_L1() const;
-        std::vector<float> Get_beta_after_L1() const;
-        std::vector<float> Get_beta_after_L2() const;
-        std::vector<float> Get_beta_after_L3() const;
-        std::vector<float> Get_beta_after_L4() const;
-        std::vector<float> Get_beta_after_L5() const;
-        uint64_t Get_board_event_time() const;
-        uint64_t Get_channel_event_time() const;
-        uint64_t Get_evtno();
-        int Get_pileup() const;
-        //int Get_pileup_MWD() const;
-        int Get_overflow() const;
-        //int Get_overflow_MWD() const;
-        int Get_Global_Reactions() const;
-        int Get_Global_Reactions_on_lisa_z() const;
-        int Get_Lisa_Reactions_z() const;
-        int Get_After_Lisa_Reactions_z() const;
+        void SetGated(std::vector<Float_t> aoqs1s2_s1s2_mhtdc,
+                    std::vector<Float_t> aoqs1s2_s1s2s4_mhtdc,
+                    std::vector<Float_t> aoqs2s4_s1s2s4_mhtdc,
+                    std::vector<Float_t> z21_s1s2_mhtdc,
+                    std::vector<Float_t> z21_s1s2s4_mhtdc,
+                    std::vector<Float_t> z42_s1s2s4_mhtdc, 
+                    std::vector<Float_t> aoqs1s2_selected_s1s2_mhtdc,
+                    std::vector<Float_t> aoqs1s2_selected_s1s2s4_mhtdc,
+                    std::vector<Float_t> aoqs2s4_selected_s1s2s4_mhtdc,
+                    std::vector<Float_t> z21_selected_s1s2_mhtdc,
+                    std::vector<Float_t> z21_selected_s1s2s4_mhtdc,
+                    std::vector<Float_t> z42_selected_s1s2s4_mhtdc,
+                    Float_t e_layer,
+                    Float_t e_layer_gated,
+                    Float_t e_MWD_layer,
+                    Float_t e_MWD_layer_gated);
 
 
-        // Getters
+        void ResetNonGated();
+        void ResetGated();
+     
+    
+        
+        // just gonna keep everything public so it can be accessed directly cus who cares
+    
+
+        // Ungated but still in corrleations with LISA!
+        std::vector<Float_t> AoQ_s1s2_mhtdc;
+        std::vector<Float_t> AoQ_s2s4_mhtdc;
+        std::vector<Float_t> AoQ_s1s2_mhtdc_selected;
+        std::vector<Float_t> AoQ_s2s4_mhtdc_selected;
+   
+        // FRS Gated
+        std::vector<Float_t> AoQs1s2_s1s2_mhtdc;
+        std::vector<Float_t> AoQs1s2_s1s2s4_mhtdc;
+        std::vector<Float_t> AoQs2s4_s1s2s4_mhtdc;
+        std::vector<Float_t> Z21_s1s2_mhtdc;
+        std::vector<Float_t> Z21_s1s2s4_mhtdc;
+        std::vector<Float_t> Z42_s1s2s4_mhtdc;
+
+        std::vector<Float_t> AoQs1s2_selected_s1s2_mhtdc;
+        std::vector<Float_t> AoQs1s2_selected_s1s2s4_mhtdc;
+        std::vector<Float_t> AoQs2s4_selected_s1s2s4_mhtdc;
+        std::vector<Float_t> Z21_selected_s1s2_mhtdc;
+        std::vector<Float_t> Z21_selected_s1s2s4_mhtdc;
+        std::vector<Float_t> Z42_selected_s1s2s4_mhtdc;
+
+        Float_t energy_layer;
+        Float_t energy_layer_gated;
+        Float_t energy_MWD_layer;
+        Float_t energy_MWD_layer_gated;
+
         ClassDef(LisaHistoItem, 1);
-    private:
-        uint64_t wr_t;
-        uint16_t wr_id;
-        int board_id;
-        int layer_id;
-        TString city; // name
-        int xposition;
-        int yposition;
-        float tpc_x_on_lisa;
-        float tpc_y_on_lisa;
-        float thickness;
-        float energy; // double? int?
-        float energy_MWD; // double? int?
-        std::vector<float> trace_febex;
-        //std::vector<int16_t> trace_MWD;
-        std::vector<int16_t> trace_x;
-        float energy_GM;
-        float energy_MWD_GM;
-        float de_dx;
-        float de_dx_GM;
-        std::vector<float> z_lisa;
-        std::vector<float> beta0;
-        std::vector<float> beta_before_lisa;
-        std::vector<float> beta1;
-        std::vector<float> beta2;
-        std::vector<float> beta3;
-        std::vector<float> beta4;
-        std::vector<float> beta5;
-        uint64_t board_event_time;
-        uint64_t ch_event_time;
-        uint64_t event_no;
-        int pileup;
-        //int pileup_MWD;
-        int overflow;
-        //int overflow_MWD;
-        int global_reactions;
-        int global_reactions_on_lisa_z;
-        int lisa_reactions_z;
-        int after_lisa_reactions_z;
-        // timing info for correlations
 
 };
-
-inline uint64_t LisaHistoItem::Get_wr_t() const
-{
-    return wr_t;
-}
-
-inline uint16_t LisaHistoItem::Get_wr_id() const
-{
-    return wr_id;
-}
-
-inline int LisaHistoItem::Get_board_id() const
-{
-    return board_id;
-}
-
-inline int LisaHistoItem::Get_layer_id() const
-{
-    return layer_id;
-}
-
-inline TString LisaHistoItem::Get_city() const
-{
-    return city;
-}
-
-inline int LisaHistoItem::Get_xposition() const
-{
-    return xposition;
-}
-
-inline int LisaHistoItem::Get_yposition() const
-{
-    return yposition;
-}
-
-inline float LisaHistoItem::Get_tpc_x_on_lisa() const
-{
-    return tpc_x_on_lisa;
-}
-
-inline float LisaHistoItem::Get_tpc_y_on_lisa() const
-{
-    return tpc_y_on_lisa;
-}
-
-inline float LisaHistoItem::Get_thickness() const
-{
-    return thickness;
-}
-
-inline float LisaHistoItem::Get_energy() const
-{
-    return energy;
-}
-
-inline float LisaHistoItem::Get_energy_MWD() const
-{
-    return energy_MWD;
-}
-
-inline std::vector<float> LisaHistoItem::Get_trace_febex() const
-{
-    return trace_febex;
-}
-
-// inline std::vector<int16_t> LisaHistoItem::Get_trace_MWD() const
-// {
-//     return trace_MWD;
-// }
-
-inline std::vector<int16_t> LisaHistoItem::Get_trace_x() const
-{
-    return trace_x;
-}
-
-inline float LisaHistoItem::Get_energy_GM() const
-{
-    return energy_GM;
-}
-
-inline float LisaHistoItem::Get_energy_MWD_GM() const
-{
-    return energy_MWD_GM;
-}
-
-inline float LisaHistoItem::Get_de_dx() const
-{
-    return de_dx;
-}
-
-inline float LisaHistoItem::Get_de_dx_GM() const
-{
-    return de_dx_GM;
-}
-
-inline std::vector<float> LisaHistoItem::Get_Z_lisa() const
-{
-    return z_lisa;
-}
-
-inline std::vector<float> LisaHistoItem::Get_beta_s1s2_correlated() const
-{
-    return beta0;
-}
-
-inline std::vector<float> LisaHistoItem::Get_beta_before_L1() const
-{
-    return beta_before_lisa;
-}
-
-inline std::vector<float> LisaHistoItem::Get_beta_after_L1() const
-{
-    return beta1;
-}
-
-inline std::vector<float> LisaHistoItem::Get_beta_after_L2() const
-{
-    return beta2;
-}
-
-inline std::vector<float> LisaHistoItem::Get_beta_after_L3() const
-{
-    return beta3;
-}
-
-inline std::vector<float> LisaHistoItem::Get_beta_after_L4() const
-{
-    return beta4;
-}
-
-inline std::vector<float> LisaHistoItem::Get_beta_after_L5() const
-{
-    return beta5;
-}
-
-inline uint64_t LisaHistoItem::Get_board_event_time() const
-{
-    return board_event_time;
-}
-
-inline uint64_t LisaHistoItem::Get_channel_event_time() const
-{
-    return ch_event_time;
-}
-
-inline int LisaHistoItem::Get_pileup() const
-{
-    return pileup;
-}
-
-// inline int LisaHistoItem::Get_pileupMWD() const
-// {
-//     return pileup_MWD;
-// }
-
-inline int LisaHistoItem::Get_overflow() const
-{
-    return overflow;
-}
-
-// inline int LisaHistoItem::Get_overflow_MWD() const
-// {
-//     return overflow_MWD;
-// }
-
-inline int LisaHistoItem::Get_Global_Reactions() const
-{
-    return global_reactions;
-}
-
-inline int LisaHistoItem::Get_Global_Reactions_on_lisa_z() const
-{
-    return global_reactions_on_lisa_z;
-}
-
-inline int LisaHistoItem::Get_Lisa_Reactions_z() const
-{
-    return lisa_reactions_z;
-}
-
-inline int LisaHistoItem::Get_After_Lisa_Reactions_z() const
-{
-    return after_lisa_reactions_z;
-}
-
 
 #endif

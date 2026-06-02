@@ -66,6 +66,7 @@ if (LISA_ONLY)
     ./lisa/LisaRaw2Ana.cxx
     ./lisa/LisaAna2Cal.cxx
     ./lisa/LisaCal2Hit.cxx
+    ./lisa/LisaHit2Histo.cxx
     )
 
     Set(STRUCT_HEADERS
@@ -87,6 +88,7 @@ if (LISA_ONLY)
     LisaRaw2Ana
     LisaAna2Cal
     LisaCal2Hit
+    LisaHit2Histo
     EXT_STR_h101_unpack_t
     EXT_STR_h101_frs_t
     EXT_STR_h101_lisa_t
@@ -112,6 +114,7 @@ if (NOT LISA_ONLY)
     ./lisa/LisaRaw2Ana.cxx
     ./lisa/LisaAna2Cal.cxx
     ./lisa/LisaCal2Hit.cxx
+    ./lisa/LisaHit2Histo.cxx
     ./bplast/bPlastReader.cxx
     ./bplast/bPlastRaw2Cal.cxx
     ./beammonitor/BeamMonitorReader.cxx

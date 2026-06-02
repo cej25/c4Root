@@ -113,6 +113,9 @@ InitStatus FrsCal2Hit::Init()
     calTpcArray = mgr->InitObjectAs<decltype(calTpcArray)>("FrsCalTpcData");
     c4LOG_IF(fatal, !calTpcArray, "Branch FrsCalTpcData not found!");
 
+    // for (auto gate : FrsLisaGates )
+
+
     mgr->RegisterAny("FrsHitData", hitArray, !fOnline);
     mgr->RegisterAny("FrsMultiHitData", multihitArray, !fOnline);
 

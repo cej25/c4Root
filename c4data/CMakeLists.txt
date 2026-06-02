@@ -37,6 +37,7 @@ if (LISA_ONLY)
     lisaData/LisaCalData.cxx
     lisaData/LisaAnaData.cxx
     lisaData/LisaHitData.cxx
+    lisaData/LisaHistoData.cxx
     lisaData/LisaTraceData.cxx
     frsData/TFRSParameter.cxx
     frsData/TFrsConfiguration.cxx
@@ -76,6 +77,7 @@ if (LISA_ONLY)
     LisaCalItem
     LisaAnaItem
     LisaHitItem
+    LisaHistoItem
     LisaTraceData
     LisaGate
     )
@@ -90,6 +92,7 @@ if (NOT LISA_ONLY)
     lisaData/LisaCalData.cxx
     lisaData/LisaAnaData.cxx
     lisaData/LisaHitData.cxx
+    lisaData/LisaHistoData.cxx
     lisaData/LisaTraceData.cxx
     aidaData/AidaData.cxx
     aidaData/AidaCalData.cxx
