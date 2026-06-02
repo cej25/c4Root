@@ -395,6 +395,33 @@ void LisaCal2Hit::Exec(Option_t* option)
     // AoQ_s2s4_mhtdc
     // AoQ_s1s2_selected_mhtdc
     // AoQ_s2s4_selected_mhtdc
+    // 
+    // FRS gated quantities
+    // AoQs1s2_s1s2_mhtdc  -- //this is theAo!of s1s2 gated on s1s2 gate
+    // AoQs1s2_s1s2s4_mhtdc -- //this is the same gated on the sequential gate so s1s2s4
+    // AoQs2s4_s1s2s4_mhtdc
+    // Z21_s1s2_mhtdc
+    // Z21_s1s24_mhtdc
+    // Z42_s1s2s4_mhtdc
+
+    // AoQs1s2_selected_s1s2_mhtdc  -- //this is theAo!of s1s2 gated on s1s2 gate
+    // AoQs1s2_selected_s1s2s4_mhtdc -- //this is the same gated on the sequential gate so s1s2s4
+    // AoQs2s4_selected_s1s2s4_mhtdc
+    // Z21_selected_s1s2_mhtdc
+    // Z21_selected_s1s24_mhtdc
+    // Z42_selected_s1s2s4_mhtdc
+
+    // LISA quantities gated on FRS gate (both for normal and _selected quantites)
+    // energy_layer
+    // energy_layer_gated
+    // energy_MWD_layer
+    // energy_MWD_layer_gated
+
+    // LISA quantities gated on FRS+LISA gates (both for normal and _selected quantites)
+    // energy_layer
+    // energy_layer_gated
+    // energy_MWD_layer
+    // energy_MWD_layer_gated
 
 
     // ::: Histos to make into trees
