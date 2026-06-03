@@ -128,6 +128,9 @@ LisaHit2Histo::~LisaHit2Histo()
     // delete lisaHistoArray;
     delete frsHitArray;
     delete multihitArray;
+
+    //and do I need this?
+    //for (auto* v : lisaHistoArray) delete v;
 }
 
 InitStatus LisaHit2Histo::Init()
@@ -155,6 +158,13 @@ InitStatus LisaHit2Histo::Init()
 
     //c4LOG(info,"A");
     lisaHistoArray.resize(1 + std::min(febex_gates.size(), FrsGates.size()));
+    // Do I need this???
+    // for (int i = 0; i < (int)lisaHistoArray.size(); i++)
+    // {
+    //     lisaHistoArray.at(i) = new std::vector<LisaHistoItem>();
+    // }
+
+
     //c4LOG(info,"AA");
     // if (lisaHistoArray.size() > 0)
     // {
@@ -235,6 +245,10 @@ InitStatus LisaHit2Histo::Init()
         energy_MWD_layer_gated[g].resize(layer_number);
     }
 
+    int pair_count_init = (int)std::min(febex_gates.size(), FrsGates.size());
+    layers_event_gated.resize(pair_count_init);
+    xpos_event_gated.resize(pair_count_init);
+    ypos_event_gated.resize(pair_count_init);
 
     
     //c4LOG(info,"D - end of init");
@@ -428,9 +442,14 @@ void LisaHit2Histo::Exec(Option_t* option)
 
             uint64_t EVTno = header->GetEventno();
             float de_dx = lisaCalItem.Get_de_dx_GM();
-            int layer = lisaCalItem.Get_layer_id();
-            int xpos = lisaCalItem.Get_xposition();
-            int ypos = lisaCalItem.Get_yposition();
+            layer = lisaCalItem.Get_layer_id();
+            xpos = lisaCalItem.Get_xposition();
+            ypos = lisaCalItem.Get_yposition();
+
+            layers_event.emplace_back(layer);
+            xpos_event.emplace_back(xpos);
+            ypos_event.emplace_back(ypos);
+
             float thickness = lisaCalItem.Get_thickness();
             std::pair< int, std::pair<int,int> > detector_lxy = std::make_pair( layer, std::make_pair(xpos, ypos) );
 
@@ -450,125 +469,130 @@ void LisaHit2Histo::Exec(Option_t* option)
             energy_layer[layer-1].emplace_back(energy_LISA_febex);
             energy_MWD_layer[layer-1].emplace_back(energy_LISA_MWD);
 
-   
-            // ::: LISA-FRS gates applied on LISA 
-            // ::: Febex
-            pair_count = std::min(febex_gates.size(), FrsGates.size());
-            for (int pair = 0; pair < pair_count; pair++)  
-            {
-                for (int l = 0; l < layer_number; l++) 
-                {
-                    // Check condition on Febex Gate
-                    //if (energy_layer_gated[pair][l].size() == 0) break; 
-
-                    // Loop for sequential gate S1S2S4
-                    if ( Z21_passed[pair].size() > 0 && Z42_passed[pair].size() > 0 ) 
-                    {
-
-                        for (size_t j = 0; j < energy_layer[l].size(); j++)
-                        {
-                        // Febex with condition of trigger on sci41 (TPAT 2)
-                            if ((frsHitItem.Get_tpat() & 0b10) && lisa_total_multiplicity == 5) energy_layer_gated[pair][l].emplace_back(energy_layer[l].at(j));   
-                        }
-
-                    }
-                        
-                }
-            }
-            // ::: MWD 
-            int pair_count_MWD = std::min(mwd_gates.size(), FrsGates.size());
-            for (int pair = 0; pair < pair_count_MWD; pair++)  
-            {
-                for (int l = 0; l < layer_number; l++) 
-                {
-                    // Check condition
-                    //if (energy_MWD_layer_gated[pair][l].size() == 0) break;
-
-                    // Loop for sequential gate S1S2S4
-                    if ( Z21_passed[pair].size() > 0 && Z42_passed[pair].size() > 0 ) 
-                    {
-                        
-                        for (size_t j = 0; j < energy_MWD_layer[l].size(); j++)
-                        {
-                        // MWD with condition of trigger on sci41 (TPAT 2)
-                        if ((frsHitItem.Get_tpat() & 0b10) && lisa_total_multiplicity == 5) energy_MWD_layer_gated[pair][l].emplace_back(energy_MWD_layer[l].at(j));   
-                        }
-                        
-                                        
-                    }
-                }
-            } 
-            //............................
-  
-    //c4LOG(info,"H");
-            auto & nongated_entry = lisaHistoArray.at(0)->emplace_back();
-            nongated_entry.SetNonGated(
-                layer,
-                xpos,
-                ypos,
-                AoQ_s1s2_mhtdc,
-                AoQ_s2s4_mhtdc,
-                AoQ_s1s2_selected_mhtdc,
-                AoQ_s2s4_selected_mhtdc,
-                Z21_mhtdc,
-                Z41_mhtdc,
-                Z42_mhtdc ,
-                Z21_selected_mhtdc, 
-                Z42_selected_mhtdc,
-                energy_layer,
-                energy_MWD_layer
-                );
-    //c4LOG(info,"H2");
-            // for (int gate = 0; gate < FrsGates.size(); gate++)
-            // {
-            //     auto & gated_entry = lisaHistoArray.at(gate)->emplace_back();
-            //     gated_entry.SetGated(
-            //         AoQ_s1s2_passed[gate],
-            //         AoQs1s2_s1s2s4_passed[gate],
-            //         AoQs2s4_s1s2s4_passed[gate],
-            //         Z21_passed[gate],
-            //         Z21_s1s2s4_passed[gate],
-            //         Z42_s1s2s4_passed[gate],
-            //         AoQ_s1s2_selected_passed[gate],
-            //         AoQs1s2_s1s2s4_selected_passed[gate],
-            //         AoQs2s4_s1s2s4_selected_passed[gate],
-            //         Z21_selected_passed[gate],
-            //         Z21_s1s2s4_selected_passed[gate],
-            //         Z42_s1s2s4_selected_passed[gate],
-            //         energy_layer_gated[gate],
-            //         energy_MWD_layer_gated[gate]
-            //         );
-            // }
-            for (int gate = 0; gate < FrsGates.size(); gate++)
-            {
-                //c4LOG(info,"H3");
-                auto & gated_entry = lisaHistoArray.at(gate+1)->emplace_back();
-                
-                gated_entry.AoQs1s2_s1s2_mhtdc = AoQ_s1s2_passed[gate];
-                gated_entry.AoQs1s2_s1s2s4_mhtdc = AoQs1s2_s1s2s4_passed[gate];
-                gated_entry.AoQs2s4_s1s2s4_mhtdc = AoQs2s4_s1s2s4_passed[gate];
-                gated_entry.Z21_s1s2_mhtdc = Z21_passed[gate];
-                gated_entry.Z21_s1s2s4_mhtdc = Z21_s1s2s4_passed[gate];
-                gated_entry.Z42_s1s2s4_mhtdc = Z42_s1s2s4_passed[gate];
-                gated_entry.AoQs1s2_selected_s1s2_mhtdc = AoQ_s1s2_selected_passed[gate];
-                gated_entry.AoQs1s2_selected_s1s2s4_mhtdc = AoQs1s2_s1s2s4_selected_passed[gate];
-                gated_entry.AoQs2s4_selected_s1s2s4_mhtdc = AoQs2s4_s1s2s4_selected_passed[gate];
-                gated_entry.Z21_selected_s1s2_mhtdc = Z21_selected_passed[gate];
-                gated_entry.Z21_selected_s1s2s4_mhtdc = Z21_s1s2s4_selected_passed[gate];
-                gated_entry.Z42_selected_s1s2s4_mhtdc = Z42_s1s2s4_selected_passed[gate];
-                gated_entry.energy_layer_gated = energy_layer_gated[gate];
-                //c4LOG(info,"H4");
-                gated_entry.energy_MWD_layer_gated = energy_MWD_layer_gated[gate];
-                //c4LOG(info,"H5");
-
-
-            }
-
-
-
+            //...........................
             //c4LOG(info, " END of subevent");
 
         }
+
+    }
+   
+    // ::: LISA-FRS gates applied on LISA 
+    // ::: Febex
+    pair_count = std::min(febex_gates.size(), FrsGates.size());
+    for (int pair = 0; pair < pair_count; pair++)  
+    {
+        for (int l = 0; l < layer_number; l++) 
+        {
+            // Check condition on Febex Gate
+            //if (energy_layer_gated[pair][l].size() == 0) break; 
+
+            // Loop for sequential gate S1S2S4
+            if ( Z21_passed[pair].size() > 0 && Z42_passed[pair].size() > 0 ) 
+            {
+
+                for (size_t j = 0; j < energy_layer[l].size(); j++)
+                {
+                // Febex with condition of trigger on sci41 (TPAT 2)
+                    if ((frsHitItem.Get_tpat() & 0b10) && (int)lisaCalArray->size() == 5) energy_layer_gated[pair][l].emplace_back(energy_layer[l].at(j));   
+                }
+
+                for (size_t j = 0; j < layers_event.size(); j++)
+                {
+                    layers_event_gated[pair].emplace_back(layers_event.at(j));
+                    xpos_event_gated[pair].emplace_back(xpos_event.at(j));
+                    ypos_event_gated[pair].emplace_back(ypos_event.at(j));
+                }
+
+            }
+                
+        }
+    }
+    // ::: MWD 
+    int pair_count_MWD = std::min(mwd_gates.size(), FrsGates.size());
+    for (int pair = 0; pair < pair_count_MWD; pair++)  
+    {
+        for (int l = 0; l < layer_number; l++) 
+        {
+            // Check condition
+            //if (energy_MWD_layer_gated[pair][l].size() == 0) break;
+
+            // Loop for sequential gate S1S2S4
+            if ( Z21_passed[pair].size() > 0 && Z42_passed[pair].size() > 0 ) 
+            {
+                
+                for (size_t j = 0; j < energy_MWD_layer[l].size(); j++)
+                {
+                // MWD with condition of trigger on sci41 (TPAT 2)
+                if ((frsHitItem.Get_tpat() & 0b10) && (int)lisaCalArray->size() == 5) energy_MWD_layer_gated[pair][l].emplace_back(energy_MWD_layer[l].at(j));   
+                }
+                
+                                
+            }
+        }
+    } 
+    auto & nongated_entry = lisaHistoArray.at(0)->emplace_back();
+    nongated_entry.SetNonGated(
+        layers_event,
+        xpos_event,
+        ypos_event,
+        AoQ_s1s2_mhtdc,
+        AoQ_s2s4_mhtdc,
+        AoQ_s1s2_selected_mhtdc,
+        AoQ_s2s4_selected_mhtdc,
+        Z21_mhtdc,
+        Z41_mhtdc,
+        Z42_mhtdc ,
+        Z21_selected_mhtdc, 
+        Z42_selected_mhtdc,
+        energy_layer,
+        energy_MWD_layer
+        );
+//c4LOG(info,"H2");
+    // for (int gate = 0; gate < FrsGates.size(); gate++)
+    // {
+    //     auto & gated_entry = lisaHistoArray.at(gate)->emplace_back();
+    //     gated_entry.SetGated(
+    //         AoQ_s1s2_passed[gate],
+    //         AoQs1s2_s1s2s4_passed[gate],
+    //         AoQs2s4_s1s2s4_passed[gate],
+    //         Z21_passed[gate],
+    //         Z21_s1s2s4_passed[gate],
+    //         Z42_s1s2s4_passed[gate],
+    //         AoQ_s1s2_selected_passed[gate],
+    //         AoQs1s2_s1s2s4_selected_passed[gate],
+    //         AoQs2s4_s1s2s4_selected_passed[gate],
+    //         Z21_selected_passed[gate],
+    //         Z21_s1s2s4_selected_passed[gate],
+    //         Z42_s1s2s4_selected_passed[gate],
+    //         energy_layer_gated[gate],
+    //         energy_MWD_layer_gated[gate]
+    //         );
+    // }
+    for (int gate = 0; gate < FrsGates.size(); gate++)
+    {
+        //c4LOG(info,"H3");
+        auto & gated_entry = lisaHistoArray.at(gate+1)->emplace_back();
+        
+        gated_entry.AoQs1s2_s1s2_mhtdc = AoQ_s1s2_passed[gate];
+        gated_entry.AoQs1s2_s1s2s4_mhtdc = AoQs1s2_s1s2s4_passed[gate];
+        gated_entry.AoQs2s4_s1s2s4_mhtdc = AoQs2s4_s1s2s4_passed[gate];
+        gated_entry.Z21_s1s2_mhtdc = Z21_passed[gate];
+        gated_entry.Z21_s1s2s4_mhtdc = Z21_s1s2s4_passed[gate];
+        gated_entry.Z42_s1s2s4_mhtdc = Z42_s1s2s4_passed[gate];
+        gated_entry.AoQs1s2_selected_s1s2_mhtdc = AoQ_s1s2_selected_passed[gate];
+        gated_entry.AoQs1s2_selected_s1s2s4_mhtdc = AoQs1s2_s1s2s4_selected_passed[gate];
+        gated_entry.AoQs2s4_selected_s1s2s4_mhtdc = AoQs2s4_s1s2s4_selected_passed[gate];
+        gated_entry.Z21_selected_s1s2_mhtdc = Z21_selected_passed[gate];
+        gated_entry.Z21_selected_s1s2s4_mhtdc = Z21_s1s2s4_selected_passed[gate];
+        gated_entry.Z42_selected_s1s2s4_mhtdc = Z42_s1s2s4_selected_passed[gate];
+        gated_entry.energy_layer_gated = energy_layer_gated[gate];
+        //c4LOG(info,"H4");
+        gated_entry.energy_MWD_layer_gated = energy_MWD_layer_gated[gate];
+        //c4LOG(info,"H5");
+        gated_entry.layers_gated     = layers_event_gated[gate];
+        gated_entry.xpositions_gated = xpos_event_gated[gate];
+        gated_entry.ypositions_gated = ypos_event_gated[gate];
+
     }
 
 
@@ -599,6 +623,11 @@ void LisaHit2Histo::FinishEvent()
             energy_MWD_layer_gated[g][l].clear();
         }
     }
+
+    layers_event.clear();
+    xpos_event.clear();
+    ypos_event.clear();
+
     //c4LOG(info,"L");
     for (int gate = 0; gate < FrsGates.size(); gate++)
     {
@@ -621,6 +650,9 @@ void LisaHit2Histo::FinishEvent()
         AoQs2s4_s1s2s4_selected_passed[gate].clear();
         Z21_selected_passed[gate].clear();
         Z42_s1s2s4_selected_passed[gate].clear();
+        layers_event_gated[gate].clear();
+        xpos_event_gated[gate].clear();
+        ypos_event_gated[gate].clear();
     }
 
 

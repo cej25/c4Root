@@ -28,9 +28,9 @@ class LisaHistoItem : public TObject
     public:
         LisaHistoItem();
 
-        void SetNonGated(int layer_id,
-                    int x_pos,
-                    int y_pos,
+        void SetNonGated(std::vector<int> layers,
+                    std::vector<int> x_positions,
+                    std::vector<int> y_positions,
                     std::vector<Float_t> aoq_s1s2_mhtdc,
                     std::vector<Float_t> aoq_s2s4_mhtdc,
                     std::vector<Float_t> aoq_s1s2_selected_mhtdc,
@@ -40,8 +40,8 @@ class LisaHistoItem : public TObject
                     std::vector<Float_t> z42_mhtdc,
                     std::vector<Float_t> z21_selected_mhtdc,
                     std::vector<Float_t> z42_selected_mhtdc,
-                    std::vector<std::vector<float>> e_layer,
-                    std::vector<std::vector<float>> e_MWD_layer);
+                    std::vector<std::vector<Float_t>> e_layer,
+                    std::vector<std::vector<Float_t>> e_MWD_layer);
 
         void SetGated(std::vector<Float_t> aoqs1s2_s1s2_mhtdc,
                     std::vector<Float_t> aoqs1s2_s1s2s4_mhtdc,
@@ -55,17 +55,24 @@ class LisaHistoItem : public TObject
                     std::vector<Float_t> z21_selected_s1s2_mhtdc,
                     std::vector<Float_t> z21_selected_s1s2s4_mhtdc,
                     std::vector<Float_t> z42_selected_s1s2s4_mhtdc,
-                    std::vector<std::vector<float>> e_layer_gated,
-                    std::vector<std::vector<float>> e_MWD_layer_gated);
+                    std::vector<std::vector<Float_t>> e_layer_gated,
+                    std::vector<std::vector<Float_t>> e_MWD_layer_gated);
 
 
         void ResetNonGated();
         void ResetGated();
      
         // LISA position
-        int layer;
-        int xpos;
-        int ypos;
+        // int layer;
+        // int xpos;
+        // int ypos;
+        std::vector<int> layers;
+        std::vector<int> xpositions;
+        std::vector<int> ypositions;
+    
+        std::vector<int> layers_gated;
+        std::vector<int> xpositions_gated;
+        std::vector<int> ypositions_gated;
 
         // Ungated but still in corrleations with LISA!
         std::vector<Float_t> AoQ_s1s2_mhtdc;
@@ -93,10 +100,10 @@ class LisaHistoItem : public TObject
         std::vector<Float_t> Z21_selected_s1s2s4_mhtdc;
         std::vector<Float_t> Z42_selected_s1s2s4_mhtdc;
 
-        std::vector<std::vector<float>> energy_layer;
-        std::vector<std::vector<float>> energy_layer_gated;
-        std::vector<std::vector<float>> energy_MWD_layer;
-        std::vector<std::vector<float>> energy_MWD_layer_gated;
+        std::vector<std::vector<Float_t>> energy_layer;
+        std::vector<std::vector<Float_t>> energy_layer_gated;
+        std::vector<std::vector<Float_t>> energy_MWD_layer;
+        std::vector<std::vector<Float_t>> energy_MWD_layer_gated;
 
         ClassDef(LisaHistoItem, 1);
 

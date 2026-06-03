@@ -84,6 +84,10 @@ class LisaHit2Histo : public FairTask
         int pair_count = 0;
         //int pair_count_MWD = 0;
 
+        int layer;
+        int xpos;
+        int ypos;
+
 
         int** mh_counter_passed_s1s2_seq;
         int** mh_counter_passed_s2s4_seq;
@@ -114,6 +118,10 @@ class LisaHit2Histo : public FairTask
         int layer_number;
         int xmax;
         int ymax;
+
+        std::vector<int> layers_event;
+        std::vector<int> xpos_event;
+        std::vector<int> ypos_event;
 
         std::map<std::pair<int,int>, std::pair<std::pair<int, std::pair<int, int>>,std::pair<float,std::pair<std::string,std::string>>>> detector_mapping; //Debugging.Raplace std:string-> TString ?
         std::map<std::pair<int,std::pair<int,int>>, std::pair<double,double>> detector_z_calibration;
@@ -148,13 +156,16 @@ class LisaHit2Histo : public FairTask
         std::vector<std::vector<Float_t>> AoQs2s4_s1s2s4_selected_passed;
         std::vector<std::vector<Float_t>> AoQs1s2_s1s2s4_selected_passed;
 
-        std::vector<std::vector<float>> energy_layer;
-        std::vector<std::vector<float>> energy_MWD_layer;
-        std::vector<std::vector<std::vector<float>>> energy_layer_gated;
-        std::vector<std::vector<std::vector<float>>> energy_MWD_layer_gated;
-        std::vector<std::vector<std::vector<std::vector<std::vector<float>>>>> energy_xy_gated;
-        std::vector<std::vector<std::vector<std::vector<std::vector<float>>>>> energy_MWD_xy_gated;
+        std::vector<std::vector<Float_t>> energy_layer;
+        std::vector<std::vector<Float_t>> energy_MWD_layer;
+        std::vector<std::vector<std::vector<Float_t>>> energy_layer_gated;
+        std::vector<std::vector<std::vector<Float_t>>> energy_MWD_layer_gated;
+        std::vector<std::vector<std::vector<std::vector<std::vector<Float_t>>>>> energy_xy_gated;
+        std::vector<std::vector<std::vector<std::vector<std::vector<Float_t>>>>> energy_MWD_xy_gated;
 
+        std::vector<std::vector<int>> layers_event_gated;
+        std::vector<std::vector<int>> xpos_event_gated;
+        std::vector<std::vector<int>> ypos_event_gated;
 
         double slope_z;
         double intercept_z;
