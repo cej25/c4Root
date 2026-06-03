@@ -71,7 +71,7 @@ void LisaHistoItem::SetGated(std::vector<Float_t> aoqs1s2_s1s2_mhtdc,
                     std::vector<Float_t> z21_selected_s1s2_mhtdc,
                     std::vector<Float_t> z21_selected_s1s2s4_mhtdc,
                     std::vector<Float_t> z42_selected_s1s2s4_mhtdc,
-                    std::vector<std::vector<Float_t>> e_layer_gated,
+                    // std::vector<std::vector<Float_t>> e_layer_gated,
                     std::vector<std::vector<Float_t>> e_MWD_layer_gated)
 {
     AoQs1s2_s1s2_mhtdc = aoqs1s2_s1s2_mhtdc;
@@ -88,7 +88,7 @@ void LisaHistoItem::SetGated(std::vector<Float_t> aoqs1s2_s1s2_mhtdc,
     Z21_selected_s1s2s4_mhtdc = z21_selected_s1s2s4_mhtdc;
     Z42_selected_s1s2s4_mhtdc = z42_selected_s1s2s4_mhtdc;
 
-    energy_layer_gated = e_layer_gated;
+    // energy_layer_gated = e_layer_gated;
     energy_MWD_layer_gated = e_MWD_layer_gated;
 }
 
@@ -132,7 +132,7 @@ void LisaHistoItem::ResetGated()
     Z21_selected_s1s2s4_mhtdc = {};
     Z42_selected_s1s2s4_mhtdc = {};
 
-    energy_layer_gated = {};
+    // energy_layer_gated = {};
     energy_MWD_layer_gated = {};
 };
 
