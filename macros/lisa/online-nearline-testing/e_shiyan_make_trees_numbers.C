@@ -5,7 +5,7 @@
 #include <sstream>
 
 // !!! Switch all tasks related to {subsystem} on (1)/off (0)
-#define LISA_ON 0
+#define LISA_ON 1
 #define FRS_ON 1
 
 // !!! Select the data level you want to visualize
@@ -17,8 +17,8 @@
 
 // Definition of setup and configuration files
 // FRS
-#define FRS_SETUP_FILE "../../../config/shiyan/frs/setup/setup_103_020_2025_conv.C"
-#define FRS_CONFIG_FILE "../../../config/shiyan/frs/general/frs_config_v5.C"
+#define FRS_SETUP_FILE "../../../config/shiyan/frs/setup/setup_103_020_2025_conv_may26.C"
+#define FRS_CONFIG_FILE "../../../config/shiyan/frs/general/frs_config_test_fragment.C"
 // LISA
 #define LISA_CONFIG_FILE "../../../config/shiyan/lisa/general/lisa_config_v2.C"
 
@@ -84,7 +84,7 @@ void e_shiyan_make_trees_numbers(int fileNumber)
     TString filename = Form(inputpath + "run_%04d_*.lmd",fileNumber);
 
     // ::: OUTPUT 
-    TString outputpath = "/u/gandolfo/data/lustre/gamma/gandolfo_LISA_c4/trees_shiyan_setting20/";   //testing
+    TString outputpath = "/u/gandolfo/data/lustre/gamma/gandolfo_LISA_c4/trees_shiyan_setting20_hitdata/";   //testing
     TString outputFilename = Form(outputpath + "run_%04d_tree.root",fileNumber);
     
     // ::: Create online run
@@ -208,7 +208,7 @@ void e_shiyan_make_trees_numbers(int fileNumber)
         run->AddTask(hitfrs);
     } 
 
-    if (LISA_ON && LISA_HIT)
+    if (LISA_ON && LISA_HIT && FRS_ON )
     {
         LisaCal2Hit* lisacal2hit = new LisaCal2Hit();
         lisacal2hit->SetOnline(false);

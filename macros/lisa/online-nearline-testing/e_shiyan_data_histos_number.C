@@ -29,7 +29,16 @@ typedef struct EXT_STR_h101_t
 
 } EXT_STR_h101;
 
-void e_shiyan_data_histos()
+std::string readFileToString(const std::string& path)
+{
+    std::ifstream file(path);
+    if (!file.is_open()) return "[Could not open file]";
+    std::stringstream buffer;
+    buffer << file.rdbuf();
+    return buffer.str();
+}
+
+void e_shiyan_data_histos(int fileNumber)
 {   
     const Int_t nev = -1; const Int_t fRunId = 1; const Int_t fExpId = 1;
     // ::: Experiment name
@@ -58,14 +67,13 @@ void e_shiyan_data_histos()
 
     // ::: P A T H   O F   F I L E  to read
     //TString inputpath = "/u/gandolfo/data/lustre/gamma/lisa_s092/trees/";
-    TString inputpath = "/u/gandolfo/data/lustre/gamma/gandolfo_LISA_c4/trees_shiyan_setting20_hitdata/";
-    TString filename = inputpath + "run_0143_tree.root";  
+    TString inputpath = "/u/gandolfo/data/shiyan_HitData/";
+    TString filename = Form(inputpath + "run_%04d_tree.root",fileNumber);  
     
     // ::: O U T P U T
     //TString outputpath = "/u/gandolfo/data/lustre/gamma/lisa_s092/histos/";
-    TString outputpath = "/u/gandolfo/data/lustre/gamma/gandolfo_LISA_c4/datahisto_shiyan_setting20_hitdata/";   //energy resolution output
-    TString outputFilename = outputpath + "run_0143_data_histo.root";
-
+    TString outputpath = "/u/gandolfo/data/shiyan_HitData/";   //energy resolution output
+    TString outputFilename = Form(outputpath + "run_%04d_histodata.root",fileNumber);
 
     FairRunAna* run = new FairRunAna();
     EventHeader* EvtHead = new EventHeader();
