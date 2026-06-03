@@ -25,7 +25,10 @@ LisaHistoItem::LisaHistoItem()
 
 }
 
-void LisaHistoItem::SetNonGated(std::vector<Float_t> aoq_s1s2_mhtdc,
+void LisaHistoItem::SetNonGated(int layer_id,
+                            int x_pos,
+                            int y_pos,
+                            std::vector<Float_t> aoq_s1s2_mhtdc,
                             std::vector<Float_t> aoq_s2s4_mhtdc,
                             std::vector<Float_t> aoq_s1s2_selected_mhtdc,
                             std::vector<Float_t> aoq_s2s4_selected_mhtdc,
@@ -37,6 +40,10 @@ void LisaHistoItem::SetNonGated(std::vector<Float_t> aoq_s1s2_mhtdc,
                             std::vector<std::vector<float>> e_layer,
                             std::vector<std::vector<float>> e_MWD_layer)
 {
+    
+    layer = layer_id;
+    xpos = x_pos;
+    ypos = y_pos;
     AoQ_s1s2_mhtdc = aoq_s1s2_mhtdc;
     AoQ_s2s4_mhtdc = aoq_s2s4_mhtdc;
     AoQ_s1s2_selected_mhtdc = aoq_s1s2_selected_mhtdc;
@@ -88,6 +95,9 @@ void LisaHistoItem::SetGated(std::vector<Float_t> aoqs1s2_s1s2_mhtdc,
 
 void LisaHistoItem::ResetNonGated()
 {   
+    layer = 0;
+    xpos = 0;
+    ypos = 0;
     AoQ_s1s2_mhtdc = {};
     AoQ_s2s4_mhtdc = {};
     AoQ_s1s2_selected_mhtdc = {};

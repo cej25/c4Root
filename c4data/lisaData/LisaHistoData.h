@@ -28,7 +28,10 @@ class LisaHistoItem : public TObject
     public:
         LisaHistoItem();
 
-        void SetNonGated(std::vector<Float_t> aoq_s1s2_mhtdc,
+        void SetNonGated(int layer_id,
+                    int x_pos,
+                    int y_pos,
+                    std::vector<Float_t> aoq_s1s2_mhtdc,
                     std::vector<Float_t> aoq_s2s4_mhtdc,
                     std::vector<Float_t> aoq_s1s2_selected_mhtdc,
                     std::vector<Float_t> aoq_s2s4_selected_mhtdc,
@@ -59,7 +62,10 @@ class LisaHistoItem : public TObject
         void ResetNonGated();
         void ResetGated();
      
-        
+        // LISA position
+        int layer;
+        int xpos;
+        int ypos;
 
         // Ungated but still in corrleations with LISA!
         std::vector<Float_t> AoQ_s1s2_mhtdc;

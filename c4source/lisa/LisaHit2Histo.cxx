@@ -153,8 +153,9 @@ InitStatus LisaHit2Histo::Init()
     multihitArray = mgr->InitObjectAs<decltype(multihitArray)>("FrsMultiHitData");
     c4LOG_IF(fatal, !multihitArray, "Branch FrsMultiHitData not found!");
 
+    //c4LOG(info,"A");
     lisaHistoArray.resize(1 + std::min(febex_gates.size(), FrsGates.size()));
-
+    //c4LOG(info,"AA");
     // if (lisaHistoArray.size() > 0)
     // {
     //     mgr->RegisterAny("LisaHistoData_NoGate", lisaHistoArray.at(0), !fOnline);
@@ -165,19 +166,20 @@ InitStatus LisaHit2Histo::Init()
     //         mgr->RegisterAny(branchName.c_str(), lisaHistoArray.at(i+1), !fOnline);
     //     }
     // }
+    //c4LOG(info,"B");
 
     if (lisaHistoArray.size() > 0)
     {
         mgr->RegisterAny("LisaHistoData_NoGate", lisaHistoArray.at(0), !fOnline);
 
-        for (int i = 0; i < (int)FrsGates.size(); i++)  // ← was lisaHistoArray.size()
+        for (int i = 0; i < (int)FrsGates.size(); i++)  //  was lisaHistoArray.size()
         {
             std::string branchName = "LisaHistoData_" + FrsGates.at(i)->GetName();
-            mgr->RegisterAny(branchName.c_str(), lisaHistoArray.at(i+1), !fOnline);  // now safe
+            mgr->RegisterAny(branchName.c_str(), lisaHistoArray.at(i+1), !fOnline); 
         }
     }
     
-    mgr->RegisterAny("LisaHitData", lisaHitArray, !fOnline);
+    //mgr->RegisterAny("LisaHitData", lisaHitArray, !fOnline);
 
     layer_number = lisa_config->NLayers();
     xmax = lisa_config->XMax();
@@ -187,6 +189,7 @@ InitStatus LisaHit2Histo::Init()
     mwd_gate_number = mwd_gates.size();
 
     excluded = lisa_config->GetExcludedChannels();
+    //c4LOG(info,"C");
 
     // LISA energy
     energy_layer.resize(layer_number);
@@ -206,6 +209,18 @@ InitStatus LisaHit2Histo::Init()
     Z42_selected_passed.resize(FrsGates.size());
     AoQ_s1s2_passed.resize(FrsGates.size());
     AoQ_s2s4_passed.resize(FrsGates.size());
+    AoQ_s2s4_selected_passed.resize(FrsGates.size());   
+
+    Z41_s1s2s4_passed.resize(FrsGates.size());
+    Z21_s1s2s4_selected_passed.resize(FrsGates.size());
+    AoQs1s2_s1s2s4_passed.resize(FrsGates.size());
+    AoQs2s4_s1s2s4_passed.resize(FrsGates.size());
+    Z21_s1s2s4_passed.resize(FrsGates.size());
+    Z42_s1s2s4_passed.resize(FrsGates.size());
+    AoQ_s1s2_selected_passed.resize(FrsGates.size());
+    AoQs1s2_s1s2s4_selected_passed.resize(FrsGates.size());
+    AoQs2s4_s1s2s4_selected_passed.resize(FrsGates.size());
+    Z42_s1s2s4_selected_passed.resize(FrsGates.size());
 
     // --- LISA - febex
     energy_layer_gated.resize(gate_number);
@@ -214,15 +229,15 @@ InitStatus LisaHit2Histo::Init()
         energy_layer_gated[g].resize(layer_number);
     }
     // --- LISA - MWD
-    energy_MWD_layer_gated.resize(mwd_gate_number);
-    for (int g = 0; g < mwd_gate_number; g++) 
+    energy_MWD_layer_gated.resize(gate_number);
+    for (int g = 0; g < gate_number; g++) 
     {   
         energy_MWD_layer_gated[g].resize(layer_number);
     }
 
 
-    // cej:: commented all this out to stop errors
     
+    //c4LOG(info,"D - end of init");
 
     return kSUCCESS;
 }
@@ -247,6 +262,7 @@ void LisaHit2Histo::Exec(Option_t* option)
 
     // ::: Total multiplicity of lisa
     int lisa_total_multiplicity = 0;
+    //c4LOG(info,"E - start of exec");
 
     // ::: MUSIC energies
     energy_MUSIC_21 = frsHitItem.Get_music21_dE();
@@ -258,6 +274,7 @@ void LisaHit2Histo::Exec(Option_t* option)
     std::vector<Float_t> Z41_mhtdc = multihitItem.Get_ID_z41_mhtdc();
     std::vector<Float_t> Z42_mhtdc = multihitItem.Get_ID_z42_mhtdc();
     std::vector<Float_t> Z21_selected_mhtdc = multihitItem.Get_ID_z21_selected_mhtdc();
+    std::vector<Float_t> Z41_selected_mhtdc = multihitItem.Get_ID_z41_selected_mhtdc();
     std::vector<Float_t> Z42_selected_mhtdc = multihitItem.Get_ID_z42_selected_mhtdc();
     std::vector<Float_t> AoQ_s1s2_mhtdc = multihitItem.Get_ID_AoQ_corr_s1s2_mhtdc();
     std::vector<Float_t> AoQ_s1s2_selected_mhtdc = multihitItem.Get_ID_AoQ_corr_s1s2_selected_mhtdc();
@@ -268,6 +285,7 @@ void LisaHit2Histo::Exec(Option_t* option)
 
     if (AoQ_s2s4_mhtdc.size() > 0) aoq++;
     std::vector<Float_t> dEdeg_z41_mhtdc = multihitItem.Get_ID_dEdeg_z41_mhtdc();
+    //std::vector<Float_t> dEdeg_z41_selected_mhtdc = multihitItem.Get_ID_dEdeg_z41_selected_mhtdc();
     Float_t x2_position = frsHitItem.Get_ID_x2();
     Float_t x4_position = frsHitItem.Get_ID_x4();
     Float_t sci42e = frsHitItem.Get_sci_e_42();
@@ -285,13 +303,16 @@ void LisaHit2Histo::Exec(Option_t* option)
         if (beta_i[i] <= 0. || beta_i[i] >= 1.) return;
     }
 
-    
+    //c4LOG(info,"F");
+
     // --- FRS gated on FRS quantities
     if (!FrsGates.empty())
     {
+        //c4LOG(info,"F1");
         for (int gate = 0; gate < FrsGates.size(); gate++)
         {
             // Z21 and AoQs1s2 with s1s2 gates
+            //c4LOG(info,"F2");
             for (int i = 0; i < AoQ_s1s2_mhtdc.size(); i++)
             {
                 
@@ -301,7 +322,7 @@ void LisaHit2Histo::Exec(Option_t* option)
                     AoQ_s1s2_passed[gate].emplace_back(AoQ_s1s2_mhtdc.at(i));
                 }
             }
-
+            //c4LOG(info,"F3");
             // z21 and AoQ selected with s1s2 gates
             for (int i = 0; i < AoQ_s1s2_selected_mhtdc.size(); i++)
             {
@@ -312,7 +333,7 @@ void LisaHit2Histo::Exec(Option_t* option)
                     AoQ_s1s2_selected_passed[gate].emplace_back(AoQ_s1s2_selected_mhtdc.at(i));
                 }
             }
-
+            //c4LOG(info,"F4");
             // z41, z42, aoqs2s4 and dEg with s2s4 gates
             for (int i = 0; i < AoQ_s2s4_mhtdc.size(); i++)
             {
@@ -324,17 +345,28 @@ void LisaHit2Histo::Exec(Option_t* option)
                     dEdeg_z41_passed[gate].emplace_back(dEdeg_z41_mhtdc.at(i));
                 }
             }
-
+            //c4LOG(info,"F5");
+            //c4LOG(info,"size of aoqs2s4 passed: " << AoQ_s2s4_selected_mhtdc.size());
             // z42, aoqs2s4 selected with s12s4 gates
             for (int i = 0; i < AoQ_s2s4_selected_mhtdc.size(); i++)
             {
-                if (FrsGates[gate]->PassedS2S4(Z41_mhtdc.at(i), Z42_selected_mhtdc.at(i), x2_position, x4_position, AoQ_s2s4_selected_mhtdc.at(i), dEdeg_z41_mhtdc.at(i), sci42e))
+                //c4LOG(info,"size of Z41_selected_mhtdc: " << Z41_selected_mhtdc.size());
+                //c4LOG(info,"size of Z42_selected_mhtdc: " << Z42_selected_mhtdc.size());
+                //c4LOG(info,"size of dEdeg_z41_mhtdc: " << dEdeg_z41_mhtdc.size());
+                if (FrsGates[gate]->PassedS2S4(Z41_selected_mhtdc.at(i), Z42_selected_mhtdc.at(i), x2_position, x4_position, AoQ_s2s4_selected_mhtdc.at(i), dEdeg_z41_mhtdc.at(i), sci42e))
                 {
+                    //c4LOG(info,"inner loop");
+                    //c4LOG(info,"size of Z41_selected_mhtdc: " << Z41_selected_mhtdc.size());
+                    //c4LOG(info,"size of Z42_selected_mhtdc: " << Z42_selected_mhtdc.size());
+                    //c4LOG(info,"size of dEdeg_z41_mhtdc: " << dEdeg_z41_mhtdc.size());
                     Z42_selected_passed[gate].emplace_back(Z42_selected_mhtdc.at(i));
+                    //c4LOG(info,"z42 filled");
+
                     AoQ_s2s4_selected_passed[gate].emplace_back(AoQ_s2s4_selected_mhtdc.at(i));
+                    //c4LOG(info,"end emplace_back");
                 }
             }
-
+            //c4LOG(info,"F6");
             // Full seq gate (S1S2S4)
             if ( Z21_passed[gate].size() > 0 && Z41_passed[gate].size() > 0) 
             {
@@ -346,7 +378,7 @@ void LisaHit2Histo::Exec(Option_t* option)
 
                 }
 
-                for ( int j = 0; j < Z41_passed[gate].size(); j++)
+                for ( int j = 0; j < Z42_passed[gate].size(); j++)
                 {
                     
                     Z41_s1s2s4_passed[gate].emplace_back(Z41_mhtdc.at(j));
@@ -355,28 +387,36 @@ void LisaHit2Histo::Exec(Option_t* option)
 
                 }
             }
-
+            //c4LOG(info,"F7");
             if ( Z21_selected_passed[gate].size() > 0 && Z42_selected_passed[gate].size() > 0) 
             {
                 
+                //c4LOG(info,"F8");
                 for ( int i = 0; i < Z21_selected_passed[gate].size(); i++)
                 {
                     AoQs1s2_s1s2s4_selected_passed[gate].emplace_back(AoQ_s1s2_selected_mhtdc.at(i));
                     Z21_s1s2s4_selected_passed[gate].emplace_back(Z21_selected_mhtdc.at(i));
 
                 }
+                //c4LOG(info,"F9");
+                //c4LOG(info," size of Z42_selected_passed: " << Z42_selected_passed[gate].size());
+                //c4LOG(info," size of Z42_selected_mhtdc: " << Z42_selected_mhtdc.size());
 
                 for ( int j = 0; j < Z42_selected_passed[gate].size(); j++)
                 {
                     
+                    //c4LOG(info,"F91");
                     Z42_s1s2s4_selected_passed[gate].emplace_back(Z42_selected_mhtdc.at(j));
+                    //c4LOG(info,"F92");
                     AoQs2s4_s1s2s4_selected_passed[gate].emplace_back(AoQ_s2s4_selected_mhtdc.at(j));
+                    //c4LOG(info,"F93");
 
                 }
             }
         }
     }
 
+    //c4LOG(info,"G");
 
     //....................
     // ::: Now loop over lisa data starts
@@ -460,9 +500,12 @@ void LisaHit2Histo::Exec(Option_t* option)
             } 
             //............................
   
-
+    //c4LOG(info,"H");
             auto & nongated_entry = lisaHistoArray.at(0)->emplace_back();
             nongated_entry.SetNonGated(
+                layer,
+                xpos,
+                ypos,
                 AoQ_s1s2_mhtdc,
                 AoQ_s2s4_mhtdc,
                 AoQ_s1s2_selected_mhtdc,
@@ -475,7 +518,7 @@ void LisaHit2Histo::Exec(Option_t* option)
                 energy_layer,
                 energy_MWD_layer
                 );
-
+    //c4LOG(info,"H2");
             // for (int gate = 0; gate < FrsGates.size(); gate++)
             // {
             //     auto & gated_entry = lisaHistoArray.at(gate)->emplace_back();
@@ -498,6 +541,7 @@ void LisaHit2Histo::Exec(Option_t* option)
             // }
             for (int gate = 0; gate < FrsGates.size(); gate++)
             {
+                //c4LOG(info,"H3");
                 auto & gated_entry = lisaHistoArray.at(gate+1)->emplace_back();
                 
                 gated_entry.AoQs1s2_s1s2_mhtdc = AoQ_s1s2_passed[gate];
@@ -513,7 +557,11 @@ void LisaHit2Histo::Exec(Option_t* option)
                 gated_entry.Z21_selected_s1s2s4_mhtdc = Z21_s1s2s4_selected_passed[gate];
                 gated_entry.Z42_selected_s1s2s4_mhtdc = Z42_s1s2s4_selected_passed[gate];
                 gated_entry.energy_layer_gated = energy_layer_gated[gate];
+                //c4LOG(info,"H4");
                 gated_entry.energy_MWD_layer_gated = energy_MWD_layer_gated[gate];
+                //c4LOG(info,"H5");
+
+
             }
 
 
@@ -529,7 +577,7 @@ void LisaHit2Histo::Exec(Option_t* option)
 
 void LisaHit2Histo::FinishEvent()
 {
-    
+    //c4LOG(info,"I");
     for (int l = 0; l < layer_number; l++)
     {
         energy_layer[l].clear();
@@ -551,7 +599,7 @@ void LisaHit2Histo::FinishEvent()
             energy_MWD_layer_gated[g][l].clear();
         }
     }
-
+    //c4LOG(info,"L");
     for (int gate = 0; gate < FrsGates.size(); gate++)
     {
  
@@ -565,6 +613,7 @@ void LisaHit2Histo::FinishEvent()
         Z21_passed[gate].clear();
         Z41_passed[gate].clear();
         Z42_passed[gate].clear();
+        Z42_selected_passed[gate].clear();
         Z21_s1s2s4_passed[gate].clear();
         Z42_s1s2s4_passed[gate].clear();
         AoQ_s1s2_selected_passed[gate].clear();
