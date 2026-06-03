@@ -22,6 +22,42 @@
 #include "TString.h"
 #include "TVector.h"
 
+class LisaHistoGatedItem : public TObject
+{
+    public:
+        LisaHistoGatedItem();
+
+        std::vector<int> layers_gated;
+        std::vector<int> xpositions_gated;
+        std::vector<int> ypositions_gated;
+
+        std::vector<Float_t> AoQs1s2_s1s2_mhtdc;
+        std::vector<Float_t> AoQs1s2_s1s2s4_mhtdc;
+        std::vector<Float_t> AoQs2s4_s1s2s4_mhtdc;
+        std::vector<Float_t> Z21_s1s2_mhtdc;
+        std::vector<Float_t> Z21_s1s2s4_mhtdc;
+        std::vector<Float_t> Z42_s1s2s4_mhtdc;
+
+        std::vector<Float_t> AoQs1s2_selected_s1s2_mhtdc;
+        std::vector<Float_t> AoQs1s2_selected_s1s2s4_mhtdc;
+        std::vector<Float_t> AoQs2s4_selected_s1s2s4_mhtdc;
+        std::vector<Float_t> Z21_selected_s1s2_mhtdc;
+        std::vector<Float_t> Z21_selected_s1s2s4_mhtdc;
+        std::vector<Float_t> Z42_selected_s1s2s4_mhtdc;
+
+        std::vector<Float_t> energy_layer1_gated;
+        std::vector<Float_t> energy_layer2_gated;
+        std::vector<Float_t> energy_layer3_gated;
+        std::vector<Float_t> energy_layer4_gated;
+        std::vector<Float_t> energy_layer5_gated;
+
+        std::vector<Float_t> energy_MWD_layer1_gated;
+        std::vector<Float_t> energy_MWD_layer2_gated;
+        std::vector<Float_t> energy_MWD_layer3_gated;
+        std::vector<Float_t> energy_MWD_layer4_gated;
+        std::vector<Float_t> energy_MWD_layer5_gated;
+};
+
 
 class LisaHistoItem : public TObject
 {
@@ -55,7 +91,7 @@ class LisaHistoItem : public TObject
                     std::vector<Float_t> z21_selected_s1s2_mhtdc,
                     std::vector<Float_t> z21_selected_s1s2s4_mhtdc,
                     std::vector<Float_t> z42_selected_s1s2s4_mhtdc,
-                    std::vector<std::vector<Float_t>> e_layer_gated,
+                    // std::vector<std::vector<Float_t>> e_layer_gated,
                     std::vector<std::vector<Float_t>> e_MWD_layer_gated);
 
 
@@ -100,10 +136,30 @@ class LisaHistoItem : public TObject
         std::vector<Float_t> Z21_selected_s1s2s4_mhtdc;
         std::vector<Float_t> Z42_selected_s1s2s4_mhtdc;
 
-        std::vector<std::vector<Float_t>> energy_layer;
+        std::vector<std::vector<Float_t>> energy_layer; // old just here to not break stuff for now
+        std::vector<Float_t> energy_layer1;
+        std::vector<Float_t> energy_layer2;
+        std::vector<Float_t> energy_layer3;
+        std::vector<Float_t> energy_layer4;
+        std::vector<Float_t> energy_layer5;
         std::vector<std::vector<Float_t>> energy_layer_gated;
+        std::vector<Float_t> energy_layer1_gated;
+        std::vector<Float_t> energy_layer2_gated;
+        std::vector<Float_t> energy_layer3_gated;
+        std::vector<Float_t> energy_layer4_gated;
+        std::vector<Float_t> energy_layer5_gated;
         std::vector<std::vector<Float_t>> energy_MWD_layer;
+        std::vector<Float_t> energy_MWD_layer1;
+        std::vector<Float_t> energy_MWD_layer2;
+        std::vector<Float_t> energy_MWD_layer3;
+        std::vector<Float_t> energy_MWD_layer4;
+        std::vector<Float_t> energy_MWD_layer5;
         std::vector<std::vector<Float_t>> energy_MWD_layer_gated;
+        std::vector<Float_t> energy_MWD_layer1_gated;
+        std::vector<Float_t> energy_MWD_layer2_gated;
+        std::vector<Float_t> energy_MWD_layer3_gated;
+        std::vector<Float_t> energy_MWD_layer4_gated;
+        std::vector<Float_t> energy_MWD_layer5_gated;
 
         ClassDef(LisaHistoItem, 1);
 
