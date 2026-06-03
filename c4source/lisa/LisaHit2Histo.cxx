@@ -60,7 +60,7 @@
 #include "TColor.h"
 #include "TStyle.h"
 
-LisaHit2Histo::LisaHit2Histo()
+LisaHit2Histo::LisaHit2Histo(const TString& name, Int_t verbose)
     :   FairTask()
     ,   header(nullptr)
     ,   fNEvents(0)
@@ -124,6 +124,7 @@ LisaHit2Histo::~LisaHit2Histo()
     delete lisaArray;
     delete lisaAnaArray;
     delete lisaCalArray;
+    delete lisaHitArray;
     // delete lisaHistoArray;
     delete frsHitArray;
     delete multihitArray;
@@ -137,11 +138,14 @@ InitStatus LisaHit2Histo::Init()
     header = (EventHeader*)mgr->GetObject("EventHeader.");
     c4LOG_IF(error, !header, "Branch EventHeader. not found");
 
-    lisaArray = mgr->InitObjectAs<decltype(lisaArray)>("LisaData");
-    c4LOG_IF(fatal, !lisaArray, "Branch LisaData not found!");
+    //lisaArray = mgr->InitObjectAs<decltype(lisaArray)>("LisaData");
+    //c4LOG_IF(fatal, !lisaArray, "Branch LisaData not found!");
 
     lisaCalArray = mgr->InitObjectAs<decltype(lisaCalArray)>("LisaCalData");
     c4LOG_IF(fatal, !lisaCalArray, "Branch LisaCalData not found!");
+
+    lisaHitArray = mgr->InitObjectAs<decltype(lisaHitArray)>("LisaHitData");
+    c4LOG_IF(fatal, !lisaHitArray, "Branch LisaHitData not found!");
 
     frsHitArray = mgr->InitObjectAs<decltype(frsHitArray)>("FrsHitData");
     c4LOG_IF(fatal, !frsHitArray, "Branch FrsHitData not found!");
@@ -151,14 +155,25 @@ InitStatus LisaHit2Histo::Init()
 
     lisaHistoArray.resize(1 + std::min(febex_gates.size(), FrsGates.size()));
 
+    // if (lisaHistoArray.size() > 0)
+    // {
+    //     mgr->RegisterAny("LisaHistoData_NoGate", lisaHistoArray.at(0), !fOnline);
+
+    //     for (int i = 0; i < lisaHistoArray.size(); i++)
+    //     {
+    //         std::string branchName = "LisaHistoData_" + FrsGates.at(i)->GetName();
+    //         mgr->RegisterAny(branchName.c_str(), lisaHistoArray.at(i+1), !fOnline);
+    //     }
+    // }
+
     if (lisaHistoArray.size() > 0)
     {
         mgr->RegisterAny("LisaHistoData_NoGate", lisaHistoArray.at(0), !fOnline);
 
-        for (int i = 0; i < lisaHistoArray.size(); i++)
+        for (int i = 0; i < (int)FrsGates.size(); i++)  // ← was lisaHistoArray.size()
         {
             std::string branchName = "LisaHistoData_" + FrsGates.at(i)->GetName();
-            mgr->RegisterAny(branchName.c_str(), lisaHistoArray.at(i+1), !fOnline);
+            mgr->RegisterAny(branchName.c_str(), lisaHistoArray.at(i+1), !fOnline);  // now safe
         }
     }
     
@@ -384,6 +399,7 @@ void LisaHit2Histo::Exec(Option_t* option)
             Float_t x_lisa_tpc22_23 = (a_focs2 / 1000. * dist_LISA_focS2) + x_focs2;
             Float_t y_lisa_tpc22_23 = (b_focs2 / 1000. * dist_LISA_focS2) + y_focs2;
 
+            lisa_total_multiplicity++;
             // ::: Energy data
             float energy_LISA_febex = lisaCalItem.Get_energy_GM();
             float energy_LISA_MWD = lisaCalItem.Get_energy_MWD_GM();
@@ -403,15 +419,16 @@ void LisaHit2Histo::Exec(Option_t* option)
                 for (int l = 0; l < layer_number; l++) 
                 {
                     // Check condition on Febex Gate
-                    if (energy_layer_gated[pair][l].size() == 0) break; 
+                    //if (energy_layer_gated[pair][l].size() == 0) break; 
 
                     // Loop for sequential gate S1S2S4
-                    if ( Z21_passed[pair].size() > 0 && Z41_passed[pair].size() > 0 ) 
+                    if ( Z21_passed[pair].size() > 0 && Z42_passed[pair].size() > 0 ) 
                     {
-                        for ( int j = 0; j < energy_layer_gated[pair][l].size(); j++)
+
+                        for (size_t j = 0; j < energy_layer[l].size(); j++)
                         {
-                            // Febex with condition of trigger on sci41 (TPAT 2)
-                            if ((frsHitItem.Get_tpat() & 0b10) && lisa_total_multiplicity == 5) energy_layer_gated[pair][l].emplace_back(energy_layer.at(j));   
+                        // Febex with condition of trigger on sci41 (TPAT 2)
+                            if ((frsHitItem.Get_tpat() & 0b10) && lisa_total_multiplicity == 5) energy_layer_gated[pair][l].emplace_back(energy_layer[l].at(j));   
                         }
 
                     }
@@ -425,18 +442,18 @@ void LisaHit2Histo::Exec(Option_t* option)
                 for (int l = 0; l < layer_number; l++) 
                 {
                     // Check condition
-                    if (energy_MWD_layer_gated[pair][l].size() == 0) break;
+                    //if (energy_MWD_layer_gated[pair][l].size() == 0) break;
 
                     // Loop for sequential gate S1S2S4
-                    if ( Z21_passed[pair].size() > 0 && Z41_passed[pair].size() > 0 ) 
+                    if ( Z21_passed[pair].size() > 0 && Z42_passed[pair].size() > 0 ) 
                     {
                         
-                        for ( int j = 0; j < energy_MWD_layer_gated[pair][l].size(); j++)
+                        for (size_t j = 0; j < energy_MWD_layer[l].size(); j++)
                         {
-                            // MWD with condition of trigger on sci41 (TPAT 2)
-                            if ((frsHitItem.Get_tpat() & 0b10) && lisa_total_multiplicity == 5) energy_MWD_layer_gated[pair][l].emplace_back(energy_MWD_layer.at(j));   
-                        
+                        // MWD with condition of trigger on sci41 (TPAT 2)
+                        if ((frsHitItem.Get_tpat() & 0b10) && lisa_total_multiplicity == 5) energy_MWD_layer_gated[pair][l].emplace_back(energy_MWD_layer[l].at(j));   
                         }
+                        
                                         
                     }
                 }
@@ -459,25 +476,44 @@ void LisaHit2Histo::Exec(Option_t* option)
                 energy_MWD_layer
                 );
 
+            // for (int gate = 0; gate < FrsGates.size(); gate++)
+            // {
+            //     auto & gated_entry = lisaHistoArray.at(gate)->emplace_back();
+            //     gated_entry.SetGated(
+            //         AoQ_s1s2_passed[gate],
+            //         AoQs1s2_s1s2s4_passed[gate],
+            //         AoQs2s4_s1s2s4_passed[gate],
+            //         Z21_passed[gate],
+            //         Z21_s1s2s4_passed[gate],
+            //         Z42_s1s2s4_passed[gate],
+            //         AoQ_s1s2_selected_passed[gate],
+            //         AoQs1s2_s1s2s4_selected_passed[gate],
+            //         AoQs2s4_s1s2s4_selected_passed[gate],
+            //         Z21_selected_passed[gate],
+            //         Z21_s1s2s4_selected_passed[gate],
+            //         Z42_s1s2s4_selected_passed[gate],
+            //         energy_layer_gated[gate],
+            //         energy_MWD_layer_gated[gate]
+            //         );
+            // }
             for (int gate = 0; gate < FrsGates.size(); gate++)
             {
-                auto & gated_entry = lisaHistoArray.at(gate)->emplace_back();
-                gated_entry.SetGated(
-                    AoQ_s1s2_passed[gate],
-                    AoQs1s2_s1s2s4_passed[gate],
-                    AoQs2s4_s1s2s4_passed[gate],
-                    Z21_passed[gate],
-                    Z21_s1s2s4_passed[gate],
-                    Z42_s1s2s4_passed[gate],
-                    AoQ_s1s2_selected_passed[gate],
-                    AoQs1s2_s1s2s4_selected_passed[gate],
-                    AoQs2s4_s1s2s4_selected_passed[gate],
-                    Z21_selected_passed[gate],
-                    Z21_s1s2s4_selected_passed[gate],
-                    Z42_s1s2s4_selected_passed[gate],
-                    energy_layer_gated[gate],
-                    energy_MWD_layer_gated[gate]
-                    );
+                auto & gated_entry = lisaHistoArray.at(gate+1)->emplace_back();
+                
+                gated_entry.AoQs1s2_s1s2_mhtdc = AoQ_s1s2_passed[gate];
+                gated_entry.AoQs1s2_s1s2s4_mhtdc = AoQs1s2_s1s2s4_passed[gate];
+                gated_entry.AoQs2s4_s1s2s4_mhtdc = AoQs2s4_s1s2s4_passed[gate];
+                gated_entry.Z21_s1s2_mhtdc = Z21_passed[gate];
+                gated_entry.Z21_s1s2s4_mhtdc = Z21_s1s2s4_passed[gate];
+                gated_entry.Z42_s1s2s4_mhtdc = Z42_s1s2s4_passed[gate];
+                gated_entry.AoQs1s2_selected_s1s2_mhtdc = AoQ_s1s2_selected_passed[gate];
+                gated_entry.AoQs1s2_selected_s1s2s4_mhtdc = AoQs1s2_s1s2s4_selected_passed[gate];
+                gated_entry.AoQs2s4_selected_s1s2s4_mhtdc = AoQs2s4_s1s2s4_selected_passed[gate];
+                gated_entry.Z21_selected_s1s2_mhtdc = Z21_selected_passed[gate];
+                gated_entry.Z21_selected_s1s2s4_mhtdc = Z21_s1s2s4_selected_passed[gate];
+                gated_entry.Z42_selected_s1s2s4_mhtdc = Z42_s1s2s4_selected_passed[gate];
+                gated_entry.energy_layer_gated = energy_layer_gated[gate];
+                gated_entry.energy_MWD_layer_gated = energy_MWD_layer_gated[gate];
             }
 
 
@@ -519,6 +555,9 @@ void LisaHit2Histo::FinishEvent()
     for (int gate = 0; gate < FrsGates.size(); gate++)
     {
  
+        AoQ_s1s2_passed[gate].clear();
+        Z41_s1s2s4_passed[gate].clear();
+        Z21_s1s2s4_selected_passed[gate].clear();
         AoQ_s2s4_passed[gate].clear();
         dEdeg_z41_passed[gate].clear(); 
         AoQs1s2_s1s2s4_passed[gate].clear();

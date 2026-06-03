@@ -93,7 +93,7 @@ class LisaHit2Histo : public FairTask
         std::vector<LisaItem> const* lisaArray;
         std::vector<LisaAnaItem> const* lisaAnaArray;
         std::vector<LisaCalItem> const* lisaCalArray; // needed?
-        std::vector<LisaHitItem>* lisaHitArray;
+        std::vector<LisaHitItem> const* lisaHitArray;
         std::vector<std::vector<LisaHistoItem>*> lisaHistoArray;
         std::vector<FrsHitItem> const* frsHitArray;
         std::vector<FrsMultiHitItem> const* multihitArray;

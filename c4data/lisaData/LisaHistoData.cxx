@@ -52,20 +52,20 @@ void LisaHistoItem::SetNonGated(std::vector<Float_t> aoq_s1s2_mhtdc,
 
 };
 
-void LisaHistoItem::SetGated(std::vector<std::vector<Float_t>> aoqs1s2_s1s2_mhtdc,
-                    std::vector<std::vector<Float_t>> aoqs1s2_s1s2s4_mhtdc,
-                    std::vector<std::vector<Float_t>> aoqs2s4_s1s2s4_mhtdc,
-                    std::vector<std::vector<Float_t>> z21_s1s2_mhtdc,
-                    std::vector<std::vector<Float_t>> z21_s1s2s4_mhtdc,
-                    std::vector<std::vector<Float_t>> z42_s1s2s4_mhtdc, 
-                    std::vector<std::vector<Float_t>> aoqs1s2_selected_s1s2_mhtdc,
-                    std::vector<std::vector<Float_t>> aoqs1s2_selected_s1s2s4_mhtdc,
-                    std::vector<std::vector<Float_t>> aoqs2s4_selected_s1s2s4_mhtdc,
-                    std::vector<std::vector<Float_t>> z21_selected_s1s2_mhtdc,
-                    std::vector<std::vector<Float_t>> z21_selected_s1s2s4_mhtdc,
-                    std::vector<std::vector<Float_t>> z42_selected_s1s2s4_mhtdc,
-                    std::vector<std::vector<std::vector<float>>> e_layer_gated,
-                    std::vector<std::vector<std::vector<float>>> e_MWD_layer_gated)
+void LisaHistoItem::SetGated(std::vector<Float_t> aoqs1s2_s1s2_mhtdc,
+                    std::vector<Float_t> aoqs1s2_s1s2s4_mhtdc,
+                    std::vector<Float_t> aoqs2s4_s1s2s4_mhtdc,
+                    std::vector<Float_t> z21_s1s2_mhtdc,
+                    std::vector<Float_t> z21_s1s2s4_mhtdc,
+                    std::vector<Float_t> z42_s1s2s4_mhtdc, 
+                    std::vector<Float_t> aoqs1s2_selected_s1s2_mhtdc,
+                    std::vector<Float_t> aoqs1s2_selected_s1s2s4_mhtdc,
+                    std::vector<Float_t> aoqs2s4_selected_s1s2s4_mhtdc,
+                    std::vector<Float_t> z21_selected_s1s2_mhtdc,
+                    std::vector<Float_t> z21_selected_s1s2s4_mhtdc,
+                    std::vector<Float_t> z42_selected_s1s2s4_mhtdc,
+                    std::vector<std::vector<float>> e_layer_gated,
+                    std::vector<std::vector<float>> e_MWD_layer_gated)
 {
     AoQs1s2_s1s2_mhtdc = aoqs1s2_s1s2_mhtdc;
     AoQs1s2_s1s2s4_mhtdc = aoqs1s2_s1s2s4_mhtdc;
