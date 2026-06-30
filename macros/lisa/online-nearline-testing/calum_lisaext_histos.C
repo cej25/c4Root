@@ -16,7 +16,7 @@
 //................................................
 
 // Definition of histo ranges for lisa and frs
-#define HISTO_FILE "../../config/lisaext/general/histo_config_v0.C"
+#define HISTO_FILE "../../..//config/lisaext/general/histo_config_v0.C"
 
 extern "C"
 {
