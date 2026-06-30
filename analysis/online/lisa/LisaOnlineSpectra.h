@@ -119,6 +119,8 @@ class LisaOnlineSpectra : public FairTask
         TCanvas* c_energy_vs_layer;
         TCanvas* c_energy_layer_vs_layer;
         TCanvas* c_energy_first_vs_last;
+        TCanvas* c_energy_first_vs_last_Z22;
+        TCanvas* c_energy_first_vs_last_Z40;
 
         std::vector<TCanvas*> c_energy_MWD_ch;
         TCanvas* c_energy_MWD_layer;
@@ -151,6 +153,9 @@ class LisaOnlineSpectra : public FairTask
         TH2F* h2_energy_vs_layer;
         std::vector<TH2F*> h2_energy_layer_vs_layer;
         TH2F* h2_energy_first_vs_last;
+        TH2F* h2_energy_first_vs_last_Z22;
+        TH2F* h2_energy_first_vs_last_Z40;
+
         //      MWD  
         std::vector<std::vector<std::vector<TH1F*>>> h1_energy_MWD_ch;
         std::vector<TH1F*> h1_energy_MWD_layer;
