@@ -514,6 +514,38 @@ InitStatus LisaOnlineSpectra::Init()
     c_energy_first_vs_last->cd();
     dir_febex->Append(c_energy_first_vs_last);
     //....................................
+    // ::: Febex Energy First vs Last Layer - single detector
+    //-----22
+    dir_febex->cd();
+    //c_energy_first_vs_last_Z22 = new TCanvas("c_energy_first_vs_last_Z22", "Energy First vs Last Layer Z22", 650, 350);
+
+    //h2_energy_first_vs_last_Z22 = new TH2F("h2_energy_first_vs_last_Z22",
+                                    //Form("E(122) vs E(%d22) Det Z22", layer_number),
+                                    //lisa_config->bin_energy, lisa_config->min_energy, lisa_config->max_energy,
+                                    //lisa_config->bin_energy, lisa_config->min_energy, lisa_config->max_energy);
+
+    //h2_energy_first_vs_last_Z22->GetXaxis()->SetTitle(Form("E(%d22)[a.u.]", layer_number));
+    //h2_energy_first_vs_last_Z22->GetYaxis()->SetTitle("E(122) [a.u.]");
+    //h2_energy_first_vs_last_Z22->Draw("COLZ");
+
+    //c_energy_first_vs_last_Z22->cd();
+    //dir_febex->Append(c_energy_first_vs_last_Z22);
+    //----- 40
+    //c_energy_first_vs_last_Z40 = new TCanvas("c_energy_first_vs_last_Z40", "Energy First vs Last Layer Z40", 650, 350);
+
+    //h2_energy_first_vs_last_Z40 = new TH2F("h2_energy_first_vs_last_Z40",
+                                    //Form("E(140) vs E(%d40)", layer_number),
+                                    //lisa_config->bin_energy, lisa_config->min_energy, lisa_config->max_energy,
+                                    //lisa_config->bin_energy, lisa_config->min_energy, lisa_config->max_energy);
+
+    //h2_energy_first_vs_last_Z40->GetXaxis()->SetTitle(Form("E(%d40) [a.u.]", layer_number));
+    //h2_energy_first_vs_last_Z40->GetYaxis()->SetTitle("E(140)[a.u.]");
+    //h2_energy_first_vs_last_Z40->Draw("COLZ");
+
+    //c_energy_first_vs_last_Z40>cd();
+    //dir_febex->Append(c_energy_first_vs_last_Z40);
+    //....................................
+
     // ::: E N E R G Y     M W D:::
     //      MWD per channel - energy gain matched and/or calibrated
     dir_MWD_channel->cd();
@@ -650,7 +682,7 @@ InitStatus LisaOnlineSpectra::Init()
     c_energy_MWD_layer_vs_layer->cd();
     dir_energy_MWD->Append(c_energy_MWD_layer_vs_layer);
     //....................................
-    // ::: Febex Energy First vs Last Layer
+    // ::: MWD Energy First vs Last Layer
     dir_energy_MWD->cd();
     c_energy_MWD_first_vs_last = new TCanvas("c_energy_MWD_first_vs_last", "Energy MWD_First vs Last Layer", 650, 350);
 
@@ -665,6 +697,7 @@ InitStatus LisaOnlineSpectra::Init()
 
     c_energy_MWD_first_vs_last->cd();
     dir_energy_MWD->Append(c_energy_MWD_first_vs_last);
+
     //....................................
     //:::  T R A C E S
     dir_traces->cd();
@@ -777,6 +810,8 @@ void LisaOnlineSpectra::Reset_Histo()
         }
     }
     h2_energy_first_vs_last->Reset();
+    //h2_energy_first_vs_last_Z22->Reset();
+    //h2_energy_first_vs_last_Z40->Reset();
     for (int i = 0; i < layer_number-1; i++) 
     {
         h2_energy_layer_vs_layer[i]->Reset();
@@ -1004,7 +1039,23 @@ void LisaOnlineSpectra::Exec(Option_t* option)
         {
             h2_energy_first_vs_last->Fill( energy_layer[layer_number-1][j], energy_layer[0][i]);
         }
+        
     }
+    // ::: Energy First vs Last Layer - single detector
+    //if (xpos == 2 && ypos == 2)
+    //{
+        //for (int j = 0; j < energy_layer[layer_number-1].size(); ++j)
+        //{
+            //h2_energy_first_vs_last_Z22->Fill( energy_layer[layer_number-1], energy_layer[0]);
+        //} 
+    //}
+    //if (xpos == 4 && ypos == 0)
+    //{
+        //for (int j = 0; j < energy_layer[layer_number-1].size(); ++j)
+        //{
+            //h2_energy_first_vs_last_Z40->Fill( energy_layer[layer_number-1], energy_layer[0]);
+        //} 
+    //}
     //....................................
     // ::: Energy MWD Layer vs Layer
     for ( int i = 0; i < layer_number-1; i++)
