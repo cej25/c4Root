@@ -11,7 +11,7 @@
 #define WR_ENABLED 1
 
 // Definition of setup and configuration files
-#define LISA_CONFIG_FILE "../../config/lisaext/general/lisa_config_0-0deg_wrong.C"
+#define LISA_CONFIG_FILE "../../config/lisaext/general/lisa_config_0-180deg_v5.C"
 
 // :::  Define LISA setup.C file; place in /config/cologne/general
 extern "C"
@@ -36,8 +36,7 @@ std::string readFileToString(const std::string& path)
     return buffer.str();
 }
 
-//void cologne_make_trees(int fileNumber)
-void lisaext_make_trees()
+void versoek_make_trees(int fileNumber, std::string runPattern = "run_")
 {   
     const Int_t nev = -1; const Int_t fRunId = 1; const Int_t fExpId = 1;
     // ::: Experiment name
@@ -68,21 +67,12 @@ void lisaext_make_trees()
     
     // ::: FILE  PATH
     TString inputpath = "/home/lisa/data/server/lmd/";
-    TString lmdname = "run_0074_0001.lmd";
-    TString filename = inputpath + lmdname;
-    /*
-    TString inputpath = "/u/gandolfo/data/lustre/gamma/LISA/data/ext_daq_debnik/dev_test/";
-    TString lmdname = "new_timestamp_format_0001.lmd";
-    TString filename = inputpath + lmdname;
-    */
-    //TString filename = Form(inputpath + "run_%04d_*.lmd", fileNumber);
+    TString lmdName = Form("%s%04d.lmd", runPattern.c_str(),fileNumber);
+    TString filename = inputpath + lmdName;
 
-    // ::: OUTPUT 
-    //TString outputpath = "/u/gandolfo/data/lustre/gamma/LISA/data/ext_daq_debnik/dev_test/"; 
-    //TString outputpath = "/u/gandolfo/data/lisaext/"; 
     TString outputpath = "/home/lisa/data/server/trees/";
 
-    TString outputFilename = outputpath + TString(lmdname).ReplaceAll(".lmd", "_wrong_tree.root");
+    TString outputFilename = outputpath + TString(lmdName).ReplaceAll(".lmd", "_tree.root");
 
 
 

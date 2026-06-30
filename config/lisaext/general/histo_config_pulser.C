@@ -21,7 +21,7 @@ void histo_config(const std::string& config_path)
 
     // ::: LISA ranges
     //  Channel Energy 
-    TLisaConfiguration::SetEnergyRange(10000,40000); 
+    TLisaConfiguration::SetEnergyRange(10000,100000); 
     TLisaConfiguration::SetEnergyBin(500); 
 
     //  MWD histos

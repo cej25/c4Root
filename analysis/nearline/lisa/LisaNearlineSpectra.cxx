@@ -355,6 +355,7 @@ InitStatus LisaNearlineSpectra::Init()
             for (int k = 0; k < ymax; k++)
             {   
                 city = "";
+                sn = "";
                 for (auto & detector : detector_mapping)
                 {
                     int x = detector.second.first.second.first;
@@ -363,10 +364,11 @@ InitStatus LisaNearlineSpectra::Init()
                     if (l_id == i + 1 && x == j && y == k)
                     {
                         city = detector.second.second.second.first;
+                        sn   = detector.second.second.second.second;
                         break;
                     }
                 }
-                h1_energy_ch[i][j][k] = new TH1F(Form("energy_%s_%i%i%i", city.Data(), i+1, j, k), Form("Energy Febex %s",city.Data()), lisa_config->bin_energy, lisa_config->min_energy, lisa_config->max_energy);
+                h1_energy_ch[i][j][k] = new TH1F(Form("energy_%s_%s_%i%i%i", city.Data(), sn.Data(),i+1, j, k), Form("Energy Febex %s",city.Data()), lisa_config->bin_energy, lisa_config->min_energy, lisa_config->max_energy);
                 h1_energy_ch[i][j][k]->GetXaxis()->SetTitle("E(LISA) [a.u.]");
                 h1_energy_ch[i][j][k]->SetLineColor(kBlue+1);
                 h1_energy_ch[i][j][k]->SetFillColor(kOrange-3);
@@ -461,14 +463,16 @@ InitStatus LisaNearlineSpectra::Init()
             for (int k = 0; k < ymax; k++)
             {
                 city = "";
+                sn = "";
                 for (auto & detector : detector_mapping)
                 {
+                    int x = detector.second.first.second.first;
+                    int y = detector.second.first.second.second;
                     int l_id = detector.second.first.first;
-                    int x    = detector.second.first.second.first;
-                    int y    = detector.second.first.second.second;
                     if (l_id == i + 1 && x == j && y == k)
                     {
-                        city = detector.second.second.second.first;  // det_name
+                        city = detector.second.second.second.first;
+                        sn   = detector.second.second.second.second;
                         break;
                     }
                 }
@@ -476,7 +480,7 @@ InitStatus LisaNearlineSpectra::Init()
                 // Name:  energy_MWD_<det_name>_zxy  e.g. energy_MWD_ch0_0_100
                 // Title: Energy MWD <det_name>       e.g. Energy MWD ch0_0
                 h1_energy_MWD_ch[i][j][k] = new TH1F(
-                    Form("energy_MWD_%s_%i%i%i", city.Data(), i+1, j, k),
+                    Form("energy_MWD_%s_%s_%i%i%i", city.Data(), sn.Data(), i+1, j, k),
                     Form("Energy MWD %s", city.Data()),
                     lisa_config->bin_energy_MWD,
                     lisa_config->min_energy_MWD,
@@ -577,6 +581,7 @@ InitStatus LisaNearlineSpectra::Init()
             for (int k = 0; k < ymax; k++)
             {   
                 city = "";
+                sn = "";
                 for (auto & detector : detector_mapping)
                 {
                     int x = detector.second.first.second.first;
@@ -585,10 +590,11 @@ InitStatus LisaNearlineSpectra::Init()
                     if (l_id == i + 1 && x == j && y == k)
                     {
                         city = detector.second.second.second.first;
+                        sn   = detector.second.second.second.second;
                         break;
                     }
                 }
-                h1_dedx_ch[i][j][k] = new TH1F(Form("dedx_%s_%i%i%i", city.Data(), i+1, j, k), Form("dEdX %s",city.Data()), lisa_config->bin_dedx, lisa_config->min_dedx, lisa_config->max_dedx);
+                h1_dedx_ch[i][j][k] = new TH1F(Form("dedx_%s_%s_%i%i%i", city.Data(),sn.Data(), i+1, j, k), Form("dEdX %s",city.Data()), lisa_config->bin_dedx, lisa_config->min_dedx, lisa_config->max_dedx);
                 h1_dedx_ch[i][j][k]->GetXaxis()->SetTitle("dEdX [MeV/um]");
                 h1_dedx_ch[i][j][k]->SetLineColor(kBlue+1);
                 h1_dedx_ch[i][j][k]->SetFillColor(kViolet-1);

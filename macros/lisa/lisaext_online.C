@@ -56,10 +56,10 @@ void lisaext_online()
     TString filename = "stream://134.95.192.248:6002"; 
 
     // ::: OFFLINE READING - For testing
-    //TString inputpath = "/home/lisa/data/lmd/";                   
-    //TString filename = inputpath + "preamp_test_input_0019.lmd"; 
+    //TString inputpath = "/home/lisa/data/server/lmd/";                   
+    //TString filename = inputpath + "run_0076_0001.lmd"; 
     
-    // ::: OUTPUT - does not write a tree if it is not set layer
+    // ::: OUTPUT - does not write a tree if it is not set later
     TString outputpath = "/home/lisa/data/"; //testing
     TString outputFileName = outputpath + "output_online.root";
     
@@ -90,15 +90,15 @@ void lisaext_online()
     // ::: Lisa config
 
     // ::: Mapping
-    TLisaConfiguration::SetMappingFile(config_path + "/Lisa_Mapping_All_Boards_FULL.txt");
+    TLisaConfiguration::SetMappingFile(config_path + "/Lisa_Mapping_5x5_Versoek_0-180deg_v1.txt");
     
     // ::: Gain Matching Febex, MWD, dEdX
-    TLisaConfiguration::SetGMFile(config_path + "/Lisa_GainMatching_4x4.txt");
-    TLisaConfiguration::SetGMFileMWD(config_path + "/Lisa_GainMatching_MWD_4x4.txt");
-    TLisaConfiguration::SetGMFiledEdX(config_path + "/Lisa_GainMatching_MWD_dEdX_4x4.txt");
+    TLisaConfiguration::SetGMFile(config_path + "/Lisa_GainMatching_5x5_Versoek_0-180deg_v3.txt");
+    TLisaConfiguration::SetGMFileMWD(config_path + "/Lisa_GainMatching_MWD_5x5_Versoek_0-0deg_v0.txt");
+    TLisaConfiguration::SetGMFiledEdX(config_path + "/Lisa_GainMatching_dedx_5x5_Versoek_0-0deg_v0.txt");
     
     // ::: MWD parameters
-    TLisaConfiguration::SetMWDParametersFile(config_path + "/Lisa_MWD_Parameters_v0.txt");
+    TLisaConfiguration::SetMWDParametersFile(config_path + "/Lisa_MWD_Parameters_v1.txt");
     
     TLisaConfiguration::SetExcludedChannels({
     std::make_tuple(1,0,0),
@@ -149,7 +149,7 @@ void lisaext_online()
 
     // ::: LISA
     //      Channel Energy 
-    TLisaConfiguration::SetEnergyRange(85000,100000); 
+    TLisaConfiguration::SetEnergyRange(0,120); 
     TLisaConfiguration::SetEnergyBin(500); 
 
     //      MWD histos
