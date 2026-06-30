@@ -5,7 +5,7 @@ std::vector<LisaGate*> lgs;
 void histo_config(const std::string& config_path)
 {
     // ::: Mapping
-    TLisaConfiguration::SetMappingFile(config_path + "/Lisa_Mapping_All_Boards_FULL.txt");    
+    TLisaConfiguration::SetMappingFile(config_path + "/Lisa_Mapping_5x5_Versoek_0-180deg.txt");    
     //..................................................
 
     // ::: Start of experiment
@@ -21,7 +21,7 @@ void histo_config(const std::string& config_path)
 
     // ::: LISA ranges
     //  Channel Energy 
-    TLisaConfiguration::SetEnergyRange(10000,40000); 
+    TLisaConfiguration::SetEnergyRange(0,20); 
     TLisaConfiguration::SetEnergyBin(500); 
 
     //  MWD histos

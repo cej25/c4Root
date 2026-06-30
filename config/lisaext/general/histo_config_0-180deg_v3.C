@@ -5,7 +5,7 @@ std::vector<LisaGate*> lgs;
 void histo_config(const std::string& config_path)
 {
     // ::: Mapping
-    TLisaConfiguration::SetMappingFile(config_path + "/Lisa_Mapping_All_Boards_FULL.txt");    
+    TLisaConfiguration::SetMappingFile(config_path + "/Lisa_Mapping_5x5_Versoek_0-180deg_v1.txt");    
     //..................................................
 
     // ::: Start of experiment
@@ -21,7 +21,7 @@ void histo_config(const std::string& config_path)
 
     // ::: LISA ranges
     //  Channel Energy 
-    TLisaConfiguration::SetEnergyRange(10000,40000); 
+    TLisaConfiguration::SetEnergyRange(5000,500000); 
     TLisaConfiguration::SetEnergyBin(500); 
 
     //  MWD histos
@@ -34,8 +34,8 @@ void histo_config(const std::string& config_path)
     //  Traces Time and Amplitude Ranges 
     TLisaConfiguration::SetTracesRange(0,10);
     TLisaConfiguration::SetTracesBin(100);
-    TLisaConfiguration::SetAmplitudeMin(7500);
-    TLisaConfiguration::SetAmplitudeMax(8000);
+    TLisaConfiguration::SetAmplitudeMin(5000);
+    TLisaConfiguration::SetAmplitudeMax(12000);
 
     // Black Rabbit
     TLisaConfiguration::SetBrDiffRange(0,10000);

@@ -95,6 +95,7 @@ class LisaNearlineSpectra : public FairTask
         Int_t layer;
         //std::string city = "";
         TString city = "";
+        TString sn = "";
         EventHeader const* header; // maybe
         Int_t fNEvents;
         

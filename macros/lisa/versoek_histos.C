@@ -16,7 +16,7 @@
 //................................................
 
 // Definition of histo ranges for lisa and frs
-#define HISTO_FILE "../../config/lisaext/general/histo_config_0-0deg_wrong.C"
+#define HISTO_FILE "../../config/lisaext/general/histo_config_0-180deg_v4.C"
 
 extern "C"
 {
@@ -32,7 +32,7 @@ typedef struct EXT_STR_h101_t
 
 } EXT_STR_h101;
 
-void lisaext_histos()
+void versoek_histos(int fileNumber, std::string runPattern = "run_")
 {   
     const Int_t nev = -1; const Int_t fRunId = 1; const Int_t fExpId = 1;
     // ::: Experiment name
@@ -62,17 +62,12 @@ void lisaext_histos()
 
     // ::: P A T H   O F   F I L E  to read
     TString inputpath = "/home/lisa/data/server/trees/";
-
-    TString rootname = "run_0074_0001_wrong_tree.root";
-    TString filename = inputpath + rootname;
+    TString rootName = Form("%s%04d_tree.root",runPattern.c_str(),fileNumber);
+    TString filename = inputpath + rootName ;
 
     // ::: OUTPUT 
-    //TString outputpath = "/u/gandolfo/data/lustre/gamma/LISA/data/ext_daq_debnik/dev_test/"; 
-    //TString outputpath = "/u/gandolfo/data/lisaext/"; 
     TString outputpath = "/home/lisa/data/server/histos/"; 
-    //TString outputpath = "/home/lisa/data/"; 
-
-    TString outputFilename = outputpath + TString(rootname).ReplaceAll("_wrong_tree.root", "_wrong_histo.root");
+    TString outputFilename = outputpath + TString(rootName).ReplaceAll("_tree.root", "_histo.root");
 
     
     FairRunAna* run = new FairRunAna();
