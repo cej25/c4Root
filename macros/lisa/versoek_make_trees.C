@@ -11,7 +11,7 @@
 #define WR_ENABLED 1
 
 // Definition of setup and configuration files
-#define LISA_CONFIG_FILE "../../config/lisaext/general/lisa_config_0-180deg_v5.C"
+#define LISA_CONFIG_FILE "/home/lisa/programs/c4/c4Root/config/lisaext/general/lisa_config_0-180deg_v2.C"
 
 // :::  Define LISA setup.C file; place in /config/cologne/general
 extern "C"
@@ -66,11 +66,11 @@ void versoek_make_trees(int fileNumber, std::string runPattern = "run_")
 
     
     // ::: FILE  PATH
-    TString inputpath = "/home/lisa/data/server/lmd/";
+    TString inputpath = "/home/lisa/versoek/lmd_dev/";
     TString lmdName = Form("%s%04d.lmd", runPattern.c_str(),fileNumber);
     TString filename = inputpath + lmdName;
 
-    TString outputpath = "/home/lisa/data/server/trees/";
+    TString outputpath = "/home/lisa/versoek/out/trees_dev/";
 
     TString outputFilename = outputpath + TString(lmdName).ReplaceAll(".lmd", "_tree.root");
 
