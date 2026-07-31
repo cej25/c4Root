@@ -90,12 +90,12 @@ void lisaext_online()
     // ::: Lisa config
 
     // ::: Mapping
-    TLisaConfiguration::SetMappingFile(config_path + "/Lisa_Mapping_5x5_Versoek_0-180deg_v1.txt");
+    TLisaConfiguration::SetMappingFile(config_path + "/Lisa_Mapping_3x3_2a.txt");
     
     // ::: Gain Matching Febex, MWD, dEdX
-    TLisaConfiguration::SetGMFile(config_path + "/Lisa_GainMatching_5x5_Versoek_0-180deg_v3.txt");
-    TLisaConfiguration::SetGMFileMWD(config_path + "/Lisa_GainMatching_MWD_5x5_Versoek_0-0deg_v0.txt");
-    TLisaConfiguration::SetGMFiledEdX(config_path + "/Lisa_GainMatching_dedx_5x5_Versoek_0-0deg_v0.txt");
+    TLisaConfiguration::SetGMFile(config_path +     "/Lisa_GainMatching_3x3_fake.txt");
+    TLisaConfiguration::SetGMFileMWD(config_path +  "/Lisa_GainMatching_3x3_fake.txt");
+    TLisaConfiguration::SetGMFiledEdX(config_path + "/Lisa_GainMatching_3x3_fake.txt");
     
     // ::: MWD parameters
     TLisaConfiguration::SetMWDParametersFile(config_path + "/Lisa_MWD_Parameters_v1.txt");
@@ -149,8 +149,8 @@ void lisaext_online()
 
     // ::: LISA
     //      Channel Energy 
-    TLisaConfiguration::SetEnergyRange(0,120); 
-    TLisaConfiguration::SetEnergyBin(500); 
+    TLisaConfiguration::SetEnergyRange(0,120000); 
+    TLisaConfiguration::SetEnergyBin(1000); 
 
     //      MWD histos
     TLisaConfiguration::SetEnergyRangeMWD(0,500);
