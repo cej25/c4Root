@@ -11,7 +11,7 @@
 #define WR_ENABLED 1
 
 // Definition of setup and configuration files
-#define LISA_CONFIG_FILE "../../config/lisaext/general/lisa_config_0-0deg_wrong.C"
+#define LISA_CONFIG_FILE "/home/lisa/programs/c4/julia_c4Root/config/lisaext/general/lisa_config_0-180deg_v2.C"
 
 // :::  Define LISA setup.C file; place in /config/cologne/general
 extern "C"
@@ -36,20 +36,19 @@ std::string readFileToString(const std::string& path)
     return buffer.str();
 }
 
-//void cologne_make_trees(int fileNumber)
-void lisaext_make_trees()
+void versoek_make_trees_dev(int runNumber, int subrunNumber)
 {   
     const Int_t nev = -1; const Int_t fRunId = 1; const Int_t fExpId = 1;
     // ::: Experiment name
     TString fExpName = "lisaext";
 
     // ::: Here you define commonly used path
-    //TString c4Root_path = "/u/gandolfo/c4/c4Root";
+    //TString c4Root_path = "/u/gandolfo/c4/julia_c4Root";
     TString c4Root_path = "/home/lisa/programs/c4/julia_c4Root";
-    TString ucesb_path = c4Root_path + "/unpack/exps/" + fExpName + "/" + fExpName + " --debug --input-buffer=200Mi --event-sizes --allow-errors";
+    TString ucesb_path = julia_c4Root_path + "/unpack/exps/" + fExpName + "/" + fExpName + " --debug --input-buffer=200Mi --event-sizes --allow-errors";
     ucesb_path.ReplaceAll("//","/");
 
-    std::string config_path = std::string(c4Root_path.Data()) + "/config/" + std::string(fExpName.Data());
+    std::string config_path = std::string(julia_c4Root_path.Data()) + "/config/" + std::string(fExpName.Data());
 
     // ::: Macro timing
     TString cRunId = Form("%04d", fRunId);
@@ -68,21 +67,12 @@ void lisaext_make_trees()
     
     // ::: FILE  PATH
     TString inputpath = "/home/lisa/data/server/lmd/";
-    TString lmdname = "run_0074_0001.lmd";
-    TString filename = inputpath + lmdname;
-    /*
-    TString inputpath = "/u/gandolfo/data/lustre/gamma/LISA/data/ext_daq_debnik/dev_test/";
-    TString lmdname = "new_timestamp_format_0001.lmd";
-    TString filename = inputpath + lmdname;
-    */
-    //TString filename = Form(inputpath + "run_%04d_*.lmd", fileNumber);
+    TString lmdName = Form("run_%04d_%04d.lmd", runNumber, subrunNumber);
+    TString filename = inputpath + lmdName;
 
-    // ::: OUTPUT 
-    //TString outputpath = "/u/gandolfo/data/lustre/gamma/LISA/data/ext_daq_debnik/dev_test/"; 
-    //TString outputpath = "/u/gandolfo/data/lisaext/"; 
-    TString outputpath = "/home/lisa/data/server/trees/";
+    TString outputpath = "/home/lisa/versoek/out/trees_dev/";
 
-    TString outputFilename = outputpath + TString(lmdname).ReplaceAll(".lmd", "_wrong_tree.root");
+    TString outputFilename = outputpath + TString(lmdName).ReplaceAll(".lmd", "_tree.root");
 
 
 

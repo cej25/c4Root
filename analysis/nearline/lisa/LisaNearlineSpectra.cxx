@@ -142,6 +142,7 @@ InitStatus LisaNearlineSpectra::Init()
     dir_MWD_channel = dir_energy_MWD->mkdir("Channels");
     dir_dedx = dir_energy->mkdir("dEdX");
     dir_dedx_channel = dir_dedx->mkdir("Channels");
+    dir_dedx_layer_layer = dir_dedx->mkdir("LayerVSLayer");
 
     dir_traces = dir_lisa->mkdir("Traces");
 
@@ -675,6 +676,30 @@ InitStatus LisaNearlineSpectra::Init()
     h2_dedx_first_vs_last->GetYaxis()->SetTitle("dEdX(Layer 1) [a.u.]");
     h2_dedx_first_vs_last->SetOption("COLZ");
     //....................................
+    // dedx Layer vs Layer for each (xy) position
+    dir_dedx_layer_layer->cd();
+    h2_dedx_layer_vs_layer_ch.resize(layer_number - 1);
+    
+    for (int i = 0; i < layer_number - 1; i++)
+    {
+        h2_dedx_layer_vs_layer_ch[i].resize(xmax);
+        for (int j = 0; j < 5; j++)
+        {
+            h2_dedx_layer_vs_layer_ch[i][j].resize(ymax);
+            for (int k = 0; k < 5; k++)
+            {
+                h2_dedx_layer_vs_layer_ch[i][j][k] = new TH2F(Form("h2_dedx_layer_%i_vs_layer_%i_%i%i", i + 2, i + 1, j, k),
+                                            Form("dEdX(Layer %i%i%i) vs dEdX(Layer %i%i%i)", i + 2,j, k, i + 1, j, k),
+                                            lisa_config->bin_dedx, lisa_config->min_dedx, lisa_config->max_dedx,
+                                            lisa_config->bin_dedx, lisa_config->min_dedx, lisa_config->max_dedx);
+
+        h2_dedx_layer_vs_layer_ch[i][j][k]->GetXaxis()->SetTitle(Form("dEdX(Layer %i%i%i) [MeV/um]", i + 1, j, k));  
+        h2_dedx_layer_vs_layer_ch[i][j][k]->GetYaxis()->SetTitle(Form("dEdX(Layer %i%i%i) [MeV/um]", i + 2, j, k));  
+        h2_dedx_layer_vs_layer_ch[i][j][k]->SetOption("COLZ");
+            }
+        }
+    }
+    //....................................
     //.................................... END OF ENERGY
     // ::: T R A C E S
     //c4LOG(info, "E");
@@ -944,6 +969,8 @@ void LisaNearlineSpectra::Exec(Option_t* option)
     std::vector<std::vector<float>> de_dx_layer(layer_number);
     de_dx_layer.resize(layer_number); 
 
+    std::vector<float> de_dx_layer_ch[layer_number][xmax][ymax];
+
     // ::: Energy gated - Layer
     std::vector<float> energy_layer_gated[gate_number][layer_number];
     std::vector<float> energy_MWD_layer_gated[mwd_gate_number][layer_number];
@@ -1050,6 +1077,7 @@ void LisaNearlineSpectra::Exec(Option_t* option)
         energy_layer[layer-1].emplace_back(energy_GM);
         energy_MWD_layer[layer-1].emplace_back(energy_MWD_GM);
         de_dx_layer[layer-1].emplace_back(de_dx_GM);
+        de_dx_layer_ch[layer-1][xpos][ypos].emplace_back(de_dx_GM);
         
         // Loop over gates for LISA FEBEX
         int g = 0;
@@ -1261,6 +1289,26 @@ void LisaNearlineSpectra::Exec(Option_t* option)
             }
         }    
     }
+
+    // ::: dedx Layer vs Layer for each (xy) position
+    for ( int i = 0; i < layer_number-1; i++)
+    {
+        for( int j = 0; j < 5; j++)
+        {
+            for ( int k = 0; k < 5; k++)
+            {
+                for (int l = 0; l < de_dx_layer_ch[i][j][k].size(); l++)
+                {
+                    for (int m = 0; m < de_dx_layer_ch[i+1][j][k].size(); m++)
+                    {
+                        h2_dedx_layer_vs_layer_ch[i][j][k]->Fill(de_dx_layer_ch[i][j][k][l],de_dx_layer_ch[i+1][j][k][m]);
+                    }
+                }
+            }
+        }    
+    }
+
+
     //....................................
     // ::: dedx First vs Last Layer
     for (int i = 0; i < de_dx_layer[0].size(); ++i)
