@@ -198,6 +198,7 @@ class LisaNearlineSpectra : public FairTask
         TH2F* h2_dedx_vs_layer;
         std::vector<TH2F*> h2_dedx_layer_vs_layer;
         std::vector<std::vector<std::vector<TH2F*>>> h2_dedx_layer_vs_layer_ch;
+        //std::vector<TH2F*> h2_dedx_layer_vs_layer_ch;
         TH2F* h2_dedx_first_vs_last;
         //      - Gated
         std::vector<std::vector<TH1*>> h1_dedx_MWD_layer_gated;

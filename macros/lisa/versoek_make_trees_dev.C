@@ -45,10 +45,10 @@ void versoek_make_trees_dev(int runNumber, int subrunNumber)
     // ::: Here you define commonly used path
     //TString c4Root_path = "/u/gandolfo/c4/julia_c4Root";
     TString c4Root_path = "/home/lisa/programs/c4/julia_c4Root";
-    TString ucesb_path = julia_c4Root_path + "/unpack/exps/" + fExpName + "/" + fExpName + " --debug --input-buffer=200Mi --event-sizes --allow-errors";
+    TString ucesb_path = c4Root_path + "/unpack/exps/" + fExpName + "/" + fExpName + " --debug --input-buffer=200Mi --event-sizes --allow-errors";
     ucesb_path.ReplaceAll("//","/");
 
-    std::string config_path = std::string(julia_c4Root_path.Data()) + "/config/" + std::string(fExpName.Data());
+    std::string config_path = std::string(c4Root_path.Data()) + "/config/" + std::string(fExpName.Data());
 
     // ::: Macro timing
     TString cRunId = Form("%04d", fRunId);
@@ -66,7 +66,7 @@ void versoek_make_trees_dev(int runNumber, int subrunNumber)
 
     
     // ::: FILE  PATH
-    TString inputpath = "/home/lisa/data/server/lmd/";
+    TString inputpath = "/home/lisa/data/server/experiments/staging/2026_IKP_LISA_test/lmd/";
     TString lmdName = Form("run_%04d_%04d.lmd", runNumber, subrunNumber);
     TString filename = inputpath + lmdName;
 
