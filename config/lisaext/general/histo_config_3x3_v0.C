@@ -5,7 +5,7 @@ std::vector<LisaGate*> lgs;
 void histo_config(const std::string& config_path)
 {
     // ::: Mapping
-    TLisaConfiguration::SetMappingFile(config_path + "/Lisa_Mapping_5x5_Versoek_0-180deg_v1.txt");    
+    TLisaConfiguration::SetMappingFile(config_path + "/Lisa_Mapping_3x3_2a.txt");    
     //..................................................
 
     // ::: Start of experiment
@@ -21,7 +21,7 @@ void histo_config(const std::string& config_path)
 
     // ::: LISA ranges
     //  Channel Energy 
-    TLisaConfiguration::SetEnergyRange(5000,400000); 
+    TLisaConfiguration::SetEnergyRange(0,90000); 
     TLisaConfiguration::SetEnergyBin(500); 
 
     //  MWD histos
@@ -53,14 +53,4 @@ void histo_config(const std::string& config_path)
 
     // L I S A 
     
-    // 1
-    LisaGate* Wide_F1 = new LisaGate("wide_feb_1", "energy", config_path + "/Gates/Febex_Gate1shiyan.txt");
-    LisaGate* Wide_M1 = new LisaGate("wide_mwd_1", "energy_mwd", config_path + "/Gates/MWD_Gate1shiyan.txt");
-    LisaGate* Wide_D1 = new LisaGate("wide_dedx_1", "dedx_mwd", config_path + "/Gates/dEdX_Gate1shiyan.txt");
-
-    lgs.emplace_back(Wide_F1);
-    lgs.emplace_back(Wide_M1);
-    lgs.emplace_back(Wide_D1);
-    
-
 }
