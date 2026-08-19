@@ -42,6 +42,7 @@ void LisaCalItem::SetAll(uint64_t br,
                         int xpos,
                         int ypos,
                         float thick,
+                        float lab_deg,
                         float e,
                         float e_MWD,
                         std::vector<float> tr,
@@ -69,6 +70,7 @@ void LisaCalItem::SetAll(uint64_t br,
     xposition = xpos;
     yposition = ypos;
     thickness = thick;
+    laboratory_angle = lab_deg,
     energy = e;
     energy_MWD = e_MWD;
     trace_febex = tr;
@@ -100,6 +102,7 @@ void LisaCalItem::Reset()
     xposition = 0;
     yposition = 0;
     thickness = 0;
+    laboratory_angle = 0;
     energy = 0;
     energy_MWD = 0;
     trace_febex = {};

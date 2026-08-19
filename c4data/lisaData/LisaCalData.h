@@ -43,6 +43,7 @@ class LisaCalItem : public TObject
                     int xpos,
                     int ypos,
                     float thick,
+                    float lab_deg,
                     float e, 
                     float e_MWD,
                     std::vector<float> tr,
@@ -71,6 +72,7 @@ class LisaCalItem : public TObject
         int Get_xposition() const;
         int Get_yposition() const;
         float Get_thickness() const;
+        float Get_laboratory_angle() const;
         float Get_energy() const;
         float Get_energy_MWD() const;
         std::vector<float> Get_trace_febex() const;
@@ -101,6 +103,7 @@ class LisaCalItem : public TObject
         int xposition;
         int yposition;
         float thickness;
+        float laboratory_angle;
         float energy; // double? int?
         float energy_MWD; // double? int?
         std::vector<float> trace_febex;
@@ -164,6 +167,11 @@ inline int LisaCalItem::Get_yposition() const
 inline float LisaCalItem::Get_thickness() const
 {
     return thickness;
+}
+
+inline float LisaCalItem::Get_laboratory_angle() const
+{
+    return laboratory_angle;
 }
 
 inline float LisaCalItem::Get_energy() const

@@ -160,6 +160,54 @@ void LisaAna2Cal::Exec(Option_t* option)
                 
                 de_dx = 0;
                 de_dx = lisaAnaItem.Get_channel_energy_MWD()/thickness;
+                //add theta calculation 
+                
+               
+    		double theta0 = 30.0;  // deg
+    		double phi0   = 0.0;   // deg
+    		int layerID = 1;
+
+    		TVector3 center;
+    		center.SetMagThetaPhi(
+        	r0,
+        	theta0*TMath::DegToRad(),
+        	phi0*TMath::DegToRad()
+    		);
+
+    		double th = theta0*TMath::DegToRad();
+    		double ph = phi0*TMath::DegToRad();
+
+    		TVector3 eTheta(
+        		cos(th)*cos(ph),
+        		cos(th)*sin(ph),
+       			-sin(th)
+    		);
+
+   		 TVector3 ePhi(
+       		-sin(ph),
+        	cos(ph),
+        	0);
+
+
+   
+
+    //const double pitch = 5.5; // mm
+    const double pitch = 5.7; // mm
+
+    for(int iy=-2; iy<=2; iy++)
+    {
+        for(int ix=-2; ix<=2; ix++)
+        {
+            double u = ix*pitch;
+            double v = iy*pitch;
+
+            TVector3 p =
+                center
+              + u*eTheta
+              - v*ePhi;
+                
+                
+                //
 
 
                 if (lisa_config->GainMatchingLoaded())
@@ -247,6 +295,7 @@ void LisaAna2Cal::Exec(Option_t* option)
                     xpos,
                     ypos,
                     thickness,
+                    laboratory_angle;
                     lisaAnaItem.Get_channel_energy(),
                     lisaAnaItem.Get_channel_energy_MWD(),
                     lisaAnaItem.Get_trace_febex(),

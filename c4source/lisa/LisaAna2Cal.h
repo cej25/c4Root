@@ -69,6 +69,7 @@ class LisaAna2Cal : public FairTask
         double intercept;
         float energy_GM;
         float de_dx;
+        float laboratory_angle;
         double slope_dEdX;
         double intercept_dEdX;
         float de_dx_GM;
