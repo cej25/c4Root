@@ -50,11 +50,6 @@ int TLisaConfiguration::amplitude_bin = 1000;
 int TLisaConfiguration::amplitude_min = 7000;
 int TLisaConfiguration::amplitude_max = 16000;
 
-// ::: Laboratory angles(deg)
-int TLisaConfiguration::agnle_bin = 300;
-int TLisaConfiguration::agnle_min = 20;
-int TLisaConfiguration::agnle_max = 50;
-
 // ::: Energy
 int TLisaConfiguration::min_energy = 0;
 int TLisaConfiguration::max_energy = 10000000;

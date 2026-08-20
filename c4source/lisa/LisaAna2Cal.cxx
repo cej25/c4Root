@@ -31,8 +31,10 @@
 // ROOT
 
 #include <vector>
-#include <numeric>
+#include <numeric> 
 #include "TVector.h"
+#include "TVector3.h"
+#include "TMath.h"
 
 LisaAna2Cal::LisaAna2Cal()
     :   FairTask()
@@ -162,50 +164,37 @@ void LisaAna2Cal::Exec(Option_t* option)
                 de_dx = lisaAnaItem.Get_channel_energy_MWD()/thickness;
                 //add theta calculation 
                 
-               
-    		double theta0 = 30.0;  // deg
-    		double phi0   = 0.0;   // deg
-    		int layerID = 1;
+                double r0     = 231.0;  // mm
+		double theta0 = 30.0;   // deg
+		double phi0   = 0.0;    // deg
 
-    		TVector3 center;
-    		center.SetMagThetaPhi(
-        	r0,
-        	theta0*TMath::DegToRad(),
-        	phi0*TMath::DegToRad()
-    		);
+		TVector3 center;
 
-    		double th = theta0*TMath::DegToRad();
-    		double ph = phi0*TMath::DegToRad();
+		center.SetMagThetaPhi(r0, theta0 * TMath::DegToRad(), phi0   * TMath::DegToRad());
 
-    		TVector3 eTheta(
-        		cos(th)*cos(ph),
-        		cos(th)*sin(ph),
-       			-sin(th)
-    		);
+		double th = theta0 * TMath::DegToRad();
+		double ph = phi0   * TMath::DegToRad();
 
-   		 TVector3 ePhi(
-       		-sin(ph),
-        	cos(ph),
-        	0);
+		TVector3 eTheta(cos(th) * cos(ph),cos(th) * sin(ph), -sin(th));
+
+		TVector3 ePhi(-sin(ph), cos(ph), 0);
+
+		const double pitch = 5.7;  // mm
 
 
-   
 
-    //const double pitch = 5.5; // mm
-    const double pitch = 5.7; // mm
+		const double xLocal = static_cast<double>(xpos - 2);
+		const double yLocal = static_cast<double>(ypos - 2);
 
-    for(int iy=-2; iy<=2; iy++)
-    {
-        for(int ix=-2; ix<=2; ix++)
-        {
-            double u = ix*pitch;
-            double v = iy*pitch;
+		const double u = xLocal * pitch;
+		const double v = yLocal * pitch;
 
-            TVector3 p =
-                center
-              + u*eTheta
-              - v*ePhi;
-                
+		TVector3 p = center + u * eTheta - v * ePhi;
+
+
+		TVector3 pColumn = center + u * eTheta;
+
+		laboratory_angle = pColumn.Theta() * TMath::RadToDeg();
                 
                 //
 
@@ -295,7 +284,7 @@ void LisaAna2Cal::Exec(Option_t* option)
                     xpos,
                     ypos,
                     thickness,
-                    laboratory_angle;
+                    laboratory_angle,
                     lisaAnaItem.Get_channel_energy(),
                     lisaAnaItem.Get_channel_energy_MWD(),
                     lisaAnaItem.Get_trace_febex(),

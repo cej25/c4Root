@@ -106,9 +106,6 @@ std::map<std::pair<int,int>, std::pair<std::pair<int, std::pair<int, int>>,std::
         static void SetAmplitudeMax(int max_amp) { amplitude_max = max_amp; }
         static void SetAmplitudeMin(int min_amp) { amplitude_min = min_amp; }
         
-        static void SetAngleBin(int bin_deg) { angle_bin = bin_deg; }
-        static void SetAngleMax(int max_deg) { angle_max = max_deg; }
-        static void SetAngleMin(int min_deg) { angle_min = min_deg; }
 
         static void SetEnergyRange(int min, int max) { min_energy = min; max_energy = max; }
         static void SetEnergyBin(int bin_e) { bin_energy = bin_e; }
