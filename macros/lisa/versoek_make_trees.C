@@ -44,7 +44,7 @@ void versoek_make_trees(int fileNumber, std::string runPattern = "run_")
 
     // ::: Here you define commonly used path
     //TString c4Root_path = "/u/gandolfo/c4/c4Root";
-    TString c4Root_path = "/home/lisa/programs/c4/c4Root";
+    TString c4Root_path = "/home/lisa/programs/c4/julia_c4Root";
     TString ucesb_path = c4Root_path + "/unpack/exps/" + fExpName + "/" + fExpName + " --debug --input-buffer=200Mi --event-sizes --allow-errors";
     ucesb_path.ReplaceAll("//","/");
 
@@ -66,11 +66,11 @@ void versoek_make_trees(int fileNumber, std::string runPattern = "run_")
 
     
     // ::: FILE  PATH
-    TString inputpath = "/home/lisa/data/server/lmd/";
+    TString inputpath = "/home/lisa/data/server/experiments/staging/2026_IKP_LISA_test/lmd/";
     TString lmdName = Form("%s%04d.lmd", runPattern.c_str(),fileNumber);
     TString filename = inputpath + lmdName;
 
-    TString outputpath = "/home/lisa/data/server/trees/";
+    TString outputpath = "/home/lisa/versoek/out/trees_dev/";
 
     TString outputFilename = outputpath + TString(lmdName).ReplaceAll(".lmd", "_tree.root");
 

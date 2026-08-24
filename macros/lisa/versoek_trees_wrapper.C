@@ -11,7 +11,7 @@ std::vector<int> GetSubrunsWrapper(int runNumber)
 {
     std::vector<int> subruns;
 
-    TString inputpath = "/home/lisa/data/server/experiments/staging/2026_IKP_LISA_test/lmd/";
+    TString inputpath = "/home/lisa/data/server/experiments/2026/IKP/LISA/test_june/lmd/";
 
     void* dir = gSystem->OpenDirectory(inputpath);
     const char* f;
