@@ -1,0 +1,7 @@
+*
+!*.spec
+!*.hh
+!*.cc
+!Makefile
+!makefile_additional.inc
+!.gitignore
