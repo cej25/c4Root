@@ -22,6 +22,7 @@ EXPS=template \
 	beammonitor \
 	lisaext \
 	lisa \
+	lisafast \
 	s450 \
 	NovTest \
 	onlyFATIMA \
