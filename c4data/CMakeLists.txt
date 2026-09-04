@@ -37,6 +37,9 @@ lisaData/LisaData.cxx
 lisaData/LisaCalData.cxx
 lisaData/LisaAnaData.cxx
 lisaData/LisaTraceData.cxx
+lisaData/TLisaConfiguration.cxx
+lisaData/LisaGate.cxx
+lisaData/LisaFastTwinpeaksData.cxx
 aidaData/AidaData.cxx
 aidaData/AidaCalData.cxx
 aidaData/AidaHitData.cxx
@@ -81,8 +84,7 @@ frsData/TFrsConfiguration.cxx
 frsData/FrsGate.cxx
 baseData/TCorrelationsConfiguration.cxx
 baseData/TExperimentConfiguration.cxx
-lisaData/TLisaConfiguration.cxx
-lisaData/LisaGate.cxx
+
 )
 
 # fill list of header files from list of source files by exchanging the file extension

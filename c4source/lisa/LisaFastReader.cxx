@@ -467,7 +467,7 @@ Bool_t LisaFastReader::Read() //do fine time here:
 
                     previous_epoch_word,
                     coarse_T,
-                    fine_T,
+                    fine_T
                     
                     //fData->lisafast_ts_subsystem_id,
                     //wr_t //+ 0*( (((int64_t)previous_epoch_word)*10.24e3 + ((int64_t)coarse_T)*5.0 - (int64_t)fine_T) - accepted_trigger_time) // corrected by the time difference to the acc trigger time

@@ -95,7 +95,7 @@ class LisaFastReader : public c4Reader
 
 
         static const int NBoards = sizeof(fData->lisafast_tamex) / sizeof(fData->lisafast_tamex[0]);
-        static const int NChannels = 33; //slow + fast per board + trigger channel 0. why the trigger??
+        static const int NChannels = 33; //slow + fast per board + trigger channel 0. why the trigger?? should be 16X2 +4 (botton channel that can be programmed with logic functions)
 
 
         //global
@@ -125,7 +125,7 @@ class LisaFastReader : public c4Reader
         TH1I *** fine_time_hits; //array of TH1 hisots [NBoards][NChannels+1] accounting also for the trigger channel
         double *** fine_time_calibration_coeffs; //[NBoards][NChannels+1][1024] last index is bin nr. - this is the lookup table
         
-        int fine_time_calibration_after = 10000000;
+        int fine_time_calibration_after = 10000000; //? what is this number
         double TAMEX_fine_time_clock = 5.0; // ns in one fine time cycle.
         //need some status flags:
         bool fine_time_calibration_set = false;

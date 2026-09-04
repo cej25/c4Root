@@ -67,6 +67,7 @@ set(SRCS
 ./lisa/LisaReader.cxx
 ./lisa/LisaAna2Cal.cxx
 ./lisa/LisaRaw2Ana.cxx
+./lisa/LisaFastReader.cxx
 ./bplast/bPlastReader.cxx
 ./bplast/bPlastRaw2Cal.cxx
 ./beammonitor/BeamMonitorReader.cxx
@@ -100,6 +101,7 @@ Set(STRUCT_HEADERS
 ./aida/ext_h101_aida.h
 ./frs/ext_h101_frs.h
 ./lisa/ext_h101_lisa.h
+./lisa/ext_h101_lisafast.h
 ./germanium/ext_h101_germanium.h
 ./germanium/ext_h101_germanium_traces.h
 ./bplast/ext_h101_bplast.h
