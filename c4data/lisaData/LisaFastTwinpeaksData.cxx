@@ -30,7 +30,7 @@ LisaFastTwinpeaksData::LisaFastTwinpeaksData()
     flead_fine_T(0),
     ftrail_epoch_counter(0),
     ftrail_coarse_T(0),
-    ftrail_fine_T(0),
+    ftrail_fine_T(0)
     //fwr_subsystem_id(0),
     //fwr_t(0)
 {
@@ -68,7 +68,7 @@ LisaFastTwinpeaksData::LisaFastTwinpeaksData(
     flead_fine_T(lead_fine_T),
     ftrail_epoch_counter(trail_epoch_counter),
     ftrail_coarse_T(trail_coarse_T),
-    ftrail_fine_T(trail_fine_T),
+    ftrail_fine_T(trail_fine_T)
     //fwr_subsystem_id(wr_subsystem_id),
     //fwr_t(wr_t)
 {
