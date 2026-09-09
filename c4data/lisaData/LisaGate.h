@@ -25,7 +25,7 @@ class LisaGate
     public:
         ClassDef(LisaGate, 1)
 
-	// ciao
+	//--
 };
 
 #endif
