@@ -121,6 +121,7 @@
 #pragma link C++ class TBB7VmeConfiguration+;
 #pragma link C++ class TBB7FebexConfiguration+;
 #pragma link C++ class TLisaConfiguration+;
+#pragma link C++ class TLisaFastConfiguration+;
 #pragma link C++ class TFimpConfiguration+;
 #pragma link C++ class TH10MCPConfiguration+;
 #pragma link C++ class TStefanConfiguration+;

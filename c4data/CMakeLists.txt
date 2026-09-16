@@ -38,6 +38,7 @@ lisaData/LisaCalData.cxx
 lisaData/LisaAnaData.cxx
 lisaData/LisaTraceData.cxx
 lisaData/TLisaConfiguration.cxx
+lisaData/TLisaFastConfiguration.cxx
 lisaData/LisaGate.cxx
 lisaData/LisaFastTwinpeaksData.cxx
 aidaData/AidaData.cxx

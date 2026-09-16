@@ -1,29 +1,22 @@
 #include <TROOT.h>
 
-// !!! Switch all tasks related to {subsystem} on (1)/off (0)
-#define LISA_ON 1
-
-// !!! Select the data level you want to visualize
-#define LISA_RAW 0
-#define LISA_ANA 0
-#define LISA_CAL 1
-
-#define WR_ENABLED 1
+#define LISAFAST_ON 1
+#define LISAFAST_RAW 0
 
 // Definition of setup and configuration files
-#define LISA_CONFIG_FILE "../../config/lisaext/general/lisa_config_3x3_Num9.C"
+//#define LISA_CONFIG_FILE "../../config/lisafast/general/lisa_config_fast.C"
 
 // :::  Define LISA setup.C file; place in /config/cologne/general
 extern "C"
 {    
     // LISA setup
-    #include LISA_CONFIG_FILE
+    //#include LISA_CONFIG_FILE
 }
 
 typedef struct EXT_STR_h101_t
 {   
     EXT_STR_h101_unpack_t eventheaders;
-    EXT_STR_h101_lisaext_onion_t lisa;
+    EXT_STR_h101_lisafast_onion_t lisafast;
 
 } EXT_STR_h101;
 
@@ -37,15 +30,14 @@ std::string readFileToString(const std::string& path)
 }
 
 //void cologne_make_trees(int fileNumber)
-void lisaext_make_trees()
+void lisafast_make_trees()
 {   
     const Int_t nev = -1; const Int_t fRunId = 1; const Int_t fExpId = 1;
     // ::: Experiment name
-    TString fExpName = "lisaext";
+    TString fExpName = "lisafast";
 
     // ::: Here you define commonly used path
-    //TString c4Root_path = "/u/gandolfo/c4/c4Root";
-    TString c4Root_path = "/home/lisa/programs/c4/c4Root";
+    TString c4Root_path = "/home/lisa/programs/c4/fast_c4Root";
     TString ucesb_path = c4Root_path + "/unpack/exps/" + fExpName + "/" + fExpName + " --debug --input-buffer=200Mi --event-sizes --allow-errors";
     ucesb_path.ReplaceAll("//","/");
 
@@ -68,18 +60,12 @@ void lisaext_make_trees()
     
     // ::: FILE  PATH
     TString inputpath = "/home/lisa/data/server/groups/wimmer/laboratory/lmd/";
-    TString lmdname = "run_0014_0001.lmd";
+    TString lmdname = "tamex_0010_0001.lmd";
     TString filename = inputpath + lmdname;
-    /*
-    TString inputpath = "/u/gandolfo/data/lustre/gamma/LISA/data/ext_daq_debnik/dev_test/";
-    TString lmdname = "new_timestamp_format_0001.lmd";
-    TString filename = inputpath + lmdname;
-    */
+
     //TString filename = Form(inputpath + "run_%04d_*.lmd", fileNumber);
 
     // ::: OUTPUT 
-    //TString outputpath = "/u/gandolfo/data/lustre/gamma/LISA/data/ext_daq_debnik/dev_test/"; 
-    //TString outputpath = "/u/gandolfo/data/lisaext/"; 
     TString outputpath = "/home/lisa/data/server/groups/wimmer/laboratory/trees/";
 
     TString outputFilename = outputpath + TString(lmdname).ReplaceAll(".lmd", "_tree.root");
@@ -92,9 +78,10 @@ void lisaext_make_trees()
     run->SetEventHeader(EvtHead);
     run->SetRunId(1);
     run->SetSink(new FairRootFileSink(outputFilename)); // don't write after termintion
-    TFolder* histograms = new TFolder("Histograms", "Histograms");
-    FairRootManager::Instance()->Register("Histograms", "Histogram Folder", histograms, false);
-    run->AddObject(histograms);
+
+    //TFolder* histograms = new TFolder("Histograms", "Histograms");
+    //FairRootManager::Instance()->Register("Histograms", "Histogram Folder", histograms, false);
+    //run->AddObject(histograms);
 
     // ::: Take ucesb input and create source
     EXT_STR_h101 ucesb_struct;
@@ -104,8 +91,8 @@ void lisaext_make_trees()
     run->SetSource(source);
 
     // ::: L I S A parameter - Initialise
-    lisa_config(config_path);
-
+    //lisa_config(config_path);
+    TLisaFastConfiguration::SetDetectorConfigurationFile(config_path + "/Lisa_Mapping_LaBr3.txt");
 
     //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
     // S U B S Y S T E M S
@@ -116,56 +103,39 @@ void lisaext_make_trees()
     UnpackReader* unpackheader = new UnpackReader((EXT_STR_h101_unpack*)&ucesb_struct.eventheaders, offsetof(EXT_STR_h101, eventheaders));
     source->AddReader(unpackheader);
 
-    if (LISA_ON)
+    if (LISAFAST_ON)
     {
-        LisaReader* unpacklisa = new LisaReader((EXT_STR_h101_lisaext_onion*)&ucesb_struct.lisa, offsetof(EXT_STR_h101, lisa));
+        LisaFastReader* unpacklisafast = new LisaReader((EXT_STR_h101_lisafast_onion*)&ucesb_struct.lisafast, offsetof(EXT_STR_h101, lisafast));
 
-        if (LISA_RAW)
+        if (LISAFAST_RAW)
         {
             unpacklisa->SetOnline(false); //false= write to a tree; true=doesn't write to tree
         } else 
         {
             unpacklisa->SetOnline(true); //false= write to a tree; true=doesn't write to tree
         }        
-        source->AddReader(unpacklisa);
+        source->AddReader(unpacklisafast);
     }
 
     // ::: CALIBRATE Subsystem  :::
-    if (LISA_ON && LISA_ANA && !LISA_CAL)
-    {
-        LisaRaw2Ana* lisaraw2ana = new LisaRaw2Ana();
+    // if (LISAFAST_ON && LISAFAST_CAL )
+    // {
+    //     LisaFastRaw2Ana* lisafastraw2ana = new LisaFastRaw2Ana();
 
-        lisaraw2ana->SetOnline(false);
-        run->AddTask(lisaraw2ana);  
-    } 
-
-    if (LISA_ON && LISA_CAL)
-    {
-        LisaRaw2Ana* lisaraw2ana = new LisaRaw2Ana();
-        if(LISA_ANA)
-        {
-            lisaraw2ana->SetOnline(false);
-        }else
-        {
-            lisaraw2ana->SetOnline(true);
-        }
-        run->AddTask(lisaraw2ana); 
-
-        LisaAna2Cal* lisaana2cal = new LisaAna2Cal();
-        lisaana2cal->SetOnline(false);
-        run->AddTask(lisaana2cal);
-    }
+    //     lisafastraw2ana->SetOnline(false);
+    //     run->AddTask(lisafastraw2ana);  
+    // } 
 
 
     // Write information on setup and config in a "info" tree
-    TString lisaConfigFile = LISA_CONFIG_FILE;
+    //TString lisaConfigFile = LISA_CONFIG_FILE;
 
-    TTree* metaTree = new TTree("info", "Setup file and config info");
-    metaTree->Branch("LISA_config", &lisaConfigFile);
-    metaTree->Fill();
+    //TTree* metaTree = new TTree("info", "Setup file and config info");
+    //metaTree->Branch("LISA_config", &lisaConfigFile);
+    //metaTree->Fill();
     
     run->Init();  
-    metaTree->Write(); 
+    //metaTree->Write(); 
 
     // Information about portnumber and main data stream
     cout << "\n\n" << endl;
