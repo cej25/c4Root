@@ -60,7 +60,7 @@ void lisafast_make_trees()
     
     // ::: FILE  PATH
     TString inputpath = "/home/lisa/data/server/groups/wimmer/laboratory/lmd/";
-    TString lmdname = "tamex_0010_0001.lmd";
+    TString lmdname = "tamex_0012_0001.lmd";
     TString filename = inputpath + lmdname;
 
     //TString filename = Form(inputpath + "run_%04d_*.lmd", fileNumber);
@@ -105,14 +105,14 @@ void lisafast_make_trees()
 
     if (LISAFAST_ON)
     {
-        LisaFastReader* unpacklisafast = new LisaReader((EXT_STR_h101_lisafast_onion*)&ucesb_struct.lisafast, offsetof(EXT_STR_h101, lisafast));
+        LisaFastReader* unpacklisafast = new LisaFastReader((EXT_STR_h101_lisafast_onion*)&ucesb_struct.lisafast, offsetof(EXT_STR_h101, lisafast));
 
         if (LISAFAST_RAW)
         {
-            unpacklisa->SetOnline(false); //false= write to a tree; true=doesn't write to tree
+            unpacklisafast->SetOnline(false); //false= write to a tree; true=doesn't write to tree
         } else 
         {
-            unpacklisa->SetOnline(true); //false= write to a tree; true=doesn't write to tree
+            unpacklisafast->SetOnline(true); //false= write to a tree; true=doesn't write to tree
         }        
         source->AddReader(unpacklisafast);
     }

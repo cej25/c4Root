@@ -72,7 +72,8 @@ Bool_t UcesbSource::Init()
 
     c4LOG(debug2, "checking whether EventHeader has been defined in FairRun");
     auto run = FairRun::Instance();
-    auto EvtHead = dynamic_cast<EventHeader*>(run->GetEventHeader());
+    //auto EvtHead = dynamic_cast<std::unique_ptr<EventHeader>>(run->GetEventHeader()); // protects pointer ownership 
+    auto EvtHead = dynamic_cast<EventHeader*>(run->GetEventHeader()); 
     if (EvtHead)
     {
         c4LOG(info, "EventHeader. was defined properly - success!");
