@@ -3,6 +3,26 @@
 #include "../../common/whiterabbit.spec"
 #include "../../common/gsi_tamex4.spec"
 
+TAMEX_DUMMY()
+{
+    UINT32 dummy NOENCODE;
+}
+
+EXTRA_BLOCK()
+{
+    UINT32 lead
+    {
+        0_19: leadbits;
+        20_31: 0x5ca;
+    }
+
+    select several
+    {
+        dummy = TAMEX_DUMMY();
+    }
+
+}
+
 SUBEVENT(lisa_tamex_subev)
 {
     //ts = TIMESTAMP_WHITERABBIT_EXTENDED(id=0x1600);
@@ -18,6 +38,11 @@ SUBEVENT(lisa_tamex_subev)
         tamex[2] = TAMEX4_SFP(sfp=0,card=2);
         tamex[3] = TAMEX4_SFP(sfp=0,card=3);
     }  
+
+    select optional
+    {
+        extra = EXTRA_BLOCK();
+    }
 }
 
 

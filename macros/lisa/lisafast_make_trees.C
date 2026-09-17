@@ -1,7 +1,7 @@
 #include <TROOT.h>
 
 #define LISAFAST_ON 1
-#define LISAFAST_RAW 0
+#define LISAFAST_RAW 1
 
 // Definition of setup and configuration files
 //#define LISA_CONFIG_FILE "../../config/lisafast/general/lisa_config_fast.C"
