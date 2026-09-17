@@ -319,6 +319,7 @@ Some assumptions:
 Bool_t LisaFastReader::Read() //do fine time here:
 {
     auto start = std::chrono::high_resolution_clock::now();
+    c4LOG(info,"start of Read()");
 
     if (!fData) return kTRUE;
 
@@ -326,6 +327,7 @@ Bool_t LisaFastReader::Read() //do fine time here:
         DoFineTimeCalibration();
         if (fine_time_calibration_save) WriteFineTimeHistosToFile();
     }
+    //c4LOG(info,"start of Read()");
     
     //whiterabbit timestamp: -> No WR in lisa external to GSI
     //wr_t = (((uint64_t)fData->lisafast_ts_t[3]) << 48) + (((uint64_t)fData->lisafast_ts_t[2]) << 32) + (((uint64_t)fData->lisafast_ts_t[1]) << 16) + (uint64_t)(fData->lisafast_ts_t[0]);
@@ -333,6 +335,7 @@ Bool_t LisaFastReader::Read() //do fine time here:
     for (int it_board_number = 0; it_board_number < NBoards; it_board_number++)
     { //per board:
 
+        //c4LOG(info,"start for board number for");
         uint16_t trig =  fData->lisafast_tamex[it_board_number].trig;       
         if (fData->lisafast_tamex[it_board_number].event_size == 0) continue; // empty event skip
         
@@ -368,6 +371,7 @@ Bool_t LisaFastReader::Read() //do fine time here:
             e.g.: ch1-hit1, ch1-hit2, ch1-hit3, ch2-hit1, ch2-hit2, ch3-hit1, ....., chN-hitN.
             from M Reese 08.12.23
             */
+            //c4LOG(info,"start of hits for");
 
             // check if arrays are overflowing. These could be placed outside this inner loop, but now it sums up the number of lost events in case they are not equal. This indicates an error in UCESB/MBS i believe if this fails.
             if (fData->lisafast_tamex[it_board_number].time_epoch <= it_hits) {fNevents_skipped++; continue;}
@@ -398,7 +402,8 @@ Bool_t LisaFastReader::Read() //do fine time here:
 
             if (!(channelid >= last_channel_read)) {c4LOG(fatal, Form("Data format is inconcistent with assumption: Channels are not read out in increasing order. This channel = %i, last channel = %i",channelid,last_channel_read));}
 
-        
+            c4LOG(info, "channel id = " << channelid);
+            c4LOG(info, " board number = " << it_board_number);
             last_word_read_was_epoch = false;
             last_channel_read = channelid;
 
@@ -414,13 +419,18 @@ Bool_t LisaFastReader::Read() //do fine time here:
 
             uint32_t coarse_T = fData->lisafast_tamex[it_board_number].time_coarsev[it_hits] & 0x7FF;
             double fine_T = GetFineTime(fData->lisafast_tamex[it_board_number].time_finev[it_hits],it_board_number,channelid);
-
+            //c4LOG(info,"before channelid=0");
             if (channelid == 0) 
             {
                 accepted_trigger_time = ((double)previous_epoch_word)*10.24e3 + ((double)coarse_T)*5.0 - (double)fine_T; // round it off to ns resolution
                 accepted_lead_epoch_counter = previous_epoch_word;
                 accepted_lead_coarse_T = coarse_T;
                 accepted_lead_fine_T = fine_T;
+
+                c4LOG(info, " accepted trigger TIME = " << accepted_trigger_time);
+                c4LOG(info, " accepted lead COARSE = " << accepted_lead_coarse_T);
+                c4LOG(info, " accepted lead FINE = " << accepted_lead_fine_T);
+
 
                 // std::cout << std::fixed << std::setprecision(0) << num << std::endl;
                 // std::cout << "time:: " << std::fixed << std::setprecision(9) << accepted_trigger_time << std::endl;
@@ -431,11 +441,13 @@ Bool_t LisaFastReader::Read() //do fine time here:
             } // skip channel 0 for now. This is the trigger information. The trigger time is kept, the wr timestamp is corrected by the difference of the hit and the acc trigger time.
 
             //if(it_board_number == 1) c4LOG(info,fData->lisafast_tamex[it_board_number].time_edgev[it_hits]);
+            c4LOG(info,"is leading : " << is_leading);
 
             if (is_leading)
             { // rise signal:
                 //if (it_board_number == 1) c4LOG(info,Form("Found rise: ch = %i, le = %i, lc = %i, lf = %f", channelid, previous_epoch_word,coarse_T,fine_T));
                 
+                c4LOG(info,"inside is_leading if");
                 //count number of double leads
                 if (last_tdc_hit.hit) {fNevents_second_lead_seen[it_board_number][channelid]++;}
                 
@@ -445,13 +457,14 @@ Bool_t LisaFastReader::Read() //do fine time here:
                 last_tdc_hit.lead_fine_T = fine_T;
 
                 fNleads_read[it_board_number][channelid]++;
+                c4LOG(info,"end is_leading if");
                 continue;
             }
             else if (!is_leading && last_tdc_hit.hit)
             { 
                 //trail and rise are matched
                 //if (it_board_number == 1) c4LOG(info,Form("Writing: ch = %i, le = %i lc = %i, lf = %f, te = %i tc = %i, tf = %f ",channelid,last_tdc_hit.lead_epoch_counter, last_tdc_hit.lead_coarse_T, last_tdc_hit.lead_fine_T,last_tdc_hit.lead_epoch_counter,coarse_T,fine_T));
-
+                c4LOG(info,"before filling the tree");
                 new ((*fArray)[fArray->GetEntriesFast()]) LisaFastTwinpeaksData(
                     trig,
                     it_board_number,
