@@ -61,7 +61,7 @@ void lisafast_make_trees()
     
     // ::: FILE  PATH
     TString inputpath = "/home/lisa/data/server/groups/wimmer/laboratory/lmd/";
-    TString lmdname = "tamex_0012_0001.lmd";
+    TString lmdname = "tamex_0010_0001.lmd";
     TString filename = inputpath + lmdname;
 
     //TString filename = Form(inputpath + "run_%04d_*.lmd", fileNumber);
@@ -109,10 +109,10 @@ void lisafast_make_trees()
         LisaFastReader* unpacklisafast = new LisaFastReader((EXT_STR_h101_lisafast_onion*)&ucesb_struct.lisafast, offsetof(EXT_STR_h101, lisafast));
         
         // Do Fine Tie calibration -> produces the file below
-        unpacklisafast->DoFineTimeCalOnline(config_path + '/lisafast/fine_time_histos_1709.root', 100000);
+        //unpacklisafast->DoFineTimeCalOnline("/home/lisa/programs/c4/fast_c4Root/config/lisafast/fine_time_histos_1709.root", 100000);
 
         // Run tree with the fine time calibration defined here
-        //unpacklisafast->SetInputFileFineTimeHistos(config_path + '/lisafast/fine_time_histos_1709.root');
+        unpacklisafast->SetInputFileFineTimeHistos("/home/lisa/programs/c4/fast_c4Root/config/lisafast/fine_time_histos_1709.root");
         if (LISAFAST_RAW)
         {
             unpacklisafast->SetOnline(false); //false= write to a tree; true=doesn't write to tree
