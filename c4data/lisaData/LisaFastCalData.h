@@ -1,15 +1,15 @@
-#ifndef LisaFastTwinpeaksCalData_H
-#define LisaFastTwinpeaksCalData_H
+#ifndef LisaFastCalData_H
+#define LisaFastCalData_H
 
 #include "TObject.h"
 
-class LisaFastTwinpeaksCalData : public TObject
+class LisaFastCalData : public TObject
 {
     public:
         // Default Constructor
-        LisaFastTwinpeaksCalData();
+        LisaFastCalData();
 
-        LisaFastTwinpeaksCalData(
+        LisaFastCalData(
         uint16_t trig,
         uint16_t board_id,
         uint16_t ch_ID,
@@ -39,7 +39,7 @@ class LisaFastTwinpeaksCalData : public TObject
         //uint64_t absolute_event_time);
 
         // Destructor
-        virtual ~LisaFastTwinpeaksCalData() {}
+        virtual ~LisaFastCalData() {}
 
         // Getters
         inline const uint16_t Get_trigger() const { return ftrig; }
@@ -121,7 +121,7 @@ class LisaFastTwinpeaksCalData : public TObject
     
 
     public:
-        ClassDef(LisaFastTwinpeaksCalData, 1);
+        ClassDef(LisaFastCalData, 1);
 };
 
 #endif

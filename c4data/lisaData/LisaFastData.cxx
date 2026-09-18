@@ -14,9 +14,9 @@
  *                                06.05.25                                    *
  ******************************************************************************/
 
-#include "LisaFastTwinpeaksData.h"
+#include "LisaFastData.h"
 
-LisaFastTwinpeaksData::LisaFastTwinpeaksData()
+LisaFastData::LisaFastData()
     : 
     ftrig(0),
     fboard_id(0),
@@ -36,7 +36,7 @@ LisaFastTwinpeaksData::LisaFastTwinpeaksData()
 {
 }
 
-LisaFastTwinpeaksData::LisaFastTwinpeaksData(
+LisaFastData::LisaFastData(
         uint16_t trig,
         uint16_t board_id,
         uint32_t ch_ID,
@@ -74,4 +74,4 @@ LisaFastTwinpeaksData::LisaFastTwinpeaksData(
 {
 }
 
-ClassImp(LisaFastTwinpeaksData)
+ClassImp(LisaFastData)

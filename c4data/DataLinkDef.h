@@ -97,8 +97,8 @@
 #pragma link C++ class LisaTraceData+;
 #pragma link C++ class LisaGate+;
 // LISA fast time
-#pragma link C++ class LisaFastTwinpeaksData+;
-
+#pragma link C++ class LisaFastData+;
+#pragma link C++ class LisaFastCalData+;
 
 // STEFAN
 #pragma link C++ class StefanFebexItem+;

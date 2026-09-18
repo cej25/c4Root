@@ -68,6 +68,7 @@ set(SRCS
 ./lisa/LisaAna2Cal.cxx
 ./lisa/LisaRaw2Ana.cxx
 ./lisa/LisaFastReader.cxx
+./lisa/LisaFastRaw2Cal.cxx
 ./bplast/bPlastReader.cxx
 ./bplast/bPlastRaw2Cal.cxx
 ./beammonitor/BeamMonitorReader.cxx

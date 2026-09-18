@@ -1,7 +1,8 @@
 #include <TROOT.h>
 
 #define LISAFAST_ON 1
-#define LISAFAST_RAW 1
+#define LISAFAST_RAW 0
+#define LISAFAST_CAL 1
 
 // Definition of setup and configuration files
 //#define LISA_CONFIG_FILE "../../config/lisafast/general/lisa_config_fast.C"
@@ -38,7 +39,7 @@ void lisafast_make_trees()
 
     // ::: Here you define commonly used path
     TString c4Root_path = "/home/lisa/programs/c4/fast_c4Root";
-    TString ucesb_path = c4Root_path + "/unpack/exps/" + fExpName + "/" + fExpName + " --debug --input-buffer=200Mi --event-sizes --allow-errors --print --data";
+    TString ucesb_path = c4Root_path + "/unpack/exps/" + fExpName + "/" + fExpName + " --debug --input-buffer=200Mi --event-sizes --allow-errors ";
     ucesb_path.ReplaceAll("//","/");
 
     std::string config_path = std::string(c4Root_path.Data()) + "/config/" + std::string(fExpName.Data());
@@ -68,7 +69,7 @@ void lisafast_make_trees()
     // ::: OUTPUT 
     TString outputpath = "/home/lisa/data/server/groups/wimmer/laboratory/trees/";
 
-    TString outputFilename = outputpath + TString(lmdname).ReplaceAll(".lmd", "_tree.root");
+    TString outputFilename = outputpath + TString(lmdname).ReplaceAll(".lmd", "_cal_tree.root");
 
 
 
@@ -106,7 +107,12 @@ void lisafast_make_trees()
     if (LISAFAST_ON)
     {
         LisaFastReader* unpacklisafast = new LisaFastReader((EXT_STR_h101_lisafast_onion*)&ucesb_struct.lisafast, offsetof(EXT_STR_h101, lisafast));
+        
+        // Do Fine Tie calibration -> produces the file below
+        unpacklisafast->DoFineTimeCalOnline(config_path + '/lisafast/fine_time_histos_1709.root', 100000);
 
+        // Run tree with the fine time calibration defined here
+        //unpacklisafast->SetInputFileFineTimeHistos(config_path + '/lisafast/fine_time_histos_1709.root');
         if (LISAFAST_RAW)
         {
             unpacklisafast->SetOnline(false); //false= write to a tree; true=doesn't write to tree
@@ -117,14 +123,14 @@ void lisafast_make_trees()
         source->AddReader(unpacklisafast);
     }
 
-    // ::: CALIBRATE Subsystem  :::
-    // if (LISAFAST_ON && LISAFAST_CAL )
-    // {
-    //     LisaFastRaw2Ana* lisafastraw2ana = new LisaFastRaw2Ana();
+    //::: CALIBRATE Subsystem  :::
+    if (LISAFAST_ON && LISAFAST_CAL )
+    {
+        LisaFastRaw2Cal* lisafastraw2cal = new LisaFastRaw2Cal();
 
-    //     lisafastraw2ana->SetOnline(false);
-    //     run->AddTask(lisafastraw2ana);  
-    // } 
+        lisafastraw2cal->SetOnline(false);
+        run->AddTask(lisafastraw2cal);  
+    } 
 
 
     // Write information on setup and config in a "info" tree

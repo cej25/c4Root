@@ -1,15 +1,15 @@
-#ifndef LisaFastTwinpeaksData_H
-#define LisaFastTwinpeaksData_H
+#ifndef LisaFastData_H
+#define LisaFastData_H
 
 #include "TObject.h"
 
-class LisaFastTwinpeaksData : public TObject
+class LisaFastData : public TObject
 {
     public:
         // Default Constructor
-        LisaFastTwinpeaksData();
+        LisaFastData();
 
-        LisaFastTwinpeaksData(
+        LisaFastData(
         uint16_t trig,
         uint16_t board_id,
         uint32_t ch_ID,
@@ -30,7 +30,7 @@ class LisaFastTwinpeaksData : public TObject
         //uint64_t wr_t);
 
         // Destructor
-        virtual ~LisaFastTwinpeaksData() {}
+        virtual ~LisaFastData() {}
 
         // Getters
         inline const uint16_t Get_trigger() const { return ftrig; }
@@ -100,7 +100,7 @@ class LisaFastTwinpeaksData : public TObject
     
 
     public:
-        ClassDef(LisaFastTwinpeaksData, 1);
+        ClassDef(LisaFastData, 1);
 };
 
 #endif

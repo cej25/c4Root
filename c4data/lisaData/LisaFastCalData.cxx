@@ -14,9 +14,9 @@
  *                                08.26                                    *
  ******************************************************************************/
 
-#include "LisaFastTwinpeaksCalData.h"
+#include "LisaFastCalData.h"
 
-LisaFastTwinpeaksCalData::LisaFastTwinpeaksCalData()
+LisaFastCalData::LisaFastCalData()
     :
     ftrig(0),
     fboard_id(0),
@@ -44,7 +44,7 @@ LisaFastTwinpeaksCalData::LisaFastTwinpeaksCalData()
 {
 }
 
-LisaFastTwinpeaksCalData::LisaFastTwinpeaksCalData(
+LisaFastCalData::LisaFastCalData(
         uint16_t trig,
         uint16_t board_id,
         uint16_t ch_ID,
@@ -86,9 +86,9 @@ LisaFastTwinpeaksCalData::LisaFastTwinpeaksCalData(
         fslow_ToT(slow_ToT),
         fenergy(energy)
         //fwr_subsystem_id(wr_subsystem_id),
-        f//wr_t(wr_t),
+        //wr_t(wr_t),
         //fabsolute_event_time(absolute_event_time)
 {
 }
 
-ClassImp(LisaFastTwinpeaksCalData)
+ClassImp(LisaFastCalData)
