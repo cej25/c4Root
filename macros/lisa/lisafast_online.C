@@ -59,7 +59,7 @@ void lisafast_online()
 
     // Create Online run
     Int_t refresh = 10; // Refresh rate for online histograms
-    Int_t port = 2222; 
+    Int_t port = 1111; 
 
     FairRunOnline* run = new FairRunOnline();
     EventHeader* EvtHead = new EventHeader();

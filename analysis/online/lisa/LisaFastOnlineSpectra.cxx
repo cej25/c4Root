@@ -85,8 +85,8 @@ InitStatus LisaFastOnlineSpectra::Init()
 
     TDirectory::TContext ctx(nullptr);
 
-    dir_lisafast = new TDirectory("FATIMA", "FATIMA", "", 0);
-    // mgr->Register("FATIMA", "FATIMA Directory", dir_lisafast, false); // allow other tasks to access directory.
+    dir_lisafast = new TDirectory("LISA_FAST", "LISA_FAST", "", 0);
+    // mgr->Register("LISA_FAST", "LISA_FAST Directory", dir_lisafast, false); // allow other tasks to access directory.
     histograms->Add(dir_lisafast);
 
     dir_lisafast_slowToT = dir_lisafast->mkdir("SlowToT");
@@ -152,8 +152,8 @@ InitStatus LisaFastOnlineSpectra::Init()
     h2_lisafast_fast_v_slow.resize(number_detectors);
     for (int ihist = 0; ihist < number_detectors; ihist++){
         c_lisafast_fast_v_slow->cd(ihist+1);
-        h2_lisafast_fast_v_slow[ihist] = MakeTH2(dir_lisafast_fast_v_slow, "F", Form("h2_lisafast_fast_v_slow_ToT_%d",detectors.at(ihist)),Form("FATIMA fast vs. slow detector %d",detectors.at(ihist)),ffast_tot_nbins,ffast_tot_bin_low,ffast_tot_bin_high,fslow_tot_nbins,fslow_tot_bin_low,fslow_tot_bin_high, "Fast ToT [ns]", "Slow ToT [ns]");
-        // h2_lisafast_fast_v_slow[ihist] = new TH2F(Form("h2_lisafast_fast_v_slow_ToT_%d",detectors.at(ihist)),Form("FATIMA fast vs. slow detector %d",detectors.at(ihist)),ffast_tot_nbins,ffast_tot_bin_low,ffast_tot_bin_high,fslow_tot_nbins,fslow_tot_bin_low,fslow_tot_bin_high);
+        h2_lisafast_fast_v_slow[ihist] = MakeTH2(dir_lisafast_fast_v_slow, "F", Form("h2_lisafast_fast_v_slow_ToT_%d",detectors.at(ihist)),Form("LISA_FAST fast vs. slow detector %d",detectors.at(ihist)),ffast_tot_nbins,ffast_tot_bin_low,ffast_tot_bin_high,fslow_tot_nbins,fslow_tot_bin_low,fslow_tot_bin_high, "Fast ToT [ns]", "Slow ToT [ns]");
+        // h2_lisafast_fast_v_slow[ihist] = new TH2F(Form("h2_lisafast_fast_v_slow_ToT_%d",detectors.at(ihist)),Form("LISA_FAST fast vs. slow detector %d",detectors.at(ihist)),ffast_tot_nbins,ffast_tot_bin_low,ffast_tot_bin_high,fslow_tot_nbins,fslow_tot_bin_low,fslow_tot_bin_high);
         // h2_lisafast_fast_v_slow[ihist]->GetXaxis()->SetTitle("fast ToT (ns)");
         // h2_lisafast_fast_v_slow[ihist]->GetYaxis()->SetTitle("slow ToT (ns)");
         h2_lisafast_fast_v_slow[ihist]->Draw();        
@@ -180,8 +180,8 @@ InitStatus LisaFastOnlineSpectra::Init()
     //2D energy spectrum
     // dir_lisafast_energy_spectra->cd();
     c_lisafast_energy_vs_detid = new TCanvas("c_lisafast_energy_vs_detid","LisaFast energy spectrum",650,350);
-    h2_lisafast_energy_vs_detid = MakeTH2(dir_lisafast_energy_spectra, "F", "h2_lisafast_energy_vs_detid","FATIMA energies",fenergy_nbins,fenergy_bin_low,fenergy_bin_high,max_detector_id+1,0-0.5,max_detector_id+0.5, "Energy [keV]", "Detector");
-    // h2_lisafast_energy_vs_detid = new TH2F("h2_lisafast_energy_vs_detid","FATIMA energies",fenergy_nbins,fenergy_bin_low,fenergy_bin_high,max_detector_id+1,0-0.5,max_detector_id+0.5); //such that the y-axis is the detector id and not the index
+    h2_lisafast_energy_vs_detid = MakeTH2(dir_lisafast_energy_spectra, "F", "h2_lisafast_energy_vs_detid","LISA_FAST energies",fenergy_nbins,fenergy_bin_low,fenergy_bin_high,max_detector_id+1,0-0.5,max_detector_id+0.5, "Energy [keV]", "Detector");
+    // h2_lisafast_energy_vs_detid = new TH2F("h2_lisafast_energy_vs_detid","LISA_FAST energies",fenergy_nbins,fenergy_bin_low,fenergy_bin_high,max_detector_id+1,0-0.5,max_detector_id+0.5); //such that the y-axis is the detector id and not the index
     // h2_lisafast_energy_vs_detid->GetXaxis()->SetTitle("Energy (keV)");
     // h2_lisafast_energy_vs_detid->GetYaxis()->SetTitle("Detector nr.");
     h2_lisafast_energy_vs_detid->Draw();
@@ -189,8 +189,8 @@ InitStatus LisaFastOnlineSpectra::Init()
 
     //2D uncalibrated energy spectrum
     c_lisafast_energy_uncal = new TCanvas("c_lisafast_energy_uncal","LisaFast energy spectrum",650,350);
-    h2_lisafast_energy_uncal_vs_detid = MakeTH2(dir_lisafast_energy_spectra, "F", "h2_lisafast_energy_uncal_vs_detid","FATIMA uncal energy (arb.)",fslow_tot_nbins,fslow_tot_bin_low,fslow_tot_bin_high,max_detector_id+1,0-0.5,max_detector_id+0.5, "Energy [a.u.]", "Detector");
-    // h2_lisafast_energy_uncal_vs_detid = new TH2F("h2_lisafast_energy_uncal_vs_detid","FATIMA uncal energy (arb.)",fslow_tot_nbins,fslow_tot_bin_low,fslow_tot_bin_high,max_detector_id+1,0-0.5,max_detector_id+0.5);
+    h2_lisafast_energy_uncal_vs_detid = MakeTH2(dir_lisafast_energy_spectra, "F", "h2_lisafast_energy_uncal_vs_detid","LISA_FAST uncal energy (arb.)",fslow_tot_nbins,fslow_tot_bin_low,fslow_tot_bin_high,max_detector_id+1,0-0.5,max_detector_id+0.5, "Energy [a.u.]", "Detector");
+    // h2_lisafast_energy_uncal_vs_detid = new TH2F("h2_lisafast_energy_uncal_vs_detid","LISA_FAST uncal energy (arb.)",fslow_tot_nbins,fslow_tot_bin_low,fslow_tot_bin_high,max_detector_id+1,0-0.5,max_detector_id+0.5);
     // h2_lisafast_energy_uncal_vs_detid->GetXaxis()->SetTitle("Energy (arb.)");
     // h2_lisafast_energy_uncal_vs_detid->GetYaxis()->SetTitle("Detector nr.");
     h2_lisafast_energy_uncal_vs_detid->Draw();
@@ -202,15 +202,15 @@ InitStatus LisaFastOnlineSpectra::Init()
     c_lisafast_hitpatterns->Divide(2,1);
 
     c_lisafast_hitpatterns->cd(1);
-    h1_lisafast_hitpattern_slow = MakeTH1(dir_lisafast_hitpattern, "I", "h1_lisafast_hitpattern_slow","FATIMA slow hit patterns",max_detector_id+1,0-0.5,max_detector_id+0.5, "Detector", kRed-3, kBlack);
-    // h1_lisafast_hitpattern_slow = new TH1F("h1_lisafast_hitpattern_slow","FATIMA slow hit patterns",max_detector_id+1,0-0.5,max_detector_id+0.5);
+    h1_lisafast_hitpattern_slow = MakeTH1(dir_lisafast_hitpattern, "I", "h1_lisafast_hitpattern_slow","LISA_FAST slow hit patterns",max_detector_id+1,0-0.5,max_detector_id+0.5, "Detector", kRed-3, kBlack);
+    // h1_lisafast_hitpattern_slow = new TH1F("h1_lisafast_hitpattern_slow","LISA_FAST slow hit patterns",max_detector_id+1,0-0.5,max_detector_id+0.5);
     // h1_lisafast_hitpattern_slow->GetXaxis()->SetTitle("Detector nr.");
     // h1_lisafast_hitpattern_slow->GetYaxis()->SetTitle("Hits");
     h1_lisafast_hitpattern_slow->Draw();
     
     c_lisafast_hitpatterns->cd(2);
-    h1_lisafast_hitpattern_fast = MakeTH1(dir_lisafast_hitpattern, "I", "h1_lisafast_hitpattern_fast","FATIMA fast hit patterns",max_detector_id+1,0-0.5,max_detector_id+0.5, "Detector", kRed-3, kBlack);
-    // h1_lisafast_hitpattern_fast = new TH1F("h1_lisafast_hitpattern_fast","FATIMA fast hit patterns",max_detector_id+1,0-0.5,max_detector_id+0.5);
+    h1_lisafast_hitpattern_fast = MakeTH1(dir_lisafast_hitpattern, "I", "h1_lisafast_hitpattern_fast","LISA_FAST fast hit patterns",max_detector_id+1,0-0.5,max_detector_id+0.5, "Detector", kRed-3, kBlack);
+    // h1_lisafast_hitpattern_fast = new TH1F("h1_lisafast_hitpattern_fast","LISA_FAST fast hit patterns",max_detector_id+1,0-0.5,max_detector_id+0.5);
     // h1_lisafast_hitpattern_fast->GetXaxis()->SetTitle("Detector nr.");
     // h1_lisafast_hitpattern_fast->GetYaxis()->SetTitle("Hits");
     h1_lisafast_hitpattern_fast->Draw();
@@ -219,8 +219,8 @@ InitStatus LisaFastOnlineSpectra::Init()
     
     c_lisafast_event_multiplicity  = new TCanvas("c_lisafast_event_multiplicity","LisaFast event multiplicities",650,350);
     
-    h1_lisafast_multiplicity = MakeTH1(dir_lisafast_hitpattern, "I", "h1_lisafast_multiplicity","FATIMA event multiplicity",20,0,20, "Event Multiplicity", kRed-3, kBlack);
-    // h1_lisafast_multiplicity = new TH1F("h1_lisafast_multiplicity","FATIMA event multiplicity",20,0,20);
+    h1_lisafast_multiplicity = MakeTH1(dir_lisafast_hitpattern, "I", "h1_lisafast_multiplicity","LISA_FAST event multiplicity",20,0,20, "Event Multiplicity", kRed-3, kBlack);
+    // h1_lisafast_multiplicity = new TH1F("h1_lisafast_multiplicity","LISA_FAST event multiplicity",20,0,20);
     // h1_lisafast_multiplicity->GetXaxis()->SetTitle("Event multiplicity");
     // h1_lisafast_multiplicity->GetYaxis()->SetTitle("Counts");
     h1_lisafast_multiplicity->Draw();
@@ -249,7 +249,7 @@ InitStatus LisaFastOnlineSpectra::Init()
         {
             c_lisafast_time_differences->cd(detid_idx+1);
             
-            h1_lisafast_time_differences[ihist][detid_idx] = MakeTH1(dir_lisafast_time_differences[ihist], "F", Form("h1_lisafast_rel_time_det_%d_to_det_%d_energy_gate_%d_%d",dt_reference_detectors.at(ihist),detectors.at(detid_idx),(int)dt_reference_detectors_energy_gates.at(ihist).first,(int)dt_reference_detectors_energy_gates.at(ihist).second),Form("FATIMA dT t(%d) - t(%d) gated %d and %d",detectors.at(detid_idx),dt_reference_detectors.at(ihist),(int)dt_reference_detectors_energy_gates.at(ihist).first,(int)dt_reference_detectors_energy_gates.at(ihist).second),ftime_coincidence_nbins,ftime_coincidence_low,ftime_coincidence_high, Form("dT t(%d) - t(%d) [ns]",detectors.at(detid_idx),dt_reference_detectors.at(ihist)), kMagenta, kBlue+2);
+            h1_lisafast_time_differences[ihist][detid_idx] = MakeTH1(dir_lisafast_time_differences[ihist], "F", Form("h1_lisafast_rel_time_det_%d_to_det_%d_energy_gate_%d_%d",dt_reference_detectors.at(ihist),detectors.at(detid_idx),(int)dt_reference_detectors_energy_gates.at(ihist).first,(int)dt_reference_detectors_energy_gates.at(ihist).second),Form("LISA_FAST dT t(%d) - t(%d) gated %d and %d",detectors.at(detid_idx),dt_reference_detectors.at(ihist),(int)dt_reference_detectors_energy_gates.at(ihist).first,(int)dt_reference_detectors_energy_gates.at(ihist).second),ftime_coincidence_nbins,ftime_coincidence_low,ftime_coincidence_high, Form("dT t(%d) - t(%d) [ns]",detectors.at(detid_idx),dt_reference_detectors.at(ihist)), kMagenta, kBlue+2);
 
             // h1_lisafast_time_differences[ihist][detid_idx] = new TH1F(Form("h1_lisafast_rel_time_det_%d_to_det_%d_energy_gate_%d_%d",dt_reference_detectors.at(ihist),detectors.at(detid_idx),(int)dt_reference_detectors_energy_gates.at(ihist).first,(int)dt_reference_detectors_energy_gates.at(ihist).second),Form("lisafast delta time t(%d) - t(%d) gated %d and %d",detectors.at(detid_idx),dt_reference_detectors.at(ihist),(int)dt_reference_detectors_energy_gates.at(ihist).first,(int)dt_reference_detectors_energy_gates.at(ihist).second),ftime_coincidence_nbins,ftime_coincidence_low,ftime_coincidence_high); 
             // h1_lisafast_time_differences[ihist][detid_idx]->GetXaxis()->SetTitle(Form("dt t(%d) - t(%d) (ns)",detectors.at(detid_idx),dt_reference_detectors.at(ihist)));
@@ -267,7 +267,7 @@ InitStatus LisaFastOnlineSpectra::Init()
         for (int detid_idx = 0; detid_idx < number_detectors; detid_idx++)
         {
             c_lisafast_time_differences_vs_energy->cd(detid_idx+1);
-            h2_lisafast_time_differences_vs_energy[ihist][detid_idx] = MakeTH2(dir_lisafast_time_differences[ihist], "F", Form("h1_lisafast_rel_time_det_%d_to_det_%d_vs_energy_energy_gate_%d_%d",detectors.at(detid_idx),dt_reference_detectors.at(ihist),(int)dt_reference_detectors_energy_gates.at(ihist).first,(int)dt_reference_detectors_energy_gates.at(ihist).second),Form("FATIMA dT t(%d) - t(%d) vs Energy, energy gate %d, %d",detectors.at(detid_idx),dt_reference_detectors.at(ihist),(int)dt_reference_detectors_energy_gates.at(ihist).first,(int)dt_reference_detectors_energy_gates.at(ihist).second),fenergy_nbins,fenergy_bin_low,fenergy_bin_high,ftime_coincidence_nbins,ftime_coincidence_low,ftime_coincidence_high, Form("Energy (Detector %d) [keV]",detectors.at(detid_idx)), Form("dT t(%d) - t(%d) [ns]",detectors.at(detid_idx),dt_reference_detectors.at(ihist)));
+            h2_lisafast_time_differences_vs_energy[ihist][detid_idx] = MakeTH2(dir_lisafast_time_differences[ihist], "F", Form("h1_lisafast_rel_time_det_%d_to_det_%d_vs_energy_energy_gate_%d_%d",detectors.at(detid_idx),dt_reference_detectors.at(ihist),(int)dt_reference_detectors_energy_gates.at(ihist).first,(int)dt_reference_detectors_energy_gates.at(ihist).second),Form("LISA_FAST dT t(%d) - t(%d) vs Energy, energy gate %d, %d",detectors.at(detid_idx),dt_reference_detectors.at(ihist),(int)dt_reference_detectors_energy_gates.at(ihist).first,(int)dt_reference_detectors_energy_gates.at(ihist).second),fenergy_nbins,fenergy_bin_low,fenergy_bin_high,ftime_coincidence_nbins,ftime_coincidence_low,ftime_coincidence_high, Form("Energy (Detector %d) [keV]",detectors.at(detid_idx)), Form("dT t(%d) - t(%d) [ns]",detectors.at(detid_idx),dt_reference_detectors.at(ihist)));
             // h2_lisafast_time_differences_vs_energy[ihist][detid_idx] = new TH2F(Form("h1_lisafast_rel_time_det_%d_to_det_%d_vs_energy_energy_gate_%d_%d",detectors.at(detid_idx),dt_reference_detectors.at(ihist),(int)dt_reference_detectors_energy_gates.at(ihist).first,(int)dt_reference_detectors_energy_gates.at(ihist).second),Form("lisafast delta time t(%d) - t(%d) vs energy, energy gate %d, %d",detectors.at(detid_idx),dt_reference_detectors.at(ihist),(int)dt_reference_detectors_energy_gates.at(ihist).first,(int)dt_reference_detectors_energy_gates.at(ihist).second),fenergy_nbins,fenergy_bin_low,fenergy_bin_high,ftime_coincidence_nbins,ftime_coincidence_low,ftime_coincidence_high); 
             // h2_lisafast_time_differences_vs_energy[ihist][detid_idx]->GetYaxis()->SetTitle(Form("dt t(%d) - t(%d) (ns)",detectors.at(detid_idx),dt_reference_detectors.at(ihist)));
             // h2_lisafast_time_differences_vs_energy[ihist][detid_idx]->GetXaxis()->SetTitle(Form("energy det %d (keV)",detectors.at(detid_idx)));
@@ -285,21 +285,21 @@ InitStatus LisaFastOnlineSpectra::Init()
     // h1_lisafast_rates = new TH1*[number_detectors];
     // detector_counters = new int[number_detectors];
     // detector_rates = new int[number_detectors];
-    // for (int i = 0; i < number_detectors; i++) h1_lisafast_rates[i] = MakeTH1(dir_lisafast_rates, "I", Form("h1_lisafast_rates_det_%i", i), Form("Rate in FATIMA detector %i", i), 1800, 0, 1800, "Time [2s]", kCyan, kBlack);
+    // for (int i = 0; i < number_detectors; i++) h1_lisafast_rates[i] = MakeTH1(dir_lisafast_rates, "I", Form("h1_lisafast_rates_det_%i", i), Form("Rate in LISA_FAST detector %i", i), 1800, 0, 1800, "Time [2s]", kCyan, kBlack);
     
-    run->GetHttpServer()->RegisterCommand("Reset_FATIMA_Histos", Form("/Objects/%s/->Reset_Histo()", GetName()));
+    run->GetHttpServer()->RegisterCommand("Reset_LISA_Fast_Histos", Form("/Objects/%s/->Reset_Histo()", GetName()));
 
     return kSUCCESS;
     
 }
 
 void LisaFastOnlineSpectra::Reset_Histo() {
-    c4LOG(info, "Resetting FATIMA histograms.");
+    c4LOG(info, "Resetting LISA Fast histograms.");
 
     // Assuming dir is a TDirectory pointer containing histograms
     if (dir_lisafast) {
         AnalysisTools_H::ResetHistogramsInDirectory(dir_lisafast);
-        c4LOG(info, "FATIMA histograms reset.");
+        c4LOG(info, "LISA Fast histograms reset.");
     } else {
         c4LOG(error, "Failed to get list of histograms from directory.");
     }
