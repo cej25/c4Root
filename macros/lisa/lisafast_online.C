@@ -46,12 +46,12 @@ void lisafast_online()
     FairLogger::GetLogger()->SetColoredLog(true);
 
     // ::: ONLINE READING
-    TString filename = "stream://134.95.192.83:6002";
+    //TString filename = "stream://134.95.192.83:6002";
     //TString filename = "stream://134.95.192.248:6002";
 
     // ::: OFFLINE READING - For testing
-    //TString inputpath = "/home/lisa/data/lmd/"; 
-    //TString filename = inputpath + "tamex_0012_0001.lmd";
+    TString inputpath = "/home/lisa/data/lmd/"; 
+    TString filename = inputpath + "tamex_0012_0001.lmd";
 
     // ::: OUTPUT - does not write a tree if it is not set later
     TString outputpath = "/home/lisa/data/"; //testing
@@ -136,8 +136,10 @@ void lisafast_online()
         std::vector<int> dets = {1,2};
         onlinelisafast->SetDetectorsToPlot(dets);
         
-        //onlinelisafast->AddReferenceDetectorForTimeDifferencesWithEnergyGates(1,1332);
-        //onlinelisafast->SetEnergyGateWidth(20);
+        onlinelisafast->AddReferenceDetectorForTimeDifferences(1);
+        onlinelisafast->AddReferenceDetectorForTimeDifferencesWithEnergyGates(1,1730);
+        //AddReferenceDetectorForTimeDifferencesWithEnergyGates (#reference detector, Energy of #N detector, Energy of Ref detector)
+        onlinelisafast->SetEnergyGateWidth(20);
         
         run->AddTask(onlinelisafast);
     }

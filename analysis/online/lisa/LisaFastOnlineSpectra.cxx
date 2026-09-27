@@ -160,9 +160,7 @@ InitStatus LisaFastOnlineSpectra::Init()
     {
         c_lisafast_time_spectra_divided->cd(ihist+1);
         h1_lisafast_abs_time[ihist] = MakeTH1(dir_lisafast_time_spectra, "F", Form("h1_lisafast_abs_time_%d",detectors.at(ihist)),Form("LisaFast absolute DAQ time detector %d",detectors.at(ihist)), 1e3, 0, 2.7e12, "Timestamp [ns]");
-        h1_lisafast_abs_time[ihist] = new TH1F(Form("h1_lisafast_abs_time_%d",detectors.at(ihist)),Form("LisaFast absolute DAQ time detector %d",detectors.at(ihist)),1000,0,2.7e12); // up to 45 mins in ns :)
-        h1_lisafast_abs_time[ihist]->GetXaxis()->SetTitle("Timestamp (ns)");
-        h1_lisafast_abs_time[ihist]->Draw();
+
     }
     c_lisafast_time_spectra_divided->cd(0);
     dir_lisafast_time_spectra->Append(c_lisafast_time_spectra_divided);
@@ -223,10 +221,6 @@ InitStatus LisaFastOnlineSpectra::Init()
             c_lisafast_time_differences->cd(detid_idx+1);
             
             h1_lisafast_time_differences[ihist][detid_idx] = MakeTH1(dir_lisafast_time_differences[ihist], "F", Form("h1_lisafast_rel_time_det_%d_to_det_%d_energy_gate_%d_%d",dt_reference_detectors.at(ihist),detectors.at(detid_idx),(int)dt_reference_detectors_energy_gates.at(ihist).first,(int)dt_reference_detectors_energy_gates.at(ihist).second),Form("LISA_FAST dT t(%d) - t(%d) gated %d and %d",detectors.at(detid_idx),dt_reference_detectors.at(ihist),(int)dt_reference_detectors_energy_gates.at(ihist).first,(int)dt_reference_detectors_energy_gates.at(ihist).second),ftime_coincidence_nbins,ftime_coincidence_low,ftime_coincidence_high, Form("dT t(%d) - t(%d) [ns]",detectors.at(detid_idx),dt_reference_detectors.at(ihist)), kMagenta, kBlue+2);
-
-            h1_lisafast_time_differences[ihist][detid_idx] = new TH1F(Form("h1_lisafast_rel_time_det_%d_to_det_%d_energy_gate_%d_%d",dt_reference_detectors.at(ihist),detectors.at(detid_idx),(int)dt_reference_detectors_energy_gates.at(ihist).first,(int)dt_reference_detectors_energy_gates.at(ihist).second),Form("lisafast delta time t(%d) - t(%d) gated %d and %d",detectors.at(detid_idx),dt_reference_detectors.at(ihist),(int)dt_reference_detectors_energy_gates.at(ihist).first,(int)dt_reference_detectors_energy_gates.at(ihist).second),ftime_coincidence_nbins,ftime_coincidence_low,ftime_coincidence_high); 
-            h1_lisafast_time_differences[ihist][detid_idx]->GetXaxis()->SetTitle(Form("dt t(%d) - t(%d) (ns)",detectors.at(detid_idx),dt_reference_detectors.at(ihist)));
-            h1_lisafast_time_differences[ihist][detid_idx]->Draw();
             
         }
         c_lisafast_time_differences->cd(0);
@@ -240,7 +234,7 @@ InitStatus LisaFastOnlineSpectra::Init()
         for (int detid_idx = 0; detid_idx < number_detectors; detid_idx++)
         {
             c_lisafast_time_differences_vs_energy->cd(detid_idx+1);
-            h2_lisafast_time_differences_vs_energy[ihist][detid_idx] = MakeTH2(dir_lisafast_time_differences[ihist], "F", Form("h1_lisafast_rel_time_det_%d_to_det_%d_vs_energy_energy_gate_%d_%d",detectors.at(detid_idx),dt_reference_detectors.at(ihist),(int)dt_reference_detectors_energy_gates.at(ihist).first,(int)dt_reference_detectors_energy_gates.at(ihist).second),Form("LISA_FAST dT t(%d) - t(%d) vs Energy, energy gate %d, %d",detectors.at(detid_idx),dt_reference_detectors.at(ihist),(int)dt_reference_detectors_energy_gates.at(ihist).first,(int)dt_reference_detectors_energy_gates.at(ihist).second),fenergy_nbins,fenergy_bin_low,fenergy_bin_high,ftime_coincidence_nbins,ftime_coincidence_low,ftime_coincidence_high, Form("Energy (Detector %d) [keV]",detectors.at(detid_idx)), Form("dT t(%d) - t(%d) [ns]",detectors.at(detid_idx),dt_reference_detectors.at(ihist)));
+            h2_lisafast_time_differences_vs_energy[ihist][detid_idx] = MakeTH2(dir_lisafast_time_differences[ihist], "F", Form("h2_lisafast_rel_time_det_%d_to_det_%d_vs_energy_energy_gate_%d_%d",detectors.at(detid_idx),dt_reference_detectors.at(ihist),(int)dt_reference_detectors_energy_gates.at(ihist).first,(int)dt_reference_detectors_energy_gates.at(ihist).second),Form("LISA_FAST dT t(%d) - t(%d) vs Energy, energy gate %d, %d",detectors.at(detid_idx),dt_reference_detectors.at(ihist),(int)dt_reference_detectors_energy_gates.at(ihist).first,(int)dt_reference_detectors_energy_gates.at(ihist).second),fenergy_nbins,fenergy_bin_low,fenergy_bin_high,ftime_coincidence_nbins,ftime_coincidence_low,ftime_coincidence_high, Form("Energy (Detector %d) [keV]",detectors.at(detid_idx)), Form("dT t(%d) - t(%d) [ns]",detectors.at(detid_idx),dt_reference_detectors.at(ihist)));
             // h2_lisafast_time_differences_vs_energy[ihist][detid_idx] = new TH2F(Form("h1_lisafast_rel_time_det_%d_to_det_%d_vs_energy_energy_gate_%d_%d",detectors.at(detid_idx),dt_reference_detectors.at(ihist),(int)dt_reference_detectors_energy_gates.at(ihist).first,(int)dt_reference_detectors_energy_gates.at(ihist).second),Form("lisafast delta time t(%d) - t(%d) vs energy, energy gate %d, %d",detectors.at(detid_idx),dt_reference_detectors.at(ihist),(int)dt_reference_detectors_energy_gates.at(ihist).first,(int)dt_reference_detectors_energy_gates.at(ihist).second),fenergy_nbins,fenergy_bin_low,fenergy_bin_high,ftime_coincidence_nbins,ftime_coincidence_low,ftime_coincidence_high); 
             // h2_lisafast_time_differences_vs_energy[ihist][detid_idx]->GetYaxis()->SetTitle(Form("dt t(%d) - t(%d) (ns)",detectors.at(detid_idx),dt_reference_detectors.at(ihist)));
             // h2_lisafast_time_differences_vs_energy[ihist][detid_idx]->GetXaxis()->SetTitle(Form("energy det %d (keV)",detectors.at(detid_idx)));
@@ -305,7 +299,7 @@ void LisaFastOnlineSpectra::Exec(Option_t* option)
             h1_lisafast_energy[detector_index1]->Fill(energy1);
             h1_lisafast_fastToT[detector_index1]->Fill(fast_ToT1);
             h2_lisafast_fast_v_slow[detector_index1]->Fill(fast_ToT1, slow_ToT1);
-            //h1_lisafast_abs_time[detector_index1]->Fill(fast_lead1);
+            h1_lisafast_abs_time[detector_index1]->Fill(fast_lead_epoch+fast_lead1);
             
             h2_lisafast_energy_vs_detid->Fill(energy1, detector_id1);
             h2_lisafast_energy_uncal_vs_detid->Fill(slow_ToT1, detector_id1);

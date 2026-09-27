@@ -174,8 +174,8 @@ class LisaFastOnlineSpectra : public FairTask
         float fenergy_bin_low = 0;
         float fenergy_bin_high = 1500;
         int ftime_coincidence_nbins = 1000;
-        float ftime_coincidence_low = -100;
-        float ftime_coincidence_high = 100;
+        float ftime_coincidence_low = -10;
+        float ftime_coincidence_high = 10;
 
         double energygate_width = 10;
             
