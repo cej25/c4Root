@@ -114,7 +114,6 @@ InitStatus LisaFastOnlineSpectra::Init()
     dir_lisafast_slowToT->Append(c_lisafast_slowToT);
 
     //fast ToT
-    // dir_lisafast_fastToT->cd();
     c_lisafast_fastToT  = new TCanvas("c_lisafast_fastToT","Fast ToT LisaFast spectra",650,350);
     c_lisafast_fastToT->Divide((number_detectors<5) ? number_detectors : 5,(number_detectors%5==0) ? (number_detectors/5) : (number_detectors/5 + 1));
     h1_lisafast_fastToT.resize(number_detectors);
@@ -122,8 +121,6 @@ InitStatus LisaFastOnlineSpectra::Init()
     {
         c_lisafast_fastToT->cd(ihist+1);
         h1_lisafast_fastToT[ihist] = MakeTH1(dir_lisafast_fastToT, "F", Form("h1_lisafast_fastToT_%d",detectors.at(ihist)),Form("LisaFast fast ToT detector %d",detectors.at(ihist)),ffast_tot_nbins,ffast_tot_bin_low,ffast_tot_bin_high, "ToT [ns]", kSpring, kBlue+2);
-        // h1_lisafast_fastToT[ihist] = new TH1F(Form("h1_lisafast_fastToT_%d",detectors.at(ihist)),Form("LisaFast fast ToT detector %d",detectors.at(ihist)),ffast_tot_nbins,ffast_tot_bin_low,ffast_tot_bin_high);
-        // h1_lisafast_fastToT[ihist]->GetXaxis()->SetTitle("ToT (ns)");
         h1_lisafast_fastToT[ihist]->Draw();
         
     }
@@ -131,88 +128,67 @@ InitStatus LisaFastOnlineSpectra::Init()
     dir_lisafast_fastToT->Add(c_lisafast_fastToT);
     
     //energy spectrum:
-    // dir_lisafast_energy_spectra->cd();
     c_lisafast_energy  = new TCanvas("c_lisafast_energy","LisaFast energy spectra",650,350);
     c_lisafast_energy->Divide((number_detectors<5) ? number_detectors : 5,(number_detectors%5==0) ? (number_detectors/5) : (number_detectors/5 + 1));
     h1_lisafast_energy.resize(number_detectors);
     for (int ihist = 0; ihist < number_detectors; ihist++){
         c_lisafast_energy->cd(ihist+1);
         h1_lisafast_energy[ihist] = MakeTH1(dir_lisafast_energy_spectra, "F", Form("h1_lisafast_energy_%d",detectors.at(ihist)),Form("LisaFast energy detector %d",detectors.at(ihist)),fenergy_nbins,fenergy_bin_low,fenergy_bin_high, "Energy [keV]", kOrange-3, kBlue+2);
-        // h1_lisafast_energy[ihist] = new TH1F(Form("h1_lisafast_energy_%d",detectors.at(ihist)),Form("LisaFast energy detector %d",detectors.at(ihist)),fenergy_nbins,fenergy_bin_low,fenergy_bin_high);
-        // h1_lisafast_energy[ihist]->GetXaxis()->SetTitle("energy (keV)");
         h1_lisafast_energy[ihist]->Draw();
     }
     c_lisafast_energy->cd(0);
     dir_lisafast_energy_spectra->Append(c_lisafast_energy);
     
     // fast vs slow:
-    // dir_lisafast_fast_v_slow->cd();
     c_lisafast_fast_v_slow  = new TCanvas("c_lisafast_fast_v_slow","fast vs slow ToT LisaFast spectra",650,350);
     c_lisafast_fast_v_slow->Divide((number_detectors<5) ? number_detectors : 5,(number_detectors%5==0) ? (number_detectors/5) : (number_detectors/5 + 1));
     h2_lisafast_fast_v_slow.resize(number_detectors);
     for (int ihist = 0; ihist < number_detectors; ihist++){
         c_lisafast_fast_v_slow->cd(ihist+1);
         h2_lisafast_fast_v_slow[ihist] = MakeTH2(dir_lisafast_fast_v_slow, "F", Form("h2_lisafast_fast_v_slow_ToT_%d",detectors.at(ihist)),Form("LISA_FAST fast vs. slow detector %d",detectors.at(ihist)),ffast_tot_nbins,ffast_tot_bin_low,ffast_tot_bin_high,fslow_tot_nbins,fslow_tot_bin_low,fslow_tot_bin_high, "Fast ToT [ns]", "Slow ToT [ns]");
-        // h2_lisafast_fast_v_slow[ihist] = new TH2F(Form("h2_lisafast_fast_v_slow_ToT_%d",detectors.at(ihist)),Form("LISA_FAST fast vs. slow detector %d",detectors.at(ihist)),ffast_tot_nbins,ffast_tot_bin_low,ffast_tot_bin_high,fslow_tot_nbins,fslow_tot_bin_low,fslow_tot_bin_high);
-        // h2_lisafast_fast_v_slow[ihist]->GetXaxis()->SetTitle("fast ToT (ns)");
-        // h2_lisafast_fast_v_slow[ihist]->GetYaxis()->SetTitle("slow ToT (ns)");
         h2_lisafast_fast_v_slow[ihist]->Draw();        
     }
     c_lisafast_fast_v_slow->cd(0);
     dir_lisafast_fast_v_slow->Append(c_lisafast_fast_v_slow);
     
-    // Time spectra:
-    // dir_lisafast_time_spectra->cd();
-    // c_lisafast_time_spectra_divided  = new TCanvas("c_lisafast_time_spectra_divided","LisaFast absolute time spectra",650,350);
-    // c_lisafast_time_spectra_divided->Divide((number_detectors<5) ? number_detectors : 5,(number_detectors%5==0) ? (number_detectors/5) : (number_detectors/5 + 1));
-    // h1_lisafast_abs_time.resize(number_detectors);
-    // for (int ihist = 0; ihist < number_detectors; ihist++)
-    // {
-    //     c_lisafast_time_spectra_divided->cd(ihist+1);
-    //     h1_lisafast_abs_time[ihist] = MakeTH1(dir_lisafast_time_spectra, "F", Form("h1_lisafast_abs_time_%d",detectors.at(ihist)),Form("LisaFast absolute DAQ time detector %d",detectors.at(ihist)), 1e3, 0, 2.7e12, "Timestamp [ns]");
-    //     // h1_lisafast_abs_time[ihist] = new TH1F(Form("h1_lisafast_abs_time_%d",detectors.at(ihist)),Form("LisaFast absolute DAQ time detector %d",detectors.at(ihist)),1000,0,2.7e12); // up to 45 mins in ns :)
-    //     // h1_lisafast_abs_time[ihist]->GetXaxis()->SetTitle("Timestamp (ns)");
-    //     h1_lisafast_abs_time[ihist]->Draw();
-    // }
-    // c_lisafast_time_spectra_divided->cd(0);
-    // dir_lisafast_time_spectra->Append(c_lisafast_time_spectra_divided);
+    //Time spectra:
+    dir_lisafast_time_spectra->cd();
+    c_lisafast_time_spectra_divided  = new TCanvas("c_lisafast_time_spectra_divided","LisaFast absolute time spectra",650,350);
+    c_lisafast_time_spectra_divided->Divide((number_detectors<5) ? number_detectors : 5,(number_detectors%5==0) ? (number_detectors/5) : (number_detectors/5 + 1));
+    h1_lisafast_abs_time.resize(number_detectors);
+    for (int ihist = 0; ihist < number_detectors; ihist++)
+    {
+        c_lisafast_time_spectra_divided->cd(ihist+1);
+        h1_lisafast_abs_time[ihist] = MakeTH1(dir_lisafast_time_spectra, "F", Form("h1_lisafast_abs_time_%d",detectors.at(ihist)),Form("LisaFast absolute DAQ time detector %d",detectors.at(ihist)), 1e3, 0, 2.7e12, "Timestamp [ns]");
+        h1_lisafast_abs_time[ihist] = new TH1F(Form("h1_lisafast_abs_time_%d",detectors.at(ihist)),Form("LisaFast absolute DAQ time detector %d",detectors.at(ihist)),1000,0,2.7e12); // up to 45 mins in ns :)
+        h1_lisafast_abs_time[ihist]->GetXaxis()->SetTitle("Timestamp (ns)");
+        h1_lisafast_abs_time[ihist]->Draw();
+    }
+    c_lisafast_time_spectra_divided->cd(0);
+    dir_lisafast_time_spectra->Append(c_lisafast_time_spectra_divided);
 
     //2D energy spectrum
-    // dir_lisafast_energy_spectra->cd();
     c_lisafast_energy_vs_detid = new TCanvas("c_lisafast_energy_vs_detid","LisaFast energy spectrum",650,350);
     h2_lisafast_energy_vs_detid = MakeTH2(dir_lisafast_energy_spectra, "F", "h2_lisafast_energy_vs_detid","LISA_FAST energies",fenergy_nbins,fenergy_bin_low,fenergy_bin_high,max_detector_id+1,0-0.5,max_detector_id+0.5, "Energy [keV]", "Detector");
-    // h2_lisafast_energy_vs_detid = new TH2F("h2_lisafast_energy_vs_detid","LISA_FAST energies",fenergy_nbins,fenergy_bin_low,fenergy_bin_high,max_detector_id+1,0-0.5,max_detector_id+0.5); //such that the y-axis is the detector id and not the index
-    // h2_lisafast_energy_vs_detid->GetXaxis()->SetTitle("Energy (keV)");
-    // h2_lisafast_energy_vs_detid->GetYaxis()->SetTitle("Detector nr.");
     h2_lisafast_energy_vs_detid->Draw();
     dir_lisafast_energy_spectra->Append(c_lisafast_energy_vs_detid);
 
     //2D uncalibrated energy spectrum
     c_lisafast_energy_uncal = new TCanvas("c_lisafast_energy_uncal","LisaFast energy spectrum",650,350);
     h2_lisafast_energy_uncal_vs_detid = MakeTH2(dir_lisafast_energy_spectra, "F", "h2_lisafast_energy_uncal_vs_detid","LISA_FAST uncal energy (arb.)",fslow_tot_nbins,fslow_tot_bin_low,fslow_tot_bin_high,max_detector_id+1,0-0.5,max_detector_id+0.5, "Energy [a.u.]", "Detector");
-    // h2_lisafast_energy_uncal_vs_detid = new TH2F("h2_lisafast_energy_uncal_vs_detid","LISA_FAST uncal energy (arb.)",fslow_tot_nbins,fslow_tot_bin_low,fslow_tot_bin_high,max_detector_id+1,0-0.5,max_detector_id+0.5);
-    // h2_lisafast_energy_uncal_vs_detid->GetXaxis()->SetTitle("Energy (arb.)");
-    // h2_lisafast_energy_uncal_vs_detid->GetYaxis()->SetTitle("Detector nr.");
     h2_lisafast_energy_uncal_vs_detid->Draw();
     dir_lisafast_energy_spectra->Append(c_lisafast_energy_uncal);
 
     // Hit patterns:
-    // dir_lisafast_hitpattern->cd();
     c_lisafast_hitpatterns  = new TCanvas("c_lisafast_hitpatterns","LisaFast hit patterns",650,350);
     c_lisafast_hitpatterns->Divide(2,1);
 
     c_lisafast_hitpatterns->cd(1);
     h1_lisafast_hitpattern_slow = MakeTH1(dir_lisafast_hitpattern, "I", "h1_lisafast_hitpattern_slow","LISA_FAST slow hit patterns",max_detector_id+1,0-0.5,max_detector_id+0.5, "Detector", kRed-3, kBlack);
-    // h1_lisafast_hitpattern_slow = new TH1F("h1_lisafast_hitpattern_slow","LISA_FAST slow hit patterns",max_detector_id+1,0-0.5,max_detector_id+0.5);
-    // h1_lisafast_hitpattern_slow->GetXaxis()->SetTitle("Detector nr.");
-    // h1_lisafast_hitpattern_slow->GetYaxis()->SetTitle("Hits");
     h1_lisafast_hitpattern_slow->Draw();
     
     c_lisafast_hitpatterns->cd(2);
     h1_lisafast_hitpattern_fast = MakeTH1(dir_lisafast_hitpattern, "I", "h1_lisafast_hitpattern_fast","LISA_FAST fast hit patterns",max_detector_id+1,0-0.5,max_detector_id+0.5, "Detector", kRed-3, kBlack);
-    // h1_lisafast_hitpattern_fast = new TH1F("h1_lisafast_hitpattern_fast","LISA_FAST fast hit patterns",max_detector_id+1,0-0.5,max_detector_id+0.5);
-    // h1_lisafast_hitpattern_fast->GetXaxis()->SetTitle("Detector nr.");
-    // h1_lisafast_hitpattern_fast->GetYaxis()->SetTitle("Hits");
     h1_lisafast_hitpattern_fast->Draw();
     c_lisafast_hitpatterns->cd(0);
     dir_lisafast_hitpattern->Append(c_lisafast_hitpatterns);
@@ -220,9 +196,6 @@ InitStatus LisaFastOnlineSpectra::Init()
     c_lisafast_event_multiplicity  = new TCanvas("c_lisafast_event_multiplicity","LisaFast event multiplicities",650,350);
     
     h1_lisafast_multiplicity = MakeTH1(dir_lisafast_hitpattern, "I", "h1_lisafast_multiplicity","LISA_FAST event multiplicity",20,0,20, "Event Multiplicity", kRed-3, kBlack);
-    // h1_lisafast_multiplicity = new TH1F("h1_lisafast_multiplicity","LISA_FAST event multiplicity",20,0,20);
-    // h1_lisafast_multiplicity->GetXaxis()->SetTitle("Event multiplicity");
-    // h1_lisafast_multiplicity->GetYaxis()->SetTitle("Counts");
     h1_lisafast_multiplicity->Draw();
     c_lisafast_event_multiplicity->cd(0);
     dir_lisafast_hitpattern->Append(c_lisafast_event_multiplicity);
@@ -251,8 +224,8 @@ InitStatus LisaFastOnlineSpectra::Init()
             
             h1_lisafast_time_differences[ihist][detid_idx] = MakeTH1(dir_lisafast_time_differences[ihist], "F", Form("h1_lisafast_rel_time_det_%d_to_det_%d_energy_gate_%d_%d",dt_reference_detectors.at(ihist),detectors.at(detid_idx),(int)dt_reference_detectors_energy_gates.at(ihist).first,(int)dt_reference_detectors_energy_gates.at(ihist).second),Form("LISA_FAST dT t(%d) - t(%d) gated %d and %d",detectors.at(detid_idx),dt_reference_detectors.at(ihist),(int)dt_reference_detectors_energy_gates.at(ihist).first,(int)dt_reference_detectors_energy_gates.at(ihist).second),ftime_coincidence_nbins,ftime_coincidence_low,ftime_coincidence_high, Form("dT t(%d) - t(%d) [ns]",detectors.at(detid_idx),dt_reference_detectors.at(ihist)), kMagenta, kBlue+2);
 
-            // h1_lisafast_time_differences[ihist][detid_idx] = new TH1F(Form("h1_lisafast_rel_time_det_%d_to_det_%d_energy_gate_%d_%d",dt_reference_detectors.at(ihist),detectors.at(detid_idx),(int)dt_reference_detectors_energy_gates.at(ihist).first,(int)dt_reference_detectors_energy_gates.at(ihist).second),Form("lisafast delta time t(%d) - t(%d) gated %d and %d",detectors.at(detid_idx),dt_reference_detectors.at(ihist),(int)dt_reference_detectors_energy_gates.at(ihist).first,(int)dt_reference_detectors_energy_gates.at(ihist).second),ftime_coincidence_nbins,ftime_coincidence_low,ftime_coincidence_high); 
-            // h1_lisafast_time_differences[ihist][detid_idx]->GetXaxis()->SetTitle(Form("dt t(%d) - t(%d) (ns)",detectors.at(detid_idx),dt_reference_detectors.at(ihist)));
+            h1_lisafast_time_differences[ihist][detid_idx] = new TH1F(Form("h1_lisafast_rel_time_det_%d_to_det_%d_energy_gate_%d_%d",dt_reference_detectors.at(ihist),detectors.at(detid_idx),(int)dt_reference_detectors_energy_gates.at(ihist).first,(int)dt_reference_detectors_energy_gates.at(ihist).second),Form("lisafast delta time t(%d) - t(%d) gated %d and %d",detectors.at(detid_idx),dt_reference_detectors.at(ihist),(int)dt_reference_detectors_energy_gates.at(ihist).first,(int)dt_reference_detectors_energy_gates.at(ihist).second),ftime_coincidence_nbins,ftime_coincidence_low,ftime_coincidence_high); 
+            h1_lisafast_time_differences[ihist][detid_idx]->GetXaxis()->SetTitle(Form("dt t(%d) - t(%d) (ns)",detectors.at(detid_idx),dt_reference_detectors.at(ihist)));
             h1_lisafast_time_differences[ihist][detid_idx]->Draw();
             
         }
@@ -280,13 +253,7 @@ InitStatus LisaFastOnlineSpectra::Init()
 
     dir_lisafast->cd();
 
-    
-    // ::: Rates :::: //
-    // h1_lisafast_rates = new TH1*[number_detectors];
-    // detector_counters = new int[number_detectors];
-    // detector_rates = new int[number_detectors];
-    // for (int i = 0; i < number_detectors; i++) h1_lisafast_rates[i] = MakeTH1(dir_lisafast_rates, "I", Form("h1_lisafast_rates_det_%i", i), Form("Rate in LISA_FAST detector %i", i), 1800, 0, 1800, "Time [2s]", kCyan, kBlack);
-    
+      
     run->GetHttpServer()->RegisterCommand("Reset_LISA_Fast_Histos", Form("/Objects/%s/->Reset_Histo()", GetName()));
 
     return kSUCCESS;
@@ -338,7 +305,7 @@ void LisaFastOnlineSpectra::Exec(Option_t* option)
             h1_lisafast_energy[detector_index1]->Fill(energy1);
             h1_lisafast_fastToT[detector_index1]->Fill(fast_ToT1);
             h2_lisafast_fast_v_slow[detector_index1]->Fill(fast_ToT1, slow_ToT1);
-            //h1_lisafast_abs_time[detector_index1]->Fill(fast_lead_epoch+fast_lead1);
+            //h1_lisafast_abs_time[detector_index1]->Fill(fast_lead1);
             
             h2_lisafast_energy_vs_detid->Fill(energy1, detector_id1);
             h2_lisafast_energy_uncal_vs_detid->Fill(slow_ToT1, detector_id1);
@@ -346,52 +313,52 @@ void LisaFastOnlineSpectra::Exec(Option_t* option)
             if (fast_ToT1 != 0 ) h1_lisafast_hitpattern_fast->Fill(detector_id1);
             if (slow_ToT1 != 0 ) h1_lisafast_hitpattern_slow->Fill(detector_id1);
             
-            // //TWO FOLD COINCIDENCES: ????
-            // if (nHits >= 2 && number_reference_detectors > 0){
-            //     for (Int_t ihit2 = 0; ihit2 < nHits; ihit2++){
-            //         if (ihit2 == ihit) {continue;}
+            //TWO FOLD COINCIDENCES: ????
+            if (nHits >= 2 && number_reference_detectors > 0){
+                for (Int_t ihit2 = 0; ihit2 < nHits; ihit2++){
+                    if (ihit2 == ihit) {continue;}
 
-            //         LisaFastCalData * hit2 = (LisaFastCalData*)fHitLisaFast->At(ihit2); // I want this to be the reference detector for easier code:
+                    LisaFastCalData * hit2 = (LisaFastCalData*)fHitLisaFast->At(ihit2); // I want this to be the reference detector for easier code:
                     
-            //         int detector_id2 = hit2->Get_detector_id();
-            //         double slow_ToT2 = hit2->Get_slow_ToT();
-            //         double fast_ToT2 = hit2->Get_fast_ToT();
-            //         double energy2 = hit2->Get_energy();
-            //         double fast_lead2 = hit2->Get_fast_lead_time();
-            //         int64_t fast_lead_epoch2 = hit2->Get_fast_lead_epoch();
+                    int detector_id2 = hit2->Get_detector_id();
+                    double slow_ToT2 = hit2->Get_slow_ToT();
+                    double fast_ToT2 = hit2->Get_fast_ToT();
+                    double energy2 = hit2->Get_energy();
+                    double fast_lead2 = hit2->Get_fast_lead_time();
+                    int64_t fast_lead_epoch2 = hit2->Get_fast_lead_epoch();
 
                         
-            //         for (int detector_index2 = 0; detector_index2<number_reference_detectors; detector_index2++){
+                    for (int detector_index2 = 0; detector_index2<number_reference_detectors; detector_index2++){
                     
-            //         if (detector_id2 == dt_reference_detectors.at(detector_index2)) {
+                    if (detector_id2 == dt_reference_detectors.at(detector_index2)) {
                     
-            //         double dt = fast_lead1 - fast_lead2 + (fast_lead_epoch - fast_lead_epoch2) - lisafast_configuration->GetTimeshiftCoefficient(detector_id2,detector_id1); 
-            //         //c4LOG(info,Form("det1 = %i, det2 = %i, shift = %f",detector_id1,detector_id2,lisafast_configuration->GetTimeshiftCoefficient(detector_id2,detector_id1)));
-            //         //c4LOG(info,Form("epoch1 = %i, epoch2 = %i, depoch = %i",fast_lead_epoch,fast_lead_epoch2,fast_lead_epoch-fast_lead_epoch2));
-            //         //c4LOG(info,Form("time1 = %f, time2 = %f, dtime = %f",fast_lead1,fast_lead2,fast_lead1-fast_lead2));
-            //         //c4LOG(info,Form("dt = %f",dt));
+                    double dt = fast_lead1 - fast_lead2;//+ (fast_lead_epoch - fast_lead_epoch2) - lisafast_configuration->GetTimeshiftCoefficient(detector_id2,detector_id1); 
+                    //c4LOG(info,Form("det1 = %i, det2 = %i, shift = %f",detector_id1,detector_id2,lisafast_configuration->GetTimeshiftCoefficient(detector_id2,detector_id1)));
+                    //c4LOG(info,Form("epoch1 = %i, epoch2 = %i, depoch = %i",fast_lead_epoch,fast_lead_epoch2,fast_lead_epoch-fast_lead_epoch2));
+                    //c4LOG(info,Form("time1 = %f, time2 = %f, dtime = %f",fast_lead1,fast_lead2,fast_lead1-fast_lead2));
+                    //c4LOG(info,Form("dt = %f",dt));
                     
 
-            //         if (dt_reference_detectors_energy_gates.at(detector_index2).first != 0 && dt_reference_detectors_energy_gates.at(detector_index2).second != 0){
-            //             if ((TMath::Abs(energy2 - dt_reference_detectors_energy_gates.at(detector_index2).second) < energygate_width) && (TMath::Abs(energy1 - dt_reference_detectors_energy_gates.at(detector_index2).first) < energygate_width)){
-            //                 h1_lisafast_time_differences[detector_index2][detector_index1]->Fill(dt);
-            //                 h2_lisafast_time_differences_vs_energy[detector_index2][detector_index1]->Fill(energy1,dt);
-            //             }
-            //         }else if(dt_reference_detectors_energy_gates.at(detector_index2).second != 0 && dt_reference_detectors_energy_gates.at(detector_index2).first == 0){
-            //             if ((TMath::Abs(energy2 - dt_reference_detectors_energy_gates.at(detector_index2).second) < energygate_width)){
-            //                 h1_lisafast_time_differences[detector_index2][detector_index1]->Fill(dt);
-            //                 h2_lisafast_time_differences_vs_energy[detector_index2][detector_index1]->Fill(energy1,dt);
-            //             }
-            //         }
-            //         else{ // no gates
-            //             h1_lisafast_time_differences[detector_index2][detector_index1]->Fill(dt);
-            //             h2_lisafast_time_differences_vs_energy[detector_index2][detector_index1]->Fill(energy1,dt);
-            //         }
-            //         }
+                    if (dt_reference_detectors_energy_gates.at(detector_index2).first != 0 && dt_reference_detectors_energy_gates.at(detector_index2).second != 0){
+                        if ((TMath::Abs(energy2 - dt_reference_detectors_energy_gates.at(detector_index2).second) < energygate_width) && (TMath::Abs(energy1 - dt_reference_detectors_energy_gates.at(detector_index2).first) < energygate_width)){
+                            h1_lisafast_time_differences[detector_index2][detector_index1]->Fill(dt);
+                            h2_lisafast_time_differences_vs_energy[detector_index2][detector_index1]->Fill(energy1,dt);
+                        }
+                    }else if(dt_reference_detectors_energy_gates.at(detector_index2).second != 0 && dt_reference_detectors_energy_gates.at(detector_index2).first == 0){
+                        if ((TMath::Abs(energy2 - dt_reference_detectors_energy_gates.at(detector_index2).second) < energygate_width)){
+                            h1_lisafast_time_differences[detector_index2][detector_index1]->Fill(dt);
+                            h2_lisafast_time_differences_vs_energy[detector_index2][detector_index1]->Fill(energy1,dt);
+                        }
+                    }
+                    else{ // no gates
+                        h1_lisafast_time_differences[detector_index2][detector_index1]->Fill(dt);
+                        h2_lisafast_time_differences_vs_energy[detector_index2][detector_index1]->Fill(energy1,dt);
+                    }
+                    }
                     
-            //         }
-            //     }
-            // }
+                    }
+                }
+            }
         }
 
 

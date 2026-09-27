@@ -60,14 +60,14 @@ void lisafast_make_trees()
 
     
     // ::: FILE  PATH
-    TString inputpath = "/home/lisa/data/server/groups/wimmer/laboratory/lmd/";
-    TString lmdname = "tamex_0010_0001.lmd";
+    TString inputpath = "/home/lisa/data/server1/groups/wimmer/laboratory/lmd/";
+    TString lmdname = "tamex_0016_0001.lmd";
     TString filename = inputpath + lmdname;
 
     //TString filename = Form(inputpath + "run_%04d_*.lmd", fileNumber);
 
     // ::: OUTPUT 
-    TString outputpath = "/home/lisa/data/server/groups/wimmer/laboratory/trees/";
+    TString outputpath = "/home/lisa/data/server1/groups/wimmer/laboratory/trees/";
 
     TString outputFilename = outputpath + TString(lmdname).ReplaceAll(".lmd", "_cal_tree.root");
 

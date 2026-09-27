@@ -150,6 +150,8 @@ class LisaFastOnlineSpectra : public FairTask
         std::vector<TH1*> h1_lisafast_fastToT;
         std::vector<TH1*> h1_lisafast_energy;
         std::vector<TH2*> h2_lisafast_fast_v_slow;
+        std::vector<TH1*> h1_lisafast_abs_time;
+
 
         TH1 * h1_lisafast_multiplicity;
         TH2 * h2_lisafast_energy_vs_detid;
