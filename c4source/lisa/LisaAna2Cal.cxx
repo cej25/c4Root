@@ -164,10 +164,13 @@ void LisaAna2Cal::Exec(Option_t* option)
                 de_dx = lisaAnaItem.Get_channel_energy_MWD()/thickness;
                 //add theta calculation 
                 
-                double r0     = 231.0;  // mm
-		double theta0 = 30.0;   // deg
-		double phi0   = 0.0;    // deg
-
+                
+                if (layer_id == 1) {
+                
+               		double r0     = 231.0;  // mm
+			double theta0 = 30.0;   // deg
+			double phi0   = 0.0;    // deg
+			
 		TVector3 center;
 
 		center.SetMagThetaPhi(r0, theta0 * TMath::DegToRad(), phi0   * TMath::DegToRad());
@@ -195,6 +198,42 @@ void LisaAna2Cal::Exec(Option_t* option)
 		TVector3 pColumn = center + u * eTheta;
 
 		laboratory_angle = pColumn.Theta() * TMath::RadToDeg();
+                }
+                
+                if (layer_id == 2) {
+                
+                	double r0     = 218.0;  // mm
+			double theta0 = 45.0;   // deg
+			double phi0   = 0.0;    // deg
+			
+		TVector3 center;
+
+		center.SetMagThetaPhi(r0, theta0 * TMath::DegToRad(), phi0   * TMath::DegToRad());
+
+		double th = theta0 * TMath::DegToRad();
+		double ph = phi0   * TMath::DegToRad();
+
+		TVector3 eTheta(cos(th) * cos(ph),cos(th) * sin(ph), -sin(th));
+
+		TVector3 ePhi(-sin(ph), cos(ph), 0);
+
+		const double pitch = 5.7;  // mm
+
+
+
+		const double xLocal = static_cast<double>(xpos - 2);
+		const double yLocal = static_cast<double>(ypos - 2);
+
+		const double u = xLocal * pitch;
+		const double v = yLocal * pitch;
+
+		TVector3 p = center + u * eTheta - v * ePhi;
+
+
+		TVector3 pColumn = center + u * eTheta;
+
+		laboratory_angle = pColumn.Theta() * TMath::RadToDeg();
+		}
                 
                 //
 

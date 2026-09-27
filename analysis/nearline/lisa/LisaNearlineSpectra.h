@@ -166,6 +166,8 @@ class LisaNearlineSpectra : public FairTask
         std::vector<TH1I*> h1_multiplicity_per_layer; ;
         TH1I* h1_layer_multiplicity;
         TH1I* h1_layer_fired;
+        
+        std::vector<std::vector<std::vector<TH3F*>>> h3_theta_per_position;
 
         //  ::: Energy
         //      Febex

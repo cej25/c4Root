@@ -145,6 +145,8 @@ InitStatus LisaNearlineSpectra::Init()
     dir_dedx_layer_layer = dir_dedx->mkdir("LayerVSLayer");
 
     dir_traces = dir_lisa->mkdir("Traces");
+    
+    dir_theta = dir_lisa->mkdir("Layer_Angles");
 
     dir_drift = dir_lisa->mkdir("Drifts");
     dir_febex_drift = dir_drift->mkdir("Febex_Drift");
@@ -341,6 +343,28 @@ InitStatus LisaNearlineSpectra::Init()
     h1_layer_multiplicity = new TH1I("h1_layer_multiplicity", "Layer Multiplicity", layer_number+1, -0.5, layer_number+0.5);
     //...................................END OF STATS   
     //c4LOG(info, "Energy");
+    
+    // ::: L A B   A N G L E S :::
+    
+   h3_theta_per_position.resize(layer_number - 1);
+	
+	for (int i = 0; i < layer_number - 1; i++)
+	{
+    	h3_theta_per_position[i] = new TH3F(
+        	Form("h3_theta_per_position_layer_%i", i + 1),
+        	Form("xpos vs ypos vs theta, Layer %i", i + 1),
+
+        5, 0, 4,
+        5, 0, 4,
+        40, 20, 60);
+
+    	h3_theta_per_position[i]->GetXaxis()->SetTitle("x position [a.u.]");
+    	h3_theta_per_position[i]->GetYaxis()->SetTitle("y position [a.u.]");
+    	h3_theta_per_position[i]->GetZaxis()->SetTitle("theta [deg]");
+
+    	h3_theta_per_position[i]->SetOption("BOX");
+	
+	}
 
     // ::: E N E R G Y :::
     dir_energy->cd();
@@ -1000,6 +1024,7 @@ void LisaNearlineSpectra::Exec(Option_t* option)
         city = lisaCalItem.Get_city();
         int xpos = lisaCalItem.Get_xposition();
         int ypos = lisaCalItem.Get_yposition();
+        int lab_deg = lisaCalItem.Get_laboratory_angle();
         int pileup = lisaCalItem.Get_pileup();
         int overflow = lisaCalItem.Get_overflow();
         float energy = lisaCalItem.Get_energy();
@@ -1233,6 +1258,23 @@ void LisaNearlineSpectra::Exec(Option_t* option)
         if(multiplicity[i] != 0) layers_fired++;
     }
     h1_layer_multiplicity->Fill(layers_fired);
+
+    // ::: Theta
+
+	for (int i = 0; i < layer_number - 1; i++)
+	{
+    	for (int j = 0; j < xpos[i].size(); j++)
+    	{
+    	for (int k = 0; k < ypos[i].size(); k++)
+    	{
+        	h3_theta_per_position[i]->Fill(
+            	xpos[i][j][k],
+           	ypos[i][j][k],
+            	lab_deg[i][j][k]
+        	);
+        }
+    }
+}
 
 
     //....................................
