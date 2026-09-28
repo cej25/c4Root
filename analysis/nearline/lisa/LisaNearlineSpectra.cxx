@@ -38,6 +38,7 @@
 #include "TFolder.h"
 #include "TH1F.h"
 #include "TH2F.h"
+#include "TH3F.h"
 #include "TGraph.h"
 #include "THttpServer.h"
 #include "TMath.h"
@@ -345,14 +346,14 @@ InitStatus LisaNearlineSpectra::Init()
     //c4LOG(info, "Energy");
     
     // ::: L A B   A N G L E S :::
-    
-   h3_theta_per_position.resize(layer_number - 1);
+    dir_theta->cd();
+   h3_theta_per_position.resize(layer_number);
 	
 	for (int i = 0; i < layer_number - 1; i++)
 	{
     	h3_theta_per_position[i] = new TH3F(
-        	Form("h3_theta_per_position_layer_%i", i + 1),
-        	Form("xpos vs ypos vs theta, Layer %i", i + 1),
+        	Form("h3_theta_per_position_layer_%i", i+1),
+        	Form("xpos vs ypos vs theta, Layer %i", i+1),
 
         5, 0, 4,
         5, 0, 4,
@@ -361,10 +362,9 @@ InitStatus LisaNearlineSpectra::Init()
     	h3_theta_per_position[i]->GetXaxis()->SetTitle("x position [a.u.]");
     	h3_theta_per_position[i]->GetYaxis()->SetTitle("y position [a.u.]");
     	h3_theta_per_position[i]->GetZaxis()->SetTitle("theta [deg]");
-
-    	h3_theta_per_position[i]->SetOption("BOX");
-	
+	h3_theta_per_position[i]->SetOption("BOX2");	
 	}
+
 
     // ::: E N E R G Y :::
     dir_energy->cd();
@@ -994,6 +994,7 @@ void LisaNearlineSpectra::Exec(Option_t* option)
     de_dx_layer.resize(layer_number); 
 
     std::vector<float> de_dx_layer_ch[layer_number][xmax][ymax];
+    std::vector<float> theta_per_position[layer_number][xmax][ymax];
 
     // ::: Energy gated - Layer
     std::vector<float> energy_layer_gated[gate_number][layer_number];
@@ -1024,7 +1025,7 @@ void LisaNearlineSpectra::Exec(Option_t* option)
         city = lisaCalItem.Get_city();
         int xpos = lisaCalItem.Get_xposition();
         int ypos = lisaCalItem.Get_yposition();
-        int lab_deg = lisaCalItem.Get_laboratory_angle();
+        double lab_deg = lisaCalItem.Get_laboratory_angle();
         int pileup = lisaCalItem.Get_pileup();
         int overflow = lisaCalItem.Get_overflow();
         float energy = lisaCalItem.Get_energy();
@@ -1103,6 +1104,7 @@ void LisaNearlineSpectra::Exec(Option_t* option)
         energy_MWD_layer[layer-1].emplace_back(energy_MWD_GM);
         de_dx_layer[layer-1].emplace_back(de_dx_GM);
         de_dx_layer_ch[layer-1][xpos][ypos].emplace_back(de_dx_GM);
+	theta_per_position[layer-1][xpos][ypos].emplace_back(lab_deg);
         
         // Loop over gates for LISA FEBEX
         int g = 0;
@@ -1261,20 +1263,19 @@ void LisaNearlineSpectra::Exec(Option_t* option)
 
     // ::: Theta
 
-	for (int i = 0; i < layer_number - 1; i++)
-	{
-    	for (int j = 0; j < xpos[i].size(); j++)
-    	{
-    	for (int k = 0; k < ypos[i].size(); k++)
-    	{
-        	h3_theta_per_position[i]->Fill(
-            	xpos[i][j][k],
-           	ypos[i][j][k],
-            	lab_deg[i][j][k]
-        	);
-        }
+for ( int i = 0; i < layer_number-1; i++)
+    {
+        for( int j = 0; j < 5; j++)
+        {
+            for ( int k = 0; k < 5; k++)
+            {
+                for (int l = 0; l < theta_per_position[i][j][k].size(); l++)
+                {
+                        h3_theta_per_position[i]->Fill(j, k, theta_per_position[i][j][k][l]);
+                }
+            }
+        }    
     }
-}
 
 
     //....................................

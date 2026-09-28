@@ -32,13 +32,14 @@ class EventHeader;
 class TCanvas;
 class TH1F;
 class TH2F;
+class TH3F;
 class TH1I;
 class TH2I;
 class TFolder;
 class TDirectory;
 class TH2;
 class TH1;
-
+class TH3;
 
 class LisaNearlineSpectra : public FairTask
 {
@@ -130,7 +131,8 @@ class LisaNearlineSpectra : public FairTask
         TDirectory* dir_MWD_channel;
         TDirectory* dir_dedx_channel;
         TDirectory* dir_dedx_layer_layer;
-
+	
+	TDirectory* dir_theta;
         //  Traces
         TDirectory* dir_traces;
         //  Drift
@@ -167,7 +169,7 @@ class LisaNearlineSpectra : public FairTask
         TH1I* h1_layer_multiplicity;
         TH1I* h1_layer_fired;
         
-        std::vector<std::vector<std::vector<TH3F*>>> h3_theta_per_position;
+        std::vector<TH3F*> h3_theta_per_position;
 
         //  ::: Energy
         //      Febex

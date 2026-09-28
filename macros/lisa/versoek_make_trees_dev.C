@@ -66,7 +66,7 @@ void versoek_make_trees_dev(int runNumber, int subrunNumber)
 
     
     // ::: FILE  PATH
-    TString inputpath = "/home/lisa/data/server/experiments/2026/IKP/LISA/test_june/lmd/";
+    TString inputpath = "/home/lisa/data/server1/experiments/2026/IKP/LISA/test_june/lmd/";
     TString lmdName = Form("run_%04d_%04d.lmd", runNumber, subrunNumber);
     TString filename = inputpath + lmdName;
 
