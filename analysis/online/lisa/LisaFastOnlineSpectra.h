@@ -36,28 +36,28 @@ class LisaFastOnlineSpectra : public FairTask
 
         virtual void FinishTask();
 
-        void SetBinningFastToT(int nbins, float binlow, float binhigh){
-            ffast_tot_nbins = nbins;
-            ffast_tot_bin_low = binlow;
-            ffast_tot_bin_high = binhigh;
-        };
-        void SetBinningSlowToT(int nbins, float binlow, float binhigh){
-            fslow_tot_nbins = nbins;
-            fslow_tot_bin_low = binlow;
-            fslow_tot_bin_high = binhigh;
+        // void SetBinningFastToT(int nbins, float binlow, float binhigh){ //delete this shit here -> it is in the config
+        //     ffast_tot_nbins = nbins;
+        //     ffast_tot_bin_low = binlow;
+        //     ffast_tot_bin_high = binhigh;
+        // };
+        // void SetBinningSlowToT(int nbins, float binlow, float binhigh){
+        //     fslow_tot_nbins = nbins;
+        //     fslow_tot_bin_low = binlow;
+        //     fslow_tot_bin_high = binhigh;
             
             
-        };
-        void SetBinningEnergy(int nbins, float binlow, float binhigh){
-            fenergy_nbins = nbins;
-            fenergy_bin_low = binlow;
-            fenergy_bin_high = binhigh; 
-        };
-        void SetBinningCoincidences(int nbins, float binlow, float binhigh){
-            ftime_coincidence_nbins = nbins;
-            ftime_coincidence_low = binlow;
-            ftime_coincidence_high = binhigh;
-        }
+        // };
+        // void SetBinningEnergy(int nbins, float binlow, float binhigh){
+        //     fenergy_nbins = nbins;
+        //     fenergy_bin_low = binlow;
+        //     fenergy_bin_high = binhigh; 
+        // };
+        // void SetBinningCoincidences(int nbins, float binlow, float binhigh){
+        //     ftime_coincidence_nbins = nbins;
+        //     ftime_coincidence_low = binlow;
+        //     ftime_coincidence_high = binhigh;
+        // }
 
         void SetDetectorsToPlot(std::vector<int> detectors_to_analyze){
             detectors = detectors_to_analyze;
@@ -137,9 +137,10 @@ class LisaFastOnlineSpectra : public FairTask
 
         std::vector<TDirectory*> dir_lisafast_time_differences = {};
         
-        std::vector<int> detectors = {0,1,2};
-        int number_detectors = 3;
-
+        //std::vector<int> detectors = {0,1,2};
+        //int number_detectors = 3;
+        int layer_number;
+        int det_number;
 
         std::vector<int> dt_reference_detectors = {};
         std::vector<std::pair<double,double>> dt_reference_detectors_energy_gates = {};
@@ -164,18 +165,21 @@ class LisaFastOnlineSpectra : public FairTask
         TH1** h1_lisafast_rates;
         
         // Binnings:
-        int ffast_tot_nbins = 500;
-        float ffast_tot_bin_low = 0;
-        float ffast_tot_bin_high = 100; 
-        int fslow_tot_nbins = 500;
-        float fslow_tot_bin_low = 550;
-        float fslow_tot_bin_high = 750;
-        int fenergy_nbins = 500;
-        float fenergy_bin_low = 0;
-        float fenergy_bin_high = 1500;
-        int ftime_coincidence_nbins = 1000;
-        float ftime_coincidence_low = -10;
-        float ftime_coincidence_high = 10;
+        // int ffast_tot_nbins = 500;
+        // float ffast_tot_bin_low = 0;
+        // float ffast_tot_bin_high = 100; 
+
+        // int fslow_tot_nbins = 500;
+        // float fslow_tot_bin_low = 550;
+        // float fslow_tot_bin_high = 750;
+
+        // int fenergy_nbins = 500;
+        // float fenergy_bin_low = 0;
+        // float fenergy_bin_high = 1500;
+
+        // int ftime_coincidence_nbins = 1000;
+        // float ftime_coincidence_low = -10;
+        // float ftime_coincidence_high = 10;
 
         double energygate_width = 10;
             

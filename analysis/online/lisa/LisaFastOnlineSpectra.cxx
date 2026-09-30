@@ -81,6 +81,9 @@ InitStatus LisaFastOnlineSpectra::Init()
     fHitLisaFast = (TClonesArray*)mgr->GetObject("LisaFastCalData");
     c4LOG_IF(fatal, !fHitLisaFast, "Branch LisaFastCalData not found!");
     
+    //layer_number = lisafast_configuration->NLayers();
+    det_number = lisafast_configuration->NDetectors();
+
     histograms = (TFolder*)mgr->GetObject("Histograms");
 
     TDirectory::TContext ctx(nullptr);
@@ -96,18 +99,18 @@ InitStatus LisaFastOnlineSpectra::Init()
     dir_lisafast_energy_spectra = dir_lisafast->mkdir("Energy Spectra");
     dir_lisafast_time_spectra = dir_lisafast->mkdir("Time Spectra");
 
-    int min_detector_id = *min_element(detectors.begin(),detectors.end());
-    int max_detector_id = *max_element(detectors.begin(), detectors.end());
-    number_detectors = detectors.size();
+    // int min_detector_id = *min_element(detectors.begin(),detectors.end()); delete this
+    // int max_detector_id = *max_element(detectors.begin(), detectors.end());
+    //number_detectors = detectors.size();
 
-    // Slow ToT:
+    // ::: Slow ToT (i.e raw energy):
     c_lisafast_slowToT  = new TCanvas("c_lisafast_slowToT","slow ToT LisaFast spectra",650,350);
-    c_lisafast_slowToT->Divide((number_detectors<5) ? number_detectors : 5,(number_detectors%5==0) ? (number_detectors/5) : (number_detectors/5 + 1));
-    h1_lisafast_slowToT.resize(number_detectors);
-    for (int ihist = 0; ihist < number_detectors; ihist++)
+    c_lisafast_slowToT->Divide(2, (det_number+1)/2);
+    h1_lisafast_slowToT.resize(det_number);
+    for (int ihist = 0; ihist < det_number; ihist++)
     {
         c_lisafast_slowToT->cd(ihist+1);
-        h1_lisafast_slowToT[ihist] = MakeTH1(dir_lisafast_slowToT, "F", Form("h1_lisafast_slowToT_%d",detectors.at(ihist)), Form("LisaFast slow ToT detector %d",detectors.at(ihist)),fslow_tot_nbins,fslow_tot_bin_low,fslow_tot_bin_high, "ToT [ns]", kSpring, kBlue+2);
+        h1_lisafast_slowToT[ihist] = MakeTH1(dir_lisafast_slowToT, "F", Form("h1_lisafast_slowToT_%d",ihist), Form("LisaFast slow ToT detector %d",ihist),fslow_tot_nbins,fslow_tot_bin_low,fslow_tot_bin_high, "ToT [ns]", kSpring, kBlue+2);
         h1_lisafast_slowToT[ihist]->Draw();
     }
     c_lisafast_slowToT->cd(0);

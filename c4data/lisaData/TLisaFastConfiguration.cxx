@@ -32,6 +32,30 @@ std::string TLisaFastConfiguration::promptflash_cut_file = "blank";
 std::string TLisaFastConfiguration::gain_shifts_file = "blank";
 
 
+// Ranges for histos
+
+int TLisaFastConfiguration::slowToT_bin = 500;
+int TLisaFastConfiguration::slowToT_min = 0;
+int TLisaFastConfiguration::slowToT_max = 1000;
+
+
+int TLisaFastConfiguration::fastToT_bin = 500;
+int TLisaFastConfiguration::fastToT_min = 300;
+int TLisaFastConfiguration::fastToT_max = 800;
+
+
+int TLisaFastConfiguration::energy_bin = 500;
+int TLisaFastConfiguration::energy_min = 0;
+int TLisaFastConfiguration::energy_max = 1000;
+
+
+int TLisaFastConfiguration::dt_bin = 1000;
+int TLisaFastConfiguration::dt_min = -200;
+int TLisaFastConfiguration::dt_max = 200;
+
+int TLisaFastConfiguration::en_gate_width = 20;
+
+
 TLisaFastConfiguration::TLisaFastConfiguration()
     :   num_detectors(0)
     ,   num_tamex_boards(0)
@@ -44,6 +68,7 @@ TLisaFastConfiguration::TLisaFastConfiguration()
     if (gain_shifts_file != "blank") ReadGainShifts();
 }
 
+// Mapping for LaBr
 void TLisaFastConfiguration::ReadConfiguration()
 {
 

@@ -50,11 +50,60 @@ class TLisaFastConfiguration
         } //what is this
 
 
-
+        int NLayers() const;
+        int XMax() const;
+        int YMax() const;
         int NDetectors() const;
         int NTamexBoards() const;
+
  
         std::set<int> ExtraSignals() const;
+
+        //:::::Ranges in Histos
+        // Slow Tot
+        static void SetSlowToT_bin(int bin_slowToT) { slowToT_bin = bin_slowToT; }
+        static void SetSlowToT_min(int max_slowToT) { slowToT_max = max_slowToT; }
+        static void SetSlowToT_max(int min_slowToT) { slowToT_min = min_slowToT; }
+
+        // Fast Tot
+        static void SetFastToT_bin(int bin_fastToT) { fastToT_bin = bin_fastToT; }
+        static void SetFastToT_min(int max_fastToT) { fastToT_max = max_fastToT; }
+        static void SetFastToT_max(int min_fastToT) { fastToT_min = min_fastToT; }
+
+        // Energy
+        static void SetEnergy_bin(int bin_energy) { energy_bin = bin_energy; }
+        static void SetEnergy_min(int max_energy) { energy_max = max_energy; }
+        static void SetEnergy_max(int min_energy) { energy_min = min_energy; }
+
+        // dTime
+        static void SetdT_bin(int bin_dt) { dt_bin = bin_dt; }
+        static void SetdT_min(int max_dt) { dt_max = max_dt; }
+        static void SetdT_max(int min_dt) { dt_min = min_dt; }
+
+        // Energy gate witdh
+        static void SetEnergyGateWidth(double width) { en_gate_width = width; }
+
+        
+        
+        static int slowToT_bin;
+        static int slowToT_max;
+        static int slowToT_min;
+
+        static int fastToT_bin;
+        static int fastToT_max;
+        static int fastToT_min;
+
+        static int energy_bin;
+        static int energy_max;
+        static int energy_min;
+
+        static int dt_bin;
+        static int dt_max;
+        static int dt_min;
+
+        static int en_gate_width;
+        
+        
 
     private:
 
@@ -86,6 +135,9 @@ class TLisaFastConfiguration
         std::vector<GainShift*> gain_shifts;
 
 
+        int num_layers;   
+        int xmax;
+        int ymax;
         int num_detectors;
         int num_tamex_boards;
         int num_tamex_channels;
@@ -193,7 +245,22 @@ inline bool TLisaFastConfiguration::MappingLoaded() const
     return detector_map_loaded;
 }
 
-inline int TLisaFastConfiguration::NDetectors() const
+inline int TLisaConfiguration::NLayers() const
+{
+    return num_layers;
+}
+
+inline int TLisaConfiguration::XMax() const
+{
+    return xmax;
+}
+
+inline int TLisaConfiguration::YMax() const
+{
+    return ymax;
+}
+
+inline int TLisaConfiguration::NDetectors() const
 {
     return num_detectors;
 }
