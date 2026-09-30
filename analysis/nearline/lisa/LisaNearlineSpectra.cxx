@@ -349,7 +349,7 @@ InitStatus LisaNearlineSpectra::Init()
     dir_theta->cd();
    h3_theta_per_position.resize(layer_number);
 	
-	for (int i = 0; i < layer_number - 1; i++)
+	for (int i = 0; i < layer_number; i++)
 	{
     	h3_theta_per_position[i] = new TH3F(
         	Form("h3_theta_per_position_layer_%i", i+1),
