@@ -137,8 +137,8 @@ class LisaFastOnlineSpectra : public FairTask
 
         std::vector<TDirectory*> dir_lisafast_time_differences = {};
         
-        //std::vector<int> detectors = {0,1,2};
-        //int number_detectors = 3;
+        std::vector<int> detectors = {0,1,2};
+        int number_detectors = 3;
         int layer_number;
         int det_LaBr_number;
 
@@ -164,22 +164,22 @@ class LisaFastOnlineSpectra : public FairTask
 
         TH1** h1_lisafast_rates;
         
-        // Binnings:
-        // int ffast_tot_nbins = 500;
-        // float ffast_tot_bin_low = 0;
-        // float ffast_tot_bin_high = 100; 
+        // Binnings:  -- we can also add a way to change them!!
+        int ffast_tot_nbins = 500;
+        float ffast_tot_bin_low = 0;
+        float ffast_tot_bin_high = 100; 
 
-        // int fslow_tot_nbins = 500;
-        // float fslow_tot_bin_low = 550;
-        // float fslow_tot_bin_high = 750;
+        int fslow_tot_nbins = 500;
+        float fslow_tot_bin_low = 550;
+        float fslow_tot_bin_high = 750;
 
-        // int fenergy_nbins = 500;
-        // float fenergy_bin_low = 0;
-        // float fenergy_bin_high = 1500;
+        int fenergy_nbins = 500;
+        float fenergy_bin_low = 0;
+        float fenergy_bin_high = 1500;
 
-        // int ftime_coincidence_nbins = 1000;
-        // float ftime_coincidence_low = -10;
-        // float ftime_coincidence_high = 10;
+        int ftime_coincidence_nbins = 1000;
+        float ftime_coincidence_low = -10;
+        float ftime_coincidence_high = 10;
 
         double energygate_width = 10;
             

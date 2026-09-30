@@ -82,8 +82,8 @@ InitStatus LisaFastOnlineSpectra::Init()
     c4LOG_IF(fatal, !fHitLisaFast, "Branch LisaFastCalData not found!");
     
     //layer_number = lisafast_configuration->NLayers();
-    det_LaBr_number = lisafast_configuration->NDetectors();
-    auto const & det_mapping = lisafast_configuration->Mapping();
+    det_LaBr_number = lisafast_configuration->NLaBrDetectors();
+    auto const & det_mapping = lisafast_configuration->LaBr_Mapping();
 
     histograms = (TFolder*)mgr->GetObject("Histograms");
 
@@ -101,8 +101,13 @@ InitStatus LisaFastOnlineSpectra::Init()
     dir_lisafast_time_spectra = dir_lisafast->mkdir("Time Spectra");
 
     // int min_detector_id = *min_element(detectors.begin(),detectors.end()); delete this
-    // int max_detector_id = *max_element(detectors.begin(), detectors.end());
+    int max_detector_id = *max_element(detectors.begin(), detectors.end()); // this can be read from mapping in TConfig instead, i'm just fixing like this for now.
     //number_detectors = detectors.size();
+
+    
+    int slowToT_bins = lisafast_configuration->slowToT_bin;
+    float slowToT_min = lisafast_configuration->slowToT_min;
+    float slowToT_max = lisafast_configuration->slowToT_max;
 
     // ::: Slow ToT (i.e raw energy):
     c_lisafast_slowToT  = new TCanvas("c_lisafast_slowToT","slow ToT LisaFast spectra",650,350);
@@ -133,7 +138,7 @@ InitStatus LisaFastOnlineSpectra::Init()
     
     //energy spectrum:
     c_lisafast_energy  = new TCanvas("c_lisafast_energy","LisaFast energy spectra",650,350);
-    c_lisafast_energy->Divide(Divide(2, (det_number+1)/2));
+    c_lisafast_energy->Divide((2, (det_LaBr_number+1)/2));
     h1_lisafast_energy.resize(number_detectors);
     for (int ihist = 0; ihist < number_detectors; ihist++){
         c_lisafast_energy->cd(ihist+1);
