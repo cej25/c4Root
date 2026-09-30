@@ -1,47 +1,51 @@
 #!/bin/bash
 # This file is based on FairRoot's cmake/scripts/root_macro.sh.in
+#
+# It is used to start ROOT macros from CMake tests with the environment
+# required by c4Root/FairRoot.
 
-# This macro is needed to start the Root macros used for automatic testing
-# from inside CMake using the add_test functionality. Since the tests
-# starts with a fresh environment on has to set first the correct environment
-# needed to run FairRoot.
-# Also parameters defined in add_test will be converted in the correct format
-# to be passed to root.
+# ------------------------------------------------------------------------------
+# Runtime environment
+# ------------------------------------------------------------------------------
 
-# Setup the needed environment
-export LD_LIBRARY_PATH=@MY_LD_LIBRARY_PATH@:$LD_LIBRARY_PATH
-export DYLD_LIBRARY_PATH=@MY_LD_LIBRARY_PATH@:$DYLD_LIBRARY_PATH
-export PATH=@SIMPATH@/bin:$PATH:@Geant4_DIR@
-export ROOTSYS=@ROOTSYS@
-export ROOTEXE=@ROOT_INSTALL_DIR@/bin/root.exe
-export ROOT_INCLUDE_PATH=@Geant3_INCLUDE_DIRS@:@MY_ROOT_INCLUDE_PATH@
+export LD_LIBRARY_PATH="@MY_LD_LIBRARY_PATH@":$LD_LIBRARY_PATH
+export PATH="@MY_PATH@":$PATH
+
+export ROOTSYS="@ROOTSYS@"
+export ROOTEXE="@ROOTSYS@/bin/root"
+
+export ROOT_INCLUDE_PATH="@ROOT_INCLUDE_PATH@"
+
 export FAIRROOTPATH="@FAIRROOTPATH@"
-export VMCWORKDIR=@VMCWORKDIR@
-export Geant4VMC_MACRO_DIR=@Geant4VMC_MACRO_DIR@
-export USE_VGM=1
-export BOOST=@Boost_Avail@
+export VMCWORKDIR="@VMCWORKDIR@"
 
-@Geant4Data_Variables_sh@
+# ------------------------------------------------------------------------------
+# Convert command-line arguments into a comma-separated ROOT argument list
+# ------------------------------------------------------------------------------
 
-export G3SYS="@Geant3_SYSTEM_DIR@"
-export PYTHIA8DATA="@PYTHIA8DATA@"
-if [ -e @Geant4_DIR@/env.sh ]; then
-  . @Geant4_DIR@/env.sh
-fi
-
-# Concatenate all parameters given on the command line to one
-# comma separated string
 parameters=""
-for i in $*; do
-  if [ -z $parameters ]; then
-    parameters=$i
-  else
-    parameters=$(echo "$parameters,$i")
-  fi
+
+for i in "$@"; do
+
+    if [ -z "$parameters" ]; then
+        parameters="$i"
+    else
+        parameters="$parameters,$i"
+    fi
+
 done
 
-cd @new_path@
-ROOT_INCLUDE_PATH+=:$(echo $(  find  "$VMCWORKDIR/" -iname \*.h | xargs dirname | sort | uniq ) |  sed 's/ /:/g')
 
-# execute root with the defined macro and the command line parameters
-$ROOTEXE -q -b @my_script_name@+g\($parameters\)
+# ------------------------------------------------------------------------------
+# Run the requested ROOT macro
+# ------------------------------------------------------------------------------
+
+cd "@new_path@" || exit 1
+
+# Add c4Root headers to ROOT's include search path.
+ROOT_INCLUDE_PATH="$ROOT_INCLUDE_PATH:$(find "$VMCWORKDIR" -iname '*.h' \
+    -exec dirname {} \; | sort -u | tr '\n' ':' | sed 's/:$//')"
+
+export ROOT_INCLUDE_PATH
+
+"$ROOTEXE" -q -b "@my_script_name@"+g\($parameters\)

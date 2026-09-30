@@ -1,217 +1,490 @@
-MACRO (WRITE_CONFIG_FILE filename)
+# ==============================================================================
+# Generate c4Root environment configuration files
+# ==============================================================================
 
-  String(REGEX REPLACE "^.*(install).*$" "\\1" INSTALL_VERSION ${filename})
-  String(COMPARE EQUAL "install" "${INSTALL_VERSION}" INSTALL_TRUE)
+MACRO(WRITE_CONFIG_FILE filename)
 
-  List(REMOVE_ITEM LD_LIBRARY_PATH ${CMAKE_BINARY_DIR}/lib)
+  # ---------------------------------------------------------------------------
+  # Determine whether this is a build-tree or install-tree configuration
+  # ---------------------------------------------------------------------------
 
-  If (INSTALL_TRUE)
-    SET(_INSTALLDIR ${CMAKE_INSTALL_PREFIX})  
-    SET(_BINDIR ${CMAKE_INSTALL_PREFIX}/bin)  
-#    SET(VMCWORKDIR ${CMAKE_INSTALL_PREFIX}/share/fairbase)  
-    SET(FAIRLIBDIR ${CMAKE_INSTALL_PREFIX}/lib)  
-    SET(_LD_LIBRARY_PATH ${FAIRLIBDIR} ${LD_LIBRARY_PATH}) 
-  Else (INSTALL_TRUE)
-    SET(_INSTALLDIR ${CMAKE_BINARY_DIR})  
-    SET(_BINDIR ${CMAKE_BINARY_DIR})  
-#    SET(VMCWORKDIR ${CMAKE_SOURCE_DIR})  
-    SET(FAIRLIBDIR ${CMAKE_BINARY_DIR}/lib)  
-    SET(_LD_LIBRARY_PATH ${FAIRLIBDIR} ${LD_LIBRARY_PATH}) 
-  EndIf (INSTALL_TRUE)
+  string(REGEX REPLACE "^.*(install).*$" "\\1" INSTALL_VERSION "${filename}")
+  string(COMPARE EQUAL "install" "${INSTALL_VERSION}" INSTALL_TRUE)
 
-  If(NOT DEFINED FULL_CONFIG_FILE)
-    Set(FULL_CONFIG_FILE "true")
-  EndIf(NOT DEFINED FULL_CONFIG_FILE)
+  # Do not duplicate the build library directory.
+  list(REMOVE_ITEM LD_LIBRARY_PATH "${CMAKE_BINARY_DIR}/lib")
 
-  
-  IF(CMAKE_SYSTEM_NAME MATCHES Linux)
-    IF(FAIRROOTPATH)
-      configure_file(${FAIRROOTPATH}/share/fairbase/cmake/scripts/check_system.sh.in
-                     ${CMAKE_CURRENT_BINARY_DIR}/check_system.sh
-                    )
-      configure_file(${FAIRROOTPATH}/share/fairbase/cmake/scripts/check_system.csh.in
-                     ${CMAKE_CURRENT_BINARY_DIR}/check_system.csh
-                    )
-    ELSE(FAIRROOTPATH)
-      configure_file(${PROJECT_SOURCE_DIR}/cmake/scripts/check_system.sh.in
-                     ${CMAKE_CURRENT_BINARY_DIR}/check_system.sh
-                    )
-      configure_file(${PROJECT_SOURCE_DIR}/cmake/scripts/check_system.csh.in
-                     ${CMAKE_CURRENT_BINARY_DIR}/check_system.csh
-                    )
-    ENDIF(FAIRROOTPATH)
-    
-    EXECUTE_PROCESS(COMMAND lsb_release -sd 
-                     OUTPUT_VARIABLE _linux_flavour
-                     OUTPUT_STRIP_TRAILING_WHITESPACE
-                    )
+  if(INSTALL_TRUE)
 
-    IF(_linux_flavour)
-      STRING(REGEX REPLACE "^\"" "" _linux_flavour ${_linux_flavour})
-      STRING(REGEX REPLACE "\"$" "" _linux_flavour ${_linux_flavour})
-    ENDIF(_linux_flavour)
+    set(_INSTALLDIR "${CMAKE_INSTALL_PREFIX}")
+    set(_BINDIR "${CMAKE_INSTALL_PREFIX}/bin")
+    set(FAIRLIBDIR "${CMAKE_INSTALL_PREFIX}/lib")
 
-    EXECUTE_PROCESS(COMMAND uname -m 
-                    OUTPUT_VARIABLE _system 
-                    OUTPUT_STRIP_TRAILING_WHITESPACE
-                   )
-   
-  ElseIf(CMAKE_SYSTEM_NAME MATCHES Darwin)
-    IF(FAIRROOTPATH)
-      configure_file(${FAIRROOTPATH}/share/fairbase/cmake/scripts/check_system_mac.sh.in
-                     ${CMAKE_CURRENT_BINARY_DIR}/check_system.sh
-                    )
-      configure_file(${FAIRROOTPATH}/share/fairbase/cmake/scripts/check_system_mac.csh.in
-                     ${CMAKE_CURRENT_BINARY_DIR}/check_system.csh
-                    )
-    ELSE(FAIRROOTPATH)
-      configure_file(${PROJECT_SOURCE_DIR}/cmake/scripts/check_system_mac.sh.in
-                     ${CMAKE_CURRENT_BINARY_DIR}/check_system.sh
-                    )
-      configure_file(${PROJECT_SOURCE_DIR}/cmake/scripts/check_system_mac.csh.in
-                     ${CMAKE_CURRENT_BINARY_DIR}/check_system.csh
-                    )
-    ENDIF(FAIRROOTPATH)
-    EXECUTE_PROCESS(COMMAND uname -sr 
-                    OUTPUT_VARIABLE _linux_flavour
-                    OUTPUT_STRIP_TRAILING_WHITESPACE
-                   )
-    EXECUTE_PROCESS(COMMAND uname -m 
-                    OUTPUT_VARIABLE _system 
-                    OUTPUT_STRIP_TRAILING_WHITESPACE
-                   )
-  ENDIF(CMAKE_SYSTEM_NAME MATCHES Linux)
+    set(
+      _LD_LIBRARY_PATH
+      "${FAIRLIBDIR}"
+      ${LD_LIBRARY_PATH}
+    )
 
-   
-  CONVERT_LIST_TO_STRING(${Geant4_INCLUDE_DIRS})
-  Set(Geant4_INCLUDE_DIRS ${output})
+  else()
 
-  CONVERT_LIST_TO_STRING(${Geant4VMC_INCLUDE_DIRS})
-  Set(Geant4VMC_INCLUDE_DIRS ${output})
+    set(_INSTALLDIR "${CMAKE_BINARY_DIR}")
+    set(_BINDIR "${CMAKE_BINARY_DIR}")
+    set(FAIRLIBDIR "${CMAKE_BINARY_DIR}/lib")
 
-  CONVERT_LIST_TO_STRING(${Geant4VMC_CMAKE_INSTALL_LIBDIR})
-  Set(Geant4VMC_LIBRARY_DIR ${output})
+    set(
+      _LD_LIBRARY_PATH
+      "${FAIRLIBDIR}"
+      ${LD_LIBRARY_PATH}
+    )
 
-  CONVERT_LIST_TO_STRING(${Geant4VMC_MACRO_DIR})
-  Set(Geant4VMC_MACRO_DIR ${output})
-
-  Write_Geant4Data_Variables_sh()
-  Write_Geant4Data_Variables_csh()
-
-  CONVERT_LIST_TO_STRING(${PLUTO_LIBRARY_DIR})
-  Set(PLUTO_LIBRARY_DIR ${output})
-
-  CONVERT_LIST_TO_STRING(${PLUTO_INCLUDE_DIR})
-  Set(PLUTO_INCLUDE_DIR ${output})
-
-  CONVERT_LIST_TO_STRING(${PYTHIA6_LIBRARY_DIR})
-  Set(PYTHIA6_LIBRARY_DIR ${output})
-
-  CONVERT_LIST_TO_STRING(${Geant3_SYSTEM_DIR})
-  Set(G3SYS ${output})
-
-  CONVERT_LIST_TO_STRING(${Geant3_INCLUDE_DIRS})
-  Set(Geant3_INCLUDE_DIRS ${output})
-
-  CONVERT_LIST_TO_STRING(${Geant3_LIBRARY_DIR})
-  Set(Geant3_LIBRARY_DIR ${output})
-
-  CONVERT_LIST_TO_STRING(${Geant3_LIBRARIES})
-  Set(Geant3_LIBRARIES ${output})
-
-  CONVERT_LIST_TO_STRING(${ROOT_LIBRARY_DIR})
-  Set(ROOT_LIBRARY_DIR ${output})
-
-  CONVERT_LIST_TO_STRING(${ROOT_LIBRARIES})
-  Set(ROOT_LIBRARIES ${output})
-
-  CONVERT_LIST_TO_STRING(${ROOT_INCLUDE_DIR})
-  Set(ROOT_INCLUDE_DIR ${output} )
-
-#  Set(VMCWORKDIR ${C})
-
-  Set(FAIRLIBDIR ${FAIRLIBDIR})
-
-  List(REMOVE_DUPLICATES _LD_LIBRARY_PATH)
-  CONVERT_LIST_TO_STRING(${_LD_LIBRARY_PATH})
-
-  IF(CMAKE_SYSTEM_NAME MATCHES Linux)
-    Set(MY_LD_LIBRARY_PATH ${output})
-  ELSE(CMAKE_SYSTEM_NAME MATCHES Linux)
-    IF(CMAKE_SYSTEM_NAME MATCHES Darwin)
-      Set(MY_DYLD_LIBRARY_PATH ${output})
-    ENDIF(CMAKE_SYSTEM_NAME MATCHES Darwin)
-  ENDIF(CMAKE_SYSTEM_NAME MATCHES Linux)
-
-  Set(USE_VGM 1)
-
-  SET(PYTHONPATH ${CMAKE_SOURCE_DIR}/python ${SIMPATH}/lib ${SIMPATH}/lib/root ${SIMPATH}/lib/Geant4 ${SIMPATH}/lib/g4py ${PYTHONPATH})
-  UNIQUE(PYTHONPATH "${PYTHONPATH}")
-  CONVERT_LIST_TO_STRING(${PYTHONPATH})
-  SET(MY_PYTHONPATH ${output})
-
-  SET (PATH ${ROOTSYS}/bin ${PATH})
-  UNIQUE(PATH "${PATH}")
-  CONVERT_LIST_TO_STRING(${PATH})
-  Set(MY_PATH ${output})
-
-  If(FAIRSOFT_EXTERN)
-    Set(PYTHIA8DATA "${SIMPATH}/share/pythia8/xmldoc")
-  Else(FAIRSOFT_EXTERN)
-    Set(PYTHIA8DATA "${SIMPATH}/generators/pythia8/xmldoc")
-  EndIf(FAIRSOFT_EXTERN)
-
-  CONVERT_LIST_TO_STRING($ENV{NEW_CLASSPATH})
-  Set(MY_CLASSPATH ${output})
-
-  CONVERT_LIST_TO_STRING(${ROOT_INCLUDE_PATH})
-  Set(ROOT_INCLUDE_PATH ${output})
-
-  IF(${filename} MATCHES "[.]csh.*$")
-    #IF( R3BROOTPATH )
-    IF( C4ROOTPATH )
-    configure_file( ${PROJECT_SOURCE_DIR}/cmake/scripts/config.csh.in ${CMAKE_CURRENT_BINARY_DIR}/${filename} )
-    #ELSEIF( R3BROOTPATH )
-    ELSEIF( C4ROOTPATH )
-    configure_file(${FAIRROOTPATH}/share/fairbase/cmake/scripts/config.csh.in
-	           ${CMAKE_CURRENT_BINARY_DIR}/${filename}
-                  )
-    #ENDIF( R3BROOTPATH )
-    ENDIF( C4ROOTPATH )
+  endif()
 
 
-  ELSE(${filename} MATCHES "[.]csh.*$")
-    #if( R3BROOTPATH )
-    if( C4ROOTPATH )
-    configure_file( ${PROJECT_SOURCE_DIR}/cmake/scripts/config.sh.in ${CMAKE_CURRENT_BINARY_DIR}/${filename} )
-    #ELSEIF( R3BROOTPATH )
-    ELSEIF( C4ROOTPATH )
-    configure_file(${FAIRROOTPATH}/share/fairbase/cmake/scripts/config.sh.in
-	           ${CMAKE_CURRENT_BINARY_DIR}/${filename}
-                  )
-    #ENDIF( R3BROOTPATH )
-    ENDIF( C4ROOTPATH )
+  # ---------------------------------------------------------------------------
+  # System information
+  # ---------------------------------------------------------------------------
 
-  ENDIF(${filename} MATCHES "[.]csh.*$")
+  if(CMAKE_SYSTEM_NAME MATCHES "Linux")
+
+    if(FAIRROOTPATH)
+
+      configure_file(
+        "${FAIRROOTPATH}/share/fairbase/cmake/scripts/check_system.sh.in"
+        "${CMAKE_CURRENT_BINARY_DIR}/check_system.sh"
+      )
+
+      configure_file(
+        "${FAIRROOTPATH}/share/fairbase/cmake/scripts/check_system.csh.in"
+        "${CMAKE_CURRENT_BINARY_DIR}/check_system.csh"
+      )
+
+    else()
+
+      configure_file(
+        "${PROJECT_SOURCE_DIR}/cmake/scripts/check_system.sh.in"
+        "${CMAKE_CURRENT_BINARY_DIR}/check_system.sh"
+      )
+
+      configure_file(
+        "${PROJECT_SOURCE_DIR}/cmake/scripts/check_system.csh.in"
+        "${CMAKE_CURRENT_BINARY_DIR}/check_system.csh"
+      )
+
+    endif()
+
+    execute_process(
+      COMMAND lsb_release -sd
+      OUTPUT_VARIABLE _linux_flavour
+      OUTPUT_STRIP_TRAILING_WHITESPACE
+    )
+
+    if(_linux_flavour)
+      string(REGEX REPLACE "^\"" "" _linux_flavour "${_linux_flavour}")
+      string(REGEX REPLACE "\"$" "" _linux_flavour "${_linux_flavour}")
+    endif()
+
+    execute_process(
+      COMMAND uname -m
+      OUTPUT_VARIABLE _system
+      OUTPUT_STRIP_TRAILING_WHITESPACE
+    )
 
 
-ENDMACRO (WRITE_CONFIG_FILE)
+  elseif(CMAKE_SYSTEM_NAME MATCHES "Darwin")
+
+    if(FAIRROOTPATH)
+
+      configure_file(
+        "${FAIRROOTPATH}/share/fairbase/cmake/scripts/check_system_mac.sh.in"
+        "${CMAKE_CURRENT_BINARY_DIR}/check_system.sh"
+      )
+
+      configure_file(
+        "${FAIRROOTPATH}/share/fairbase/cmake/scripts/check_system_mac.csh.in"
+        "${CMAKE_CURRENT_BINARY_DIR}/check_system.csh"
+      )
+
+    else()
+
+      configure_file(
+        "${PROJECT_SOURCE_DIR}/cmake/scripts/check_system_mac.sh.in"
+        "${CMAKE_CURRENT_BINARY_DIR}/check_system.sh"
+      )
+
+      configure_file(
+        "${PROJECT_SOURCE_DIR}/cmake/scripts/check_system_mac.csh.in"
+        "${CMAKE_CURRENT_BINARY_DIR}/check_system.csh"
+      )
+
+    endif()
+
+    execute_process(
+      COMMAND uname -sr
+      OUTPUT_VARIABLE _linux_flavour
+      OUTPUT_STRIP_TRAILING_WHITESPACE
+    )
+
+    execute_process(
+      COMMAND uname -m
+      OUTPUT_VARIABLE _system
+      OUTPUT_STRIP_TRAILING_WHITESPACE
+    )
+
+  endif()
 
 
-MACRO (CONVERT_LIST_TO_STRING)
+  # ---------------------------------------------------------------------------
+  # ROOT installation information
+  #
+  # Prefer root-config. This works for both older and modern ROOT versions
+  # without relying on FairSoft/SIMPATH.
+  # ---------------------------------------------------------------------------
 
-  set (tmp "")
-  foreach (_current ${ARGN})
+  # ---------------------------------------------------------------------------
+  # ROOT installation information
+  #
+  # Use the root-config belonging to the ROOT installation selected by CMake.
+  # Do not simply use whichever root-config happens to appear first in PATH,
+  # since that could belong to a different ROOT installation.
+  # ---------------------------------------------------------------------------
 
-    set(tmp1 ${tmp})
-    set(tmp "")
-    set(tmp ${tmp1}:${_current})
+  set(C4ROOT_ROOT_CONFIG_EXECUTABLE "")
 
-  endforeach (_current ${ARGN})
-  If(tmp)
-    STRING(REGEX REPLACE "^:(.*)" "\\1" output ${tmp}) 
-  Else(tmp)
-    Set(output "")
-  EndIf(tmp)
+  # ROOT_DIR normally points to:
+  #
+  #   <ROOT prefix>/share/root/cmake
+  #
+  # so derive the corresponding installation prefix from it.
+  if(ROOT_DIR)
 
-ENDMACRO (CONVERT_LIST_TO_STRING LIST)
+    get_filename_component(
+      _ROOT_PREFIX_FROM_CMAKE
+      "${ROOT_DIR}/../../.."
+      ABSOLUTE
+    )
+
+    if(EXISTS "${_ROOT_PREFIX_FROM_CMAKE}/bin/root-config")
+
+      set(
+        C4ROOT_ROOT_CONFIG_EXECUTABLE
+        "${_ROOT_PREFIX_FROM_CMAKE}/bin/root-config"
+      )
+
+    endif()
+
+  endif()
+
+
+  # Older ROOT/FairRoot setups may already provide ROOT_CONFIG_EXECUTABLE.
+  if(NOT C4ROOT_ROOT_CONFIG_EXECUTABLE
+     AND ROOT_CONFIG_EXECUTABLE
+     AND EXISTS "${ROOT_CONFIG_EXECUTABLE}")
+
+    set(
+      C4ROOT_ROOT_CONFIG_EXECUTABLE
+      "${ROOT_CONFIG_EXECUTABLE}"
+    )
+
+  endif()
+
+
+  # Final compatibility fallback.
+  #
+  # This is intentionally last: PATH should only be consulted when the ROOT
+  # CMake package itself did not tell us where ROOT lives.
+  if(NOT C4ROOT_ROOT_CONFIG_EXECUTABLE)
+
+    find_program(
+      C4ROOT_ROOT_CONFIG_EXECUTABLE
+      NAMES root-config
+    )
+
+  endif()
+
+
+  if(C4ROOT_ROOT_CONFIG_EXECUTABLE)
+
+    execute_process(
+      COMMAND "${C4ROOT_ROOT_CONFIG_EXECUTABLE}" --prefix
+      OUTPUT_VARIABLE ROOTSYS
+      OUTPUT_STRIP_TRAILING_WHITESPACE
+    )
+
+    execute_process(
+      COMMAND "${C4ROOT_ROOT_CONFIG_EXECUTABLE}" --bindir
+      OUTPUT_VARIABLE ROOT_BINDIR
+      OUTPUT_STRIP_TRAILING_WHITESPACE
+    )
+
+    execute_process(
+      COMMAND "${C4ROOT_ROOT_CONFIG_EXECUTABLE}" --libdir
+      OUTPUT_VARIABLE ROOT_LIBRARY_DIR
+      OUTPUT_STRIP_TRAILING_WHITESPACE
+    )
+
+    execute_process(
+      COMMAND "${C4ROOT_ROOT_CONFIG_EXECUTABLE}" --incdir
+      OUTPUT_VARIABLE ROOT_INCLUDE_DIR
+      OUTPUT_STRIP_TRAILING_WHITESPACE
+    )
+
+    message(
+      STATUS
+      "ROOT environment configuration taken from: "
+      "${C4ROOT_ROOT_CONFIG_EXECUTABLE}"
+    )
+
+  else()
+
+    message(WARNING
+      "Could not locate root-config for the ROOT installation selected by CMake. "
+      "Existing ROOT CMake variables will be used instead."
+    )
+
+  endif()
+
+
+  # Retain ROOT_LIBRARIES for compatibility with existing c4Root scripts.
+  convert_list_to_string(${ROOT_LIBRARIES})
+  set(ROOT_LIBRARIES "${output}")
+
+
+  # ---------------------------------------------------------------------------
+  # Runtime library path
+  # ---------------------------------------------------------------------------
+
+  if(ROOT_LIBRARY_DIR)
+    list(APPEND _LD_LIBRARY_PATH "${ROOT_LIBRARY_DIR}")
+  endif()
+
+  if(FAIRROOTPATH)
+    list(APPEND _LD_LIBRARY_PATH "${FAIRROOTPATH}/lib")
+  endif()
+
+  if(ucesb_FOUND AND ucesb_LIBRARY_DIR)
+    list(APPEND _LD_LIBRARY_PATH "${ucesb_LIBRARY_DIR}")
+  endif()
+
+  list(REMOVE_DUPLICATES _LD_LIBRARY_PATH)
+
+  convert_list_to_string(${_LD_LIBRARY_PATH})
+
+  if(CMAKE_SYSTEM_NAME MATCHES "Linux")
+
+    set(MY_LD_LIBRARY_PATH "${output}")
+
+    set(DYLD_REPLACE "")
+    set(DYLD_PREPEND "")
+    set(DYLD_APPEND "")
+
+  elseif(CMAKE_SYSTEM_NAME MATCHES "Darwin")
+
+    set(MY_DYLD_LIBRARY_PATH "${output}")
+
+    set(
+      DYLD_REPLACE
+      "export DYLD_LIBRARY_PATH=\"${MY_DYLD_LIBRARY_PATH}\""
+    )
+
+    set(
+      DYLD_PREPEND
+      "export DYLD_LIBRARY_PATH=\"${MY_DYLD_LIBRARY_PATH}\":$DYLD_LIBRARY_PATH"
+    )
+
+    set(
+      DYLD_APPEND
+      "export DYLD_LIBRARY_PATH=$DYLD_LIBRARY_PATH:\"${MY_DYLD_LIBRARY_PATH}\""
+    )
+
+  endif()
+
+  if(CMAKE_SYSTEM_NAME MATCHES "Linux")
+
+    set(DYLD_REPLACE_CSH "")
+    set(DYLD_PREPEND_CSH "")
+    set(DYLD_APPEND_CSH "")
+
+  elseif(CMAKE_SYSTEM_NAME MATCHES "Darwin")
+
+    set(
+      DYLD_REPLACE_CSH
+      "setenv DYLD_LIBRARY_PATH \"${MY_DYLD_LIBRARY_PATH}\""
+    )
+
+    set(
+      DYLD_PREPEND_CSH
+      "setenv DYLD_LIBRARY_PATH \"${MY_DYLD_LIBRARY_PATH}\":$DYLD_LIBRARY_PATH"
+    )
+
+    set(
+      DYLD_APPEND_CSH
+      "setenv DYLD_LIBRARY_PATH $DYLD_LIBRARY_PATH:\"${MY_DYLD_LIBRARY_PATH}\""
+    )
+
+  endif()
+
+
+  # ---------------------------------------------------------------------------
+  # Python path
+  #
+  # Only add c4Root's own Python directory. The user's existing PYTHONPATH is
+  # handled by the generated shell script when it is sourced.
+  # ---------------------------------------------------------------------------
+
+  set(_C4_PYTHONPATH)
+
+  if(EXISTS "${CMAKE_SOURCE_DIR}/python")
+    list(APPEND _C4_PYTHONPATH "${CMAKE_SOURCE_DIR}/python")
+  endif()
+
+  list(REMOVE_DUPLICATES _C4_PYTHONPATH)
+
+  convert_list_to_string(${_C4_PYTHONPATH})
+  set(MY_PYTHONPATH "${output}")
+
+  if(MY_PYTHONPATH)
+
+    set(
+      PYTHONPATH_EXPORT
+      "export PYTHONPATH=\"${MY_PYTHONPATH}\":$PYTHONPATH"
+    )
+
+  else()
+
+    set(PYTHONPATH_EXPORT "")
+
+  endif()
+
+  if(MY_PYTHONPATH)
+
+    set(
+      PYTHONPATH_EXPORT_CSH
+      "setenv PYTHONPATH \"${MY_PYTHONPATH}\":$PYTHONPATH"
+    )
+
+  else()
+
+    set(PYTHONPATH_EXPORT_CSH "")
+
+  endif()
+
+  # ---------------------------------------------------------------------------
+  # Executable path
+  #
+  # Do NOT copy the user's entire current PATH into config.sh. Only record the
+  # directories provided by c4Root and its direct runtime dependencies.
+  # ---------------------------------------------------------------------------
+
+  set(_C4_PATH)
+
+  if(_BINDIR)
+    list(APPEND _C4_PATH "${_BINDIR}")
+  endif()
+
+  if(ROOT_BINDIR)
+    list(APPEND _C4_PATH "${ROOT_BINDIR}")
+  elseif(ROOTSYS)
+    list(APPEND _C4_PATH "${ROOTSYS}/bin")
+  endif()
+
+  if(FAIRROOTPATH)
+    list(APPEND _C4_PATH "${FAIRROOTPATH}/bin")
+  endif()
+
+  list(REMOVE_DUPLICATES _C4_PATH)
+
+  convert_list_to_string(${_C4_PATH})
+  set(MY_PATH "${output}")
+
+
+  # ---------------------------------------------------------------------------
+  # ROOT include path
+  # ---------------------------------------------------------------------------
+
+  set(_C4_ROOT_INCLUDE_PATH)
+
+  if(ROOT_INCLUDE_DIR)
+    list(APPEND _C4_ROOT_INCLUDE_PATH "${ROOT_INCLUDE_DIR}")
+  endif()
+
+  if(FAIRROOTPATH)
+    list(APPEND _C4_ROOT_INCLUDE_PATH "${FAIRROOTPATH}/include")
+  endif()
+
+  list(REMOVE_DUPLICATES _C4_ROOT_INCLUDE_PATH)
+
+  convert_list_to_string(${_C4_ROOT_INCLUDE_PATH})
+  set(ROOT_INCLUDE_PATH "${output}")
+
+
+  # ---------------------------------------------------------------------------
+  # Generate shell configuration
+  # ---------------------------------------------------------------------------
+
+  if("${filename}" MATCHES "[.]csh.*$")
+
+    if(C4ROOTPATH)
+
+      configure_file(
+        "${PROJECT_SOURCE_DIR}/cmake/scripts/config.csh.in"
+        "${CMAKE_CURRENT_BINARY_DIR}/${filename}"
+      )
+
+    else()
+
+      configure_file(
+        "${FAIRROOTPATH}/share/fairbase/cmake/scripts/config.csh.in"
+        "${CMAKE_CURRENT_BINARY_DIR}/${filename}"
+      )
+
+    endif()
+
+  else()
+
+    if(C4ROOTPATH)
+
+      configure_file(
+        "${PROJECT_SOURCE_DIR}/cmake/scripts/config.sh.in"
+        "${CMAKE_CURRENT_BINARY_DIR}/${filename}"
+      )
+
+    else()
+
+      configure_file(
+        "${FAIRROOTPATH}/share/fairbase/cmake/scripts/config.sh.in"
+        "${CMAKE_CURRENT_BINARY_DIR}/${filename}"
+      )
+
+    endif()
+
+  endif()
+
+ENDMACRO()
+
+
+# ==============================================================================
+# Convert a CMake list into a colon-separated shell path
+# ==============================================================================
+
+MACRO(CONVERT_LIST_TO_STRING)
+
+  set(tmp "")
+
+  foreach(_current ${ARGN})
+
+    if(NOT "${_current}" STREQUAL "")
+
+      if("${tmp}" STREQUAL "")
+        set(tmp "${_current}")
+      else()
+        set(tmp "${tmp}:${_current}")
+      endif()
+
+    endif()
+
+  endforeach()
+
+  set(output "${tmp}")
+
+ENDMACRO()
