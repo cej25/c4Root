@@ -19,7 +19,8 @@ void first_test()
     FairLogger::GetLogger()->SetLogScreenLevel("INFO");
     FairLogger::GetLogger()->SetColoredLog(true);
 
-    TString filename = "$LUSTRE_DIR/gamma/s100_files/ts/168Dy_new_0006_0104.lmd";
+    //TString filename = "$LUSTRE_DIR/gamma/s100_files/ts/168Dy_new_0006_0104.lmd";
+    TString filename = "/home/calum/Analysis/LISA/lmd/tamex_0022_0005.lmd";
 
     FairRunOnline* run = new FairRunOnline();
     EventHeader* EvtHead = new EventHeader();

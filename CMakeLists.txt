@@ -1,471 +1,863 @@
-if(CMAKE_BINARY_DIR STREQUAL CMAKE_SOURCE_DIR)
-
-    message(FATAL_ERROR "In-source builds are not supported, please, create a folder build.")
-
-endif()
+# ==============================================================================
+# c4Root
+# ==============================================================================
 
 cmake_minimum_required(VERSION 3.11.0 FATAL_ERROR)
 
+# Keep policy behaviour compatible with the historical c4Root/FairRoot build
+# system while allowing newer CMake versions.
 cmake_policy(VERSION 3.11...3.31)
 
 project(C4ROOT LANGUAGES C CXX)
 
+
+# ==============================================================================
+# Prevent in-source builds
+# ==============================================================================
+
+if(CMAKE_BINARY_DIR STREQUAL CMAKE_SOURCE_DIR)
+    message(FATAL_ERROR
+        "In-source builds are not supported. "
+        "Please create a separate build directory."
+    )
+endif()
+
+
+# ==============================================================================
+# Check source tree
+# ==============================================================================
+
 if(NOT EXISTS "${PROJECT_SOURCE_DIR}/macros")
     message(FATAL_ERROR
-            "\nmacros repository is missing in the c4Root source directory\ncd ${CMAKE_SOURCE_DIR}\ngit clone -b dev <github_link>"
-            )
-endif(NOT EXISTS "${PROJECT_SOURCE_DIR}/macros")
-
-# Check for needed environment variables
-if(NOT DEFINED ENV{SIMPATH})
-
-    message(
-
-        FATAL_ERROR
-
-            "You did not define the environment variable SIMPATH which is nedded to find the external packages. Please set this variable and execute cmake again."
-
+        "\nmacros repository is missing in the c4Root source directory\n"
+        "cd ${CMAKE_SOURCE_DIR}\n"
+        "git clone -b dev <github_link>"
     )
+endif()
 
-endif(NOT DEFINED ENV{SIMPATH})
+
+# ==============================================================================
+# FairRoot location
+#
+# c4Root deliberately does NOT require SIMPATH/FairSoft.
+#
+# FAIRROOTPATH is retained for compatibility with FairRoot 18.x and existing
+# c4Root installations.
+# ==============================================================================
 
 if(NOT DEFINED ENV{FAIRROOTPATH})
+    message(FATAL_ERROR
+        "FAIRROOTPATH is not defined. "
+        "Please set FAIRROOTPATH to your FairRoot installation."
+    )
+endif()
 
-    message(
+set(FAIRROOTPATH "$ENV{FAIRROOTPATH}")
 
-        FATAL_ERROR
+string(REGEX MATCHALL "[^:]+" PATH "$ENV{PATH}")
 
-            "You did not define the environment variable FAIRROOTPATH which is needed to find FairRoot. Please set this variable and execute cmake again."
 
+# ==============================================================================
+# FairRoot version
+#
+# Determine this before selecting the FairRoot-18/FairRoot-19 CMake path.
+# ==============================================================================
+
+if(EXISTS "${FAIRROOTPATH}/bin/fairroot-config")
+
+    execute_process(
+        COMMAND "${FAIRROOTPATH}/bin/fairroot-config" --version
+        COMMAND sed "s/^v//"
+        OUTPUT_VARIABLE FairRoot_VERSION
+        OUTPUT_STRIP_TRAILING_WHITESPACE
+        RESULT_VARIABLE FAIRROOT_CONFIG_RESULT
+    )
+
+    if(NOT FAIRROOT_CONFIG_RESULT EQUAL 0)
+        message(FATAL_ERROR
+            "Could not determine FairRoot version using fairroot-config."
+        )
+    endif()
+
+else()
+
+    message(FATAL_ERROR
+        "Could not find:\n"
+        "  ${FAIRROOTPATH}/bin/fairroot-config\n"
+        "Please check FAIRROOTPATH."
     )
 
 endif()
 
-set(SIMPATH $ENV{SIMPATH})
-set(FAIRROOTPATH $ENV{FAIRROOTPATH})
 
-STRING(REGEX MATCHALL "[^:]+" PATH $ENV{PATH})
+if("${FairRoot_VERSION}" VERSION_LESS "18.2.1")
 
-set(CMAKE_MODULE_PATH "${FAIRROOTPATH}/share/fairbase/cmake/modules" ${CMAKE_MODULE_PATH})
-set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake/modules" ${CMAKE_MODULE_PATH})
+    message(FATAL_ERROR
+        "Incompatible FairRoot version detected: ${FairRoot_VERSION}\n"
+        "c4Root requires FairRoot 18.2.1 or later."
+    )
 
-Set(CheckSrcDir "${FAIRROOTPATH}/share/fairbase/cmake/checks")
+endif()
 
-# find_package(FairCMakeModules 0.1 QUIET)
-# if(FairCMakeModules_FOUND)
-#   include(FairFindPackage2)
-# else()
-#   message(STATUS "Could not find FairCMakeModules. "
-#           "It is recommended to install https://github.com/FairRootGroup/FairCMakeModules")
-# endif()
+message(STATUS "Using FairRoot ${FairRoot_VERSION}")
 
-find_package(FairCMakeModules 1.0 REQUIRED)
-include(FairFindPackage2)
 
-if(COMMAND find_package2)
-  find_package2(PUBLIC FairRoot)
+# ==============================================================================
+# CMake module paths
+# ==============================================================================
+
+set(
+    CMAKE_MODULE_PATH
+    "${FAIRROOTPATH}/share/fairbase/cmake/modules"
+    "${CMAKE_SOURCE_DIR}/cmake/modules"
+    ${CMAKE_MODULE_PATH}
+)
+
+set(
+    CheckSrcDir
+    "${FAIRROOTPATH}/share/fairbase/cmake/checks"
+)
+
+
+# ==============================================================================
+# FairRoot CMake compatibility
+#
+# FairRoot >= 19:
+#   FairFindPackage2 lives in FairCMakeModules.
+#
+# FairRoot 18:
+#   Some later releases can also use FairCMakeModules, while older releases
+#   may provide the required helpers through FairRoot itself.
+# ==============================================================================
+
+if("${FairRoot_VERSION}" VERSION_GREATER_EQUAL "19.0")
+
+    find_package(FairCMakeModules 1.0 REQUIRED)
+    include(FairFindPackage2)
+
 else()
-  find_package(FairRoot)
+
+    # FairRoot 18.x compatibility.
+    #
+    # Prefer FairCMakeModules where available (e.g. newer 18.x installations),
+    # but do not make it an unconditional c4Root requirement for all 18.x.
+    find_package(FairCMakeModules 1.0 QUIET)
+
+    if(FairCMakeModules_FOUND)
+
+        include(FairFindPackage2)
+
+    elseif(EXISTS
+           "${FAIRROOTPATH}/share/fairbase/cmake/modules/FairFindPackage2.cmake")
+
+        include(
+            "${FAIRROOTPATH}/share/fairbase/cmake/modules/FairFindPackage2.cmake"
+        )
+
+    else()
+
+        message(STATUS
+            "FairFindPackage2 is not available. "
+            "Using standard CMake find_package() for FairRoot 18 compatibility."
+        )
+
+    endif()
+
 endif()
 
-# FairRoot_VERSION is eventually set by find_package, for now let's set it explicitly
-execute_process(
-  COMMAND ${FAIRROOTPATH}/bin/fairroot-config --version
-  COMMAND sed "s/^v//"
-  OUTPUT_VARIABLE FairRoot_VERSION
-  OUTPUT_STRIP_TRAILING_WHITESPACE
-  )
-if( "${FairRoot_VERSION}"  VERSION_LESS 18.2.1 )
-  Message(FATAL_ERROR "Incompatible FairRoot version detected: ${FairRoot_VERSION}. c4Root requires FairRoot v18.2.1 or later")
-else()
-  message(STATUS "You seem to be using FairRoot ${FairRoot_VERSION}.")
-endif()
 
-set(C4ROOTPATH ${CMAKE_INSTALL_PREFIX})
+# ==============================================================================
+# Package-finding compatibility wrapper
+#
+# find_package2() is preferred when available because this is what the
+# historical FairRoot/c4Root build infrastructure expects.
+#
+# Standard find_package() is used as a fallback.
+# ==============================================================================
 
-if(SIMPATH)
-  set(CMAKE_PREFIX_PATH ${SIMPATH} ${CMAKE_PREFIX_PATH})
-endif()
+macro(c4_find_package VISIBILITY PACKAGE_NAME)
 
-# Load some basic macros which are needed later on
+    if(COMMAND find_package2)
+
+        find_package2(
+            ${VISIBILITY}
+            ${PACKAGE_NAME}
+            ${ARGN}
+        )
+
+    else()
+
+        find_package(
+            ${PACKAGE_NAME}
+            ${ARGN}
+        )
+
+    endif()
+
+endmacro()
+
+
+# ==============================================================================
+# FairRoot
+# ==============================================================================
+
+c4_find_package(
+    PUBLIC
+    FairRoot
+    REQUIRED
+)
+
+
+# ==============================================================================
+# FairRoot/c4Root macros
+# ==============================================================================
+
 include(FairMacros)
-
-find_package2(PUBLIC ROOT  VERSION 6.10.00 REQUIRED)
-if("${ROOT_vmc_FOUND}" MATCHES "no")
-  find_package2(PUBLIC VMC REQUIRED)
-  set(VMCLIB VMCLibrary)
-else()
-  set(VMCLIB VMC)
-endif()
 
 include(c4Macros)
 include(WriteConfigFile_c4)
 include(WriteEnvCache)
-include(Dart)
 include(CheckCompiler)
-include(ROOTMacros) # This is from FR, see https://github.com/FairRootGroup/FairRoot/issues/1221
 
-find_package2(PUBLIC FairLogger  VERSION 1.2.0 REQUIRED) # maybe 1.6 now
+
+# ==============================================================================
+# Required c4Root dependencies
+# ==============================================================================
+
+c4_find_package(
+    PUBLIC
+    ROOT
+    VERSION 6.10.00
+    REQUIRED
+)
+
+c4_find_package(
+    PUBLIC
+    FairLogger
+    VERSION 1.2.0
+    REQUIRED
+)
+
+
+# ==============================================================================
+# FairLogger dependencies
+#
+# FairLogger is genuinely used directly by c4Root.
+#
+# Boost is deliberately not propagated as a c4Root dependency. c4Root itself
+# contains no Boost usage.
+# ==============================================================================
 
 foreach(dep IN LISTS FairLogger_PACKAGE_DEPENDENCIES)
+
     if(NOT dep STREQUAL "Boost")
-        find_package2(
-            PUBLIC
-            ${dep}
-            REQUIRED
-            VERSION
-            ${FairLogger_${dep}_VERSION})
+
+        if(COMMAND find_package2)
+
+            find_package2(
+                PUBLIC
+                ${dep}
+                REQUIRED
+                VERSION ${FairLogger_${dep}_VERSION}
+            )
+
+        else()
+
+            if(DEFINED FairLogger_${dep}_VERSION)
+
+                find_package(
+                    ${dep}
+                    ${FairLogger_${dep}_VERSION}
+                    REQUIRED
+                )
+
+            else()
+
+                find_package(
+                    ${dep}
+                    REQUIRED
+                )
+
+            endif()
+
+        endif()
+
     endif()
+
 endforeach()
 
-# if( "${FairRoot_VERSION}"  VERSION_GREATER 18.6.4 )
-#   add_definitions(-DACTIVATEOVERRIDE)
 
-#   find_package2(PUBLIC DDS)
+# ==============================================================================
+# ROOT/FairRoot dictionary macros
+#
+# FairRoot 19 requires ROOTMacros to be included after finding ROOT.
+# This is also safe for supported FairRoot 18 installations.
+# ==============================================================================
 
-# Endif()
+find_package(VMC QUIET)
 
+if(VMC_FOUND)
+    message(STATUS "Found VMC required by FairRoot: ${VMC_INCLUDE_DIRS}")
 
-if("${FairRoot_VERSION}" VERSION_GREATER 18.6.4)
+    list(APPEND
+        BASE_INCLUDE_DIRECTORIES
+        ${VMC_INCLUDE_DIRS}
+    )
 
-    find_package2(
-        PUBLIC
-        FairMQ
-        VERSION
-        1.4.0
-        REQUIRED)
-    find_package2(PUBLIC DDS)
-
-    if(FAIRSOFT_EXTERN)
-        set(Boost_ROOT ${SIMPATH})
-        set(GSL_DIR ${SIMPATH})
-    else(FAIRSOFT_EXTERN)
-        set(Boost_ROOT ${SIMPATH}/basics/boost)
-        set(GSL_DIR ${SIMPATH}/basics/gsl)
-    endif(FAIRSOFT_EXTERN)
-
-    if(NOT DEFINED Boost_NO_SYSTEM_PATHS)
-        set(Boost_NO_SYSTEM_PATHS TRUE)
-    endif()
-    if(NOT DEFINED Boost_NO_BOOST_CMAKE AND CMAKE_VERSION VERSION_LESS 3.15)
-        set(Boost_NO_BOOST_CMAKE TRUE)
-    endif()
-    if(Boost_NO_BOOST_CMAKE)
-        # If an older version of boost is found both of the variables below are
-        # cached and in a second cmake run, a good boost version is found even
-        # if the version is to old.
-        # To overcome this problem both variables are cleared before checking
-        # for boost.
-        unset(Boost_INCLUDE_DIR CACHE)
-        unset(Boost_LIBRARY_DIRS CACHE)
-    endif()
-
-    list(
-        APPEND
-        boost_dependencies
-        thread
-        system
-        timer
-        program_options
-        random
-        filesystem
-        chrono
-        exception
-        iostreams
-        regex
-        serialization
-        log
-        atomic)
-
-    find_package2(
-        PUBLIC
-        Boost
-        VERSION
-        1.67
-        COMPONENTS
-        ${boost_dependencies}
-        ADD_REQUIREMENTS_OF
-        FairMQ)
-    #  If (FairMQ_FOUND AND Boost_FOUND)
-    #    add_subdirectory(base/MQ)
-    #    add_subdirectory(parmq)
-    #  Else ()
-    #    Message(STATUS "base/MQ and parmq will not be built, because FairMQ and/or Boost was not found.")
-    #  EndIf ()
+    include_directories(
+        ${VMC_INCLUDE_DIRS}
+    )
 else()
-    set(Boost_NO_SYSTEM_PATHS TRUE)
-    set(Boost_NO_BOOST_CMAKE TRUE)
-
-    if(${ROOT_LIBRARY_DIR} MATCHES /lib/root)
-        set(Boost_ROOT ${SIMPATH})
-        set(GSL_DIR ${SIMPATH})
-    else(${ROOT_LIBRARY_DIR} MATCHES /lib/root)
-        set(Boost_ROOT ${SIMPATH}/basics/boost)
-        set(GSL_DIR ${SIMPATH}/basics/gsl)
-    endif(${ROOT_LIBRARY_DIR} MATCHES /lib/root)
-
-    unset(Boost_INCLUDE_DIR CACHE)
-    unset(Boost_LIBRARY_DIRS CACHE)
-    find_package2(
-        PUBLIC
-        Boost
-        VERSION
-        1.67
-        ${FairMQ_Boost_VERSION}
-        COMPONENTS
-        thread
-        system
-        timer
-        program_options
-        random
-        filesystem
-        chrono
-        exception
-        iostreams
-        regex
-        serialization
-        log
-        log_setup
-        atomic
-        date_time
-        ${FairMQ_Boost_COMPONENTS}
-        REQUIRED)
-endif() #end of r3b fairroot version if statement
-
-
-find_package2(PUBLIC Pythia6)
-find_package2(PUBLIC Pythia8)
-
-find_package2(PUBLIC VGM)
-
-find_package(HEPMC)
-
-find_package2(PUBLIC IWYU)
-
-find_package2(PUBLIC GSL)
-if(NOT DEFINED GTEST_ROOT)
-  set(GTEST_ROOT ${SIMPATH})
+    message(FATAL_ERROR
+        "FairRoot ${FairRoot_VERSION} requires VMC headers, "
+        "but VMC could not be found. In particular, TMCtls.h is required "
+        "by FairLinkManager.h."
+    )
 endif()
 
-find_package2(PUBLIC Git)
-set (Git_VERSION ${GIT_VERSION_STRING})
-string(REPLACE "git" " " Git_ROOT ${GIT_EXECUTABLE} )
+include(ROOTMacros)
 
-# Check the compiler and set the compile and link flags
+
+# ==============================================================================
+# ROOT dictionary-generator compatibility
+#
+# Older FairRoot ROOTMacros search for "rootcint".
+#
+# Older ROOT installations may genuinely provide rootcint, in which case it
+# is retained.
+#
+# Modern ROOT installations provide rootcling instead. If rootcint was not
+# found, use rootcling as the dictionary generator.
+# ==============================================================================
+
+if(NOT ROOT_CINT_EXECUTABLE
+   OR ROOT_CINT_EXECUTABLE MATCHES "-NOTFOUND$")
+
+    # ROOT_BINDIR is normally supplied by ROOT's CMake configuration.
+    #
+    # Obtain it from root-config as an additional compatibility mechanism.
+    if(NOT ROOT_BINDIR AND ROOT_CONFIG_EXECUTABLE)
+
+        execute_process(
+            COMMAND "${ROOT_CONFIG_EXECUTABLE}" --bindir
+            OUTPUT_VARIABLE ROOT_BINDIR
+            OUTPUT_STRIP_TRAILING_WHITESPACE
+        )
+
+    endif()
+
+    find_program(
+        C4ROOT_ROOTCLING_EXECUTABLE
+        NAMES rootcling
+        HINTS
+            "${ROOT_BINDIR}"
+            "${ROOTSYS}/bin"
+    )
+
+    if(NOT C4ROOT_ROOTCLING_EXECUTABLE)
+
+        message(FATAL_ERROR
+            "Neither rootcint nor rootcling could be found.\n"
+            "Please check your ROOT installation."
+        )
+
+    endif()
+
+    # The legacy FairRoot dictionary macro expects this particular variable.
+    set(
+        ROOT_CINT_EXECUTABLE
+        "${C4ROOT_ROOTCLING_EXECUTABLE}"
+        CACHE FILEPATH
+        "ROOT dictionary generator used by legacy FairRoot macros"
+        FORCE
+    )
+
+    message(STATUS
+        "FairRoot's legacy dictionary macro requested rootcint; "
+        "using rootcling instead:\n"
+        "  ${ROOT_CINT_EXECUTABLE}"
+    )
+
+else()
+
+    message(STATUS
+        "Using ROOT dictionary generator:\n"
+        "  ${ROOT_CINT_EXECUTABLE}"
+    )
+
+endif()
+
+
+# ==============================================================================
+# c4Root install path
+# ==============================================================================
+
+set(C4ROOTPATH "${CMAKE_INSTALL_PREFIX}")
+
+
+# ==============================================================================
+# Git
+# ==============================================================================
+
+if(COMMAND find_package2)
+
+    find_package2(PUBLIC Git)
+
+else()
+
+    find_package(Git)
+
+endif()
+
+if(GIT_FOUND)
+
+    set(Git_VERSION "${GIT_VERSION_STRING}")
+
+    get_filename_component(
+        Git_ROOT
+        "${GIT_EXECUTABLE}"
+        DIRECTORY
+    )
+
+endif()
+
+
+# ==============================================================================
+# Compiler configuration
+# ==============================================================================
+
 check_compiler()
 
 if(DEFINED ENV{WERROR} AND "$ENV{WERROR}")
-  message(STATUS "Will compile with -Werror. ")
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Werror -Wno-sign-compare -Wno-reorder -Wno-unused-variable -Wno-unused-but-set-variable -Wfatal-errors")
+
+    message(STATUS "Will compile with -Werror.")
+
+    string(APPEND CMAKE_CXX_FLAGS
+        " -Wall"
+        " -Werror"
+        " -Wno-sign-compare"
+        " -Wno-reorder"
+        " -Wno-unused-variable"
+        " -Wno-unused-but-set-variable"
+        " -Wfatal-errors"
+    )
+
 else()
-  if (NOT APPLE)
-    message(STATUS "Set env WERROR to 1 to enable -Werror. If origin/dev compiles on your platform with that option, it is definitly a good idea to do that.")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wno-sign-compare -Wno-reorder -Wno-unused-variable -Wno-unused-but-set-variable")
-  endif()
-endif()
-set(CMAKE_CXX_FLAGS "-D_GLIBCXX_ASSERTIONS ${CMAKE_CXX_FLAGS}" )
 
-set(CMAKE_EXPORT_COMPILE_COMMANDS ON) # used by clang-tidy
+    if(NOT APPLE)
 
-set(LIBRARY_OUTPUT_PATH "${CMAKE_BINARY_DIR}/lib")
-set(EXECUTABLE_OUTPUT_PATH "${CMAKE_BINARY_DIR}/bin")
-set(INCLUDE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/include")
-set(VMCWORKDIR ${CMAKE_SOURCE_DIR})
-
-option(USE_PATH_INFO "Information from PATH and LD_LIBRARY_PATH are
-used." OFF)
-if(USE_PATH_INFO)
-    set(PATH $ENV{PATH})
-    if(APPLE)
-        set(LD_LIBRARY_PATH $ENV{DYLD_LIBRARY_PATH})
-    else(APPLE)
-        set(LD_LIBRARY_PATH $ENV{LD_LIBRARY_PATH})
-    endif(APPLE)
-endif(USE_PATH_INFO)
-
-# Check if the user wants to build the project in the source directory
-check_out_of_source_build()
-
-# Check if we are on an UNIX system. If not stop with an error message
-if(NOT UNIX)
-    message(
-        FATAL_ERROR
-            "You're not on an UNIX system. The project was up to now only tested on UNIX systems, so we break here. If you want to go on please edit the CMakeLists.txt in the source directory."
+        message(STATUS
+            "Set env WERROR to 1 to enable -Werror. "
+            "If origin/dev compiles on your platform with that option, "
+            "it is definitely a good idea to do that."
         )
-endif(NOT UNIX)
 
-# Check if the external packages are installed into a separate install directory
-if (COMMAND check_external_package_install_dir)
-  check_external_package_install_dir()
+        string(APPEND CMAKE_CXX_FLAGS
+            " -Wall"
+            " -Wno-sign-compare"
+            " -Wno-reorder"
+            " -Wno-unused-variable"
+            " -Wno-unused-but-set-variable"
+        )
+
+    endif()
+
 endif()
 
-# set(Boost_NO_SYSTEM_PATHS TRUE)
-# set(Boost_NO_BOOST_CMAKE TRUE)
+string(PREPEND CMAKE_CXX_FLAGS "-D_GLIBCXX_ASSERTIONS ")
 
-# If(${ROOT_LIBRARY_DIR} MATCHES /lib/root)
-#   set(BOOST_ROOT ${SIMPATH})
-#   set(GSL_DIR ${SIMPATH})
-# Else(${ROOT_LIBRARY_DIR} MATCHES /lib/root)
-#   set(BOOST_ROOT ${SIMPATH}/basics/boost)
-#   set(GSL_DIR ${SIMPATH}/basics/gsl)
-# EndIf(${ROOT_LIBRARY_DIR} MATCHES /lib/root)
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
-# unset(Boost_INCLUDE_DIR CACHE)
-# unset(Boost_LIBRARY_DIRS CACHE)
-# find_package2(PUBLIC Boost
-#   VERSION 1.67 ${FairMQ_Boost_VERSION}
-#   COMPONENTS thread system timer program_options random filesystem chrono exception iostreams regex serialization log log_setup atomic date_time ${FairMQ_Boost_COMPONENTS}
-#   REQUIRED
-# )
-if(Boost_FOUND)
-  set(Boost_Avail 1)
-else(Boost_FOUND)
-    set(Boost_Avail 0)
-endif(Boost_FOUND)
 
-find_package2(PUBLIC yaml-cpp)
-# Workaround missing exported include directories
-# Upstream has fixed this in https://github.com/jbeder/yaml-cpp/commit/ab5f9259a4e67d3fe0e4832bd407a9e596e2d884 (since 0.6.3)
-if(yaml-cpp_FOUND)
-  get_filename_component(YAML_CPP_INCLUDE_DIR "${YAML_CPP_INCLUDE_DIR}" REALPATH BASE_DIR "/")
-endif()
-if(    yaml-cpp_FOUND
-   AND TARGET yaml-cpp
-   AND EXISTS YAML_CPP_INCLUDE_DIR
-   AND yaml-cpp_VERSION VERSION_LESS 0.6.3
+# ==============================================================================
+# Output directories
+# ==============================================================================
+
+set(
+    LIBRARY_OUTPUT_PATH
+    "${CMAKE_BINARY_DIR}/lib"
 )
-  set_target_properties(yaml-cpp PROPERTIES
-    INTERFACE_INCLUDE_DIRECTORIES "${YAML_CPP_INCLUDE_DIR}"
-  )
+
+set(
+    EXECUTABLE_OUTPUT_PATH
+    "${CMAKE_BINARY_DIR}/bin"
+)
+
+set(
+    INCLUDE_OUTPUT_DIRECTORY
+    "${CMAKE_BINARY_DIR}/include"
+)
+
+# Retained because existing c4Root scripts/macros make use of VMCWORKDIR as a
+# source-tree location. This does NOT imply a VMC library dependency.
+set(
+    VMCWORKDIR
+    "${CMAKE_SOURCE_DIR}"
+)
+
+
+# ==============================================================================
+# Optional PATH information
+#
+# Retained for backwards compatibility with older c4Root/FairRoot setups.
+# New installations generally do not need this.
+# ==============================================================================
+
+option(
+    USE_PATH_INFO
+    "Information from PATH and LD_LIBRARY_PATH are used."
+    OFF
+)
+
+if(USE_PATH_INFO)
+
+    set(PATH "$ENV{PATH}")
+
+    if(APPLE)
+        set(LD_LIBRARY_PATH "$ENV{DYLD_LIBRARY_PATH}")
+    else()
+        set(LD_LIBRARY_PATH "$ENV{LD_LIBRARY_PATH}")
+    endif()
+
 endif()
+
+
+# ==============================================================================
+# Platform/build checks
+# ==============================================================================
+
+if(COMMAND check_out_of_source_build)
+    check_out_of_source_build()
+endif()
+
+
+if(NOT UNIX)
+
+    message(FATAL_ERROR
+        "c4Root has currently only been tested on UNIX systems."
+    )
+
+endif()
+
+
+# Older FairRoot releases provided this helper.
+# Newer releases removed it.
+if(COMMAND check_external_package_install_dir)
+    check_external_package_install_dir()
+endif()
+
+
+# ==============================================================================
+# Basic FairRoot/c4Root variables
+# ==============================================================================
 
 SetBasicVariables()
 
-# Set the library version in the main CMakeLists.txt
+
+# ==============================================================================
+# Version information
+# ==============================================================================
+
 set(C4ROOT_MAJOR_VERSION 0)
 set(C4ROOT_MINOR_VERSION 0)
 set(C4ROOT_PATCH_VERSION 0)
-set(C4ROOT_VERSION "${FairRoot_VERSION}")
 
-if(NOT DEFINED ROOT_FOUND_VERSION)
+# Preserve historical c4Root behaviour for ABI/library properties.
+set(
+    C4ROOT_VERSION
+    "${FairRoot_VERSION}"
+)
+
+
+# ROOT_VERSION is the modern variable.
+#
+# Older FairRoot/ROOT combinations may instead populate ROOT_FOUND_VERSION or
+# found_vers, so retain fallbacks.
+if(ROOT_VERSION)
+
+    set(ROOT_FOUND_VERSION "${ROOT_VERSION}")
+
+elseif(NOT ROOT_FOUND_VERSION AND DEFINED found_vers)
+
     set(ROOT_FOUND_VERSION "${found_vers}")
-endif()
-message("ROOT_FOUND_VERSION = ${ROOT_FOUND_VERSION}")
 
-set(FAIRROOT_LIBRARY_PROPERTIES
+endif()
+
+message(
+    STATUS
+    "ROOT version: ${ROOT_FOUND_VERSION}"
+)
+
+
+set(
+    FAIRROOT_LIBRARY_PROPERTIES
     ${FAIRROOT_LIBRARY_PROPERTIES}
     VERSION
     "${C4ROOT_VERSION}"
     SOVERSION
-    "${C4ROOT_VERSION}")
+    "${C4ROOT_VERSION}"
+)
 
-string(COMPARE EQUAL
-               "${CMAKE_GENERATOR}"
-               "Xcode"
-               IS_XCODE)
-set(C4LIBDIR ${CMAKE_BINARY_DIR}/lib)
-if(${IS_XCODE})
-    set(LD_LIBRARY_PATH ${C4LIBDIR}/RELWITHDEBINFO ${C4LIBDIR} ${LD_LIBRARY_PATH})
-else(${IS_XCODE})
-    set(LD_LIBRARY_PATH ${C4LIBDIR} ${LD_LIBRARY_PATH})
-endif(${IS_XCODE})
+
+# ==============================================================================
+# Runtime library path
+# ==============================================================================
+
+string(
+    COMPARE EQUAL
+    "${CMAKE_GENERATOR}"
+    "Xcode"
+    IS_XCODE
+)
+
+set(
+    C4LIBDIR
+    "${CMAKE_BINARY_DIR}/lib"
+)
+
+if(IS_XCODE)
+
+    set(
+        LD_LIBRARY_PATH
+        ${C4LIBDIR}/RELWITHDEBINFO
+        ${C4LIBDIR}
+        ${LD_LIBRARY_PATH}
+    )
+
+else()
+
+    set(
+        LD_LIBRARY_PATH
+        ${C4LIBDIR}
+        ${LD_LIBRARY_PATH}
+    )
+
+endif()
+
+
+# ==============================================================================
+# ucesb
+#
+# Optional.
+#
+# If unavailable, c4Root is still built, but c4source is skipped and LMD
+# unpacking is unavailable.
+# ==============================================================================
 
 find_package(ucesb)
-if(ucesb_FOUND)
-    set(WITH_UCESB true)
-    SET(UCESBPATH $ENV{UCESB_DIR})
-    set(LD_LIBRARY_PATH ${ucesb_LIBRARY_DIR} ${LD_LIBRARY_PATH})
-else()
-  message(WARNING "${BMagenta}No UCESB configured. You will not be able to unpack lmd files. Set UCESB_DIR"
-    " to a ucesb installation to fix this. You may also need to > make an experiment in /unpack/exps.${CR}")
-endif(ucesb_FOUND)
 
-configure_file(${CMAKE_SOURCE_DIR}/cmake/scripts/c4RootConfigVersion.cmake.in "${CMAKE_BINARY_DIR}/c4RootConfigVersion.cmake" @ONLY)
+if(ucesb_FOUND)
+
+    set(WITH_UCESB TRUE)
+
+    set(
+        UCESBPATH
+        "$ENV{UCESB_DIR}"
+    )
+
+    set(
+        LD_LIBRARY_PATH
+        ${ucesb_LIBRARY_DIR}
+        ${LD_LIBRARY_PATH}
+    )
+
+else()
+
+    set(WITH_UCESB FALSE)
+
+    message(WARNING
+        "${BMagenta}"
+        "No UCESB configured. "
+        "You will not be able to unpack lmd files. "
+        "Set UCESB_DIR to a ucesb installation to fix this. "
+        "You may also need to make an experiment in /unpack/exps."
+        "${CR}"
+    )
+
+endif()
+
+
+# ==============================================================================
+# c4Root configuration/version files
+# ==============================================================================
+
+configure_file(
+    "${CMAKE_SOURCE_DIR}/cmake/scripts/c4RootConfigVersion.cmake.in"
+    "${CMAKE_BINARY_DIR}/c4RootConfigVersion.cmake"
+    @ONLY
+)
 
 c4_generate_version_info()
 
-# Recurse into the given subdirectories.  This does not actually cause another cmake executable to
-# run.  The same process will walk through the project's entire directory structure.
 
-# FIXME in FairSoft / FairRoot
-find_package(VMC QUIET)
-set (BASE_INCLUDE_DIRECTORIES ${BASE_INCLUDE_DIRECTORIES} ${VMC_INCLUDE_DIRS})
+# ==============================================================================
+# Build c4Root
+# ==============================================================================
 
 if(MODULE)
-    add_subdirectory(${MODULE})
-endif(MODULE)
 
-if(NOT MODULE)
+    add_subdirectory("${MODULE}")
+
+else()
+
     add_subdirectory(c4base)
+
     if(WITH_UCESB)
         add_subdirectory(c4source)
-    endif(WITH_UCESB)
-    set(ENV{VMCWORKDIR} ${CMAKE_CURRENT_SOURCE_DIR})
+    endif()
+
+    set(
+        ENV{VMCWORKDIR}
+        "${CMAKE_CURRENT_SOURCE_DIR}"
+    )
+
     add_subdirectory(c4data)
     add_subdirectory(compilehelper)
     add_subdirectory(analysis)
     add_subdirectory(macros)
-endif(NOT MODULE)
 
-add_subdirectory(cmake)
-
-#this whole thing might have to be commented out until a github thing is setup? dunno
-If(0 AND GIT_FOUND AND EXISTS "${CMAKE_SOURCE_DIR}/.git")
-  Execute_Process(COMMAND ${GIT_EXECUTABLE} describe --tags
-                  OUTPUT_VARIABLE C4ROOT_GIT_VERSION
-                  OUTPUT_STRIP_TRAILING_WHITESPACE
-                  WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
-                 )
-Else()
-  Set(C4ROOT_GIT_VERSION v${C4ROOT_MAJOR_VERSION}.${C4ROOT_MINOR_VERSION}.${C4ROOT_PATCH_VERSION})
-EndIf()
-
-execute_process(COMMAND ${ROOT_CONFIG_EXECUTABLE} --has-opengl
-                OUTPUT_VARIABLE EveIsBuild
-                OUTPUT_STRIP_TRAILING_WHITESPACE)
-
-# if(${EveIsBuild} STREQUAL yes)
-#     message("Build the eventdisplay.")
-#     if(NOT FAIRROOT_FOUND)
-#         add_subdirectory(eventdisplay)
-#     endif(NOT FAIRROOT_FOUND)
-# else(${EveIsBuild} STREQUAL yes)
-#     message("The eventdisplay is not build, there is no OpenGL support.")
-# endif(${EveIsBuild} STREQUAL yes)
-if (DEFINED EveIsBuild AND "${EveIsBuild}" STREQUAL "yes")
-    message("Build the eventdisplay.")
-    if (NOT FAIRROOT_FOUND)
-        add_subdirectory(eventdisplay)
-    endif()
-else()
-    message("The eventdisplay is not built, there is no OpenGL support.")
 endif()
 
 
-option(BUILD_DOXYGEN "Build Doxygen" OFF)
+add_subdirectory(cmake)
+
+
+# ==============================================================================
+# Git version
+# ==============================================================================
+
+if(0 AND GIT_FOUND AND EXISTS "${CMAKE_SOURCE_DIR}/.git")
+
+    execute_process(
+        COMMAND
+            "${GIT_EXECUTABLE}"
+            describe
+            --tags
+        OUTPUT_VARIABLE
+            C4ROOT_GIT_VERSION
+        OUTPUT_STRIP_TRAILING_WHITESPACE
+        WORKING_DIRECTORY
+            "${CMAKE_SOURCE_DIR}"
+    )
+
+else()
+
+    set(
+        C4ROOT_GIT_VERSION
+        "v${C4ROOT_MAJOR_VERSION}.${C4ROOT_MINOR_VERSION}.${C4ROOT_PATCH_VERSION}"
+    )
+
+endif()
+
+
+# ==============================================================================
+# ROOT OpenGL/event-display information
+# ==============================================================================
+
+if(ROOT_CONFIG_EXECUTABLE)
+
+    execute_process(
+        COMMAND
+            "${ROOT_CONFIG_EXECUTABLE}"
+            --has-opengl
+        OUTPUT_VARIABLE
+            EveIsBuild
+        OUTPUT_STRIP_TRAILING_WHITESPACE
+    )
+
+endif()
+
+
+if(DEFINED EveIsBuild AND "${EveIsBuild}" STREQUAL "yes")
+
+    message(
+        STATUS
+        "ROOT was built with OpenGL support."
+    )
+
+    # Historical eventdisplay build intentionally remains disabled here.
+    #
+    # if(NOT FAIRROOT_FOUND)
+    #     add_subdirectory(eventdisplay)
+    # endif()
+
+else()
+
+    message(
+        STATUS
+        "The eventdisplay is not built; "
+        "ROOT has no OpenGL support."
+    )
+
+endif()
+
+
+# ==============================================================================
+# Doxygen
+# ==============================================================================
+
+option(
+    BUILD_DOXYGEN
+    "Build Doxygen"
+    OFF
+)
+
 if(BUILD_DOXYGEN)
-    message(STATUS "*** Building the Doxygen documentaion ***")
+
+    message(
+        STATUS
+        "*** Building the Doxygen documentation ***"
+    )
+
     add_subdirectory(doxygen)
-endif(BUILD_DOXYGEN)
+
+endif()
+
+
+# ==============================================================================
+# Rule checker
+# ==============================================================================
 
 if(RULE_CHECKER_FOUND)
 
-    add_custom_target(RULES
-                      COMMAND ${RULE_CHECKER_SCRIPT1} ${CMAKE_BINARY_DIR} viol > violations.html
-                      DEPENDS $ENV{ALL_RULES})
+    add_custom_target(
+        RULES
 
-endif(RULE_CHECKER_FOUND)
+        COMMAND
+            ${RULE_CHECKER_SCRIPT1}
+            ${CMAKE_BINARY_DIR}
+            viol
+            >
+            violations.html
+
+        DEPENDS
+            $ENV{ALL_RULES}
+    )
+
+endif()
+
+
+# ==============================================================================
+# Environment/configuration scripts
+# ==============================================================================
 
 write_config_file(config.sh)
 write_config_file(config.csh)
-WRITE_CONFIG_FILE(config.sh_install)
-WRITE_CONFIG_FILE(config.csh_install)
+
+write_config_file(config.sh_install)
+write_config_file(config.csh_install)
 
 write_env_cache(env_cache.sh)
 
 
-# help
-file(APPEND ${CMAKE_BINARY_DIR}/config.sh "
+# ==============================================================================
+# c4 helper command
+# ==============================================================================
+
+file(
+    APPEND
+    "${CMAKE_BINARY_DIR}/config.sh"
+"
 c4() {
     if [ \"\$1\" = \"--help\" ]; then
         echo \"Usage: c4 [options]\"
@@ -473,7 +865,7 @@ c4() {
         echo \"  --help        Show this help message\"
         echo \"  --version     Show version information\"
         if [ \"\$2\" = \"me\" ]; then
-          echo \"How may I help you, poor soul?\"
+            echo \"How may I help you, poor soul?\"
         fi
     elif [ \"\$1\" = \"--version\" ]; then
         echo \"c4 Version: Hmm, no idea... 0.9 probably.\"
@@ -482,131 +874,306 @@ c4() {
         echo \"Try 'c4 --help' for usage information.\"
     fi
 }
-")
+"
+)
 
 
-# Summary ######################################################################
+# ==============================================================================
+# Configuration summary
+# ==============================================================================
+
 if(CMAKE_CXX_FLAGS)
-  message(STATUS "  ")
-  message(STATUS "  ${Cyan}GLOBAL CXX FLAGS${CR}  ${BGreen}${CMAKE_CXX_FLAGS}${CR}")
+
+    message(STATUS "")
+
+    message(
+        STATUS
+        "  ${Cyan}GLOBAL CXX FLAGS${CR}  "
+        "${BGreen}${CMAKE_CXX_FLAGS}${CR}"
+    )
+
 endif()
+
+
 if(CMAKE_CONFIGURATION_TYPES)
-  message(STATUS "  ")
-  message(STATUS "  ${Cyan}BUILD TYPE         CXX FLAGS${CR}")
-  string(TOUPPER "${CMAKE_BUILD_TYPE}" selected_type)
-  foreach(type IN LISTS CMAKE_CONFIGURATION_TYPES)
-   string(TOUPPER "${type}" type_upper)
-   if(type_upper STREQUAL selected_type)
-    if( "${FairRoot_VERSION}" VERSION_LESS 19.0)
-      pad("${type}" 18 " " type_padded)
-      message(STATUS "${BGreen}* ${type_padded}${CMAKE_CXX_FLAGS_${type_upper}}${CR}")
-    else()
-      # fair_pad("${type}" 19 " " type_padded)
-      message(STATUS "${BGreen}* ${type_padded}${CMAKE_CXX_FLAGS_${type_upper}}${CR}")
-    endif()
-    else()
-    if( "${FairRoot_VERSION}" VERSION_LESS 19.0)
-     pad("${type}" 18 " " type_padded)
-     message(STATUS "  ${BWhite}${type_padded}${CR}${CMAKE_CXX_FLAGS_${type_upper}}")
-    else()
-      # fair_pad("${type}" 19 " " type_padded)
-      message(STATUS "  ${BWhite}${type_padded}${CR}${CMAKE_CXX_FLAGS_${type_upper}}")
-    endif()
-   endif()
-   unset(type_padded)
-   unset(type_upper)
- endforeach()
-message(STATUS "  ")
-message(STATUS "  (Change the build type with ${BMagenta}-DCMAKE_BUILD_TYPE=...${CR})")
+
+    message(STATUS "")
+
+    message(
+        STATUS
+        "  ${Cyan}BUILD TYPE         CXX FLAGS${CR}"
+    )
+
+    string(
+        TOUPPER
+        "${CMAKE_BUILD_TYPE}"
+        selected_type
+    )
+
+
+    foreach(type IN LISTS CMAKE_CONFIGURATION_TYPES)
+
+        string(
+            TOUPPER
+            "${type}"
+            type_upper
+        )
+
+
+        if(type_upper STREQUAL selected_type)
+
+            if("${FairRoot_VERSION}" VERSION_LESS "19.0")
+
+                pad(
+                    "${type}"
+                    18
+                    " "
+                    type_padded
+                )
+
+                message(
+                    STATUS
+                    "${BGreen}* ${type_padded}"
+                    "${CMAKE_CXX_FLAGS_${type_upper}}${CR}"
+                )
+
+            else()
+
+                message(
+                    STATUS
+                    "${BGreen}* ${type} "
+                    "${CMAKE_CXX_FLAGS_${type_upper}}${CR}"
+                )
+
+            endif()
+
+        else()
+
+            if("${FairRoot_VERSION}" VERSION_LESS "19.0")
+
+                pad(
+                    "${type}"
+                    18
+                    " "
+                    type_padded
+                )
+
+                message(
+                    STATUS
+                    "  ${BWhite}${type_padded}${CR}"
+                    "${CMAKE_CXX_FLAGS_${type_upper}}"
+                )
+
+            else()
+
+                message(
+                    STATUS
+                    "  ${BWhite}${type}${CR} "
+                    "${CMAKE_CXX_FLAGS_${type_upper}}"
+                )
+
+            endif()
+
+        endif()
+
+
+        unset(type_padded)
+        unset(type_upper)
+
+    endforeach()
+
+
+    message(STATUS "")
+
+    message(
+        STATUS
+        "  (Change the build type with "
+        "${BMagenta}-DCMAKE_BUILD_TYPE=...${CR})"
+    )
+
 endif()
+
+
+# ==============================================================================
+# Dependency summary
+# ==============================================================================
 
 if(PROJECT_PACKAGE_DEPENDENCIES)
-  message(STATUS "  ")
-  message(STATUS "  ${Cyan}DEPENDENCY FOUND     VERSION                   PREFIX${CR}")
-  foreach(dep IN LISTS PROJECT_PACKAGE_DEPENDENCIES)
-    if(${dep}_VERSION)
-      if(${dep} STREQUAL DDS)
-        set(version_str "${BGreen}${${dep}_MAJOR_VERSION}.${${dep}_MINOR_VERSION}${CR}")
-      elseif(${dep} STREQUAL Boost)
-        if(Boost_VERSION_MAJOR)
-          set(version_str "${BGreen}${${dep}_VERSION_MAJOR}.${${dep}_VERSION_MINOR}${CR}")
+
+    message(STATUS "")
+
+    message(
+        STATUS
+        "  ${Cyan}DEPENDENCY FOUND     VERSION                   PREFIX${CR}"
+    )
+
+
+    foreach(dep IN LISTS PROJECT_PACKAGE_DEPENDENCIES)
+
+        unset(version_str)
+        unset(version_padded)
+        unset(version_req_str)
+        unset(prefix)
+
+
+        if(DEFINED ${dep}_VERSION AND ${dep}_VERSION)
+
+            set(
+                version_str
+                "${BGreen}${${dep}_VERSION}${CR}"
+            )
+
         else()
-          set(version_str "${BGreen}${${dep}_MAJOR_VERSION}.${${dep}_MINOR_VERSION}${CR}")
+
+            set(
+                version_str
+                "${BYellow}unknown${CR}"
+            )
+
         endif()
-      else()
-        set(version_str "${BGreen}${${dep}_VERSION}${CR}")
-      endif()
-    else()
-      set(version_str "${BYellow}unknown${CR}")
-    endif()
-    if(PROJECT_${dep}_VERSION)
-      set(version_req_str " (>= ${PROJECT_${dep}_VERSION})")
-    endif()
-    if( "${FairRoot_VERSION}" VERSION_LESS 19.0)
-      pad(${dep} 20 " " dep_padded)
-      if(DISABLE_COLOR)
-        pad("${version_str}${version_req_str}" 25 " " version_padded)
-      else()
-        pad("${version_str}${version_req_str}" 25 " " version_padded COLOR 1)
-      endif()
-    else()
-      # fair_pad(${dep} 20 " " dep_padded)
-      if(DISABLE_COLOR)
-        # fair_pad("${version_str}${version_req_str}" 25 " " version_padded)
-      else()
-        # fair_pad("${version_str}${version_req_str}" 25 " " version_padded COLOR 1)
-      endif()
-    endif()
-    set(prefix ${${dep}_PREFIX})
-    if(${dep} STREQUAL Boost)
-      if(TARGET Boost::headers)
-        get_target_property(boost_include Boost::headers INTERFACE_INCLUDE_DIRECTORIES)
-      else()
-        get_target_property(boost_include Boost::boost INTERFACE_INCLUDE_DIRECTORIES)
-      endif()
-      get_filename_component(prefix ${boost_include}/.. ABSOLUTE)
-    elseif(${dep} STREQUAL Protobuf)
-      get_filename_component(prefix ${Protobuf_INCLUDE_DIRS}/.. ABSOLUTE)
-    elseif(${dep} STREQUAL msgpack)
-      get_target_property(msgpack_include msgpackc INTERFACE_INCLUDE_DIRECTORIES)
-      get_filename_component(prefix ${msgpack_include}/.. ABSOLUTE)
-    elseif(${dep} STREQUAL Pythia6)
-      get_filename_component(prefix ${PYTHIA6_LIBRARY_DIR}/.. ABSOLUTE)
-    elseif(${dep} STREQUAL Pythia8)
-      get_filename_component(prefix ${PYTHIA8_LIB_DIR}/.. ABSOLUTE)
-    elseif(${dep} STREQUAL FairLogger)
-      if(FairLogger_PREFIX)
-        set(prefix ${FairLogger_PREFIX})
-      else()
-        set(prefix ${FairLogger_ROOT})
-      endif()
-    elseif(${dep} STREQUAL FairMQ)
-      if(FairMQ_PREFIX)
-        set(prefix ${FairMQ_PREFIX})
-      else()
-        set(prefix ${FairMQ_ROOT})
-      endif()
-    elseif(${dep} STREQUAL yaml-cpp)
-      get_filename_component(prefix ${YAML_CPP_INCLUDE_DIR}/.. ABSOLUTE)
-    elseif(${dep} STREQUAL VGM)
-      string(REPLACE ":" ";" vgm_include ${VGM_INCLUDE_DIRS})
-      list(GET vgm_include 0 vgm_include)
-      get_filename_component(prefix ${vgm_include}/.. ABSOLUTE)
-    elseif(${dep} STREQUAL ROOT)
-      set(prefix ${ROOT_INSTALL_DIR})
-    elseif(${dep} STREQUAL IWYU)
-      get_filename_component(prefix ${IWYU_BINARY}/.. ABSOLUTE)
-    elseif(${dep} STREQUAL yaml-cpp)
-      get_filename_component(prefix ${YAML_CPP_INCLUDE_DIR}/.. ABSOLUTE)
-    endif()
 
-    message(STATUS "  ${BWhite}${dep_padded}${CR}${version_padded}${prefix}")
 
-    unset(version_str)
-    unset(version_padded)
-    unset(version_req_str)
-  endforeach()
+        if(DEFINED PROJECT_${dep}_VERSION
+           AND PROJECT_${dep}_VERSION)
+
+            set(
+                version_req_str
+                " (>= ${PROJECT_${dep}_VERSION})"
+            )
+
+        else()
+
+            set(version_req_str "")
+
+        endif()
+
+
+        if("${FairRoot_VERSION}" VERSION_LESS "19.0"
+           AND COMMAND pad)
+
+            pad(
+                "${dep}"
+                20
+                " "
+                dep_padded
+            )
+
+            if(DISABLE_COLOR)
+
+                pad(
+                    "${version_str}${version_req_str}"
+                    25
+                    " "
+                    version_padded
+                )
+
+            else()
+
+                pad(
+                    "${version_str}${version_req_str}"
+                    25
+                    " "
+                    version_padded
+                    COLOR 1
+                )
+
+            endif()
+
+        else()
+
+            set(
+                dep_padded
+                "${dep} "
+            )
+
+            set(
+                version_padded
+                "${version_str}${version_req_str} "
+            )
+
+        endif()
+
+
+        set(prefix "${${dep}_PREFIX}")
+
+
+        if("${dep}" STREQUAL "FairLogger")
+
+            if(FairLogger_PREFIX)
+
+                set(
+                    prefix
+                    "${FairLogger_PREFIX}"
+                )
+
+            elseif(FairLogger_ROOT)
+
+                set(
+                    prefix
+                    "${FairLogger_ROOT}"
+                )
+
+            endif()
+
+
+        elseif("${dep}" STREQUAL "ROOT")
+
+            if(ROOT_INSTALL_DIR)
+
+                set(
+                    prefix
+                    "${ROOT_INSTALL_DIR}"
+                )
+
+            elseif(ROOTSYS)
+
+                set(
+                    prefix
+                    "${ROOTSYS}"
+                )
+
+            endif()
+
+
+        elseif("${dep}" STREQUAL "Git")
+
+            if(GIT_EXECUTABLE)
+
+                get_filename_component(
+                    prefix
+                    "${GIT_EXECUTABLE}"
+                    DIRECTORY
+                )
+
+            endif()
+
+        endif()
+
+
+        message(
+            STATUS
+            "  ${BWhite}${dep_padded}${CR}"
+            "${version_padded}${prefix}"
+        )
+
+    endforeach()
+
 endif()
 
-message(STATUS "  ")
-################################################################################
+
+# ==============================================================================
+# Final summary
+# ==============================================================================
+
+message(STATUS "")
+message(STATUS "==============================================================")
+message(STATUS " c4Root configuration complete")
+message(STATUS "")
+message(STATUS " FairRoot:           ${FairRoot_VERSION}")
+message(STATUS " ROOT:               ${ROOT_FOUND_VERSION}")
+message(STATUS " ROOT dictionary:    ${ROOT_CINT_EXECUTABLE}")
+message(STATUS " ucesb:              ${WITH_UCESB}")
+message(STATUS "")
+message(STATUS " c4Root SIMPATH requirement: NONE")
+message(STATUS "==============================================================")
+message(STATUS "")
