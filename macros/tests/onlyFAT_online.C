@@ -28,16 +28,16 @@ void onlyFAT_online()
 
     //stream://x86l-116
 
-    TString inputstream ="trans://x86l-117" ;
-    TString outputpath = "/u/despec/s100_online/fatimatimingtest/output/";
+    TString inputstream ="~/Analysis/LISA/lmd/tamex_0020_0001.lmd" ;
+    TString outputpath = "./";
     TString outputFileName = outputpath + "output.root";
 
     Int_t refresh = 1; // Refresh rate for online histograms
-    Int_t port = 5001; // Port number for online visualisation, e.g. lxgXXXX:8886
+    Int_t port = 1111; // Port number for online visualisation, e.g. lxgXXXX:8886
      
     TString ntuple_options = "UNPACK"; // "RAW"? "time=stitch=1000"? can we time-stitch files here pls?
-    TString ucesb_path = "/u/despec/s100_online/c4Root/unpack/exps/onlyFATIMA/onlyFATIMA --allow-errors --input-buffer=200Mi"; // CEJ: R3B used input-buffer, can't see in ucesb doc however...
-    std::string ucesb_dir = "/u/jlarsson/ucesb";
+    TString ucesb_path = "/home/calum/Software/c4Root/unpack/exps/onlyFATIMA/onlyFATIMA --allow-errors --input-buffer=200Mi";
+    std::string ucesb_dir = "/home/calum/Software/ucesb";
     ucesb_path.ReplaceAll("//","/");
 
     // Create online run
@@ -47,6 +47,9 @@ void onlyFAT_online()
     run->SetRunId(1); // no idea, does it even matter for this
     run->SetSink(new FairRootFileSink(outputFileName));
     run->ActivateHttpServer(refresh, port);
+    TFolder* histograms = new TFolder("Histograms", "Histograms");
+    FairRootManager::Instance()->Register("Histograms", "Histogram Folder", histograms, false);
+    run->AddObject(histograms);
 
     // Load ucesb structure
     EXT_STR_h101 ucesb_struct;
@@ -56,16 +59,15 @@ void onlyFAT_online()
     source->SetMaxEvents(nev);
     run->SetSource(source);
     
-    TFatimaTwinpeaksConfiguration::SetDetectorConfigurationFile("/u/despec/s100_online/fatimatimingtest/fatima_alloc.txt");
-    //TFatimaTwinpeaksConfiguration::SetDetectorCoefficientFile("/u/despec/s100_online/fatimatimingtest/fatima_cal.txt");
+    TFatimaTwinpeaksConfiguration::SetDetectorConfigurationFile("/home/calum/Analysis/LISA/configs/labr_mapping.txt");
 
     
     UnpackReader* unpackheader = new UnpackReader((EXT_STR_h101_unpack*)&ucesb_struct.eventheaders, offsetof(EXT_STR_h101, eventheaders));
     source->AddReader(unpackheader);
 
     FatimaReader* unpackfatima = new FatimaReader((EXT_STR_h101_fatima_onion*)&ucesb_struct.fatima, offsetof(EXT_STR_h101, fatima));
-    //unpackfatima->DoFineTimeCalOnline("/u/despec/s100_online/fatimatimingtest/fine_time_histos_01032024_fatima.root",10000);
-    unpackfatima->SetInputFileFineTimeHistos("/u/despec/s100_online/fatimatimingtest/fine_time_histos_01032024_fatima.root");
+    unpackfatima->DoFineTimeCalOnline("~/Analysis/LISA/configs/fine_time_histos_300926_labr.root",10000);
+    // unpackfatima->SetInputFileFineTimeHistos("/u/despec/s100_online/fatimatimingtest/fine_time_histos_01032024_fatima.root");
 
     unpackfatima->SetOnline(true);
     
@@ -91,11 +93,11 @@ void onlyFAT_online()
     onlinefatima->SetBinningFastToT(1000,0.1,100.1);
     onlinefatima->SetBinningEnergy(1500,0.1,1500.1);
 
-    std::vector<int> fat_dets = {0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63};
+    std::vector<int> fat_dets = {1,2};
     onlinefatima->SetDetectorsToPlot(fat_dets);
     
-    std::vector<int> fat_ref_dets = {0,1,2};
-    onlinefatima->SetReferenceDetectorsForTimeDifferences(fat_ref_dets);
+    std::vector<int> fat_ref_dets = {1};
+    // onlinefatima->SetReferenceDetectorsForTimeDifferences(fat_ref_dets);
 
     run->AddTask(onlinefatima);
 

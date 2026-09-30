@@ -3,9 +3,19 @@
 #include "../../common/whiterabbit.spec"
 #include "../../common/gsi_tamex4.spec"
 
+DUMMY()
+{
+	UINT32 dummy
+	{
+		0_31: nothing;
+	}
+}
+
 SUBEVENT(fatima_tamex_subev)
 {
-    ts = TIMESTAMP_WHITERABBIT_EXTENDED(id=0x1600);
+    select optional {
+    	ts = TIMESTAMP_WHITERABBIT_EXTENDED(id=0x1600);
+    }
     trigger_window = TAMEX4_HEADER();
     select several 
     {
@@ -17,13 +27,18 @@ SUBEVENT(fatima_tamex_subev)
         tamex[1] = TAMEX4_SFP(sfp=0,card=1);
         tamex[2] = TAMEX4_SFP(sfp=0,card=2);
         tamex[3] = TAMEX4_SFP(sfp=0,card=3);
+    }
+
+    select several
+    {
+	dummy = DUMMY();
     }  
 }
 
 
 EVENT
 {   
-    fatima = fatima_tamex_subev(type = 10, subtype = 1, procid = 75, control = 20, subcrate = 0);
+    fatima = fatima_tamex_subev(type = 10, subtype = 1, procid = 100, subcrate = 0);
 
     //ignore_unknown_subevent;
 };
