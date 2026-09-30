@@ -21,7 +21,14 @@ LisaFastCalData::LisaFastCalData()
     ftrig(0),
     fboard_id(0),
     fch_ID(0),
-    fdetector_id(0),
+
+    fdetector_type(LisaFastDetectorType::Unknown),
+
+    fdetector_id(-1),
+
+    flayer(-1),
+    fx(-1),
+    fy(-1),
     
     fslow_lead_epoch(0),
     fslow_lead_time(0),
@@ -48,7 +55,14 @@ LisaFastCalData::LisaFastCalData(
         uint16_t trig,
         uint16_t board_id,
         uint16_t ch_ID,
-        uint16_t detector_id,
+
+        LisaFastDetectorType detector_type,
+
+        int detector_id,
+
+        int layer,
+        int x,
+        int y,
         
         int64_t slow_lead_epoch,
         double slow_lead_time,
@@ -72,8 +86,14 @@ LisaFastCalData::LisaFastCalData(
         ftrig(trig),
         fboard_id(board_id),
         fch_ID(ch_ID),
+        fdetector_type(detector_type),
+
         fdetector_id(detector_id),
-        
+
+        flayer(layer),
+        fx(x),
+        fy(y),
+                
         fslow_lead_epoch(slow_lead_epoch),
         fslow_lead_time(slow_lead_time),
         fslow_trail_epoch(slow_trail_epoch),

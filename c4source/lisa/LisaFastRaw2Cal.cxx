@@ -103,40 +103,130 @@ InitStatus LisaFastRaw2Cal::Init()
 /*
 Dump detector map to console.
 */
+
 void LisaFastRaw2Cal::PrintDetectorMap()
 {
-    if (lisafast_configuration->MappingLoaded())
+    if (!lisafast_configuration->MappingLoaded())
     {
-        for (const auto& entry : lisafast_configuration->Mapping())
+        c4LOG(info, "Detector map is not loaded.");
+        return;
+    }
+
+    if (lisafast_configuration->LaBrMappingLoaded())
+    {
+        std::cout << "::::: LaBr Mapping :::::" << std::endl;
+
+        for (const auto& entry : lisafast_configuration->LaBr_Mapping())
         {
-            std::cout << "tamexMODULE: " << entry.first.first << " tamexCHANNEL " << entry.first.second;
-            std::cout << " DETECTORID: " << entry.second << "\n";
+            std::cout << "tamexMODULE: " << entry.first.first
+                      << " tamexCHANNEL: " << entry.first.second
+                      << " DETECTOR_ID: " << entry.second
+                      << std::endl;
         }
     }
-    else
+
+    if (lisafast_configuration->DiamondMappingLoaded())
     {
-        c4LOG(info, "Detector map is not load. Cannot print.");
+        std::cout << "::::: Diamond Mapping :::::" << std::endl;
+
+        for (const auto& entry : lisafast_configuration->Diamond_Mapping())
+        {
+            int board = entry.first.first;
+            int channel = entry.first.second;
+
+            int diamond_layer = entry.second.first.first;
+            int diamond_x = entry.second.first.second.first;
+            int diamond_y = entry.second.first.second.second;
+
+            std::cout << "tamexMODULE: " << board
+                      << " tamexCHANNEL: " << channel
+                      << " LAYER: " << diamond_layer
+                      << " X: " << diamond_x
+                      << " Y: " << diamond_y
+                      << std::endl;
+        }
     }
 }
+// void LisaFastRaw2Cal::PrintDetectorMap()
+// {
+//     if (lisafast_configuration->MappingLoaded())
+//     {
+//         for (const auto& entry : lisafast_configuration->Mapping())
+//         {
+//             std::cout << "tamexMODULE: " << entry.first.first << " tamexCHANNEL " << entry.first.second;
+//             std::cout << " DETECTORID: " << entry.second << "\n";
+//         }
+//     }
+//     else
+//     {
+//         c4LOG(info, "Detector map is not load. Cannot print.");
+//     }
+// }
 
 /*
 Dump detector calibrations to console.
 */
 void LisaFastRaw2Cal::PrintDetectorCal()
 {
-    if (lisafast_configuration->CalibrationCoefficientsLoaded())
+    if (!lisafast_configuration->CalibrationCoefficientsLoaded())
     {
-        for (const auto& entry : lisafast_configuration->CalibrationCoefficients())
+        c4LOG(info, "Calibration map is not loaded.");
+        return;
+    }
+
+    if (!lisafast_configuration->LaBrCalibrationCoefficients().empty())
+    {
+        std::cout << "::::: LaBr Calibration :::::" << std::endl;
+
+        for (const auto& entry :
+             lisafast_configuration->LaBrCalibrationCoefficients())
         {
-            std::cout << "DETECTORID: " << entry.first;
-            std::cout << " a0: " << entry.second.at(0) << " a1: " << entry.second.at(1) << " a2: " << entry.second.at(2) << " a3: " << entry.second.at(3) << "\n";
+            std::cout << "DETECTORID: " << entry.first
+                      << " a0: " << entry.second.at(0)
+                      << " a1: " << entry.second.at(1)
+                      << " a2: " << entry.second.at(2)
+                      << " a3: " << entry.second.at(3)
+                      << std::endl;
         }
     }
-    else
+
+    if (!lisafast_configuration->DiamondCalibrationCoefficients().empty())
     {
-        c4LOG(info, "Cal map is not load. Cannot print.");
+        std::cout << "::::: Diamond Calibration :::::" << std::endl;
+
+        for (const auto& entry :
+             lisafast_configuration->DiamondCalibrationCoefficients())
+        {
+            int diamond_layer = std::get<0>(entry.first);
+            int diamond_x = std::get<1>(entry.first);
+            int diamond_y = std::get<2>(entry.first);
+
+            std::cout << "LAYER: " << diamond_layer
+                      << " X: " << diamond_x
+                      << " Y: " << diamond_y
+                      << " a0: " << entry.second.at(0)
+                      << " a1: " << entry.second.at(1)
+                      << " a2: " << entry.second.at(2)
+                      << " a3: " << entry.second.at(3)
+                      << std::endl;
+        }
     }
-}        
+}
+// void LisaFastRaw2Cal::PrintDetectorCal()
+// {
+//     if (lisafast_configuration->CalibrationCoefficientsLoaded())
+//     {
+//         for (const auto& entry : lisafast_configuration->CalibrationCoefficients())
+//         {
+//             std::cout << "DETECTORID: " << entry.first;
+//             std::cout << " a0: " << entry.second.at(0) << " a1: " << entry.second.at(1) << " a2: " << entry.second.at(2) << " a3: " << entry.second.at(3) << "\n";
+//         }
+//     }
+//     else
+//     {
+//         c4LOG(info, "Cal map is not load. Cannot print.");
+//     }
+// }        
 
 /*
 The event loop executable. This is where the events are analyzed. Only used implicitly by FairRoot during Run().
@@ -211,17 +301,84 @@ void LisaFastRaw2Cal::Exec(Option_t* option)
 
             //from here the funcalhitpartner is the slow branch and funcal_hit the fast:
             
-            if (lisafast_configuration->MappingLoaded())
+            // if (lisafast_configuration->MappingLoaded())
+            // {
+            //     std::map<std::pair<int,int>,int> fmap;
+            //     fmap = lisafast_configuration->Mapping();
+            //     std::pair<int, int> unmapped_det { funcal_hit->Get_board_id(), (funcal_hit->Get_ch_ID()+1)/2};
+            //     if (auto result_find = fmap.find(unmapped_det); result_find != fmap.end())
+            //     {
+            //         detector_id = result_find->second; // .find returns an iterator over the pairs matching key
+            //         //c4LOG(info,Form("board = %i, ch = %i, det = %i",funcal_hit->Get_board_id(), (funcal_hit->Get_ch_ID()+1)/2,result_find->second));
+            //         if (detector_id == -1) { fNunmatched++; continue; }
+            //     }
+            // }
+
+            // Reset to this because I don't know what the hit will be
+            detector_id = -1;
+            detector_type = LisaFastDetectorType::Unknown;
+            layer = -1;
+            x = -1;
+            y = -1;
+
+            std::pair<int, int> tamex_channel
             {
-                std::map<std::pair<int,int>,int> fmap;
-                fmap = lisafast_configuration->Mapping();
-                std::pair<int, int> unmapped_det { funcal_hit->Get_board_id(), (funcal_hit->Get_ch_ID()+1)/2};
-                if (auto result_find = fmap.find(unmapped_det); result_find != fmap.end())
+                funcal_hit->Get_board_id(),
+                (funcal_hit->Get_ch_ID() + 1) / 2
+            };
+
+            bool detector_mapped = false;
+
+            // --------------------
+            // LaBr mapping
+            // --------------------
+            if (lisafast_configuration->LaBrMappingLoaded())
+            {
+                auto labr_mapping = lisafast_configuration->LaBr_Mapping();
+
+                auto it = labr_mapping.find(tamex_channel);
+
+                if (it != labr_mapping.end())
                 {
-                    detector_id = result_find->second; // .find returns an iterator over the pairs matching key
-                    //c4LOG(info,Form("board = %i, ch = %i, det = %i",funcal_hit->Get_board_id(), (funcal_hit->Get_ch_ID()+1)/2,result_find->second));
-                    if (detector_id == -1) { fNunmatched++; continue; }
+                    detector_type = LisaFastDetectorType::LaBr;
+                    detector_id = it->second;
+
+                    if (detector_id == -1)
+                    {
+                        fNunmatched++;
+                        continue;
+                    }
+
+                    detector_mapped = true;
                 }
+            }
+
+            // --------------------
+            // Diamond mapping
+            // --------------------
+            if (!detector_mapped && lisafast_configuration->DiamondMappingLoaded())
+            {
+                auto diamond_mapping = lisafast_configuration->Diamond_Mapping();
+
+                auto it = diamond_mapping.find(tamex_channel);
+
+                if (it != diamond_mapping.end())
+                {
+                    detector_type = LisaFastDetectorType::Diamond;
+
+                    layer = it->second.first.first;
+                    x = it->second.first.second.first;
+                    y = it->second.first.second.second;
+
+                    detector_mapped = true;
+                }
+            }
+
+            // No mapping found
+            if (!detector_mapped)
+            {
+                fNunmatched++;
+                continue;
             }
             
 
@@ -260,25 +417,65 @@ void LisaFastRaw2Cal::Exec(Option_t* option)
             //absolute_event_time = (uint64_t)(funcal_hit->Get_wr_t() + (int64_t)(((int32_t)funcal_hit->Get_lead_epoch_counter() - (int32_t)funcal_hit->Get_accepted_lead_epoch_counter()) * 10.24e3 + ((int32_t)funcal_hit->Get_lead_coarse_T() - (int32_t)funcal_hit->Get_accepted_lead_coarse_T()) * 5.0 - (int32_t)(funcal_hit->Get_lead_fine_T() - funcal_hit->Get_accepted_lead_fine_T())));
             //if (detector_id == 0 || detector_id == 1) c4LOG(info,Form("id = %i, fast lead = %f, fast trail = %f, fast ToT = %f",detector_id,fast_lead_time,fast_trail_time,fast_ToT));
 
-            if (lisafast_configuration->MappingLoaded()){
-                if (lisafast_configuration->CalibrationCoefficientsLoaded()){ // check
-                    std::map<int,std::vector<double>> calibration_coeffs = lisafast_configuration->CalibrationCoefficients();
-                    if (auto result_find_cal = calibration_coeffs.find(detector_id); result_find_cal != calibration_coeffs.end()){
-                        std::vector<double> coeffs = result_find_cal->second; //.find returns an iterator over the pairs matching key.
-                        a0 = coeffs.at(0);
-                        a1 = coeffs.at(1);
-                        a2 = coeffs.at(2);
-                        a3 = coeffs.at(3);
-                        
-                        energy = a0 + a1*slow_ToT + a2*slow_ToT*slow_ToT + a3*slow_ToT*slow_ToT*slow_ToT; 
-                    }else{
-                        energy = slow_ToT;
-                    }
-                
-                }else{
-                    energy = slow_ToT;
+            energy = slow_ToT;
+
+            if (lisafast_configuration->CalibrationCoefficientsLoaded())
+            {
+                std::vector<double> coeffs;
+                bool calibration_found = false;
+
+                if (detector_type == LisaFastDetectorType::LaBr)
+                {
+                    calibration_found =
+                        lisafast_configuration->GetLaBrCalibration(
+                            detector_id,
+                            coeffs
+                        );
+                }
+                else if (detector_type == LisaFastDetectorType::Diamond)
+                {
+                    calibration_found =
+                        lisafast_configuration->GetDiamondCalibration(
+                            layer,
+                            x,
+                            y,
+                            coeffs
+                        );
+                }
+
+                if (calibration_found)
+                {
+                    a0 = coeffs.at(0);
+                    a1 = coeffs.at(1);
+                    a2 = coeffs.at(2);
+                    a3 = coeffs.at(3);
+
+                    energy =
+                        a0
+                        + a1 * slow_ToT
+                        + a2 * slow_ToT * slow_ToT
+                        + a3 * slow_ToT * slow_ToT * slow_ToT;
                 }
             }
+            // if (lisafast_configuration->MappingLoaded()){
+            //     if (lisafast_configuration->CalibrationCoefficientsLoaded()){ // check
+            //         std::map<int,std::vector<double>> calibration_coeffs = lisafast_configuration->CalibrationCoefficients();
+            //         if (auto result_find_cal = calibration_coeffs.find(detector_id); result_find_cal != calibration_coeffs.end()){
+            //             std::vector<double> coeffs = result_find_cal->second; //.find returns an iterator over the pairs matching key.
+            //             a0 = coeffs.at(0);
+            //             a1 = coeffs.at(1);
+            //             a2 = coeffs.at(2);
+            //             a3 = coeffs.at(3);
+                        
+            //             energy = a0 + a1*slow_ToT + a2*slow_ToT*slow_ToT + a3*slow_ToT*slow_ToT*slow_ToT; 
+            //         }else{
+            //             energy = slow_ToT;
+            //         }
+                
+            //     }else{
+            //         energy = slow_ToT;
+            //     }
+            // }
 
             // if (lisafast_configuration->GainShiftsLoaded() && !(lisafast_configuration->IsDetectorAuxilliary(detector_id))){
             //     energy = energy*lisafast_configuration->GetGainShift(detector_id,funcal_hit->Get_wr_t());
@@ -291,7 +488,11 @@ void LisaFastRaw2Cal::Exec(Option_t* option)
                 funcal_hit->Get_trigger(),
                 funcal_hit->Get_board_id(),
                 (int)((funcal_hit->Get_ch_ID()+1)/2),
+                detector_type,
                 detector_id,
+                layer,
+                x,
+                y,
                 slow_lead_epoch,
                 slow_lead_time,
                 slow_trail_epoch,

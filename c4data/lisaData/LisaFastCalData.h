@@ -2,6 +2,14 @@
 #define LisaFastCalData_H
 
 #include "TObject.h"
+#include <cstdint>
+
+enum class LisaFastDetectorType : uint8_t
+{
+    Unknown = 0,
+    LaBr = 1,
+    Diamond = 2
+};
 
 class LisaFastCalData : public TObject
 {
@@ -13,7 +21,14 @@ class LisaFastCalData : public TObject
         uint16_t trig,
         uint16_t board_id,
         uint16_t ch_ID,
-        uint16_t detector_id,
+
+        LisaFastDetectorType detector_type,
+
+        int detector_id,
+
+        int layer,
+        int x,
+        int y,
         
         int64_t slow_lead_epoch,
         double slow_lead_time,
@@ -45,8 +60,15 @@ class LisaFastCalData : public TObject
         inline const uint16_t Get_trigger() const { return ftrig; }
         inline const uint16_t Get_board_id() const {return fboard_id; }
         inline const uint16_t Get_ch_ID() const {return fch_ID; }
-        inline const uint16_t Get_detector_id() const {return fdetector_id; }
-        
+
+        inline LisaFastDetectorType Get_detector_type() const {return fdetector_type; }
+        //LaBr
+        inline const int Get_detector_id() const {return fdetector_id; }
+        //Diamond
+        inline const int Get_layer() const{return flayer; }
+        inline const int Get_x() const{return fx; }
+        inline const int Get_y() const{return fy; }
+    
         inline const int64_t Get_slow_lead_epoch() const {return fslow_lead_epoch; }
         inline const double Get_slow_lead_time() const {return fslow_lead_time; }
         
@@ -71,7 +93,14 @@ class LisaFastCalData : public TObject
         void Set_trigger(uint16_t v) { ftrig = v; } 
         void Set_board_id(uint16_t v){ fboard_id = v; }
         void Set_ch_ID(uint16_t v){ fch_ID = v; }
-        void Set_detector_id(uint16_t v){ fdetector_id = v; }
+
+        void Set_detector_type(LisaFastDetectorType v){ fdetector_type = v; }
+        // LaBr
+        void Set_detector_id(int v){ fdetector_id = v; }
+        // Diamond
+        void Set_layer(int v){ flayer = v; }
+        void Set_x(int v){ fx = v; }
+        void Set_y(int v){ fy = v; }      
         
         void Set_slow_lead_epoch(int64_t v){ fslow_lead_epoch = v; }
         void Set_slow_lead_time(double v){ fslow_lead_time = v; }
@@ -98,7 +127,13 @@ class LisaFastCalData : public TObject
         uint16_t ftrig;
         uint16_t fboard_id;
         uint16_t fch_ID;
-        uint16_t fdetector_id;
+        LisaFastDetectorType fdetector_type;
+        //  LaBr
+        int fdetector_id;
+        // Diamond
+        int flayer;
+        int fx;
+        int fy;
         
         int64_t fslow_lead_epoch;
         double fslow_lead_time;

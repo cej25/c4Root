@@ -47,12 +47,12 @@ void lisafast_online()
 
     // ::: ONLINE READING
     //
-    TString filename = "stream://134.95.192.83:6002"; //new ip address
+    //TString filename = "stream://134.95.192.83:6002"; //new ip address
     //TString filename = "stream://134.95.192.248:6002";
 
     // ::: OFFLINE READING - For testing
-    //TString inputpath = "/home/lisa/data/lmd/"; 
-    //TString filename = inputpath + "tamex_0012_0001.lmd";
+    TString inputpath = "/home/lisa/data/lmd/"; 
+    TString filename = inputpath + "tamex_0020_0001.lmd";
 
     // ::: OUTPUT - does not write a tree if it is not set later
     TString outputpath = "/home/lisa/data/"; //testing

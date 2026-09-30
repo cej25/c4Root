@@ -8,6 +8,7 @@
 #include <set>
 #include "TCutG.h"
 #include "GainShift.h"
+#include <tuple>
 
 
 //structs
@@ -24,18 +25,34 @@ class TLisaFastConfiguration
         static void SetGainShiftFile(std::string fp) {gain_shifts_file = fp; }
 
 
-        std::map<std::pair<int,int>,int> Mapping() const;
+        typedef std::pair<std::pair<int, std::pair<int,int>>,std::pair<float, std::pair<std::string,std::string>>> LisaDiamondInfo;
+        
+        std::map<std::pair<int,int>, int>             LaBr_Mapping() const;
+        std::map<std::pair<int,int>, LisaDiamondInfo> Diamond_Mapping() const;  
+
+        //std::map<std::pair<int,int>,int> Mapping() const;
         bool MappingLoaded() const;
+        bool DiamondMappingLoaded() const;
+        bool LaBrMappingLoaded() const; 
         
         bool CalibrationCoefficientsLoaded() const;
-        std::map<int,std::vector<double>> CalibrationCoefficients() const;
+
+        std::map<int,std::vector<double>> LaBrCalibrationCoefficients() const;
+        std::map<std::tuple<int,int,int>,std::vector<double>> DiamondCalibrationCoefficients() const;
+
+        bool GetLaBrCalibration(int detector_id, std::vector<double>& coeffs) const;
+        bool GetDiamondCalibration(int layer, int x, int y, std::vector<double>& coeffs) const;
+        
+        //bool CalibrationCoefficientsLoaded() const;
+        //std::map<int,std::vector<double>> CalibrationCoefficients() const;
 
         bool TimeshiftCalibrationCoefficientsLoaded() const;
         std::map<std::pair<int,int>,double> TimeshiftCalibrationCoefficients() const;
         inline double GetTimeshiftCoefficient(int detector_id1, int detector_id2) const;
 
         bool GainShiftsLoaded() const;
-        inline double GetGainShift(int detector_id1, uint64_t wr_t) const;
+        inline double GetGainShift(int tamex_board, int tamex_channel, uint64_t wr_t) const;
+        //inline double GetGainShift(int detector_id1, uint64_t wr_t) const;
 
 
         inline bool IsDetectorAuxilliary(int detector_id) const; //what is this
@@ -49,11 +66,11 @@ class TLisaFastConfiguration
             }
         } //what is this
 
-
-        int NLayers() const;
-        int XMax() const;
-        int YMax() const;
-        int NDetectors() const;
+        int NDiamondDetectors() const;
+        int NDiamondLayers() const;
+        int NLaBrDetectors() const;          
+        int XMax() const;                // diamond x
+        int YMax() const;                // diamond y
         int NTamexBoards() const;
 
  
@@ -62,26 +79,26 @@ class TLisaFastConfiguration
         //:::::Ranges in Histos
         // Slow Tot
         static void SetSlowToT_bin(int bin_slowToT) { slowToT_bin = bin_slowToT; }
-        static void SetSlowToT_min(int max_slowToT) { slowToT_max = max_slowToT; }
-        static void SetSlowToT_max(int min_slowToT) { slowToT_min = min_slowToT; }
+        static void SetSlowToT_max(int max_slowToT) { slowToT_max = max_slowToT; }
+        static void SetSlowToT_min(int min_slowToT) { slowToT_min = min_slowToT; }
 
         // Fast Tot
         static void SetFastToT_bin(int bin_fastToT) { fastToT_bin = bin_fastToT; }
-        static void SetFastToT_min(int max_fastToT) { fastToT_max = max_fastToT; }
-        static void SetFastToT_max(int min_fastToT) { fastToT_min = min_fastToT; }
+        static void SetFastToT_max(int max_fastToT) { fastToT_max = max_fastToT; }
+        static void SetFastToT_min(int min_fastToT) { fastToT_min = min_fastToT; }
 
         // Energy
         static void SetEnergy_bin(int bin_energy) { energy_bin = bin_energy; }
-        static void SetEnergy_min(int max_energy) { energy_max = max_energy; }
-        static void SetEnergy_max(int min_energy) { energy_min = min_energy; }
+        static void SetEnergy_max(int max_energy) { energy_max = max_energy; }
+        static void SetEnergy_min(int min_energy) { energy_min = min_energy; }
 
         // dTime
         static void SetdT_bin(int bin_dt) { dt_bin = bin_dt; }
-        static void SetdT_min(int max_dt) { dt_max = max_dt; }
-        static void SetdT_max(int min_dt) { dt_min = min_dt; }
+        static void SetdT_max(int max_dt) { dt_max = max_dt; }
+        static void SetdT_min(int min_dt) { dt_min = min_dt; }
 
         // Energy gate witdh
-        static void SetEnergyGateWidth(double width) { en_gate_width = width; }
+        static void SetEnergyGateWidth(int width) { en_gate_width = width; }
 
         
         
@@ -115,6 +132,8 @@ class TLisaFastConfiguration
 
 
         TLisaFastConfiguration();
+        ~TLisaFastConfiguration();
+
         void ReadConfiguration();
         void ReadCalibrationCoefficients();
         void ReadTimeshiftCoefficients();
@@ -123,8 +142,19 @@ class TLisaFastConfiguration
 
         static TLisaFastConfiguration* instance;
         
-        std::map<std::pair<int,int>,int> detector_mapping; // [board_id][channel_id] -> [detector_id]
-        std::map<int,std::vector<double>> calibration_coeffs; // key: [detector id] -> vector[a0 - a3] index is coefficient number 0 = offset +++ expects quadratic.
+        // (layer, (x, y)), (thickness, (name, serial number))
+        std::map<std::pair<int,int>, LisaDiamondInfo> diamond_mapping;
+        
+        // ((board_id,chhannel_id), det_id)
+        std::map<std::pair<int,int>,int> labr_mapping; // [board_id][channel_id] -> [detector_id]
+        
+        // LaBr: detector_id -> a0-a3
+        std::map<int,std::vector<double>> labr_calibration_coeffs;
+
+        // Diamond: (layer,x,y) -> a0-a3
+        std::map<std::tuple<int,int,int>,std::vector<double>> diamond_calibration_coeffs;
+        
+        //std::map<int,std::vector<double>> calibration_coeffs; // key: [detector id] -> vector[a0 - a3] index is coefficient number 0 = offset +++ expects quadratic.
         std::map<std::pair<int,int>,double> timeshift_calibration_coeffs;
 
         std::set<int> extra_signals;
@@ -132,18 +162,20 @@ class TLisaFastConfiguration
 
         TCutG* prompt_flash_cut = nullptr;
 
-        std::vector<GainShift*> gain_shifts;
+        std::map<std::pair<int,int>, GainShift*> gain_shifts; // (tamex board, channel) -> GainShift, LaBr and Diamond
+        //std::vector<GainShift*> gain_shifts;
 
-
-        int num_layers;   
+        int num_labr_detectors;
+        int num_diamond_detectors;
+        int num_diamond_layers;
         int xmax;
         int ymax;
-        int num_detectors;
         int num_tamex_boards;
         int num_tamex_channels;
 
-
-        bool detector_map_loaded = 0;
+        //bool detector_map_loaded = 0;
+        bool labr_map_loaded = 0;
+        bool diamond_map_loaded = 0;
         bool detector_calibrations_loaded = 0;
         bool timeshift_calibration_coeffs_loaded = 0;
         bool gain_shifts_loaded = 0;
@@ -161,9 +193,40 @@ inline bool TLisaFastConfiguration::IsDetectorAuxilliary(int detector_id) const{
     }
 };
 
-inline std::map<int,std::vector<double>> TLisaFastConfiguration::CalibrationCoefficients() const 
-{
-    return calibration_coeffs;
+// inline std::map<int,std::vector<double>> TLisaFastConfiguration::CalibrationCoefficients() const 
+// {
+//     return calibration_coeffs;
+// }
+
+inline std::map<int,std::vector<double>> TLisaFastConfiguration::LaBrCalibrationCoefficients() const {
+    return labr_calibration_coeffs;
+}
+
+inline std::map<std::tuple<int,int,int>,std::vector<double>>TLisaFastConfiguration::DiamondCalibrationCoefficients() const {
+    return diamond_calibration_coeffs;
+}
+
+inline bool TLisaFastConfiguration::GetLaBrCalibration(int detector_id,std::vector<double>& coeffs) const {
+    auto it = labr_calibration_coeffs.find(detector_id);
+
+    if (it == labr_calibration_coeffs.end())
+        return false;
+
+    coeffs = it->second;
+    return true;
+}
+
+
+inline bool TLisaFastConfiguration::GetDiamondCalibration(int layer, int x, int y, std::vector<double>& coeffs) const{
+    auto key = std::make_tuple(layer, x, y);
+
+    auto it = diamond_calibration_coeffs.find(key);
+
+    if (it == diamond_calibration_coeffs.end())
+        return false;
+
+    coeffs = it->second;
+    return true;
 }
 
 inline bool TLisaFastConfiguration::CalibrationCoefficientsLoaded() const {
@@ -207,10 +270,18 @@ inline double TLisaFastConfiguration::GetTimeshiftCoefficient(int detector_id1, 
      
 }
 
-inline double TLisaFastConfiguration::GetGainShift(int detector_id1, uint64_t wr_t) const
+// inline double TLisaFastConfiguration::GetGainShift(int detector_id1, uint64_t wr_t) const
+// {
+//     if (IsDetectorAuxilliary(detector_id1)) return 1;
+//     if (detector_id1 < 1 || detector_id1 > (int)gain_shifts.size()) return 1;
+//     return gain_shifts.at(detector_id1-1)->GetGain(wr_t);     
+// }
+
+inline double TLisaFastConfiguration::GetGainShift(int tamex_board, int tamex_channel, uint64_t wr_t) const
 {
-    if (IsDetectorAuxilliary(detector_id1)) return 1;
-    return gain_shifts.at(detector_id1-1)->GetGain(wr_t);     
+    auto it = gain_shifts.find({tamex_board, tamex_channel});
+    if (it == gain_shifts.end()) return 1;   // auxiliary signal or unknown channel: no correction
+    return it->second->GetGain(wr_t);
 }
 
 inline TLisaFastConfiguration const* TLisaFastConfiguration::GetInstance()
@@ -235,34 +306,54 @@ inline bool TLisaFastConfiguration::TimeshiftCalibrationCoefficientsLoaded() con
 }
 
 
-inline std::map<std::pair<int,int>,int> TLisaFastConfiguration::Mapping() const
+inline std::map<std::pair<int,int>,int> TLisaFastConfiguration::LaBr_Mapping() const
 {
-  return detector_mapping;
+  return labr_mapping;
+}
+
+inline std::map<std::pair<int,int>, TLisaFastConfiguration::LisaDiamondInfo> TLisaFastConfiguration::Diamond_Mapping() const
+{
+    return diamond_mapping;
 }
 
 inline bool TLisaFastConfiguration::MappingLoaded() const
 {
-    return detector_map_loaded;
+    return labr_map_loaded || diamond_map_loaded;
 }
 
-inline int TLisaConfiguration::NLayers() const
+inline bool TLisaFastConfiguration::LaBrMappingLoaded() const
 {
-    return num_layers;
+    return labr_map_loaded;
 }
 
-inline int TLisaConfiguration::XMax() const
+inline bool TLisaFastConfiguration::DiamondMappingLoaded() const
+{
+    return diamond_map_loaded;
+}
+
+inline int TLisaFastConfiguration::NDiamondLayers() const
+{
+    return num_diamond_layers;
+}
+
+inline int TLisaFastConfiguration::XMax() const
 {
     return xmax;
 }
 
-inline int TLisaConfiguration::YMax() const
+inline int TLisaFastConfiguration::YMax() const
 {
     return ymax;
 }
 
-inline int TLisaConfiguration::NDetectors() const
+inline int TLisaFastConfiguration::NDiamondDetectors() const
 {
-    return num_detectors;
+    return num_diamond_detectors;
+}
+
+inline int TLisaFastConfiguration::NLaBrDetectors() const
+{
+    return num_labr_detectors;
 }
 
 inline int TLisaFastConfiguration::NTamexBoards() const

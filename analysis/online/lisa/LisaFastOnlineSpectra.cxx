@@ -82,7 +82,8 @@ InitStatus LisaFastOnlineSpectra::Init()
     c4LOG_IF(fatal, !fHitLisaFast, "Branch LisaFastCalData not found!");
     
     //layer_number = lisafast_configuration->NLayers();
-    det_number = lisafast_configuration->NDetectors();
+    det_LaBr_number = lisafast_configuration->NDetectors();
+    auto const & det_mapping = lisafast_configuration->Mapping();
 
     histograms = (TFolder*)mgr->GetObject("Histograms");
 
@@ -105,12 +106,12 @@ InitStatus LisaFastOnlineSpectra::Init()
 
     // ::: Slow ToT (i.e raw energy):
     c_lisafast_slowToT  = new TCanvas("c_lisafast_slowToT","slow ToT LisaFast spectra",650,350);
-    c_lisafast_slowToT->Divide(2, (det_number+1)/2);
-    h1_lisafast_slowToT.resize(det_number);
-    for (int ihist = 0; ihist < det_number; ihist++)
+    c_lisafast_slowToT->Divide(2, (det_LaBr_number+1)/2);
+    h1_lisafast_slowToT.resize(det_LaBr_number);
+    for (int ihist = 0; ihist < det_LaBr_number; ihist++)
     {
         c_lisafast_slowToT->cd(ihist+1);
-        h1_lisafast_slowToT[ihist] = MakeTH1(dir_lisafast_slowToT, "F", Form("h1_lisafast_slowToT_%d",ihist), Form("LisaFast slow ToT detector %d",ihist),fslow_tot_nbins,fslow_tot_bin_low,fslow_tot_bin_high, "ToT [ns]", kSpring, kBlue+2);
+        h1_lisafast_slowToT[ihist] = MakeTH1(dir_lisafast_slowToT, "F", Form("h1_lisafast_slowToT_%d",ihist), Form("LisaFast slow ToT detector %d",ihist),slowToT_bins,slowToT_min,slowToT_max, "ToT [ns]", kSpring, kBlue+2);
         h1_lisafast_slowToT[ihist]->Draw();
     }
     c_lisafast_slowToT->cd(0);
@@ -118,9 +119,9 @@ InitStatus LisaFastOnlineSpectra::Init()
 
     //fast ToT
     c_lisafast_fastToT  = new TCanvas("c_lisafast_fastToT","Fast ToT LisaFast spectra",650,350);
-    c_lisafast_fastToT->Divide((number_detectors<5) ? number_detectors : 5,(number_detectors%5==0) ? (number_detectors/5) : (number_detectors/5 + 1));
-    h1_lisafast_fastToT.resize(number_detectors);
-    for (int ihist = 0; ihist < number_detectors; ihist++)
+    c_lisafast_fastToT->Divide(2, (det_LaBr_number+1)/2);
+    h1_lisafast_fastToT.resize(det_LaBr_number);
+    for (int ihist = 0; ihist < det_LaBr_number; ihist++)
     {
         c_lisafast_fastToT->cd(ihist+1);
         h1_lisafast_fastToT[ihist] = MakeTH1(dir_lisafast_fastToT, "F", Form("h1_lisafast_fastToT_%d",detectors.at(ihist)),Form("LisaFast fast ToT detector %d",detectors.at(ihist)),ffast_tot_nbins,ffast_tot_bin_low,ffast_tot_bin_high, "ToT [ns]", kSpring, kBlue+2);
@@ -132,7 +133,7 @@ InitStatus LisaFastOnlineSpectra::Init()
     
     //energy spectrum:
     c_lisafast_energy  = new TCanvas("c_lisafast_energy","LisaFast energy spectra",650,350);
-    c_lisafast_energy->Divide((number_detectors<5) ? number_detectors : 5,(number_detectors%5==0) ? (number_detectors/5) : (number_detectors/5 + 1));
+    c_lisafast_energy->Divide(Divide(2, (det_number+1)/2));
     h1_lisafast_energy.resize(number_detectors);
     for (int ihist = 0; ihist < number_detectors; ihist++){
         c_lisafast_energy->cd(ihist+1);

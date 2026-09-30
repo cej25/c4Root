@@ -89,9 +89,9 @@ class LisaFastOnlineSpectra : public FairTask
 
 
         
-        void SetEnergyGateWidth(double width){
-            energygate_width = width;
-        }
+        // void SetEnergyGateWidth(double width){
+        //     energygate_width = width;
+        // }
         
 
         virtual void Reset_Histo();
@@ -140,7 +140,7 @@ class LisaFastOnlineSpectra : public FairTask
         //std::vector<int> detectors = {0,1,2};
         //int number_detectors = 3;
         int layer_number;
-        int det_number;
+        int det_LaBr_number;
 
         std::vector<int> dt_reference_detectors = {};
         std::vector<std::pair<double,double>> dt_reference_detectors_energy_gates = {};

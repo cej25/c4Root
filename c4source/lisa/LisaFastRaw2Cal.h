@@ -4,6 +4,7 @@
 #include "FairTask.h"
 #include "TLisaFastConfiguration.h"
 #include "TClonesArray.h"
+#include "LisaFastCalData.h"
 
 class TClonesArray;
 class EventHeader;
@@ -53,7 +54,13 @@ class LisaFastRaw2Cal : public FairTask
         LisaFastData* funcal_hit_next;
         LisaFastCalData* fcal_hit;
 
-        uint16_t detector_id;
+        LisaFastDetectorType detector_type = LisaFastDetectorType::Unknown;
+
+        int detector_id = -1;
+
+        int layer = -1;
+        int x = -1;
+        int y = -1;
         
         int64_t slow_lead_epoch;
         double slow_lead_time;

@@ -10,7 +10,7 @@
  * granted to it by virtue of its status as an Intergovernmental Organization *
  * or submit itself to any jurisdiction.                                      *
  ******************************************************************************
- *                                 E.Gandolfo                                 *
+ *                        E.Gandolfo & C.E. Jones                             *
  *                                   08.26                                    *
  ******************************************************************************/
 
@@ -23,6 +23,8 @@
 #include <string>
 #include <set>
 #include "TFile.h"
+#include <fstream>
+#include <algorithm>
 
 TLisaFastConfiguration* TLisaFastConfiguration::instance = nullptr;
 std::string TLisaFastConfiguration::configuration_file = "blank";
@@ -57,7 +59,11 @@ int TLisaFastConfiguration::en_gate_width = 20;
 
 
 TLisaFastConfiguration::TLisaFastConfiguration()
-    :   num_detectors(0)
+    :   num_labr_detectors(0)
+    ,   num_diamond_detectors(0)
+    ,   num_diamond_layers(0)
+    ,   xmax(0)
+    ,   ymax(0)
     ,   num_tamex_boards(0)
     ,   num_tamex_channels(0)
 {
@@ -68,98 +74,287 @@ TLisaFastConfiguration::TLisaFastConfiguration()
     if (gain_shifts_file != "blank") ReadGainShifts();
 }
 
-// Mapping for LaBr
+TLisaFastConfiguration::~TLisaFastConfiguration()
+{
+    std::set<GainShift*> deleted;
+
+    for (auto& [bc, gain] : gain_shifts)
+    {
+        if (gain != nullptr && deleted.insert(gain).second)
+        {
+            delete gain;
+        }
+    }
+
+    gain_shifts.clear();
+
+    delete prompt_flash_cut;
+    prompt_flash_cut = nullptr;
+}
+
+// One mapping file with two optional sections: [LaBr] and [Diamond]
 void TLisaFastConfiguration::ReadConfiguration()
 {
 
     std::ifstream detector_map_file(configuration_file);
     std::string line;
     std::set<int> tamex_boards;
-    std::set<int> detectors;
+    //std::set<int> detectors;
     int tamex_channels = 0;
+
+    // LaBr
+    std::set<int> labr_detectors;
+    // Diamond
+    std::set<int> layers, x_positions, y_positions;
+    int diamond_detectors = 0;
 
     if (detector_map_file.fail()) c4LOG(fatal, "Could not open LisaFast mapping file");
 
+    enum class Section { None, LaBr, Diamond };
+    Section section = Section::None;
+    int line_nr = 0;
+
+
     while (std::getline(detector_map_file, line))
     {
-        if (line.empty() || line[0] == '#') continue;
-
-        std::istringstream iss(line);
-        std::string signal;
-        int tamex_board, tamex_channel, detector;
-
-        iss >> signal;
-
-        if (isdigit(signal[0])) // detector
-        {
-            tamex_board = std::stoi(signal);
-
-            iss >> tamex_channel >> detector;
-
-        }
-        else // some additional signal
-        {
-            iss >> tamex_board >> tamex_channel >> detector;
-            // Time Machine needed for WR at GSI
-            //if (signal == "TimeMachineU") tm_undelayed = detector;
-            //else if (signal == "TimeMachineD") tm_delayed = detector;
-
-            extra_signals.insert(detector);
-        }
-
-        if (tamex_board > -1) tamex_boards.insert(tamex_board);
-        if (detector > -1) detectors.insert(detector);
-        tamex_channels++;
-
-        std::pair<int, int> tamex_mc = {tamex_board, tamex_channel};
-
-        detector_mapping.insert(std::pair<std::pair<int, int>, int> {tamex_mc, detector});  
         
+        line_nr++;
+        size_t first = line.find_first_not_of(" \t\r\n");
+        if (first == std::string::npos || line[first] == '#') continue;
+        line = line.substr(first);     
+
+        //Find initial part of [LaBr] or [Diamond]
+        if (line[0] == '[')
+        {
+            std::string tag = line.substr(0, line.find(']') + 1);
+            std::transform(tag.begin(), tag.end(), tag.begin(), ::tolower);
+
+            if (tag == "[labr]")         section = Section::LaBr;
+            else if (tag == "[diamond]") section = Section::Diamond;
+            else c4LOG(fatal, "Unknown section " << tag << " in LisaFast mapping, line " << line_nr);
+            continue;
+        }
+        
+        if (section == Section::None) c4LOG(fatal, "Data before any [LaBr]/[Diamond] section in LisaFast mapping, line " << line_nr);
+   
+        
+        std::istringstream iss(line);
+
+        // :::::::::::::::: LaBr ::::::::::::::::
+        if (section == Section::LaBr)
+        {
+            std::string signal;
+            int tamex_board, tamex_channel, detector;
+            iss >> signal;
+
+            if (isdigit(signal[0])) // detector
+            {
+                tamex_board = std::stoi(signal);
+
+                iss >> tamex_channel >> detector;
+
+            }
+            else // some additional signal
+            {
+                iss >> tamex_board >> tamex_channel >> detector;
+                extra_signals.insert(detector);
+            }
+
+            if (iss.fail()) c4LOG(fatal, "Bad [LaBr] line " << line_nr << ": " << line);
+
+            if (tamex_board > -1) tamex_boards.insert(tamex_board);
+            if (detector > -1) labr_detectors.insert(detector);
+            tamex_channels++;
+
+            labr_mapping.insert({{tamex_board, tamex_channel}, detector});
+
+        }    
+        // :::::::::::::::: Diamond ::::::::::::::::   
+        else
+        {
+            int tamex_board, tamex_channel, layer_id, x_pos, y_pos;
+            float thickness;
+            std::string det_name, det_sn;
+
+            iss >> tamex_board >> tamex_channel >> layer_id >> x_pos >> y_pos
+                >> thickness >> det_name >> det_sn;
+
+            if (iss.fail()) c4LOG(fatal, "Bad [Diamond] line " << line_nr << ": " << line);
+
+            std::pair<int,int> tamex_bc = {tamex_board, tamex_channel};
+            if (diamond_mapping.count(tamex_bc))
+                c4LOG(fatal, "Duplicate diamond TAMEX (" << tamex_board << "," << tamex_channel << "), line " << line_nr);
+
+            layers.insert(layer_id);
+            x_positions.insert(x_pos);
+            y_positions.insert(y_pos);
+            diamond_detectors++;
+
+            tamex_boards.insert(tamex_board);
+            tamex_channels++;
+
+            std::pair<int,int> xy = {x_pos, y_pos};
+            std::pair<int, std::pair<int,int>> layer_xy = {layer_id, xy};
+            std::pair<float, std::pair<std::string,std::string>> info = {thickness, {det_name, det_sn}};
+
+            diamond_mapping.insert({tamex_bc, {layer_xy, info}});      
+        }
+
     }
 
-    num_tamex_boards = tamex_boards.size();
-    num_detectors = detectors.size();
-    num_tamex_channels = tamex_channels;
+    num_tamex_boards      = tamex_boards.size();
+    num_tamex_channels    = tamex_channels;
 
-    detector_map_loaded = 1;
+    num_labr_detectors    = labr_detectors.size();
+
+    num_diamond_detectors = diamond_detectors;
+    num_diamond_layers    = layers.size();
+    xmax                  = x_positions.size();
+    ymax                  = y_positions.size();
+
+    labr_map_loaded    = !labr_mapping.empty();
+    diamond_map_loaded = !diamond_mapping.empty();
+
     detector_map_file.close();
-    LOG(info) << "LisaFast Mapping file File: " + configuration_file;
+
+    if (!labr_map_loaded && !diamond_map_loaded)
+        c4LOG(warn, "LisaFast mapping file has no LaBr and no Diamond entries: " + configuration_file);
+    else if (!labr_map_loaded)
+        c4LOG(info, "LisaFast mapping: no LaBr entries, running with Diamond only");
+    else if (!diamond_map_loaded)
+        c4LOG(info, "LisaFast mapping: no Diamond entries, running with LaBr only");
+
+    c4LOG(info, "LisaFast Mapping file: " + configuration_file);
+    c4LOG(info, "LaBr detectors: " << num_labr_detectors
+                << ", Diamond detectors: " << num_diamond_detectors
+                << ", Diamond layers: " << num_diamond_layers
+                << ", x: " << xmax << ", y: " << ymax);
+    
     return;
 }
 
-void TLisaFastConfiguration::ReadCalibrationCoefficients(){
+// Energy calibration from slowToT to keV
+void TLisaFastConfiguration::ReadCalibrationCoefficients()
+{
+    std::ifstream calibration_coeff_file(calibration_file);
 
-    std::ifstream calibration_coeff_file (calibration_file);
+    if (calibration_coeff_file.fail())
+        c4LOG(fatal, "Could not open LisaFast calibration coefficients file.");
 
-    if (calibration_coeff_file.fail()) c4LOG(fatal, "Could not open LisaFast calibration coefficients file.");
+    std::string line;
+    std::string section;
 
+    while (std::getline(calibration_coeff_file, line))
+    {
+        // Skip empty lines
+        if (line.empty())
+            continue;
 
-    int rdetector_id; // temp read variables
-    
-    //assumes the first line in the file is num-modules used
-    while(!calibration_coeff_file.eof()){
-        if(calibration_coeff_file.peek()=='#') calibration_coeff_file.ignore(256,'\n');
-        else{
-            double a0,a1,a2,a3;
-            calibration_coeff_file >> rdetector_id >> a0 >> a1 >> a2 >> a3;
-            std::vector<double> cals = {a0,a1,a2,a3};
+        // Skip comments
+        if (line[0] == '#')
+            continue;
 
-            calibration_coeffs.insert(std::pair<int,std::vector<double>>{rdetector_id,cals});
-            calibration_coeff_file.ignore(256,'\n');
+        // Check section
+        if (line == "[LaBr]")
+        {
+            section = "LaBr";
+            continue;
+        }
+
+        if (line == "[Diamond]")
+        {
+            section = "Diamond";
+            continue;
+        }
+
+        std::stringstream ss(line);
+
+        if (section == "LaBr")
+        {
+            int detector_id;
+            double a0, a1, a2, a3;
+
+            ss >> detector_id >> a0 >> a1 >> a2 >> a3;
+
+            if (ss.fail())
+            {
+                c4LOG(error, "Error reading LaBr calibration line: " + line);
+                continue;
+            }
+
+            labr_calibration_coeffs[detector_id] =
+                {a0, a1, a2, a3};
+        }
+        else if (section == "Diamond")
+        {
+            int layer;
+            int x;
+            int y;
+            double a0, a1, a2, a3;
+
+            ss >> layer >> x >> y >> a0 >> a1 >> a2 >> a3;
+
+            if (ss.fail())
+            {
+                c4LOG(error, "Error reading Diamond calibration line: " + line);
+                continue;
+            }
+
+            auto key = std::make_tuple(layer, x, y);
+
+            diamond_calibration_coeffs[key] =
+                {a0, a1, a2, a3};
         }
     }
-    detector_calibrations_loaded = 1;
+
+    detector_calibrations_loaded = true;
+
     calibration_coeff_file.close();
 
-    LOG(info) << "LisaFast Calibration coefficients File: " + calibration_file;
-    return; 
+    LOG(info) << "LisaFast Calibration coefficients File: "
+              << calibration_file;
+
+    LOG(info) << "Loaded "
+              << labr_calibration_coeffs.size()
+              << " LaBr calibration coefficients.";
+
+    LOG(info) << "Loaded "
+              << diamond_calibration_coeffs.size()
+              << " Diamond calibration coefficients.";
+
+    return;
 }
+// void TLisaFastConfiguration::ReadCalibrationCoefficients(){
+
+//     std::ifstream calibration_coeff_file (calibration_file);
+
+//     if (calibration_coeff_file.fail()) c4LOG(fatal, "Could not open LisaFast calibration coefficients file.");
+
+
+//     int rdetector_id; // temp read variables
+    
+//     //assumes the first line in the file is num-modules used
+//     while(!calibration_coeff_file.eof()){
+//         if(calibration_coeff_file.peek()=='#') calibration_coeff_file.ignore(256,'\n');
+//         else{
+//             double a0,a1,a2,a3;
+//             calibration_coeff_file >> rdetector_id >> a0 >> a1 >> a2 >> a3;
+//             std::vector<double> cals = {a0,a1,a2,a3};
+
+//             calibration_coeffs.insert(std::pair<int,std::vector<double>>{rdetector_id,cals});
+//             calibration_coeff_file.ignore(256,'\n');
+//         }
+//     }
+//     detector_calibrations_loaded = 1;
+//     calibration_coeff_file.close();
+
+//     LOG(info) << "LisaFast Calibration coefficients File: " + calibration_file;
+//     return; 
+// }
 
 
 
-
-
-
+// Allign the detector to 0 using a reference cascade with "instantaneus" gammas (i.e. 344 - 788 of 152Eu source)
 void TLisaFastConfiguration::ReadTimeshiftCoefficients()
 {
     c4LOG(info, "Reading Timeshift coefficients.");
@@ -187,7 +382,7 @@ void TLisaFastConfiguration::ReadTimeshiftCoefficients()
 
 };
 
-
+// This is a VETO for the prompt flash. From En vs dTime create a TCut.
 void TLisaFastConfiguration::ReadPromptFlashCut()
 {
     // must be a root file (not always the case from saving TCuts)
@@ -200,10 +395,12 @@ void TLisaFastConfiguration::ReadPromptFlashCut()
         return;
     }
     
-    if (cut->Get("lisafast_prompt_flash_cut"))
+    TCutG* cut_from_file =
+        dynamic_cast<TCutG*>(cut->Get("lisafast_prompt_flash_cut"));
+
+    if (cut_from_file)
     {
-        
-        prompt_flash_cut = (TCutG*)cut->Get("lisafast_prompt_flash_cut");
+        prompt_flash_cut = dynamic_cast<TCutG*>(cut_from_file->Clone());
         LOG(info) << "LisaFast Prompt flash cut File: " + promptflash_cut_file;
     }
     else
@@ -215,17 +412,33 @@ void TLisaFastConfiguration::ReadPromptFlashCut()
 }
 
 
+// This is a drift correction
 void TLisaFastConfiguration::ReadGainShifts()
 {
-    // must be a root file (not always the case from saving TCuts)
-    // must be named "lisafast_prompt_flash_cut"!
+    // LaBr: one GainShift per detector number
+    std::map<int, GainShift*> labr_by_det;
+    for (const auto& [bc, det] : labr_mapping){
+        if (IsDetectorAuxilliary(det)) continue;
 
-    for (int i = 1; i<=NDetectors(); i++){
-        if (IsDetectorAuxilliary(i)) continue;
-        c4LOG(info, TString("Creating GainShifts for ") + TString(Form("lisafast_gain_shift_det_%i",i)) + TString(" at ") + TString(gain_shifts_file));
-        GainShift * g = new GainShift(TString(Form("lisafast_gain_shift_det_%i",i)),TString(gain_shifts_file));
-        gain_shifts.push_back(g);
+        if (!labr_by_det.count(det)){
+            TString name = Form("lisafast_gain_shift_det_%i", det);
+            c4LOG(info, TString("Creating GainShifts for ") + name + TString(" at ") + TString(gain_shifts_file));
+            labr_by_det[det] = new GainShift(name, TString(gain_shifts_file));
+        }
+        gain_shifts[bc] = labr_by_det[det];
     }
+
+    // Diamond: one GainShift per (layer, x, y)
+    for (const auto& [bc, v] : diamond_mapping){
+        int layer = v.first.first;
+        int x     = v.first.second.first;
+        int y     = v.first.second.second;
+
+        TString name = Form("lisafast_gain_shift_diamond_l%i_x%i_y%i", layer, x, y);
+        c4LOG(info, TString("Creating GainShifts for ") + name + TString(" at ") + TString(gain_shifts_file));
+        gain_shifts[bc] = new GainShift(name, TString(gain_shifts_file));
+    }
+
     gain_shifts_loaded = 1;
 }
 
