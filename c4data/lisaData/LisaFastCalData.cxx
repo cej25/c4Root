@@ -22,7 +22,7 @@ LisaFastCalData::LisaFastCalData()
     fboard_id(0),
     fch_ID(0),
 
-    fdetector_type(LisaFastDetectorType::Unknown),
+    fdetector_type(-1),
 
     fdetector_id(-1),
 
@@ -56,7 +56,7 @@ LisaFastCalData::LisaFastCalData(
         uint16_t board_id,
         uint16_t ch_ID,
 
-        LisaFastDetectorType detector_type,
+        int detector_type,
 
         int detector_id,
 

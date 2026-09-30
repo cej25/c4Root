@@ -4,12 +4,6 @@
 #include "TObject.h"
 #include <cstdint>
 
-enum class LisaFastDetectorType : uint8_t
-{
-    Unknown = 0,
-    LaBr = 1,
-    Diamond = 2
-};
 
 class LisaFastCalData : public TObject
 {
@@ -22,7 +16,7 @@ class LisaFastCalData : public TObject
         uint16_t board_id,
         uint16_t ch_ID,
 
-        LisaFastDetectorType detector_type,
+        int detector_type,
 
         int detector_id,
 
@@ -61,7 +55,7 @@ class LisaFastCalData : public TObject
         inline const uint16_t Get_board_id() const {return fboard_id; }
         inline const uint16_t Get_ch_ID() const {return fch_ID; }
 
-        inline LisaFastDetectorType Get_detector_type() const {return fdetector_type; }
+        inline const int Get_detector_type() const {return fdetector_type; }
         //LaBr
         inline const int Get_detector_id() const {return fdetector_id; }
         //Diamond
@@ -94,7 +88,7 @@ class LisaFastCalData : public TObject
         void Set_board_id(uint16_t v){ fboard_id = v; }
         void Set_ch_ID(uint16_t v){ fch_ID = v; }
 
-        void Set_detector_type(LisaFastDetectorType v){ fdetector_type = v; }
+        void Set_detector_type(int v){ fdetector_type = v; }
         // LaBr
         void Set_detector_id(int v){ fdetector_id = v; }
         // Diamond
@@ -127,7 +121,7 @@ class LisaFastCalData : public TObject
         uint16_t ftrig;
         uint16_t fboard_id;
         uint16_t fch_ID;
-        LisaFastDetectorType fdetector_type;
+        int fdetector_type;
         //  LaBr
         int fdetector_id;
         // Diamond

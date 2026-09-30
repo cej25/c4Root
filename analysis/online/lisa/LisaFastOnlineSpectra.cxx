@@ -80,10 +80,13 @@ InitStatus LisaFastOnlineSpectra::Init()
 
     fHitLisaFast = (TClonesArray*)mgr->GetObject("LisaFastCalData");
     c4LOG_IF(fatal, !fHitLisaFast, "Branch LisaFastCalData not found!");
-    
-    //layer_number = lisafast_configuration->NLayers();
-    det_LaBr_number = lisafast_configuration->NLaBrDetectors();
-    auto const & det_mapping = lisafast_configuration->LaBr_Mapping();
+
+    number_labr_detectors = lisafast_configuration->NLaBrDetectors();
+    number_diamond_detectors = lisafast_configuration->NDiamondDetectors();
+
+    auto const& labr_mapping = lisafast_configuration->LaBr_Mapping();
+    auto const& diamond_mapping = lisafast_configuration->Diamond_Mapping();
+    //auto const & det_mapping = lisafast_configuration->Mapping();
 
     histograms = (TFolder*)mgr->GetObject("Histograms");
 
@@ -93,6 +96,11 @@ InitStatus LisaFastOnlineSpectra::Init()
     // mgr->Register("LISA_FAST", "LISA_FAST Directory", dir_lisafast, false); // allow other tasks to access directory.
     histograms->Add(dir_lisafast);
 
+    dir_lisafast_LaBr = dir_lisafast->mkdir("LaBr");
+    dir_lisafast_Diamond = dir_lisafast->mkdir("Diamond");
+    dir_lisafast_dt_LaBr_Diamond = dir_lisafast->mkdir("dt_LaBr_Diamond");
+
+    
     dir_lisafast_slowToT = dir_lisafast->mkdir("SlowToT");
     dir_lisafast_fastToT = dir_lisafast->mkdir("FastToT");
     dir_lisafast_hitpattern = dir_lisafast->mkdir("Hit Pattern");
@@ -104,7 +112,7 @@ InitStatus LisaFastOnlineSpectra::Init()
     int max_detector_id = *max_element(detectors.begin(), detectors.end()); // this can be read from mapping in TConfig instead, i'm just fixing like this for now.
     //number_detectors = detectors.size();
 
-    
+
     int slowToT_bins = lisafast_configuration->slowToT_bin;
     float slowToT_min = lisafast_configuration->slowToT_min;
     float slowToT_max = lisafast_configuration->slowToT_max;
