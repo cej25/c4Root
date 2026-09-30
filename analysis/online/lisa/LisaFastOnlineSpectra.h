@@ -8,6 +8,8 @@
 #include "TH1F.h"
 #include "TH2F.h"
 #include <vector>
+#include <tuple>
+#include <map>
 
 class TClonesArray;
 class EventHeader;
@@ -36,62 +38,51 @@ class LisaFastOnlineSpectra : public FairTask
 
         virtual void FinishTask();
 
-        // void SetBinningFastToT(int nbins, float binlow, float binhigh){ //delete this shit here -> it is in the config
-        //     ffast_tot_nbins = nbins;
-        //     ffast_tot_bin_low = binlow;
-        //     ffast_tot_bin_high = binhigh;
-        // };
-        // void SetBinningSlowToT(int nbins, float binlow, float binhigh){
-        //     fslow_tot_nbins = nbins;
-        //     fslow_tot_bin_low = binlow;
-        //     fslow_tot_bin_high = binhigh;
-            
-            
-        // };
-        // void SetBinningEnergy(int nbins, float binlow, float binhigh){
-        //     fenergy_nbins = nbins;
-        //     fenergy_bin_low = binlow;
-        //     fenergy_bin_high = binhigh; 
-        // };
-        // void SetBinningCoincidences(int nbins, float binlow, float binhigh){
-        //     ftime_coincidence_nbins = nbins;
-        //     ftime_coincidence_low = binlow;
-        //     ftime_coincidence_high = binhigh;
+
+        // void SetDetectorsToPlot(std::vector<int> detectors_to_analyze){
+        //     detectors = detectors_to_analyze;
+        //     number_detectors = detectors.size();
         // }
 
-        void SetDetectorsToPlot(std::vector<int> detectors_to_analyze){
-            detectors = detectors_to_analyze;
-            number_detectors = detectors.size();
-        }
-
-        int GetDetectorIndex(int detector_id){
-            //return the index of the detector id in the vector, to index the TH arrays / histograms
-            return std::distance(detectors.begin(), std::find(detectors.begin(), detectors.end(), detector_id));
-        }
-
-        void AddReferenceDetectorForTimeDifferences(int det){
-            dt_reference_detectors.emplace_back(det);
-            number_reference_detectors = dt_reference_detectors.size();
-            dt_reference_detectors_energy_gates.emplace_back(std::pair<double,double>(0.0, 0.0));
-        }
-        
-        void AddReferenceDetectorForTimeDifferencesWithEnergyGates(int detector_id, double energy_in_other, double energy_in_ref_det){
-            dt_reference_detectors.emplace_back(detector_id);
-            number_reference_detectors = dt_reference_detectors.size();
-            dt_reference_detectors_energy_gates.emplace_back(std::pair<double,double>(energy_in_other,energy_in_ref_det));
-        }
-
-        void AddReferenceDetectorForTimeDifferencesWithEnergyGates(int detector_id, double energy_in_ref_det){
-            dt_reference_detectors.emplace_back(detector_id);
-            number_reference_detectors = dt_reference_detectors.size();
-            dt_reference_detectors_energy_gates.emplace_back(std::pair<double,double>(0.0, energy_in_ref_det));
-        }
-
-
-        
-        // void SetEnergyGateWidth(double width){
-        //     energygate_width = width;
+        // int GetDetectorIndex(int detector_id){
+        //     //return the index of the detector id in the vector, to index the TH arrays / histograms
+        //     return std::distance(detectors.begin(), std::find(detectors.begin(), detectors.end(), detector_id));
         // }
+
+        //std::vector<int> dt_reference_labr = {};
+        //std::vector<std::tuple<int,int,int>> dt_reference_diamond = {};
+
+
+        void AddRefLaBrForDeltaT(int det)
+        {
+            dt_reference_labr = det;
+        }
+
+        void AddRefDiamondForDeltaT(int layer, int x, int y)
+        {
+            dt_reference_diamond = std::make_tuple(layer, x, y);
+        }
+        
+        // void AddRefLaBrForDeltaT(int det){
+            
+        //     dt_reference_detectors.emplace_back(det);
+        //     number_reference_detectors = dt_reference_detectors.size();
+        //     dt_reference_detectors_energy_gates.emplace_back(std::pair<double,double>(0.0, 0.0));
+        // }
+        
+        // void AddReferenceDetectorForTimeDifferencesWithEnergyGates(int detector_id, double energy_in_other, double energy_in_ref_det){
+        //     dt_reference_detectors.emplace_back(detector_id);
+        //     number_reference_detectors = dt_reference_detectors.size();
+        //     dt_reference_detectors_energy_gates.emplace_back(std::pair<double,double>(energy_in_other,energy_in_ref_det));
+        // }
+
+        // void AddReferenceDetectorForTimeDifferencesWithEnergyGates(int detector_id, double energy_in_ref_det){
+        //     dt_reference_detectors.emplace_back(detector_id);
+        //     number_reference_detectors = dt_reference_detectors.size();
+        //     dt_reference_detectors_energy_gates.emplace_back(std::pair<double,double>(0.0, energy_in_ref_det));
+        // }
+
+
         
 
         virtual void Reset_Histo();
@@ -110,59 +101,128 @@ class LisaFastOnlineSpectra : public FairTask
         Int_t fNEvents;
         int total_time_microsecs = 0;
 
+        int dt_reference_labr = -1;
+        std::tuple<int,int,int> dt_reference_diamond = std::make_tuple(-1, -1, -1);
+
         // Canvas
-        TCanvas* c_lisafast_slowToT;
-        TCanvas* c_lisafast_fastToT;
-        TCanvas* c_lisafast_fast_v_slow;
-        TCanvas* c_lisafast_time_spectra_divided;
-        TCanvas* c_lisafast_hitpatterns;
-        TCanvas* c_lisafast_energy;
-        TCanvas* c_lisafast_energy_vs_detid;
-        TCanvas* c_lisafast_energies;
-        TCanvas* c_lisafast_energy_uncal;
-        TCanvas* c_lisafast_time_differences;
-        TCanvas* c_lisafast_time_differences_vs_energy;
+        // LaBr
+        TCanvas* c_lisafast_LaBr_slowToT;
+        TCanvas* c_lisafast_LaBr_fastToT;
+        TCanvas* c_lisafast_LaBr_fast_v_slow;
+        TCanvas* c_lisafast_LaBr_time_spectra;
+        TCanvas* c_lisafast_LaBr_energy;
+        TCanvas* c_lisafast_LaBr_hitpatterns;
+
+        // Diamond
+        TCanvas* c_lisafast_Diamond_slowToT;
+        TCanvas* c_lisafast_Diamond_fastToT;
+        TCanvas* c_lisafast_Diamond_fast_v_slow;
+        TCanvas* c_lisafast_Diamond_time_spectra;
+        TCanvas* c_lisafast_Diamond_energy;
+        TCanvas* c_lisafast_Diamond_hitpatterns;
+
+        // dt LaBr-Diamond
+        TCanvas* c_dt_LaBr_vs_Diamond;
+        TCanvas* c_dt_Diamond_vs_LaBr;
+        TCanvas* c_dt_reference_LaBr_vs_Diamond;
+
+        TCanvas* c_dt_LaBr_vs_Diamond_vs_energy;
+        TCanvas* c_dt_Diamond_vs_LaBr_vs_energy;
+        TCanvas* c_dt_reference_LaBr_vs_Diamond_vs_energy;
+
+        // General
         TCanvas* c_lisafast_event_multiplicity;
     
 
         //Folders and files
+        // Folders
+
         TFolder* histograms;
+
         TDirectory* dir_lisafast;
-        TDirectory* dir_lisafast_slowToT;
-        TDirectory* dir_lisafast_fastToT;
-        TDirectory* dir_lisafast_fast_v_slow;
-        TDirectory* dir_lisafast_hitpattern;
-        TDirectory* dir_lisafast_energy_spectra;
-        TDirectory* dir_lisafast_time_spectra;
 
-        std::vector<TDirectory*> dir_lisafast_time_differences = {};
+        // LaBr
+        TDirectory* dir_lisafast_LaBr;
+        TDirectory* dir_lisafast_LaBr_slowToT;
+        TDirectory* dir_lisafast_LaBr_fastToT;
+        TDirectory* dir_lisafast_LaBr_fast_v_slow;
+        TDirectory* dir_lisafast_LaBr_hitpattern;
+        TDirectory* dir_lisafast_LaBr_energy_spectra;
+        TDirectory* dir_lisafast_LaBr_time_spectra;
+
+        // Diamond
+        TDirectory* dir_lisafast_Diamond;
+        TDirectory* dir_lisafast_Diamond_slowToT;
+        TDirectory* dir_lisafast_Diamond_fastToT;
+        TDirectory* dir_lisafast_Diamond_fast_v_slow;
+        TDirectory* dir_lisafast_Diamond_hitpattern;
+        TDirectory* dir_lisafast_Diamond_energy_spectra;
+        TDirectory* dir_lisafast_Diamond_time_spectra;
+
+        // LaBr-Diamond time differences
+        TDirectory* dir_lisafast_dt_LaBr_Diamond;
+        TDirectory* dir_dt_LaBr_vs_Diamond;
+        TDirectory* dir_dt_Diamond_vs_LaBr;
+        TDirectory* dir_dt_reference_LaBr_vs_Diamond;
+
+        //std::vector<TDirectory*> dir_lisafast_time_differences = {};
         
-        //std::vector<int> detectors = {0,1,2};
-        //int number_detectors = 3;
-        int layer_number;
-        int det_LaBr_number;
+        int number_labr_detectors = 0;
+        int number_diamond_detectors = 0;
 
-        std::vector<int> dt_reference_detectors = {};
-        std::vector<std::pair<double,double>> dt_reference_detectors_energy_gates = {};
-        int number_reference_detectors = 0;
+        //int layer_number;
+        //int det_LaBr_number;
+
+        //std::vector<int> dt_reference_detectors = {};
+        //std::vector<std::pair<double,double>> dt_reference_detectors_energy_gates = {};
+        //int number_reference_detectors = 0;
         
         // Histograms 
-        std::vector<TH1*> h1_lisafast_slowToT;
-        std::vector<TH1*> h1_lisafast_fastToT;
-        std::vector<TH1*> h1_lisafast_energy;
-        std::vector<TH2*> h2_lisafast_fast_v_slow;
-        std::vector<TH1*> h1_lisafast_abs_time;
+        std::map<int, TH1*> h1_lisafast_slowToT_LaBr;
+        std::map<int, TH1*> h1_lisafast_fastToT_LaBr;
+        std::map<int, TH1*> h1_lisafast_energy_LaBr;
+        std::map<int, TH2*> h2_lisafast_fast_v_slow_LaBr;
+        std::map<int, TH1*> h1_lisafast_abs_time_LaBr;
 
+        std::map<std::tuple<int,int,int>, TH1*> h1_lisafast_slowToT_Diamond;
+        std::map<std::tuple<int,int,int>, TH1*> h1_lisafast_fastToT_Diamond;
+        std::map<std::tuple<int,int,int>, TH1*> h1_lisafast_energy_Diamond;
+        std::map<std::tuple<int,int,int>, TH2*> h2_lisafast_fast_v_slow_Diamond;
+        std::map<std::tuple<int,int,int>, TH1*> h1_lisafast_abs_time_Diamond;
+
+
+        TH1* h1_lisafast_hitpattern_slow_LaBr;
+        TH1* h1_lisafast_hitpattern_fast_LaBr;
+
+        TH1* h1_lisafast_hitpattern_slow_Diamond;
+        TH1* h1_lisafast_hitpattern_fast_Diamond;        
 
         TH1 * h1_lisafast_multiplicity;
-        TH2 * h2_lisafast_energy_vs_detid;
-        TH2 * h2_lisafast_energy_uncal_vs_detid;
-        TH1 * h1_lisafast_hitpattern_slow;
-        TH1 * h1_lisafast_hitpattern_fast;
-        std::vector<std::vector<TH1*>> h1_lisafast_time_differences;
-        std::vector<std::vector<TH2*>> h2_lisafast_time_differences_vs_energy;
 
-        TH1** h1_lisafast_rates;
+        TH2* h2_lisafast_energy_vs_detid_LaBr;
+        TH2* h2_lisafast_energy_uncal_vs_detid_LaBr;  
+        
+        TH2* h2_lisafast_energy_vs_detid_Diamond;
+        TH2* h2_lisafast_energy_uncal_vs_detid_Diamond;
+
+        // LaBr detector vs Diamond reference
+        std::map<int, TH1*> h1_dt_LaBr_vs_Diamond;
+        std::map<int, TH2*> h2_dt_LaBr_vs_Diamond_vs_energy;
+
+
+        // Diamond detector vs LaBr reference
+        std::map<std::tuple<int,int,int>, TH1*> h1_dt_Diamond_vs_LaBr;
+        std::map<std::tuple<int,int,int>, TH2*> h2_dt_Diamond_vs_LaBr_vs_energy;
+
+
+        // LaBr reference vs Diamond reference
+        TH1* h1_dt_reference_LaBr_vs_Diamond;
+        TH2* h2_dt_reference_LaBr_vs_Diamond_vs_energy;
+
+        //std::vector<std::vector<TH1*>> h1_lisafast_time_differences;
+        //std::vector<std::vector<TH2*>> h2_lisafast_time_differences_vs_energy;
+
+        //TH1** h1_lisafast_rates;
         
         // Binnings:
         // int ffast_tot_nbins = 500;

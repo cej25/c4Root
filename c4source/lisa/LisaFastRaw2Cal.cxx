@@ -316,7 +316,7 @@ void LisaFastRaw2Cal::Exec(Option_t* option)
 
             // Reset to this because I don't know what the hit will be
             detector_id = -1;
-            detector_type = LisaFastDetectorType::Unknown;
+            detector_type = -1;
             layer = -1;
             x = -1;
             y = -1;
@@ -340,7 +340,7 @@ void LisaFastRaw2Cal::Exec(Option_t* option)
 
                 if (it != labr_mapping.end())
                 {
-                    detector_type = LisaFastDetectorType::LaBr;
+                    detector_type = 0; //0=LaBr, 1=Diamond, -1=Unknown
                     detector_id = it->second;
 
                     if (detector_id == -1)
@@ -364,7 +364,7 @@ void LisaFastRaw2Cal::Exec(Option_t* option)
 
                 if (it != diamond_mapping.end())
                 {
-                    detector_type = LisaFastDetectorType::Diamond;
+                    detector_type = 1; //0=LaBr, 1=Diamond, -1=Unknown
 
                     layer = it->second.first.first;
                     x = it->second.first.second.first;
@@ -424,7 +424,7 @@ void LisaFastRaw2Cal::Exec(Option_t* option)
                 std::vector<double> coeffs;
                 bool calibration_found = false;
 
-                if (detector_type == LisaFastDetectorType::LaBr)
+                if (detector_type == 0) //LaBr
                 {
                     calibration_found =
                         lisafast_configuration->GetLaBrCalibration(
@@ -432,7 +432,7 @@ void LisaFastRaw2Cal::Exec(Option_t* option)
                             coeffs
                         );
                 }
-                else if (detector_type == LisaFastDetectorType::Diamond)
+                else if (detector_type == 1) //Diamond
                 {
                     calibration_found =
                         lisafast_configuration->GetDiamondCalibration(

@@ -54,8 +54,8 @@ class LisaFastRaw2Cal : public FairTask
         LisaFastData* funcal_hit_next;
         LisaFastCalData* fcal_hit;
 
-        LisaFastDetectorType detector_type = LisaFastDetectorType::Unknown;
-
+        int detector_type = -1;
+        
         int detector_id = -1;
 
         int layer = -1;
