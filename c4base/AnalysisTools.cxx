@@ -115,6 +115,60 @@ TH2* MakeTH2(TDirectory* dir, const char* type, const char* name, const char* ti
     return h2;
 }
 
+TH3* MakeTH3(TDirectory* dir, const char* type, const char* name, const char* title, 
+            int xbins, double xmin, double xmax, int ybins, int ymin, int ymax,
+            int zbins, int zmin, int zmax)
+{
+    dir->cd();
+    // gStyle->SetPalette(kDarkBodyRadiator);
+
+    TH3* h3;
+    
+    if (*type == 'I') h3 = new TH3I(name, title, xbins, xmin, xmax, ybins, ymin, ymax, zbins, zmin, zmax);
+    else if (*type == 'F') h3 = new TH3F(name, title, xbins, xmin, xmax, ybins, ymin, ymax, zbins, zmin, zmax);
+    else if (*type == 'D') h3 = new TH3D(name, title, xbins, xmin, xmax, ybins, ymin, ymax, zbins, zmin, zmax);
+    else h3 = new TH3I(name, title, xbins, xmin, xmax, ybins, ymin, ymax, zbins, zmin, zmax);
+
+    h3->SetOption("BOX"); // default for now.
+
+    return h3;
+}
+
+TH3* MakeTH3(TDirectory* dir, const char* type,
+             const char* name, const char* title,
+             int xbins, double xmin, double xmax,
+             int ybins, double ymin, double ymax,
+             int zbins, double zmin, double zmax,
+             const char* xtitle, const char* ytitle, const char* ztitle)
+{
+    dir->cd();
+
+    TH3* h3 = nullptr;
+
+    if (*type == 'F')
+        h3 = new TH3F(name, title,
+                      xbins, xmin, xmax,
+                      ybins, ymin, ymax,
+                      zbins, zmin, zmax);
+    else if (*type == 'D')
+        h3 = new TH3D(name, title,
+                      xbins, xmin, xmax,
+                      ybins, ymin, ymax,
+                      zbins, zmin, zmax);
+    else
+        h3 = new TH3I(name, title,
+                      xbins, xmin, xmax,
+                      ybins, ymin, ymax,
+                      zbins, zmin, zmax);
+
+    h3->GetXaxis()->SetTitle(xtitle);
+    h3->GetYaxis()->SetTitle(ytitle);
+    h3->GetZaxis()->SetTitle(ztitle);
+
+    h3->SetOption("BOX");
+
+    return h3;
+}
 
 void ResetHistogramsInDirectory(TDirectory* dir) {
     if (!dir) return;

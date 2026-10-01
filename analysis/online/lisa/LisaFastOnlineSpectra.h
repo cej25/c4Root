@@ -16,6 +16,8 @@ class TClonesArray;
 class EventHeader;
 class TCanvas;
 class TH1;
+class TH2;
+class TH3;
 class TH1F;
 class TH2F;
 class TDirectory;
@@ -168,6 +170,7 @@ class LisaFastOnlineSpectra : public FairTask
         TDirectory* dir_lisafast_energy_spectra_LaBr;
         TDirectory* dir_lisafast_time_spectra_LaBr;
         TDirectory* dir_lisafast_deltaT_LaBr;
+        TDirectory* dir_lisafast_long_coin_LaBr;
 
         // Diamond
         TDirectory* dir_lisafast_Diamond;
@@ -213,6 +216,11 @@ class LisaFastOnlineSpectra : public FairTask
         std::vector<std::vector<std::vector<TH2*>>> h2_lisafast_fast_v_slow_Diamond;
         std::vector<std::vector<std::vector<TH1*>>> h1_lisafast_abs_time_Diamond;
 
+        TH1* h1_lisafast_dt_long_coin_labr;
+        TH2* h2_E1_vs_E2_long_coin_all_labr;
+        TH2* h2_E1_vs_E2_all_labr;
+
+        TH3* h3_E1_vs_E2_vs_dt_all_labr;
 
         TH1* h1_lisafast_hitpattern_slow_LaBr;
         TH1* h1_lisafast_hitpattern_fast_LaBr;
@@ -264,7 +272,7 @@ class LisaFastOnlineSpectra : public FairTask
         // // float ftime_coincidence_low = -10;
         // // float ftime_coincidence_high = 10;
 
-        double energygate_width = 10;
+        double energygate_width = 20;
             
         int event_multiplicity;
 
@@ -273,7 +281,7 @@ class LisaFastOnlineSpectra : public FairTask
         int* detector_rates;
         int rate_running_count = 0;
          
-        float coin_window_ns = 2000.; // move to config
+        float coin_window_ns = 1500000.; // move to config
         std::vector<LisaFastCalData> coin_hits;
 
     public:

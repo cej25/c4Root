@@ -3,12 +3,14 @@
 
 #include "TH1.h"
 #include "TH2.h"
+#include "TH3.h"
 #include "TDirectory.h"
 #include "Rtypes.h"
 
 class TDirectory;
 class TH1;
 class TH2;
+class TH3;
 class TH1I;
 class TH1F;
 class TH1D;
@@ -31,6 +33,16 @@ TH2* MakeTH2(TDirectory* dir, const char* type, const char* name, const char* ti
             int xbins, double xmin, double xmax, int ybins, int ymin, int ymax,
             const char* xtitle, const char* ytitle);
 
+TH3* MakeTH3(TDirectory* dir, const char* type, const char* name, const char* title, 
+            int xbins, double xmin, double xmax, int ybins, int ymin, int ymax,
+            int zbins, int zmin, int zmax);
+
+TH3* MakeTH3(TDirectory* dir, const char* type,
+             const char* name, const char* title,
+             int xbins, double xmin, double xmax,
+             int ybins, double ymin, double ymax,
+             int zbins, double zmin, double zmax,
+             const char* xtitle, const char* ytitle, const char* ztitle);
 
 // not sure how these will work yet. 
 TDirectory* CreateDirectory(TDirectory* current_dir);

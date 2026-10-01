@@ -134,13 +134,10 @@ void c_lisafast_online()
         //onlinelisafast->SetBinningFastToT(1000,0.1,600.1);
         //onlinelisafast->SetBinningEnergy(2000,0,2000);
 
-        std::vector<int> dets = {1,2};
-        //onlinelisafast->SetDetectorsToPlot(dets);
+        onlinelisafast->AddRefLaBrForDeltaT(1);
+        // onlinelisafast->AddDeltaTEnergyGate(460,460);
+        //onlinelisafast->AddDeltaTReferenceEnergyGate(740);
         
-        //onlinelisafast->AddReferenceDetectorForTimeDifferences(1);
-        //onlinelisafast->AddReferenceDetectorForTimeDifferencesWithEnergyGates(1,1730);
-        //AddReferenceDetectorForTimeDifferencesWithEnergyGates (#reference detector, Energy of #N detector, Energy of Ref detector)
-        //onlinelisafast->SetEnergyGateWidth(20);
         
         run->AddTask(onlinelisafast);
     }

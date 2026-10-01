@@ -111,6 +111,7 @@ InitStatus LisaFastOnlineSpectra::Init()
     dir_lisafast_fast_v_slow_LaBr = dir_lisafast_LaBr->mkdir("Fast Vs. Slow");
     dir_lisafast_energy_spectra_LaBr = dir_lisafast_LaBr->mkdir("Energy Spectra");
     dir_lisafast_time_spectra_LaBr = dir_lisafast_LaBr->mkdir("Time Spectra");
+    dir_lisafast_long_coin_LaBr = dir_lisafast_LaBr->mkdir("Long Coincidences");
 
     // ===:::::::: LABR :::::::::::===
     // ::: Slow ToT (i.e. raw energy):
@@ -151,7 +152,11 @@ InitStatus LisaFastOnlineSpectra::Init()
     }
     c_lisafast_energy_LaBr->cd(0);
     dir_lisafast_energy_spectra_LaBr->Append(c_lisafast_energy_LaBr);
-    
+
+    h2_E1_vs_E2_all_labr = MakeTH2(dir_lisafast_energy_spectra_LaBr, "F", "h2_E1_vs_E2_all_labr","LaBr all coincidence energy correlations",lisafast_configuration->energy_bin,lisafast_configuration->energy_min,lisafast_configuration->energy_max,lisafast_configuration->energy_bin,lisafast_configuration->energy_min,lisafast_configuration->energy_max, "Energy 1 [keV]", "Energy 2 [keV]");
+    h3_E1_vs_E2_vs_dt_all_labr = MakeTH3(dir_lisafast_energy_spectra_LaBr, "F", "h3_E1_vs_E2_vs_dt_all_labr","LaBr all coincidence energy correlations vs. time difference",lisafast_configuration->energy_bin,lisafast_configuration->energy_min,lisafast_configuration->energy_max,lisafast_configuration->energy_bin,lisafast_configuration->energy_min,lisafast_configuration->energy_max, lisafast_configuration->dt_bin,lisafast_configuration->dt_min,lisafast_configuration->dt_max, "Energy 1 [keV]", "Energy 2 [keV]", "dT [ns]");
+
+
     // ::: Fast vs Slow:
     c_lisafast_fast_v_slow_LaBr  = new TCanvas("c_lisafast_fast_v_slow_LaBr","LaBr fast vs slow ToT spectra",650,350);
     c_lisafast_fast_v_slow_LaBr->Divide(std::min(number_labr_detectors, 5), (number_labr_detectors + 4) / 5); //organize in rows of maximum 5
@@ -337,6 +342,9 @@ InitStatus LisaFastOnlineSpectra::Init()
         h2_lisafast_deltaT_vs_energy_LaBr[detid_idx]->Draw();
     }
 
+    h1_lisafast_dt_long_coin_labr = MakeTH1(dir_lisafast_long_coin_LaBr, "F", "h1_lisafast_dt_long_coin_labr","LaBr long coincidence time differences",lisafast_configuration->dt_bin,-1500000,1500000, "dT [ns]", kMagenta,kBlue + 2);
+    h2_E1_vs_E2_long_coin_all_labr = MakeTH2(dir_lisafast_long_coin_LaBr, "F", "h2_E1_vs_E2_long_coin_all_labr","LaBr long coincidence energy correlations",lisafast_configuration->energy_bin,lisafast_configuration->energy_min,lisafast_configuration->energy_max,lisafast_configuration->energy_bin,lisafast_configuration->energy_min,lisafast_configuration->energy_max, "Energy 1 [keV]", "Energy 2 [keV]");
+
     c_lisafast_deltaT_vs_energy_LaBr->cd(0);
 
     dir_lisafast_deltaT_LaBr->Append(c_lisafast_deltaT_vs_energy_LaBr);
@@ -367,7 +375,6 @@ void LisaFastOnlineSpectra::Exec(Option_t* option)
 {   
     auto start = std::chrono::high_resolution_clock::now();
 
-    // Replace YourHitType with the class you currently cast each hit to.
     std::vector<LisaFastCalData*> sortedHits;
     sortedHits.reserve(fHitLisaFast->GetEntriesFast());
 
@@ -428,11 +435,11 @@ void LisaFastOnlineSpectra::Exec(Option_t* option)
             // ::: Event-based coincidences: 
             // If multiple hits in one event -> those hits are in coincidence
 
-            if (nHits >= 2 && dt_reference_labr > 0){
+            if (nHits >= 2){
                 for (Int_t ihit2 = 0; ihit2 < nHits; ihit2++){
                     if (ihit2 == ihit) {continue;}
 
-                    LisaFastCalData * hit2 = (LisaFastCalData*)sortedHits.at(ihit2); // I want this to be the reference detector for easier code:
+                    LisaFastCalData* hit2 = (LisaFastCalData*)sortedHits.at(ihit2); // I want this to be the reference detector for easier code:
                     
                     int detector_id2 = hit2->Get_detector_id();
                     double slow_ToT2 = hit2->Get_slow_ToT();
@@ -441,42 +448,50 @@ void LisaFastOnlineSpectra::Exec(Option_t* option)
                     double fast_lead2 = hit2->Get_fast_lead_time();
                     int64_t fast_lead_epoch2 = hit2->Get_fast_lead_epoch();
 
-                        
-
-                    if (detector_id2 == dt_reference_labr) 
-                    {
-                    
                     double dt = fast_lead1 - fast_lead2;//+ (fast_lead_epoch - fast_lead_epoch2) - lisafast_configuration->GetTimeshiftCoefficient(detector_id2,detector_id1); 
-                    //c4LOG(info,Form("det1 = %i, det2 = %i, shift = %f",detector_id1,detector_id2,lisafast_configuration->GetTimeshiftCoefficient(detector_id2,detector_id1)));
-                    //c4LOG(info,Form("epoch1 = %i, epoch2 = %i, depoch = %i",fast_lead_epoch,fast_lead_epoch2,fast_lead_epoch-fast_lead_epoch2));
-                    //c4LOG(info,Form("time1 = %f, time2 = %f, dtime = %f",fast_lead1,fast_lead2,fast_lead1-fast_lead2));
-                    //c4LOG(info,Form("dt = %f",dt));
 
-                    // Gates on both detectors
-                    if (dt_reference_detectors_energy_gates.first != 0 && dt_reference_detectors_energy_gates.second != 0)
+                    h2_E1_vs_E2_all_labr->Fill(energy1, energy2);
+                    h3_E1_vs_E2_vs_dt_all_labr->Fill(energy1, energy2, dt);
+
+                    if (dt_reference_labr > 0)
                     {
-                        if ((TMath::Abs(energy2 - dt_reference_detectors_energy_gates.second) < energygate_width) && (TMath::Abs(energy1 - dt_reference_detectors_energy_gates.first) < energygate_width))
-                        {
-                            h1_lisafast_deltaT_LaBr[detector_id1-1]->Fill(dt);
-                            h2_lisafast_deltaT_vs_energy_LaBr[detector_id1-1]->Fill(energy1,dt);
-                        }
-                    // Gate on only ref detector
-                    }else if(dt_reference_detectors_energy_gates.second != 0 && dt_reference_detectors_energy_gates.first == 0)
-                    {
-                        if ((TMath::Abs(energy2 - dt_reference_detectors_energy_gates.second) < energygate_width)){
-                            h1_lisafast_deltaT_LaBr[detector_id1-1]->Fill(dt);
-                            h2_lisafast_deltaT_vs_energy_LaBr[detector_id1-1]->Fill(energy1,dt);
-                        }
-                    }
-                    else
-                    { // no gates
-                        h1_lisafast_deltaT_LaBr[detector_id1-1]->Fill(dt);
-                        h2_lisafast_deltaT_vs_energy_LaBr[detector_id1-1]->Fill(energy1,dt);
-                    }
-                    }
-                    c4LOG(info, "Slow down");
 
                     
+                        if (detector_id2 == dt_reference_labr) 
+                        {
+                        
+                            // double dt = fast_lead1 - fast_lead2;//+ (fast_lead_epoch - fast_lead_epoch2) - lisafast_configuration->GetTimeshiftCoefficient(detector_id2,detector_id1); 
+                            //c4LOG(info,Form("det1 = %i, det2 = %i, shift = %f",detector_id1,detector_id2,lisafast_configuration->GetTimeshiftCoefficient(detector_id2,detector_id1)));
+                            //c4LOG(info,Form("epoch1 = %i, epoch2 = %i, depoch = %i",fast_lead_epoch,fast_lead_epoch2,fast_lead_epoch-fast_lead_epoch2));
+                            //c4LOG(info,Form("time1 = %f, time2 = %f, dtime = %f",fast_lead1,fast_lead2,fast_lead1-fast_lead2));
+                            //c4LOG(info,Form("dt = %f",dt));
+                            
+                            
+                            // Gates on both detectors
+                            if (dt_reference_detectors_energy_gates.first != 0 && dt_reference_detectors_energy_gates.second != 0)
+                            {
+                                if ((TMath::Abs(energy2 - dt_reference_detectors_energy_gates.second) < energygate_width) && (TMath::Abs(energy1 - dt_reference_detectors_energy_gates.first) < energygate_width))
+                                {
+                                    h1_lisafast_deltaT_LaBr[detector_id1-1]->Fill(dt);
+                                    h2_lisafast_deltaT_vs_energy_LaBr[detector_id1-1]->Fill(energy1,dt);
+                                }
+                            // Gate on only ref detector
+                            }else if(dt_reference_detectors_energy_gates.second != 0 && dt_reference_detectors_energy_gates.first == 0)
+                            {
+                                if ((TMath::Abs(energy2 - dt_reference_detectors_energy_gates.second) < energygate_width)){
+                                    h1_lisafast_deltaT_LaBr[detector_id1-1]->Fill(dt);
+                                    h2_lisafast_deltaT_vs_energy_LaBr[detector_id1-1]->Fill(energy1,dt);
+                                }
+                            }
+                            else
+                            { // no gates
+                                h1_lisafast_deltaT_LaBr[detector_id1-1]->Fill(dt);
+                                h2_lisafast_deltaT_vs_energy_LaBr[detector_id1-1]->Fill(energy1,dt);
+                            }
+                        }
+                        c4LOG(info, "Slow down");
+                    }
+
                 }
             }
 
@@ -488,7 +503,7 @@ void LisaFastOnlineSpectra::Exec(Option_t* option)
             {
                 if ((run_time - hit_coin->Get_run_time()) > coin_window_ns)
                 {
-                    coin_hits.erase(hit_coin);
+                    hit_coin = coin_hits.erase(hit_coin);
                     c4LOG(info, "Slow down");
 
                 } 
@@ -500,6 +515,10 @@ void LisaFastOnlineSpectra::Exec(Option_t* option)
                 double dt = run_time - hit_coin->Get_run_time();
                 double energy2 = hit_coin->Get_energy();
                 int detector_id2 = hit_coin->Get_detector_id();
+                
+                h1_lisafast_dt_long_coin_labr->Fill(dt);
+                h2_E1_vs_E2_long_coin_all_labr->Fill(energy1, energy2);
+
             }
 
             coin_hits.push_back(*hit);
