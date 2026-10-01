@@ -63,6 +63,18 @@ class LisaFastOnlineSpectra : public FairTask
         {
             dt_reference_diamond = std::make_tuple(layer, x, y);
         }
+
+        void AddDeltaTEnergyGate(double energy_in_other, double energy_in_ref_det)
+        {
+            dt_reference_detectors_energy_gates =
+                std::make_pair(energy_in_other, energy_in_ref_det);
+        }
+
+        void AddDeltaTReferenceEnergyGate(double energy_in_ref_det)
+        {
+            dt_reference_detectors_energy_gates =
+                std::make_pair(0.0, energy_in_ref_det);
+        }
         
         // void AddRefLaBrForDeltaT(int det){
             
@@ -116,8 +128,8 @@ class LisaFastOnlineSpectra : public FairTask
         TCanvas* c_lisafast_energy_uncal_LaBr;
         TCanvas* c_lisafast_energy_vs_detid_LaBr;
         TCanvas* c_lisafast_hitpatterns_LaBr;
-        TCanvas* c_lisafast_time_differences_LaBr;
-        TCanvas* c_lisafast_time_differences_vs_energy_LaBr;
+        TCanvas* c_lisafast_deltaT_LaBr;
+        TCanvas* c_lisafast_deltaT_vs_energy_LaBr;
 
         // Diamond
         TCanvas* c_lisafast_slowToT_Diamond;
@@ -155,7 +167,7 @@ class LisaFastOnlineSpectra : public FairTask
         TDirectory* dir_lisafast_hitpattern_LaBr;
         TDirectory* dir_lisafast_energy_spectra_LaBr;
         TDirectory* dir_lisafast_time_spectra_LaBr;
-        std::vector<TDirectory*> dir_lisafast_time_differences_LaBr;
+        TDirectory* dir_lisafast_deltaT_LaBr;
 
         // Diamond
         TDirectory* dir_lisafast_Diamond;
@@ -165,7 +177,7 @@ class LisaFastOnlineSpectra : public FairTask
         TDirectory* dir_lisafast_hitpattern_Diamond;
         TDirectory* dir_lisafast_energy_spectra_Diamond;
         TDirectory* dir_lisafast_time_spectra_Diamond;
-        std::vector<TDirectory*> dir_lisafast_time_differences_Diamond;
+        TDirectory* dir_lisafast_deltaT_Diamond;
 
         // LaBr-Diamond time differences
         TDirectory* dir_lisafast_dt_LaBr_Diamond;
@@ -181,9 +193,9 @@ class LisaFastOnlineSpectra : public FairTask
         //int layer_number;
         //int det_LaBr_number;
 
-        std::vector<int> dt_reference_detectors = {};
-        std::vector<std::pair<double,double>> dt_reference_detectors_energy_gates = {};
-        int number_reference_detectors = 0;
+        //std::vector<int> dt_reference_detectors = {};
+        std::pair<double, double> dt_reference_detectors_energy_gates = {0.0, 0.0};
+        //int number_reference_detectors = 0;
         
         // Histograms 
         std::vector<TH1*> h1_lisafast_slowToT_LaBr;
@@ -191,8 +203,8 @@ class LisaFastOnlineSpectra : public FairTask
         std::vector<TH1*> h1_lisafast_energy_LaBr;
         std::vector<TH2*> h2_lisafast_fast_v_slow_LaBr;
         std::vector<TH1*> h1_lisafast_abs_time_LaBr;
-        std::vector<std::vector<TH1*>> h1_lisafast_time_differences_LaBr;
-        std::vector<std::vector<TH2*>> h2_lisafast_time_differences_vs_energy_LaBr;
+        std::vector<TH1*> h1_lisafast_deltaT_LaBr;
+        std::vector<TH2*> h2_lisafast_deltaT_vs_energy_LaBr;
 
 
         std::vector<std::vector<std::vector<TH1*>>> h1_lisafast_slowToT_Diamond;
@@ -236,21 +248,21 @@ class LisaFastOnlineSpectra : public FairTask
         //TH1** h1_lisafast_rates;
         
         // Binnings:  -- we can also add a way to change them!!
-        int ffast_tot_nbins = 500;
-        float ffast_tot_bin_low = 0;
-        float ffast_tot_bin_high = 100; 
+        // int ffast_tot_nbins = 500;
+        // float ffast_tot_bin_low = 0;
+        // float ffast_tot_bin_high = 100; 
 
-        int fslow_tot_nbins = 500;
-        float fslow_tot_bin_low = 550;
-        float fslow_tot_bin_high = 750;
+        // // int fslow_tot_nbins = 500;
+        // // float fslow_tot_bin_low = 550;
+        // // float fslow_tot_bin_high = 750;
 
-        int fenergy_nbins = 500;
-        float fenergy_bin_low = 0;
-        float fenergy_bin_high = 1500;
+        // // int fenergy_nbins = 500;
+        // // float fenergy_bin_low = 0;
+        // // float fenergy_bin_high = 1500;
 
-        int ftime_coincidence_nbins = 1000;
-        float ftime_coincidence_low = -10;
-        float ftime_coincidence_high = 10;
+        // // int ftime_coincidence_nbins = 1000;
+        // // float ftime_coincidence_low = -10;
+        // // float ftime_coincidence_high = 10;
 
         double energygate_width = 10;
             
@@ -261,7 +273,7 @@ class LisaFastOnlineSpectra : public FairTask
         int* detector_rates;
         int rate_running_count = 0;
          
-        float coin_window_ns = 2000.;
+        float coin_window_ns = 2000.; // move to config
         std::vector<LisaFastCalData> coin_hits;
 
     public:

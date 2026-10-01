@@ -267,16 +267,16 @@ void TLisaFastConfiguration::ReadCalibrationCoefficients()
             continue;
         }
 
-        std::stringstream ss(line);
+        std::stringstream line_ss(line);
 
         if (section == "LaBr")
         {
             int detector_id;
             double a0, a1, a2, a3;
 
-            ss >> detector_id >> a0 >> a1 >> a2 >> a3;
+            line_ss >> detector_id >> a0 >> a1 >> a2 >> a3;
 
-            if (ss.fail())
+            if (line_ss.fail())
             {
                 c4LOG(error, "Error reading LaBr calibration line: " + line);
                 continue;
@@ -292,9 +292,9 @@ void TLisaFastConfiguration::ReadCalibrationCoefficients()
             int y;
             double a0, a1, a2, a3;
 
-            ss >> layer >> x >> y >> a0 >> a1 >> a2 >> a3;
+            line_ss >> layer >> x >> y >> a0 >> a1 >> a2 >> a3;
 
-            if (ss.fail())
+            if (line_ss.fail())
             {
                 c4LOG(error, "Error reading Diamond calibration line: " + line);
                 continue;

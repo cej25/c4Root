@@ -130,22 +130,30 @@ void lisafast_online()
     if (LISAFAST_ON)
     {
         LisaFastOnlineSpectra* onlinelisafast = new LisaFastOnlineSpectra();
-        onlinelisafast->SetBinningSlowToT(2000,1,2000);
-        onlinelisafast->SetBinningFastToT(1000,0.1,600.1);
-        onlinelisafast->SetBinningEnergy(2000,0,2000);
-
-        std::vector<int> dets = {1,2};
-        onlinelisafast->SetDetectorsToPlot(dets);
         
-        onlinelisafast->AddReferenceDetectorForTimeDifferences(1);
-        onlinelisafast->AddReferenceDetectorForTimeDifferencesWithEnergyGates(1,1730);
+        onlinelisafast->AddRefLaBrForDeltaT(1);
+        //onlinelisafast->AddReferenceDetectorForTimeDifferencesWithEnergyGates(1,1730);
         //AddReferenceDetectorForTimeDifferencesWithEnergyGates (#reference detector, Energy of #N detector, Energy of Ref detector)
-        onlinelisafast->SetEnergyGateWidth(20);
+        //onlinelisafast->SetEnergyGateWidth(20);
         
         run->AddTask(onlinelisafast);
     }
     
+    TLisaFastConfiguration::SetSlowToT_bin(2000);
+    TLisaFastConfiguration::SetSlowToT_max(2000);
+    TLisaFastConfiguration::SetSlowToT_min(0);
 
+    TLisaFastConfiguration::SetFastToT_bin(500);
+    TLisaFastConfiguration::SetFastToT_max(500);
+    TLisaFastConfiguration::SetFastToT_min(0);
+
+    TLisaFastConfiguration::SetEnergy_bin(2000);
+    TLisaFastConfiguration::SetEnergy_max(2000);
+    TLisaFastConfiguration::SetEnergy_min(0);
+
+    TLisaFastConfiguration::SetdT_bin(2000);
+    TLisaFastConfiguration::SetdT_max(200);
+    TLisaFastConfiguration::SetdT_min(-200);
 
     // Initialise
     run->Init();
