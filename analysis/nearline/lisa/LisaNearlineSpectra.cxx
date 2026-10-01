@@ -1263,7 +1263,7 @@ void LisaNearlineSpectra::Exec(Option_t* option)
 
     // ::: Theta
 
-for ( int i = 0; i < layer_number-1; i++)
+for ( int i = 0; i < layer_number; i++)
     {
         for( int j = 0; j < 5; j++)
         {
