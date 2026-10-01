@@ -37,6 +37,7 @@
 #include "TRandom.h"
 #include <chrono>
 #include <sstream>
+#include <algorithm>
 
 LisaFastOnlineSpectra::LisaFastOnlineSpectra() : LisaFastOnlineSpectra("LisaFastOnlineSpectra")
 {
@@ -286,17 +287,33 @@ void LisaFastOnlineSpectra::Reset_Histo() {
 
 void LisaFastOnlineSpectra::Exec(Option_t* option)
 {   
-    
     auto start = std::chrono::high_resolution_clock::now();
-    
 
-    if (fHitLisaFast && fHitLisaFast->GetEntriesFast() > 0)
+    // Replace YourHitType with the class you currently cast each hit to.
+    std::vector<LisaFastCalData*> sortedHits;
+    sortedHits.reserve(fHitLisaFast->GetEntriesFast());
+
+    for (int i = 0; i < fHitLisaFast->GetEntriesFast(); ++i)
+    {
+        auto* hit = static_cast<LisaFastCalData*>(fHitLisaFast->At(i));
+
+        if (hit)
+            sortedHits.push_back(hit);
+    }
+
+    std::sort(sortedHits.begin(), sortedHits.end(),
+            [](const auto* a, const auto* b)
+            {
+                return a->Get_run_time() < b->Get_run_time();
+            });
+
+    if (sortedHits.size() > 0)
     {   
         event_multiplicity = 0;
-        Int_t nHits = fHitLisaFast->GetEntriesFast();
+        Int_t nHits = sortedHits.size();
         for (Int_t ihit = 0; ihit < nHits; ihit++)
         {   
-            LisaFastCalData* hit = (LisaFastCalData*)fHitLisaFast->At(ihit);
+            LisaFastCalData* hit = (LisaFastCalData*)sortedHits.at(ihit);
             if (!hit) continue;
 
 
@@ -307,21 +324,17 @@ void LisaFastOnlineSpectra::Exec(Option_t* option)
             int64_t fast_lead_epoch = hit->Get_fast_lead_epoch();
             double run_time = hit->Get_run_time();
 
-            c4LOG(info, "run time: " << run_time << " ns");
-
-
-            
             int detector_id1 = hit->Get_detector_id();
 
             //int detector_index1 = GetDetectorIndex(detector_id1);
             //if (detector_index1 >= number_detectors) {continue;} // this implies that the hit corresponds to a detector that is not specified for plotting.
 
             event_multiplicity ++; // count only "valid events"
-            h1_lisafast_slowToT_LaBr[detector_id1]->Fill(slow_ToT1); // all these were indexed by detector_index1, some horrible logic thing may need fixing down the road
-            h1_lisafast_energy_LaBr[detector_id1]->Fill(energy1);
-            h1_lisafast_fastToT_LaBr[detector_id1]->Fill(fast_ToT1);
-            h2_lisafast_fast_v_slow_LaBr[detector_id1]->Fill(fast_ToT1, slow_ToT1);
-            h1_lisafast_abs_time_LaBr[detector_id1]->Fill(fast_lead_epoch+fast_lead1);
+            h1_lisafast_slowToT_LaBr[detector_id1-1]->Fill(slow_ToT1); // all these were indexed by detector_index1, some horrible logic thing may need fixing down the road
+            h1_lisafast_energy_LaBr[detector_id1-1]->Fill(energy1);
+            h1_lisafast_fastToT_LaBr[detector_id1-1]->Fill(fast_ToT1);
+            h2_lisafast_fast_v_slow_LaBr[detector_id1-1]->Fill(fast_ToT1, slow_ToT1);
+            h1_lisafast_abs_time_LaBr[detector_id1-1]->Fill(fast_lead_epoch+fast_lead1);
             
             h2_lisafast_energy_vs_detid_LaBr->Fill(energy1, detector_id1);
             h2_lisafast_energy_uncal_vs_detid_LaBr->Fill(slow_ToT1, detector_id1);
@@ -334,7 +347,7 @@ void LisaFastOnlineSpectra::Exec(Option_t* option)
                 for (Int_t ihit2 = 0; ihit2 < nHits; ihit2++){
                     if (ihit2 == ihit) {continue;}
 
-                    LisaFastCalData * hit2 = (LisaFastCalData*)fHitLisaFast->At(ihit2); // I want this to be the reference detector for easier code:
+                    LisaFastCalData * hit2 = (LisaFastCalData*)sortedHits.at(ihit2); // I want this to be the reference detector for easier code:
                     
                     int detector_id2 = hit2->Get_detector_id();
                     double slow_ToT2 = hit2->Get_slow_ToT();
@@ -353,29 +366,27 @@ void LisaFastOnlineSpectra::Exec(Option_t* option)
                     //c4LOG(info,Form("epoch1 = %i, epoch2 = %i, depoch = %i",fast_lead_epoch,fast_lead_epoch2,fast_lead_epoch-fast_lead_epoch2));
                     //c4LOG(info,Form("time1 = %f, time2 = %f, dtime = %f",fast_lead1,fast_lead2,fast_lead1-fast_lead2));
                     //c4LOG(info,Form("dt = %f",dt));
-                    
 
                     if (dt_reference_detectors_energy_gates.at(detector_index2).first != 0 && dt_reference_detectors_energy_gates.at(detector_index2).second != 0){
                         if ((TMath::Abs(energy2 - dt_reference_detectors_energy_gates.at(detector_index2).second) < energygate_width) && (TMath::Abs(energy1 - dt_reference_detectors_energy_gates.at(detector_index2).first) < energygate_width)){
-                            h1_lisafast_time_differences_LaBr[detector_index2][detector_id1]->Fill(dt);
-                            h2_lisafast_time_differences_vs_energy_LaBr[detector_index2][detector_id1]->Fill(energy1,dt);
+                            h1_lisafast_time_differences_LaBr[detector_index2][detector_id1-1]->Fill(dt);
+                            h2_lisafast_time_differences_vs_energy_LaBr[detector_index2][detector_id1-1]->Fill(energy1,dt);
                         }
                     }else if(dt_reference_detectors_energy_gates.at(detector_index2).second != 0 && dt_reference_detectors_energy_gates.at(detector_index2).first == 0){
                         if ((TMath::Abs(energy2 - dt_reference_detectors_energy_gates.at(detector_index2).second) < energygate_width)){
-                            h1_lisafast_time_differences_LaBr[detector_index2][detector_id1]->Fill(dt);
-                            h2_lisafast_time_differences_vs_energy_LaBr[detector_index2][detector_id1]->Fill(energy1,dt);
+                            h1_lisafast_time_differences_LaBr[detector_index2][detector_id1-1]->Fill(dt);
+                            h2_lisafast_time_differences_vs_energy_LaBr[detector_index2][detector_id1-1]->Fill(energy1,dt);
                         }
                     }
                     else{ // no gates
-                        h1_lisafast_time_differences_LaBr[detector_index2][detector_id1]->Fill(dt);
-                        h2_lisafast_time_differences_vs_energy_LaBr[detector_index2][detector_id1]->Fill(energy1,dt);
+                        h1_lisafast_time_differences_LaBr[detector_index2][detector_id1-1]->Fill(dt);
+                        h2_lisafast_time_differences_vs_energy_LaBr[detector_index2][detector_id1-1]->Fill(energy1,dt);
                     }
                     }
                     
                     }
                 }
             }
-
 
             // ::: cross event coincidences ::: //
 
@@ -394,8 +405,6 @@ void LisaFastOnlineSpectra::Exec(Option_t* option)
                 double dt = run_time - hit_coin->Get_run_time();
                 double energy2 = hit_coin->Get_energy();
                 int detector_id2 = hit_coin->Get_detector_id();
-
-                std::cout << "making coincidences" << std::endl;
             }
 
             coin_hits.push_back(*hit);

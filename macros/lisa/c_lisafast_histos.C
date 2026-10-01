@@ -36,11 +36,10 @@ void lisaext_histos()
 {   
     const Int_t nev = -1; const Int_t fRunId = 1; const Int_t fExpId = 1;
     // ::: Experiment name
-    TString fExpName = "lisaext";
+    TString fExpName = "lisafast";
 
     // ::: Here you define commonly used path
-    //TString c4Root_path = "/u/gandolfo/c4/c4Root";
-    TString c4Root_path = "/home/lisa/programs/c4/c4Root";
+    TString c4Root_path = "/home/calum/Software/c4Root";
     TString ucesb_path = c4Root_path + "/unpack/exps/" + fExpName + "/" + fExpName + " --debug --input-buffer=200Mi --event-sizes --allow-errors";
     ucesb_path.ReplaceAll("//","/");
 
@@ -69,7 +68,7 @@ void lisaext_histos()
     // ::: OUTPUT 
     //TString outputpath = "/u/gandolfo/data/lustre/gamma/LISA/data/ext_daq_debnik/dev_test/"; 
     //TString outputpath = "/u/gandolfo/data/lisaext/"; 
-    TString outputpath = "/home/lisa/data/server/groups/wimmer/laboratory/histos/"; 
+    TString outputpath = "./"; 
     //TString outputpath = "/home/lisa/data/"; 
 
     TString outputFilename = outputpath + TString(rootname).ReplaceAll("_tree.root", "_histo.root");

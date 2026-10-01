@@ -422,7 +422,12 @@ Bool_t LisaFastReader::Read() //do fine time here:
             double fine_T = GetFineTime(fData->lisafast_tamex[it_board_number].time_finev[it_hits],it_board_number,channelid);
 
             real_time = ((double)previous_epoch_word)*10.24e3 + ((double)coarse_T)*5.0 - (double)fine_T; // round it off to ns resolution
-            if (previous_real_time > 0) run_time = run_time + real_time - previous_real_time;
+            if (previous_real_time > 0) 
+            {
+                run_time = run_time + real_time - previous_real_time;
+                //if (real_time - previous_real_time < -500) std::cout << "negative time is possible: " << real_time - previous_real_time << std::endl;
+                //if (real_time - previous_real_time > 0) std::cout << "POSITIVE time is possible: " << real_time - previous_real_time << std::endl;
+            }
             // find some way to deal with epoch resetting, need to know what the number is tho
             // store run time in tree
             // use to build vector of events that lasts for some window and deletes the oldest events.
