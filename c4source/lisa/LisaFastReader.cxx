@@ -496,10 +496,6 @@ Bool_t LisaFastReader::Read() //do fine time here:
                 );
                
                 previous_real_time = real_time;
-                // c4LOG(info, "accepted trigger time: " << accepted_trigger_time);
-                // c4LOG(info, "le = " << last_tdc_hit.lead_epoch_counter << ", lc = " << last_tdc_hit.lead_coarse_T << ", lf = " << last_tdc_hit.lead_fine_T << ", te = " << previous_epoch_word << ", tc = " << coarse_T << ", tf = " << fine_T);
-
-                c4LOG(info, "run time: " << run_time << " ns");
                 //reset:
 
                 last_tdc_hit.hit=false;

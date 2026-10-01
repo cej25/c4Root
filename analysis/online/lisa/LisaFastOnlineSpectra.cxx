@@ -305,6 +305,11 @@ void LisaFastOnlineSpectra::Exec(Option_t* option)
             double energy1 = hit->Get_energy();
             double fast_lead1 = hit->Get_fast_lead_time();
             int64_t fast_lead_epoch = hit->Get_fast_lead_epoch();
+            double run_time = hit->Get_run_time();
+
+            c4LOG(info, "run time: " << run_time << " ns");
+
+
             
             int detector_id1 = hit->Get_detector_id();
 
@@ -370,6 +375,30 @@ void LisaFastOnlineSpectra::Exec(Option_t* option)
                     }
                 }
             }
+
+
+            // ::: cross event coincidences ::: //
+
+            // erase hits outside window
+            for (auto hit_coin = coin_hits.begin(); hit_coin != coin_hits.end();)
+            {
+                if ((run_time - hit_coin->Get_run_time()) > coin_window_ns)
+                {
+                    coin_hits.erase(hit_coin);
+                } 
+                else hit_coin++;
+            }
+            
+            for (auto hit_coin = coin_hits.begin(); hit_coin != coin_hits.end(); hit_coin++)
+            {
+                double dt = run_time - hit_coin->Get_run_time();
+                double energy2 = hit_coin->Get_energy();
+                int detector_id2 = hit_coin->Get_detector_id();
+
+                std::cout << "making coincidences" << std::endl;
+            }
+
+
         }
 
 

@@ -488,6 +488,7 @@ void LisaFastRaw2Cal::Exec(Option_t* option)
                 funcal_hit->Get_trigger(),
                 funcal_hit->Get_board_id(),
                 (int)((funcal_hit->Get_ch_ID()+1)/2),
+                funcal_hit->Get_run_time(),
                 detector_type,
                 detector_id,
                 layer,

@@ -4,6 +4,7 @@
 #include "FairTask.h"
 #include "TDirectory.h"
 #include "TLisaFastConfiguration.h"
+#include "LisaFastCalData.h"
 #include "TFolder.h"
 #include "TH1F.h"
 #include "TH2F.h"
@@ -259,6 +260,9 @@ class LisaFastOnlineSpectra : public FairTask
         int* detector_counters;
         int* detector_rates;
         int rate_running_count = 0;
+         
+        float coin_window_ns = 2000.;
+        std::vector<LisaFastCalData> coin_hits;
 
     public:
         ClassDef(LisaFastOnlineSpectra, 1)

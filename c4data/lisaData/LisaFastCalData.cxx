@@ -21,6 +21,7 @@ LisaFastCalData::LisaFastCalData()
     ftrig(0),
     fboard_id(0),
     fch_ID(0),
+    frun_time(0),
 
     fdetector_type(-1),
 
@@ -55,6 +56,7 @@ LisaFastCalData::LisaFastCalData(
         uint16_t trig,
         uint16_t board_id,
         uint16_t ch_ID,
+        double run_time,
 
         int detector_type,
 
@@ -86,6 +88,7 @@ LisaFastCalData::LisaFastCalData(
         ftrig(trig),
         fboard_id(board_id),
         fch_ID(ch_ID),
+        frun_time(run_time),
         fdetector_type(detector_type),
 
         fdetector_id(detector_id),

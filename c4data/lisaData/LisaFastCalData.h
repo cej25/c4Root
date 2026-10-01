@@ -16,6 +16,8 @@ class LisaFastCalData : public TObject
         uint16_t board_id,
         uint16_t ch_ID,
 
+        double run_time,
+
         int detector_type,
 
         int detector_id,
@@ -54,6 +56,7 @@ class LisaFastCalData : public TObject
         inline const uint16_t Get_trigger() const { return ftrig; }
         inline const uint16_t Get_board_id() const {return fboard_id; }
         inline const uint16_t Get_ch_ID() const {return fch_ID; }
+        inline const double Get_run_time() const {return frun_time; }
 
         inline const int Get_detector_type() const {return fdetector_type; }
         //LaBr
@@ -87,6 +90,7 @@ class LisaFastCalData : public TObject
         void Set_trigger(uint16_t v) { ftrig = v; } 
         void Set_board_id(uint16_t v){ fboard_id = v; }
         void Set_ch_ID(uint16_t v){ fch_ID = v; }
+        void Set_run_time(double v){ frun_time = v; }
 
         void Set_detector_type(int v){ fdetector_type = v; }
         // LaBr
@@ -121,6 +125,7 @@ class LisaFastCalData : public TObject
         uint16_t ftrig;
         uint16_t fboard_id;
         uint16_t fch_ID;
+        double frun_time;
         int fdetector_type;
         //  LaBr
         int fdetector_id;
