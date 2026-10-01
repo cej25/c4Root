@@ -17,7 +17,7 @@ class EventHeader;
 class TCanvas;
 class TH1;
 class TH2;
-class TH3;
+//class TH3;
 class TH1F;
 class TH2F;
 class TDirectory;
@@ -220,7 +220,7 @@ class LisaFastOnlineSpectra : public FairTask
         TH2* h2_E1_vs_E2_long_coin_all_labr;
         TH2* h2_E1_vs_E2_all_labr;
 
-        TH3* h3_E1_vs_E2_vs_dt_all_labr;
+        //TH3* h3_E1_vs_E2_vs_dt_all_labr;
 
         TH1* h1_lisafast_hitpattern_slow_LaBr;
         TH1* h1_lisafast_hitpattern_fast_LaBr;
@@ -281,7 +281,7 @@ class LisaFastOnlineSpectra : public FairTask
         int* detector_rates;
         int rate_running_count = 0;
          
-        float coin_window_ns = 1500000.; // move to config
+        float coin_window_ns = 1500.; // move to config
         std::vector<LisaFastCalData> coin_hits;
 
     public:
