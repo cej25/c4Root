@@ -101,12 +101,12 @@ InitStatus LisaFastOnlineSpectra::Init()
     dir_lisafast_dt_LaBr_Diamond = dir_lisafast->mkdir("dt_LaBr_Diamond");
 
     
-    dir_lisafast_LaBr_slowToT = dir_lisafast_LaBr->mkdir("SlowToT");
-    dir_lisafast_LaBr_fastToT = dir_lisafast_LaBr->mkdir("FastToT");
-    dir_lisafast_LaBr_hitpattern = dir_lisafast_LaBr->mkdir("Hit Pattern");
-    dir_lisafast_LaBr_fast_v_slow = dir_lisafast_LaBr->mkdir("Fast Vs. Slow");
-    dir_lisafast_LaBr_energy_spectra = dir_lisafast_LaBr->mkdir("Energy Spectra");
-    dir_lisafast_LaBr_time_spectra = dir_lisafast_LaBr->mkdir("Time Spectra");
+    dir_lisafast_slowToT_LaBr = dir_lisafast_LaBr->mkdir("SlowToT");
+    dir_lisafast_fastToT_LaBr = dir_lisafast_LaBr->mkdir("FastToT");
+    dir_lisafast_hitpattern_LaBr = dir_lisafast_LaBr->mkdir("Hit Pattern");
+    dir_lisafast_fast_v_slow_LaBr = dir_lisafast_LaBr->mkdir("Fast Vs. Slow");
+    dir_lisafast_energy_spectra_LaBr = dir_lisafast_LaBr->mkdir("Energy Spectra");
+    dir_lisafast_time_spectra_LaBr = dir_lisafast_LaBr->mkdir("Time Spectra");
 
     // int min_detector_id = *min_element(detectors.begin(),detectors.end()); delete this
     // int max_detector_id = *max_element(detectors.begin(), detectors.end()); // this can be read from mapping in TConfig instead, i'm just fixing like this for now.
@@ -118,17 +118,17 @@ InitStatus LisaFastOnlineSpectra::Init()
     float slowToT_max = lisafast_configuration->slowToT_max;
 
     // ::: Slow ToT (i.e raw energy):
-    c_lisafast_LaBr_slowToT  = new TCanvas("c_lisafast_LaBr_slowToT","slow ToT LisaFast spectra",650,350);
-    c_lisafast_LaBr_slowToT->Divide(2, (number_labr_detectors+1)/2);
+    c_lisafast_slowToT_LaBr  = new TCanvas("c_lisafast_slowToT_LaBr","slow ToT LisaFast spectra",650,350);
+    c_lisafast_slowToT_LaBr->Divide(2, (number_labr_detectors+1)/2);
     h1_lisafast_slowToT_LaBr.resize(number_labr_detectors);
     for (int ihist = 0; ihist < number_labr_detectors; ihist++)
     {
-        c_lisafast_LaBr_slowToT->cd(ihist+1);
-        h1_lisafast_slowToT_LaBr[ihist] = MakeTH1(dir_lisafast_LaBr_slowToT, "F", Form("h1_lisafast_slowToT_LaBr_%d",ihist), Form("LisaFast slow ToT detector %d",ihist),slowToT_bins,slowToT_min,slowToT_max, "ToT [ns]", kSpring, kBlue+2);
+        c_lisafast_slowToT_LaBr->cd(ihist+1);
+        h1_lisafast_slowToT_LaBr[ihist] = MakeTH1(dir_lisafast_slowToT_LaBr, "F", Form("h1_lisafast_slowToT_LaBr_%d",ihist), Form("LisaFast slow ToT detector %d",ihist),slowToT_bins,slowToT_min,slowToT_max, "ToT [ns]", kSpring, kBlue+2);
         h1_lisafast_slowToT_LaBr[ihist]->Draw();
     }
-    c_lisafast_LaBr_slowToT->cd(0);
-    dir_lisafast_LaBr_slowToT->Append(c_lisafast_LaBr_slowToT);
+    c_lisafast_slowToT_LaBr->cd(0);
+    dir_lisafast_slowToT_LaBr->Append(c_lisafast_slowToT_LaBr);
 
     //fast ToT
     c_lisafast_LaBr_fastToT  = new TCanvas("c_lisafast_LaBr_fastToT","Fast ToT LisaFast spectra",650,350);

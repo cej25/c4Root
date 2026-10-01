@@ -107,25 +107,25 @@ class LisaFastOnlineSpectra : public FairTask
 
         // Canvas
         // LaBr
-        TCanvas* c_lisafast_LaBr_slowToT;
-        TCanvas* c_lisafast_LaBr_fastToT;
-        TCanvas* c_lisafast_LaBr_fast_v_slow;
+        TCanvas* c_lisafast_slowToT_LaBr;
+        TCanvas* c_lisafast_fastToT_LaBr;
+        TCanvas* c_lisafast_fast_v_slow_LaBr;
         // TCanvas* c_lisafast_LaBr_time_spectra;
-        TCanvas* c_lisafast_LaBr_time_spectra_divided;
-        TCanvas* c_lisafast_LaBr_energy;
-        TCanvas* c_lisafast_LaBr_energy_uncal;
-        TCanvas* c_lisafast_LaBr_energy_vs_detid;
-        TCanvas* c_lisafast_LaBr_hitpatterns;
-        TCanvas* c_lisafast_LaBr_time_differences;
-        TCanvas* c_lisafast_LaBr_time_differences_vs_energy;
+        TCanvas* c_lisafast_time_spectra_divided_LaBr;
+        TCanvas* c_lisafast_energy_LaBr;
+        TCanvas* c_lisafast_energy_uncal_LaBr;
+        TCanvas* c_lisafast_energy_vs_detid_LaBr;
+        TCanvas* c_lisafast_hitpatterns_LaBr;
+        TCanvas* c_lisafast_time_differences_LaBr;
+        TCanvas* c_lisafast_time_differences_vs_energy_LaBr;
 
         // Diamond
-        TCanvas* c_lisafast_Diamond_slowToT;
-        TCanvas* c_lisafast_Diamond_fastToT;
-        TCanvas* c_lisafast_Diamond_fast_v_slow;
-        TCanvas* c_lisafast_Diamond_time_spectra;
-        TCanvas* c_lisafast_Diamond_energy;
-        TCanvas* c_lisafast_Diamond_hitpatterns;
+        TCanvas* c_lisafast_slowToT_Diamond;
+        TCanvas* c_lisafast_fastToT_Diamond;
+        TCanvas* c_lisafast_fast_v_slow_Diamond;
+        TCanvas* c_lisafast_time_spectra_Diamond;
+        TCanvas* c_lisafast_energy_Diamond;
+        TCanvas* c_lisafast_hitpatterns_Diamond;
 
         // dt LaBr-Diamond
         TCanvas* c_dt_LaBr_vs_Diamond;
@@ -149,23 +149,23 @@ class LisaFastOnlineSpectra : public FairTask
 
         // LaBr
         TDirectory* dir_lisafast_LaBr;
-        TDirectory* dir_lisafast_LaBr_slowToT;
-        TDirectory* dir_lisafast_LaBr_fastToT;
-        TDirectory* dir_lisafast_LaBr_fast_v_slow;
-        TDirectory* dir_lisafast_LaBr_hitpattern;
-        TDirectory* dir_lisafast_LaBr_energy_spectra;
-        TDirectory* dir_lisafast_LaBr_time_spectra;
-        std::vector<TDirectory*> dir_lisafast_LaBr_time_differences;
+        TDirectory* dir_lisafast_slowToT_LaBr;
+        TDirectory* dir_lisafast_fastToT_LaBr;
+        TDirectory* dir_lisafast_fast_v_slow_LaBr;
+        TDirectory* dir_lisafast_hitpattern_LaBr;
+        TDirectory* dir_lisafast_energy_spectra_LaBr;
+        TDirectory* dir_lisafast_time_spectra_LaBr;
+        std::vector<TDirectory*> dir_lisafast_time_differences_LaBr;
 
         // Diamond
         TDirectory* dir_lisafast_Diamond;
-        TDirectory* dir_lisafast_Diamond_slowToT;
-        TDirectory* dir_lisafast_Diamond_fastToT;
-        TDirectory* dir_lisafast_Diamond_fast_v_slow;
-        TDirectory* dir_lisafast_Diamond_hitpattern;
-        TDirectory* dir_lisafast_Diamond_energy_spectra;
-        TDirectory* dir_lisafast_Diamond_time_spectra;
-        std::vector<TDirectory*> dir_lisafast_Diamond_time_differences;
+        TDirectory* dir_lisafast_slowToT_Diamond;
+        TDirectory* dir_lisafast_fastToT_Diamond;
+        TDirectory* dir_lisafast_fast_v_slow_Diamond;
+        TDirectory* dir_lisafast_hitpattern_Diamond;
+        TDirectory* dir_lisafast_energy_spectra_Diamond;
+        TDirectory* dir_lisafast_time_spectra_Diamond;
+        std::vector<TDirectory*> dir_lisafast_time_differences_Diamond;
 
         // LaBr-Diamond time differences
         TDirectory* dir_lisafast_dt_LaBr_Diamond;
