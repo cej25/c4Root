@@ -109,9 +109,14 @@ class LisaFastOnlineSpectra : public FairTask
         TCanvas* c_lisafast_LaBr_slowToT;
         TCanvas* c_lisafast_LaBr_fastToT;
         TCanvas* c_lisafast_LaBr_fast_v_slow;
-        TCanvas* c_lisafast_LaBr_time_spectra;
+        // TCanvas* c_lisafast_LaBr_time_spectra;
+        TCanvas* c_lisafast_LaBr_time_spectra_divided;
         TCanvas* c_lisafast_LaBr_energy;
+        TCanvas* c_lisafast_LaBr_energy_uncal;
+        TCanvas* c_lisafast_LaBr_energy_vs_detid;
         TCanvas* c_lisafast_LaBr_hitpatterns;
+        TCanvas* c_lisafast_LaBr_time_differences;
+        TCanvas* c_lisafast_LaBr_time_differences_vs_energy;
 
         // Diamond
         TCanvas* c_lisafast_Diamond_slowToT;
@@ -149,6 +154,7 @@ class LisaFastOnlineSpectra : public FairTask
         TDirectory* dir_lisafast_LaBr_hitpattern;
         TDirectory* dir_lisafast_LaBr_energy_spectra;
         TDirectory* dir_lisafast_LaBr_time_spectra;
+        std::vector<TDirectory*> dir_lisafast_LaBr_time_differences;
 
         // Diamond
         TDirectory* dir_lisafast_Diamond;
@@ -158,6 +164,7 @@ class LisaFastOnlineSpectra : public FairTask
         TDirectory* dir_lisafast_Diamond_hitpattern;
         TDirectory* dir_lisafast_Diamond_energy_spectra;
         TDirectory* dir_lisafast_Diamond_time_spectra;
+        std::vector<TDirectory*> dir_lisafast_Diamond_time_differences;
 
         // LaBr-Diamond time differences
         TDirectory* dir_lisafast_dt_LaBr_Diamond;
@@ -173,22 +180,25 @@ class LisaFastOnlineSpectra : public FairTask
         //int layer_number;
         //int det_LaBr_number;
 
-        //std::vector<int> dt_reference_detectors = {};
-        //std::vector<std::pair<double,double>> dt_reference_detectors_energy_gates = {};
-        //int number_reference_detectors = 0;
+        std::vector<int> dt_reference_detectors = {};
+        std::vector<std::pair<double,double>> dt_reference_detectors_energy_gates = {};
+        int number_reference_detectors = 0;
         
         // Histograms 
-        std::map<int, TH1*> h1_lisafast_slowToT_LaBr;
-        std::map<int, TH1*> h1_lisafast_fastToT_LaBr;
-        std::map<int, TH1*> h1_lisafast_energy_LaBr;
-        std::map<int, TH2*> h2_lisafast_fast_v_slow_LaBr;
-        std::map<int, TH1*> h1_lisafast_abs_time_LaBr;
+        std::vector<TH1*> h1_lisafast_slowToT_LaBr;
+        std::vector<TH1*> h1_lisafast_fastToT_LaBr;
+        std::vector<TH1*> h1_lisafast_energy_LaBr;
+        std::vector<TH2*> h2_lisafast_fast_v_slow_LaBr;
+        std::vector<TH1*> h1_lisafast_abs_time_LaBr;
+        std::vector<std::vector<TH1*>> h1_lisafast_time_differences_LaBr;
+        std::vector<std::vector<TH2*>> h2_lisafast_time_differences_vs_energy_LaBr;
 
-        std::map<std::tuple<int,int,int>, TH1*> h1_lisafast_slowToT_Diamond;
-        std::map<std::tuple<int,int,int>, TH1*> h1_lisafast_fastToT_Diamond;
-        std::map<std::tuple<int,int,int>, TH1*> h1_lisafast_energy_Diamond;
-        std::map<std::tuple<int,int,int>, TH2*> h2_lisafast_fast_v_slow_Diamond;
-        std::map<std::tuple<int,int,int>, TH1*> h1_lisafast_abs_time_Diamond;
+
+        std::vector<std::vector<std::vector<TH1*>>> h1_lisafast_slowToT_Diamond;
+        std::vector<std::vector<std::vector<TH1*>>> h1_lisafast_fastToT_Diamond;
+        std::vector<std::vector<std::vector<TH1*>>> h1_lisafast_energy_Diamond;
+        std::vector<std::vector<std::vector<TH2*>>> h2_lisafast_fast_v_slow_Diamond;
+        std::vector<std::vector<std::vector<TH1*>>> h1_lisafast_abs_time_Diamond;
 
 
         TH1* h1_lisafast_hitpattern_slow_LaBr;
@@ -197,7 +207,7 @@ class LisaFastOnlineSpectra : public FairTask
         TH1* h1_lisafast_hitpattern_slow_Diamond;
         TH1* h1_lisafast_hitpattern_fast_Diamond;        
 
-        TH1 * h1_lisafast_multiplicity;
+        TH1* h1_lisafast_multiplicity;
 
         TH2* h2_lisafast_energy_vs_detid_LaBr;
         TH2* h2_lisafast_energy_uncal_vs_detid_LaBr;  

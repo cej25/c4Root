@@ -137,6 +137,10 @@ class LisaFastReader : public c4Reader
         uint32_t accepted_lead_coarse_T = 0;
         double accepted_lead_fine_T = 0;
 
+        double real_time = 0;
+        double previous_real_time = 0;
+        double run_time = 0;
+
 
     public:
         ClassDefOverride(LisaFastReader, 0);

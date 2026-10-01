@@ -25,6 +25,7 @@ LisaFastData::LisaFastData()
     faccepted_lead_epoch_counter(0),
     faccepted_lead_coarse_T(0),
     faccepted_lead_fine_T(0),
+    frun_time(0),
     flead_epoch_counter(0),
     flead_coarse_T(0),
     flead_fine_T(0),
@@ -45,6 +46,7 @@ LisaFastData::LisaFastData(
         uint32_t accepted_lead_epoch_counter,
         uint32_t accepted_lead_coarse_T,
         double accepted_lead_fine_T,
+        double run_time,
 
         uint32_t lead_epoch_counter,
         uint32_t lead_coarse_T,
@@ -63,6 +65,7 @@ LisaFastData::LisaFastData(
     faccepted_lead_epoch_counter(accepted_lead_epoch_counter),
     faccepted_lead_coarse_T(accepted_lead_coarse_T),
     faccepted_lead_fine_T(accepted_lead_fine_T),
+    frun_time(run_time),
     flead_epoch_counter(lead_epoch_counter),
     flead_coarse_T(lead_coarse_T),
     flead_fine_T(lead_fine_T),

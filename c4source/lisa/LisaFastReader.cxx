@@ -420,6 +420,14 @@ Bool_t LisaFastReader::Read() //do fine time here:
 
             uint32_t coarse_T = fData->lisafast_tamex[it_board_number].time_coarsev[it_hits] & 0x7FF;
             double fine_T = GetFineTime(fData->lisafast_tamex[it_board_number].time_finev[it_hits],it_board_number,channelid);
+
+            real_time = ((double)previous_epoch_word)*10.24e3 + ((double)coarse_T)*5.0 - (double)fine_T; // round it off to ns resolution
+            if (previous_real_time > 0) run_time = run_time + real_time - previous_real_time;
+            // find some way to deal with epoch resetting, need to know what the number is tho
+            // store run time in tree
+            // use to build vector of events that lasts for some window and deletes the oldest events.
+
+
             //c4LOG(info,"before channelid=0");
             if (channelid == 0) 
             {
@@ -473,6 +481,7 @@ Bool_t LisaFastReader::Read() //do fine time here:
                     accepted_lead_epoch_counter,
                     accepted_lead_coarse_T,
                     accepted_lead_fine_T,
+                    run_time,
 
                     last_tdc_hit.lead_epoch_counter,
                     last_tdc_hit.lead_coarse_T,
@@ -485,8 +494,12 @@ Bool_t LisaFastReader::Read() //do fine time here:
                     //fData->lisafast_ts_subsystem_id,
                     //wr_t //+ 0*( (((int64_t)previous_epoch_word)*10.24e3 + ((int64_t)coarse_T)*5.0 - (int64_t)fine_T) - accepted_trigger_time) // corrected by the time difference to the acc trigger time
                 );
+               
+                previous_real_time = real_time;
+                // c4LOG(info, "accepted trigger time: " << accepted_trigger_time);
+                // c4LOG(info, "le = " << last_tdc_hit.lead_epoch_counter << ", lc = " << last_tdc_hit.lead_coarse_T << ", lf = " << last_tdc_hit.lead_fine_T << ", te = " << previous_epoch_word << ", tc = " << coarse_T << ", tf = " << fine_T);
 
-                
+                c4LOG(info, "run time: " << run_time << " ns");
                 //reset:
 
                 last_tdc_hit.hit=false;

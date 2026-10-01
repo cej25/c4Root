@@ -18,6 +18,7 @@ class LisaFastData : public TObject
         uint32_t accepted_lead_epoch_counter,
         uint32_t accepted_lead_coarse_T,
         double accepted_lead_fine_T,
+        double run_time,
         
         uint32_t lead_epoch_counter,
         uint32_t lead_coarse_T,
@@ -40,6 +41,7 @@ class LisaFastData : public TObject
         inline const uint32_t Get_accepted_lead_epoch_counter() const {return faccepted_lead_epoch_counter; }
         inline const uint32_t Get_accepted_lead_coarse_T() const {return faccepted_lead_coarse_T; }
         inline const double Get_accepted_lead_fine_T() const {return faccepted_lead_fine_T; }
+        inline const double Get_run_time() const {return frun_time; }
 
 
         inline const uint32_t Get_lead_epoch_counter() const {return flead_epoch_counter; }
@@ -64,6 +66,7 @@ class LisaFastData : public TObject
         void Set_accepted_lead_epoch_counter(uint32_t v){faccepted_lead_epoch_counter = v;}
         void Set_accepted_lead_coarse_T(uint32_t v){faccepted_lead_coarse_T = v;}
         void Set_accepted_lead_fine_T(double v){faccepted_lead_fine_T = v;}
+        void Set_run_time(double v){frun_time = v;}
         void Set_lead_epoch_counter(uint32_t v){flead_epoch_counter = v;}
         void Set_lead_coarse_T(uint32_t v){flead_coarse_T = v;}
         void Set_lead_fine_T(double v){flead_fine_T = v;}
@@ -83,7 +86,8 @@ class LisaFastData : public TObject
         uint32_t faccepted_lead_epoch_counter;
         uint32_t faccepted_lead_coarse_T;
         double faccepted_lead_fine_T;
-    
+            
+        double frun_time;
 
         uint32_t flead_epoch_counter;
         uint32_t flead_coarse_T;
