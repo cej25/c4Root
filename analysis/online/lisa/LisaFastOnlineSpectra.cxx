@@ -490,7 +490,7 @@ void LisaFastOnlineSpectra::Exec(Option_t* option)
                                 h2_lisafast_deltaT_vs_energy_LaBr[detector_id1-1]->Fill(energy1,dt);
                             }
                         }
-                        c4LOG(info, "Slow down");
+                        //c4LOG(info, "Slow down");
                     }
 
                 }
@@ -505,7 +505,7 @@ void LisaFastOnlineSpectra::Exec(Option_t* option)
                 if ((run_time - hit_coin->Get_run_time()) > coin_window_ns)
                 {
                     hit_coin = coin_hits.erase(hit_coin);
-                    c4LOG(info, "Slow down");
+                    //c4LOG(info, "Slow down");
 
                 } 
                 else hit_coin++;

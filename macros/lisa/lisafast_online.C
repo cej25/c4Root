@@ -47,12 +47,12 @@ void lisafast_online()
 
     // ::: ONLINE READING
     //
-    //TString filename = "stream://134.95.192.83:6002"; //new ip address
+    TString filename = "stream://134.95.192.83:6002"; //new ip address
     //TString filename = "stream://134.95.192.248:6002";
 
     // ::: OFFLINE READING - For testing
-    TString inputpath = "/home/lisa/data/lmd/"; 
-    TString filename = inputpath + "tamex_0021_0001.lmd";
+    //TString inputpath = "/home/lisa/data/lmd/"; 
+    //TString filename = inputpath + "tamex_0021_0001.lmd";
 
     // ::: OUTPUT - does not write a tree if it is not set later
     TString outputpath = "/home/lisa/data/"; //testing
@@ -132,7 +132,7 @@ void lisafast_online()
         LisaFastOnlineSpectra* onlinelisafast = new LisaFastOnlineSpectra();
         
         onlinelisafast->AddRefLaBrForDeltaT(1);
-        onlinelisafast->AddDeltaTEnergyGate(490,480);
+        //onlinelisafast->AddDeltaTEnergyGate(490,480);
         //onlinelisafast->AddReferenceDetectorForTimeDifferencesWithEnergyGates(1,1730);
         //AddReferenceDetectorForTimeDifferencesWithEnergyGates (#reference detector, Energy of #N detector, Energy of Ref detector)
         //onlinelisafast->SetEnergyGateWidth(20);
@@ -140,7 +140,7 @@ void lisafast_online()
         run->AddTask(onlinelisafast);
     }
     
-    TLisaFastConfiguration::SetEnergyGateWidth(10);
+    //TLisaFastConfiguration::SetEnergyGateWidth(10);
     TLisaFastConfiguration::SetSlowToT_bin(2000);
     TLisaFastConfiguration::SetSlowToT_max(2000);
     TLisaFastConfiguration::SetSlowToT_min(0);
