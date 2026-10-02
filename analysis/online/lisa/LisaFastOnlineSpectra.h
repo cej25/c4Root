@@ -132,6 +132,8 @@ class LisaFastOnlineSpectra : public FairTask
         TCanvas* c_lisafast_hitpatterns_LaBr;
         TCanvas* c_lisafast_deltaT_LaBr;
         TCanvas* c_lisafast_deltaT_vs_energy_LaBr;
+        TCanvas* c_lisafast_deltaT_LaBr_gated;
+        TCanvas* c_lisafast_deltaT_vs_energy_LaBr_gated;
 
         // Diamond
         TCanvas* c_lisafast_slowToT_Diamond;
@@ -169,7 +171,9 @@ class LisaFastOnlineSpectra : public FairTask
         TDirectory* dir_lisafast_hitpattern_LaBr;
         TDirectory* dir_lisafast_energy_spectra_LaBr;
         TDirectory* dir_lisafast_time_spectra_LaBr;
-        TDirectory* dir_lisafast_deltaT_LaBr;
+
+        TDirectory* dir_lisafast_dT_event_coin_LaBr;
+        TDirectory* dir_lisafast_dT_event_Gates_LaBr;
         TDirectory* dir_lisafast_dTw_coin_LaBr;
 
         // Diamond
@@ -201,15 +205,21 @@ class LisaFastOnlineSpectra : public FairTask
         //int number_reference_detectors = 0;
         
         // Histograms 
+        // LaBr
         std::vector<TH1*> h1_lisafast_slowToT_LaBr;
         std::vector<TH1*> h1_lisafast_fastToT_LaBr;
         std::vector<TH1*> h1_lisafast_energy_LaBr;
         std::vector<TH2*> h2_lisafast_fast_v_slow_LaBr;
         std::vector<TH1*> h1_lisafast_abs_time_LaBr;
+
+        // Event based coincidence - no gated
         std::vector<TH1*> h1_lisafast_deltaT_LaBr;
         std::vector<TH2*> h2_lisafast_deltaT_vs_energy_LaBr;
+        // Event based coincidence - gate
+        std::vector<TH1*> h1_lisafast_deltaT_LaBr_gated;
+        std::vector<TH2*> h2_lisafast_deltaT_vs_energy_LaBr_gated;
 
-
+        // Diamonds
         std::vector<std::vector<std::vector<TH1*>>> h1_lisafast_slowToT_Diamond;
         std::vector<std::vector<std::vector<TH1*>>> h1_lisafast_fastToT_Diamond;
         std::vector<std::vector<std::vector<TH1*>>> h1_lisafast_energy_Diamond;
