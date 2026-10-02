@@ -154,8 +154,8 @@ void lisafast_online()
     TLisaFastConfiguration::SetEnergy_min(0);
 
     TLisaFastConfiguration::SetdT_bin(2000);
-    TLisaFastConfiguration::SetdT_max(20);
-    TLisaFastConfiguration::SetdT_min(-20);
+    TLisaFastConfiguration::SetdT_max(50);
+    TLisaFastConfiguration::SetdT_min(-50);
 
     // Initialise
     run->Init();

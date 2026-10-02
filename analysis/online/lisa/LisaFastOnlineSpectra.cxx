@@ -111,7 +111,7 @@ InitStatus LisaFastOnlineSpectra::Init()
     dir_lisafast_fast_v_slow_LaBr = dir_lisafast_LaBr->mkdir("Fast Vs. Slow");
     dir_lisafast_energy_spectra_LaBr = dir_lisafast_LaBr->mkdir("Energy Spectra");
     dir_lisafast_time_spectra_LaBr = dir_lisafast_LaBr->mkdir("Time Spectra");
-    dir_lisafast_long_coin_LaBr = dir_lisafast_LaBr->mkdir("Long Coincidences");
+    dir_lisafast_dTw_coin_LaBr = dir_lisafast_LaBr->mkdir("dT_window Coincidences");
 
     // ===:::::::: LABR :::::::::::===
     // ::: Slow ToT (i.e. raw energy):
@@ -153,8 +153,8 @@ InitStatus LisaFastOnlineSpectra::Init()
     c_lisafast_energy_LaBr->cd(0);
     dir_lisafast_energy_spectra_LaBr->Append(c_lisafast_energy_LaBr);
 
-    h2_E1_vs_E2_all_labr = MakeTH2(dir_lisafast_energy_spectra_LaBr, "F", "h2_E1_vs_E2_all_labr","LaBr all coincidence energy correlations",lisafast_configuration->energy_bin,lisafast_configuration->energy_min,lisafast_configuration->energy_max,lisafast_configuration->energy_bin,lisafast_configuration->energy_min,lisafast_configuration->energy_max, "Energy 1 [keV]", "Energy 2 [keV]");
-    //h3_E1_vs_E2_vs_dt_all_labr = MakeTH3(dir_lisafast_energy_spectra_LaBr, "F", "h3_E1_vs_E2_vs_dt_all_labr","LaBr all coincidence energy correlations vs. time difference",lisafast_configuration->energy_bin,lisafast_configuration->energy_min,lisafast_configuration->energy_max,lisafast_configuration->energy_bin,lisafast_configuration->energy_min,lisafast_configuration->energy_max, lisafast_configuration->dt_bin,lisafast_configuration->dt_min,lisafast_configuration->dt_max, "Energy 1 [keV]", "Energy 2 [keV]", "dT [ns]");
+    h2_E1_vs_E2_all_LaBr = MakeTH2(dir_lisafast_energy_spectra_LaBr, "F", "h2_E1_vs_E2_all_LaBr","LaBr all coincidence energy correlations",lisafast_configuration->energy_bin,lisafast_configuration->energy_min,lisafast_configuration->energy_max,lisafast_configuration->energy_bin,lisafast_configuration->energy_min,lisafast_configuration->energy_max, "Energy 1 [keV]", "Energy 2 [keV]");
+    //h3_E1_vs_E2_vs_dt_all_LaBr = MakeTH3(dir_lisafast_energy_spectra_LaBr, "F", "h3_E1_vs_E2_vs_dt_all_LaBr","LaBr all coincidence energy correlations vs. time difference",lisafast_configuration->energy_bin,lisafast_configuration->energy_min,lisafast_configuration->energy_max,lisafast_configuration->energy_bin,lisafast_configuration->energy_min,lisafast_configuration->energy_max, lisafast_configuration->dt_bin,lisafast_configuration->dt_min,lisafast_configuration->dt_max, "Energy 1 [keV]", "Energy 2 [keV]", "dT [ns]");
 
 
     // ::: Fast vs Slow:
@@ -163,7 +163,7 @@ InitStatus LisaFastOnlineSpectra::Init()
     h2_lisafast_fast_v_slow_LaBr.resize(number_labr_detectors);
     for (int ihist = 0; ihist < number_labr_detectors; ihist++){
         c_lisafast_fast_v_slow_LaBr->cd(ihist+1);
-        h2_lisafast_fast_v_slow_LaBr[ihist] = MakeTH2(dir_lisafast_fast_v_slow_LaBr, "F", Form("h2_lisafast_fast_v_slow_ToT_LaBr_%d",ihist+1),Form("LISA_FAST fast vs. slow detector %d",ihist+1),lisafast_configuration->fastToT_bin,lisafast_configuration->fastToT_min,lisafast_configuration->fastToT_max,lisafast_configuration->slowToT_bin,lisafast_configuration->slowToT_min,lisafast_configuration->slowToT_max, "Fast ToT [ns]", "Slow ToT [ns]");
+        h2_lisafast_fast_v_slow_LaBr[ihist] = MakeTH2(dir_lisafast_fast_v_slow_LaBr, "F", Form("h2_lisafast_fast_v_slow_ToT_LaBr_%d",ihist+1),Form("LISA_FAST fast vs. slow detector %d",ihist+1),lisafast_configuration->slowToT_bin,lisafast_configuration->slowToT_min,lisafast_configuration->slowToT_max, lisafast_configuration->fastToT_bin,lisafast_configuration->fastToT_min,lisafast_configuration->fastToT_max, "Slow ToT [ns]","Fast ToT [ns]");
         h2_lisafast_fast_v_slow_LaBr[ihist]->Draw();        
     }
     c_lisafast_fast_v_slow_LaBr->cd(0);
@@ -187,13 +187,13 @@ InitStatus LisaFastOnlineSpectra::Init()
     //c4LOG(info," number of LaBr : " << number_labr_detectors);
 
     c_lisafast_energy_vs_detid_LaBr = new TCanvas("c_lisafast_energy_vs_detid_LaBr","LaBr energy vs ID",650,350);
-    h2_lisafast_energy_vs_detid_LaBr = MakeTH2(dir_lisafast_energy_spectra_LaBr, "F", "h2_lisafast_energy_vs_detid_LaBr","LaBr energies vs ID",lisafast_configuration->energy_bin,lisafast_configuration->energy_min,lisafast_configuration->energy_max,number_labr_detectors,0.5,number_labr_detectors+0.5, "Energy [keV]", "LaBr");
+    h2_lisafast_energy_vs_detid_LaBr = MakeTH2(dir_lisafast_energy_spectra_LaBr, "F", "h2_lisafast_energy_vs_detid_LaBr","LaBr energies vs ID",0.5,number_labr_detectors+0.5, lisafast_configuration->energy_bin,lisafast_configuration->energy_min,lisafast_configuration->energy_max,number_labr_detectors, "LaBr", "Energy [keV]");
     h2_lisafast_energy_vs_detid_LaBr->Draw();
     dir_lisafast_energy_spectra_LaBr->Append(c_lisafast_energy_vs_detid_LaBr);
 
     // ::: 2D uncalibrated energy spectrum
     c_lisafast_energy_uncal_LaBr = new TCanvas("c_lisafast_energy_uncal_LaBr","LaBr raw energy vs ID",650,350);
-    h2_lisafast_energy_uncal_vs_detid_LaBr = MakeTH2(dir_lisafast_energy_spectra_LaBr, "F", "h2_lisafast_energy_uncal_vs_detid_LaBr","LaBr raw energy vs ID",lisafast_configuration->slowToT_bin,lisafast_configuration->slowToT_min,lisafast_configuration->slowToT_max,number_labr_detectors,0.5,number_labr_detectors+0.5, "Energy [a.u.]", "LaBr");
+    h2_lisafast_energy_uncal_vs_detid_LaBr = MakeTH2(dir_lisafast_energy_spectra_LaBr, "F", "h2_lisafast_energy_uncal_vs_detid_LaBr","LaBr raw energy vs ID",0.5,number_labr_detectors+0.5, lisafast_configuration->slowToT_bin,lisafast_configuration->slowToT_min,lisafast_configuration->slowToT_max,number_labr_detectors, "LaBr","Energy [a.u.]");
     h2_lisafast_energy_uncal_vs_detid_LaBr->Draw();
     dir_lisafast_energy_spectra_LaBr->Append(c_lisafast_energy_uncal_LaBr);
 
@@ -243,10 +243,10 @@ InitStatus LisaFastOnlineSpectra::Init()
     c_lisafast_deltaT_LaBr =
         new TCanvas(
             Form(
-                "c_lisafast_deltaT_ref_det%d_energy_gate_%d_%d_LaBr",
-                dt_reference_labr,
+                "c_lisafast_deltaT_energy_gate_%d_%d_ref_det%d_LaBr",
                 (int)dt_reference_detectors_energy_gates.first,
-                (int)dt_reference_detectors_energy_gates.second
+                (int)dt_reference_detectors_energy_gates.second,
+                dt_reference_labr
             ),
             "LaBr relative time differences",650,350);
 
@@ -262,14 +262,14 @@ InitStatus LisaFastOnlineSpectra::Init()
                 dir_lisafast_deltaT_LaBr,
                 "F",
                 Form(
-                    "h1_lisafast_ref_det_%d_to_det_%d_energy_gate_%d_%d_LaBr",
+                    "h1_lisafast_dT_%d_to_%d_energy_gate_%d_%d(ref)_LaBr",
                     detid_idx + 1,
                     dt_reference_labr,
                     (int)dt_reference_detectors_energy_gates.first,
                     (int)dt_reference_detectors_energy_gates.second
                 ),
                 Form(
-                    "LaBr dT t(%d) - t(%d) gated %d and %d",
+                    "LaBr dT t(%d) - t(%d) gated %d and %d(ref)",
                     detid_idx + 1,
                     dt_reference_labr,
                     (int)dt_reference_detectors_energy_gates.first,
@@ -291,10 +291,10 @@ InitStatus LisaFastOnlineSpectra::Init()
     c_lisafast_deltaT_vs_energy_LaBr =
         new TCanvas(
             Form(
-                "c_lisafast_deltaT_ref_det%d_vs_en_energy_gate_%d_%d_LaBr",
-                dt_reference_labr,
+                "c_lisafast_deltaT_vs_en_energy_gate_%d_%d_ref_det%d_LaBr",
                 (int)dt_reference_detectors_energy_gates.first,
-                (int)dt_reference_detectors_energy_gates.second
+                (int)dt_reference_detectors_energy_gates.second,
+                dt_reference_labr,
             ),
             "LaBr relative time differences vs energy",650,350);
 
@@ -310,7 +310,7 @@ InitStatus LisaFastOnlineSpectra::Init()
                 dir_lisafast_deltaT_LaBr,
                 "F",
                 Form(
-                    "h2_lisafast_deltaT_ref_det_%d_to_det_%d_vs_en_energy_gate_%d_%d_LaBr",
+                    "h2_lisafast_deltaT_det_%d_to_refdet_%d_vs_en_energy_gate_%d_%d_LaBr",
                     detid_idx + 1,
                     dt_reference_labr,
                     (int)dt_reference_detectors_energy_gates.first,
@@ -343,12 +343,12 @@ InitStatus LisaFastOnlineSpectra::Init()
         h2_lisafast_deltaT_vs_energy_LaBr[detid_idx]->Draw();
     }
 
-    h1_lisafast_dt_long_coin_labr = MakeTH1(dir_lisafast_long_coin_LaBr, "F", "h1_lisafast_dt_long_coin_labr","LaBr long coincidence time differences",lisafast_configuration->dt_bin,lisafast_configuration->dt_min,lisafast_configuration->dt_max, "dT [ns]", kMagenta,kBlue + 2);
-    h2_E1_vs_E2_long_coin_all_labr = MakeTH2(dir_lisafast_long_coin_LaBr, "F", "h2_E1_vs_E2_long_coin_all_labr","LaBr long coincidence energy correlations",lisafast_configuration->energy_bin,lisafast_configuration->energy_min,lisafast_configuration->energy_max,lisafast_configuration->energy_bin,lisafast_configuration->energy_min,lisafast_configuration->energy_max, "Energy 1 [keV]", "Energy 2 [keV]");
-
     c_lisafast_deltaT_vs_energy_LaBr->cd(0);
-
     dir_lisafast_deltaT_LaBr->Append(c_lisafast_deltaT_vs_energy_LaBr);
+
+    h1_lisafast_dTw_coin_LaBr = MakeTH1(dir_lisafast_dTw_coin_LaBr, "F", "h1_lisafast_dTw_coin_labr","LaBr dTwindow coincidence",lisafast_configuration->dt_bin,lisafast_configuration->dt_min,lisafast_configuration->dt_max, "dT [ns]", kMagenta,kBlue + 2);
+    h2_E1_vs_E2_dTw_coin_all_LaBr = MakeTH2(dir_lisafast_dTw_coin_LaBr, "F", "h2_E1_vs_E2_dTw_coin_all_labr","LaBr dTWindow coincidence energy",lisafast_configuration->energy_bin,lisafast_configuration->energy_min,lisafast_configuration->energy_max,lisafast_configuration->energy_bin,lisafast_configuration->energy_min,lisafast_configuration->energy_max, "Energy 1 [keV]", "Energy 2 [keV]");
+
 
     dir_lisafast->cd();
 
@@ -400,7 +400,7 @@ void LisaFastOnlineSpectra::Exec(Option_t* option)
             // ::: Slow/Fast Time
             h1_lisafast_slowToT_LaBr[detector_id1-1]->Fill(slow_ToT1); // all these were indexed by detector_index1, some horrible logic thing may need fixing down the road
             h1_lisafast_fastToT_LaBr[detector_id1-1]->Fill(fast_ToT1);
-            h2_lisafast_fast_v_slow_LaBr[detector_id1-1]->Fill(fast_ToT1, slow_ToT1);        
+            h2_lisafast_fast_v_slow_LaBr[detector_id1-1]->Fill(slow_ToT1,fast_ToT1);        
     
             // ::: Abs time
             h1_lisafast_abs_time_LaBr[detector_id1-1]->Fill(fast_lead_epoch+fast_lead1);
@@ -409,8 +409,8 @@ void LisaFastOnlineSpectra::Exec(Option_t* option)
             h1_lisafast_energy_LaBr[detector_id1-1]->Fill(energy1);
 
             //c4LOG(info," detector_id1 = " << detector_id1);
-            h2_lisafast_energy_vs_detid_LaBr->Fill(energy1, detector_id1-0.5);
-            h2_lisafast_energy_uncal_vs_detid_LaBr->Fill(slow_ToT1, detector_id1-0.5);
+            h2_lisafast_energy_vs_detid_LaBr->Fill(detector_id1-0.5, energy1);
+            h2_lisafast_energy_uncal_vs_detid_LaBr->Fill(detector_id1-0.5, slow_ToT1);
             
             // ::: Hit Pattern
             if (fast_ToT1 != 0 ) h1_lisafast_hitpattern_fast_LaBr->Fill(detector_id1);
@@ -435,8 +435,8 @@ void LisaFastOnlineSpectra::Exec(Option_t* option)
 
                     double dt = fast_lead1 - fast_lead2;//+ (fast_lead_epoch - fast_lead_epoch2) - lisafast_configuration->GetTimeshiftCoefficient(detector_id2,detector_id1); 
 
-                    h2_E1_vs_E2_all_labr->Fill(energy1, energy2);
-                    //h3_E1_vs_E2_vs_dt_all_labr->Fill(energy1, energy2, dt);
+                    h2_E1_vs_E2_all_LaBr->Fill(energy1, energy2);
+                    //h3_E1_vs_E2_vs_dt_all_LaBr->Fill(energy1, energy2, dt);
 
                     if (dt_reference_labr > 0)
                     {
@@ -481,32 +481,88 @@ void LisaFastOnlineSpectra::Exec(Option_t* option)
             }
 
             // ::: Cross-event coincidences :::
-            // If the dT between hits is smaller than given dT window, hits are in coincidence
+            // If the dT between hits is smaller than the given dT window,
+            // AND one of the two detectors is the reference detector,
+            // the hits are considered to be in coincidence.
+            //
+            // Convention:
+            //     dt = t_other - t_reference
 
-            // erase hits outside dT window
-            for (auto hit_coin = coin_hits.begin(); hit_coin != coin_hits.end();)
+            for (auto hit_coin = coin_hits.begin(); hit_coin != coin_hits.end(); )
             {
+                // erase hits outside of dT window
                 if ((run_time - hit_coin->Get_run_time()) > coin_window_ns)
                 {
                     hit_coin = coin_hits.erase(hit_coin);
-                    //c4LOG(info, "Slow down");
+                    continue;
+                }
 
-                } 
-                else hit_coin++;
+                int detector_id_coin = hit_coin->Get_detector_id();
+                double time_coin = hit_coin->Get_run_time();
+
+                bool current_is_reference =
+                    (detector_id1 == dt_reference_labr);
+
+                bool previous_is_reference =
+                    (detector_id_coin == dt_reference_labr);
+
+                // Only consider coincidences if ref detector is in
+                if (current_is_reference || previous_is_reference)
+                {
+                    double dt = 0.0;
+
+                    if (current_is_reference)
+                    {
+                        // Current hit is the reference
+                        // dt = t_other - t_reference
+                        dt = time_coin - run_time;
+                    }
+                    else
+                    {
+                        // Previous hit is the reference
+                        // dt = t_other - t_reference
+                        dt = run_time - time_coin;
+                    }
+
+                    if (std::abs(dt) < coin_window_ns)
+                    {
+                        h1_lisafast_dTw_coin_LaBr->Fill(dt);
+
+                        h2_E1_vs_E2_dTw_coin_all_LaBr->Fill(energy1,hit_coin->Get_energy());
+                    }
+                }
+
+                ++hit_coin;
             }
-            
-            for (auto hit_coin = coin_hits.begin(); hit_coin != coin_hits.end(); hit_coin++)
-            {
-                double dt = run_time - hit_coin->Get_run_time();
-                double energy2 = hit_coin->Get_energy();
-                int detector_id2 = hit_coin->Get_detector_id();
-                
-                h1_lisafast_dt_long_coin_labr->Fill(dt);
-                h2_E1_vs_E2_long_coin_all_labr->Fill(energy1, energy2);
 
-            }
-
+            // Store current hit for future cross-event coincidences
             coin_hits.push_back(*hit);
+
+            // Old definition without a reference detector for dT calculation
+            // // erase hits outside dT window
+            // for (auto hit_coin = coin_hits.begin(); hit_coin != coin_hits.end();)
+            // {
+            //     if ((run_time - hit_coin->Get_run_time()) > coin_window_ns)
+            //     {
+            //         hit_coin = coin_hits.erase(hit_coin);
+            //         //c4LOG(info, "Slow down");
+
+            //     } 
+            //     else hit_coin++;
+            // }
+            
+            // for (auto hit_coin = coin_hits.begin(); hit_coin != coin_hits.end(); hit_coin++)
+            // {
+            //     double dt = run_time - hit_coin->Get_run_time();
+            //     double energy2 = hit_coin->Get_energy();
+            //     int detector_id2 = hit_coin->Get_detector_id();
+                
+            //     h1_lisafast_dt_dTw_coin_LaBr->Fill(dt);
+            //     h2_E1_vs_E2_dTw_coin_all_LaBr->Fill(energy1, energy2);
+
+            // }
+
+            // coin_hits.push_back(*hit);
 
 
         }

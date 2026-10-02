@@ -52,7 +52,7 @@ class LisaFastOnlineSpectra : public FairTask
         //     return std::distance(detectors.begin(), std::find(detectors.begin(), detectors.end(), detector_id));
         // }
 
-        //std::vector<int> dt_reference_labr = {};
+        //std::vector<int> dt_reference_LaBr = {};
         //std::vector<std::tuple<int,int,int>> dt_reference_diamond = {};
 
 
@@ -170,7 +170,7 @@ class LisaFastOnlineSpectra : public FairTask
         TDirectory* dir_lisafast_energy_spectra_LaBr;
         TDirectory* dir_lisafast_time_spectra_LaBr;
         TDirectory* dir_lisafast_deltaT_LaBr;
-        TDirectory* dir_lisafast_long_coin_LaBr;
+        TDirectory* dir_lisafast_dTw_coin_LaBr;
 
         // Diamond
         TDirectory* dir_lisafast_Diamond;
@@ -216,11 +216,11 @@ class LisaFastOnlineSpectra : public FairTask
         std::vector<std::vector<std::vector<TH2*>>> h2_lisafast_fast_v_slow_Diamond;
         std::vector<std::vector<std::vector<TH1*>>> h1_lisafast_abs_time_Diamond;
 
-        TH1* h1_lisafast_dt_long_coin_labr;
-        TH2* h2_E1_vs_E2_long_coin_all_labr;
-        TH2* h2_E1_vs_E2_all_labr;
+        TH1* h1_lisafast_dTw_coin_LaBr;
+        TH2* h2_E1_vs_E2_dTw_coin_all_LaBr;
+        TH2* h2_E1_vs_E2_all_LaBr;
 
-        //TH3* h3_E1_vs_E2_vs_dt_all_labr;
+        //TH3* h3_E1_vs_E2_vs_dt_all_LaBr;
 
         TH1* h1_lisafast_hitpattern_slow_LaBr;
         TH1* h1_lisafast_hitpattern_fast_LaBr;
