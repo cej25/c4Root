@@ -30,6 +30,7 @@
 
 #include "TClonesArray.h"
 #include <chrono>
+#include <algorithm>
 
 #include "LisaFastRaw2Cal.h"
 
@@ -241,7 +242,11 @@ Writes the times in ns!
 void LisaFastRaw2Cal::Exec(Option_t* option)
 {
     auto start = std::chrono::high_resolution_clock::now();
-    
+
+    std::vector<LisaFastCalData> calibratedHits;
+
+    if (funcal_data) calibratedHits.reserve(funcal_data->GetEntriesFast() / 2);
+
     if (funcal_data && funcal_data->GetEntriesFast() > 1)
     { // only get events with two hits or more
         Int_t event_multiplicity = funcal_data->GetEntriesFast();
@@ -484,10 +489,37 @@ void LisaFastRaw2Cal::Exec(Option_t* option)
 
             //c4LOG(info,Form("board = %i, ch = %i, det = %i",funcal_hit->Get_board_id(),(int)((funcal_hit->Get_ch_ID()+1)/2), detector_id));
             
-            new ((*fcal_data)[fcal_data->GetEntriesFast()]) LisaFastCalData(
+            // new ((*fcal_data)[fcal_data->GetEntriesFast()]) LisaFastCalData(
+            //     funcal_hit->Get_trigger(),
+            //     funcal_hit->Get_board_id(),
+            //     (int)((funcal_hit->Get_ch_ID()+1)/2),
+            //     funcal_hit->Get_run_time(),
+            //     detector_type,
+            //     detector_id,
+            //     layer,
+            //     x,
+            //     y,
+            //     slow_lead_epoch,
+            //     slow_lead_time,
+            //     slow_trail_epoch,
+            //     slow_trail_time,
+            //     fast_lead_epoch,
+            //     fast_lead_time,
+            //     fast_trail_epoch,
+            //     fast_trail_time,
+            //     fast_ToT,
+            //     slow_ToT,
+            //     energy
+                
+            //     //funcal_hit->Get_wr_subsystem_id(),
+            //     //funcal_hit->Get_wr_t(),
+            //     //absolute_event_time
+            //     );
+
+            calibratedHits.emplace_back(
                 funcal_hit->Get_trigger(),
                 funcal_hit->Get_board_id(),
-                (int)((funcal_hit->Get_ch_ID()+1)/2),
+                (int)((funcal_hit->Get_ch_ID() + 1) / 2),
                 funcal_hit->Get_run_time(),
                 detector_type,
                 detector_id,
@@ -505,17 +537,26 @@ void LisaFastRaw2Cal::Exec(Option_t* option)
                 fast_ToT,
                 slow_ToT,
                 energy
-                
-                //funcal_hit->Get_wr_subsystem_id(),
-                //funcal_hit->Get_wr_t(),
-                //absolute_event_time
-                );
+            );
 
             fNEvents++;
             //ihit++; //increment it by one extra.
             }
         }
         fExecs++; // count once every time we do something with lisafast
+    }
+
+    std::sort(calibratedHits.begin(), calibratedHits.end(), 
+        [](const LisaFastCalData& a, const LisaFastCalData& b)
+        {
+            return a.Get_run_time() < b.Get_run_time();
+        }
+    );
+
+    for (const auto& hit : calibratedHits)
+    {
+        new ((*fcal_data)[fcal_data->GetEntriesFast()])
+            LisaFastCalData(hit);
     }
     
     auto end = std::chrono::high_resolution_clock::now();

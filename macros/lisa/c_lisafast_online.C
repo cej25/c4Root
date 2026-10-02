@@ -52,7 +52,7 @@ void c_lisafast_online()
 
     // ::: OFFLINE READING - For testing
     TString inputpath = "/home/calum/Analysis/LISA/lmd/"; 
-    TString filename = inputpath + "tamex_0020_0001.lmd";
+    TString filename = inputpath + "tamex_0021_0001.lmd";
 
     // ::: OUTPUT - does not write a tree if it is not set later
     TString outputpath = "./"; //testing
@@ -135,13 +135,29 @@ void c_lisafast_online()
         //onlinelisafast->SetBinningEnergy(2000,0,2000);
 
         onlinelisafast->AddRefLaBrForDeltaT(1);
-        // onlinelisafast->AddDeltaTEnergyGate(460,460);
-        //onlinelisafast->AddDeltaTReferenceEnergyGate(740);
+        onlinelisafast->AddDeltaTEnergyGate(490,480);
+        // onlinelisafast->AddDeltaTReferenceEnergyGate(480);
         
         
         run->AddTask(onlinelisafast);
     }
     
+    TLisaFastConfiguration::SetEnergyGateWidth(10);
+    TLisaFastConfiguration::SetSlowToT_bin(2000);
+    TLisaFastConfiguration::SetSlowToT_max(2000);
+    TLisaFastConfiguration::SetSlowToT_min(0);
+
+    TLisaFastConfiguration::SetFastToT_bin(500);
+    TLisaFastConfiguration::SetFastToT_max(500);
+    TLisaFastConfiguration::SetFastToT_min(0);
+
+    TLisaFastConfiguration::SetEnergy_bin(2000);
+    TLisaFastConfiguration::SetEnergy_max(2000);
+    TLisaFastConfiguration::SetEnergy_min(0);
+
+    TLisaFastConfiguration::SetdT_bin(2000);
+    TLisaFastConfiguration::SetdT_max(1500);
+    TLisaFastConfiguration::SetdT_min(-1500);
 
 
     // Initialise

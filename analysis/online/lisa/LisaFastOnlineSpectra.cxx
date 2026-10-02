@@ -376,29 +376,13 @@ void LisaFastOnlineSpectra::Exec(Option_t* option)
 {   
     auto start = std::chrono::high_resolution_clock::now();
 
-    std::vector<LisaFastCalData*> sortedHits;
-    sortedHits.reserve(fHitLisaFast->GetEntriesFast());
-
-    for (int i = 0; i < fHitLisaFast->GetEntriesFast(); ++i)
-    {
-        auto* hit = static_cast<LisaFastCalData*>(fHitLisaFast->At(i));
-
-        if (hit) sortedHits.push_back(hit);
-    }
-
-    std::sort(sortedHits.begin(), sortedHits.end(),
-            [](const auto* a, const auto* b)
-            {
-                return a->Get_run_time() < b->Get_run_time();
-            });
-
-    if (sortedHits.size() > 0)
+    if (fHitLisaFast && fHitLisaFast->GetEntriesFast() > 0)
     {   
         event_multiplicity = 0;
-        Int_t nHits = sortedHits.size();
+        Int_t nHits = fHitLisaFast->GetEntriesFast();
         for (Int_t ihit = 0; ihit < nHits; ihit++)
         {   
-            LisaFastCalData* hit = (LisaFastCalData*)sortedHits.at(ihit);
+            LisaFastCalData* hit = (LisaFastCalData*)fHitLisaFast->At(ihit);
             if (!hit) continue;
 
             //c4LOG(info, "Slow down");
@@ -440,7 +424,7 @@ void LisaFastOnlineSpectra::Exec(Option_t* option)
                 for (Int_t ihit2 = 0; ihit2 < nHits; ihit2++){
                     if (ihit2 == ihit) {continue;}
 
-                    LisaFastCalData* hit2 = (LisaFastCalData*)sortedHits.at(ihit2); // I want this to be the reference detector for easier code:
+                    LisaFastCalData* hit2 = (LisaFastCalData*)fHitLisaFast->At(ihit2); // I want this to be the reference detector for easier code:
                     
                     int detector_id2 = hit2->Get_detector_id();
                     double slow_ToT2 = hit2->Get_slow_ToT();
