@@ -41,21 +41,6 @@ class LisaFastOnlineSpectra : public FairTask
 
         virtual void FinishTask();
 
-
-        // void SetDetectorsToPlot(std::vector<int> detectors_to_analyze){
-        //     detectors = detectors_to_analyze;
-        //     number_detectors = detectors.size();
-        // }
-
-        // int GetDetectorIndex(int detector_id){
-        //     //return the index of the detector id in the vector, to index the TH arrays / histograms
-        //     return std::distance(detectors.begin(), std::find(detectors.begin(), detectors.end(), detector_id));
-        // }
-
-        //std::vector<int> dt_reference_LaBr = {};
-        //std::vector<std::tuple<int,int,int>> dt_reference_diamond = {};
-
-
         void AddRefLaBrForDeltaT(int det)
         {
             dt_reference_labr = det;
@@ -68,37 +53,19 @@ class LisaFastOnlineSpectra : public FairTask
 
         void AddDeltaTEnergyGate(double energy_in_other, double energy_in_ref_det)
         {
-            dt_reference_detectors_energy_gates =
-                std::make_pair(energy_in_other, energy_in_ref_det);
+            dt_reference_detectors_energy_gates.emplace_back(
+                energy_in_other,
+                energy_in_ref_det
+            );
         }
 
         void AddDeltaTReferenceEnergyGate(double energy_in_ref_det)
         {
-            dt_reference_detectors_energy_gates =
-                std::make_pair(0.0, energy_in_ref_det);
+            dt_reference_detectors_energy_gates.emplace_back(
+                0.0,
+                energy_in_ref_det
+            );
         }
-        
-        // void AddRefLaBrForDeltaT(int det){
-            
-        //     dt_reference_detectors.emplace_back(det);
-        //     number_reference_detectors = dt_reference_detectors.size();
-        //     dt_reference_detectors_energy_gates.emplace_back(std::pair<double,double>(0.0, 0.0));
-        // }
-        
-        // void AddReferenceDetectorForTimeDifferencesWithEnergyGates(int detector_id, double energy_in_other, double energy_in_ref_det){
-        //     dt_reference_detectors.emplace_back(detector_id);
-        //     number_reference_detectors = dt_reference_detectors.size();
-        //     dt_reference_detectors_energy_gates.emplace_back(std::pair<double,double>(energy_in_other,energy_in_ref_det));
-        // }
-
-        // void AddReferenceDetectorForTimeDifferencesWithEnergyGates(int detector_id, double energy_in_ref_det){
-        //     dt_reference_detectors.emplace_back(detector_id);
-        //     number_reference_detectors = dt_reference_detectors.size();
-        //     dt_reference_detectors_energy_gates.emplace_back(std::pair<double,double>(0.0, energy_in_ref_det));
-        // }
-
-
-        
 
         virtual void Reset_Histo();
 
@@ -124,16 +91,20 @@ class LisaFastOnlineSpectra : public FairTask
         TCanvas* c_lisafast_slowToT_LaBr;
         TCanvas* c_lisafast_fastToT_LaBr;
         TCanvas* c_lisafast_fast_v_slow_LaBr;
-        // TCanvas* c_lisafast_LaBr_time_spectra;
         TCanvas* c_lisafast_time_spectra_divided_LaBr;
         TCanvas* c_lisafast_energy_LaBr;
         TCanvas* c_lisafast_energy_uncal_LaBr;
         TCanvas* c_lisafast_energy_vs_detid_LaBr;
         TCanvas* c_lisafast_hitpatterns_LaBr;
         TCanvas* c_lisafast_deltaT_LaBr;
+        TCanvas* c_lisafast_dTw_coin_LaBr;
         TCanvas* c_lisafast_deltaT_vs_energy_LaBr;
-        TCanvas* c_lisafast_deltaT_LaBr_gated;
-        TCanvas* c_lisafast_deltaT_vs_energy_LaBr_gated;
+        TCanvas* c_lisafast_dTw_vs_energy_coin_LaBr;
+
+        //TCanvas* c_lisafast_deltaT_LaBr_gated;
+        //TCanvas* c_lisafast_deltaT_vs_energy_LaBr_gated;
+        std::vector<TCanvas*> c_lisafast_deltaT_LaBr_gated;
+        std::vector<TCanvas*> c_lisafast_deltaT_vs_energy_LaBr_gated;
 
         // Diamond
         TCanvas* c_lisafast_slowToT_Diamond;
@@ -175,6 +146,7 @@ class LisaFastOnlineSpectra : public FairTask
         TDirectory* dir_lisafast_dT_event_coin_LaBr;
         TDirectory* dir_lisafast_dT_event_Gates_LaBr;
         TDirectory* dir_lisafast_dTw_coin_LaBr;
+        TDirectory* dir_lisafast_dT_window_Gates_LaBr;
 
         // Diamond
         TDirectory* dir_lisafast_Diamond;
@@ -192,17 +164,11 @@ class LisaFastOnlineSpectra : public FairTask
         TDirectory* dir_dt_Diamond_vs_LaBr;
         TDirectory* dir_dt_reference_LaBr_vs_Diamond;
 
-        //std::vector<TDirectory*> dir_lisafast_time_differences = {};
         
         int number_labr_detectors = 0;
         int number_diamond_detectors = 0;
 
-        //int layer_number;
-        //int det_LaBr_number;
-
-        //std::vector<int> dt_reference_detectors = {};
-        std::pair<double, double> dt_reference_detectors_energy_gates = {0.0, 0.0};
-        //int number_reference_detectors = 0;
+        std::vector<std::pair<double, double>> dt_reference_detectors_energy_gates;
         
         // Histograms 
         // LaBr
@@ -212,13 +178,33 @@ class LisaFastOnlineSpectra : public FairTask
         std::vector<TH2*> h2_lisafast_fast_v_slow_LaBr;
         std::vector<TH1*> h1_lisafast_abs_time_LaBr;
 
+        TH1* h1_lisafast_hitpattern_slow_LaBr;
+        TH1* h1_lisafast_hitpattern_fast_LaBr;
+
+        TH2* h2_lisafast_energy_vs_detid_LaBr;
+        TH2* h2_lisafast_energy_uncal_vs_detid_LaBr; 
+
         // Event based coincidence - no gated
         std::vector<TH1*> h1_lisafast_deltaT_LaBr;
         std::vector<TH2*> h2_lisafast_deltaT_vs_energy_LaBr;
         // Event based coincidence - gate
-        std::vector<TH1*> h1_lisafast_deltaT_LaBr_gated;
-        std::vector<TH2*> h2_lisafast_deltaT_vs_energy_LaBr_gated;
+        std::vector<std::vector<TH1*>> h1_lisafast_deltaT_LaBr_gated;
+        std::vector<std::vector<TH2*>> h2_lisafast_deltaT_vs_energy_LaBr_gated;
 
+        // dT window based coincidence
+        std::vector<std::vector<TH1*>> h1_lisafast_dTw_LaBr_gated;
+        std::vector<std::vector<TH2*>> h2_lisafast_dTw_vs_energy_LaBr_gated;
+
+        std::vector<TCanvas*> c_lisafast_dTw_LaBr_gated;
+        std::vector<TCanvas*> c_lisafast_dTw_vs_energy_LaBr_gated;
+
+        TH1* h1_lisafast_dTw_coin_LaBr;
+        TH2* h2_lisafast_dTw_vs_energy_coin_LaBr;
+        TH2* h2_E1_vs_E2_dTw_coin_all_LaBr;
+
+        TH2* h2_E1_vs_E2_all_LaBr;
+
+        
         // Diamonds
         std::vector<std::vector<std::vector<TH1*>>> h1_lisafast_slowToT_Diamond;
         std::vector<std::vector<std::vector<TH1*>>> h1_lisafast_fastToT_Diamond;
@@ -226,22 +212,10 @@ class LisaFastOnlineSpectra : public FairTask
         std::vector<std::vector<std::vector<TH2*>>> h2_lisafast_fast_v_slow_Diamond;
         std::vector<std::vector<std::vector<TH1*>>> h1_lisafast_abs_time_Diamond;
 
-        TH1* h1_lisafast_dTw_coin_LaBr;
-        TH2* h2_E1_vs_E2_dTw_coin_all_LaBr;
-        TH2* h2_E1_vs_E2_all_LaBr;
-
-        //TH3* h3_E1_vs_E2_vs_dt_all_LaBr;
-
-        TH1* h1_lisafast_hitpattern_slow_LaBr;
-        TH1* h1_lisafast_hitpattern_fast_LaBr;
-
         TH1* h1_lisafast_hitpattern_slow_Diamond;
         TH1* h1_lisafast_hitpattern_fast_Diamond;        
 
-        TH1* h1_lisafast_multiplicity;
-
-        TH2* h2_lisafast_energy_vs_detid_LaBr;
-        TH2* h2_lisafast_energy_uncal_vs_detid_LaBr;  
+        TH1* h1_lisafast_multiplicity; 
         
         TH2* h2_lisafast_energy_vs_detid_Diamond;
         TH2* h2_lisafast_energy_uncal_vs_detid_Diamond;
@@ -259,28 +233,6 @@ class LisaFastOnlineSpectra : public FairTask
         // LaBr reference vs Diamond reference
         TH1* h1_dt_reference_LaBr_vs_Diamond;
         TH2* h2_dt_reference_LaBr_vs_Diamond_vs_energy;
-
-        //std::vector<std::vector<TH1*>> h1_lisafast_time_differences;
-        //std::vector<std::vector<TH2*>> h2_lisafast_time_differences_vs_energy;
-
-        //TH1** h1_lisafast_rates;
-        
-        // Binnings:  -- we can also add a way to change them!!
-        // int ffast_tot_nbins = 500;
-        // float ffast_tot_bin_low = 0;
-        // float ffast_tot_bin_high = 100; 
-
-        // // int fslow_tot_nbins = 500;
-        // // float fslow_tot_bin_low = 550;
-        // // float fslow_tot_bin_high = 750;
-
-        // // int fenergy_nbins = 500;
-        // // float fenergy_bin_low = 0;
-        // // float fenergy_bin_high = 1500;
-
-        // // int ftime_coincidence_nbins = 1000;
-        // // float ftime_coincidence_low = -10;
-        // // float ftime_coincidence_high = 10;
 
         double energygate_width = 20;
             

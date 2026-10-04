@@ -133,6 +133,8 @@ void lisafast_online()
         
         onlinelisafast->AddRefLaBrForDeltaT(1);
         onlinelisafast->AddDeltaTEnergyGate(490,480);
+        onlinelisafast->AddDeltaTEnergyGate(490,481);
+
 
         //onlinelisafast->AddReferenceDetectorForTimeDifferencesWithEnergyGates(1,1730);
         //AddReferenceDetectorForTimeDifferencesWithEnergyGates (#reference detector, Energy of #N detector, Energy of Ref detector)
