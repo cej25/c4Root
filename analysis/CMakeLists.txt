@@ -92,6 +92,7 @@ set(SRCS
 ./nearline/fimp/FimpNearlineSpectra.cxx
 ./nearline/bb7/BB7NearlineSpectra.cxx
 ./nearline/lisa/LisaNearlineSpectra.cxx
+./nearline/lisa/LisaFastNearlineSpectra.cxx
 ./nearline/mcp/H10MCPNearlineSpectra.cxx
 ./nearline/stefan/StefanNearlineSpectra.cxx
 

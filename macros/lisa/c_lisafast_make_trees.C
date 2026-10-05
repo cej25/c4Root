@@ -30,7 +30,6 @@ std::string readFileToString(const std::string& path)
     return buffer.str();
 }
 
-//void cologne_make_trees(int fileNumber)
 void c_lisafast_make_trees()
 {   
     const Int_t nev = -1; const Int_t fRunId = 1; const Int_t fExpId = 1;

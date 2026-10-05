@@ -2,46 +2,31 @@
 
 // Switch all tasks related to {subsystem} on (1)/off (0)
 #define LISA_ON 1
-        //LISA_ANA displays only energy and traces; LISA_CAL displays stats,energy,traces. Choose one.
-        //Note that if FRS 1, LISA_CAL is needed. 
-#define LISA_ANA 0
-#define LISA_CAL 1
-
-// If you want to have trace histos
-#define TRACE_ON 1
-
-#define WR_ENABLED 1
-#define WHITE_RABBIT_CORS 0 // does not work w/o aida currently
-
-//................................................
-
-// Definition of histo ranges for lisa and frs
-#define HISTO_FILE "../../config/lisaext/general/histo_config_3x3_Num9.C"
 
 extern "C"
 {
-    #include HISTO_FILE
+    //#include HISTO_FILE
 }
 
-extern std::vector<LisaGate*> lgs;
+//extern std::vector<LisaGate*> lgs;
 
 typedef struct EXT_STR_h101_t
 {   
     EXT_STR_h101_unpack_t eventheaders;
-    EXT_STR_h101_lisaext_onion_t lisa;
+    EXT_STR_h101_lisafast_onion_t lisafast;
 
 } EXT_STR_h101;
 
-void lisaext_histos()
+void lisafast_histos()
 {   
     const Int_t nev = -1; const Int_t fRunId = 1; const Int_t fExpId = 1;
     // ::: Experiment name
-    TString fExpName = "lisaext";
+    TString fExpName = "lisafast";
 
     // ::: Here you define commonly used path
     //TString c4Root_path = "/u/gandolfo/c4/c4Root";
-    TString c4Root_path = "/home/lisa/programs/c4/c4Root";
-    TString ucesb_path = c4Root_path + "/unpack/exps/" + fExpName + "/" + fExpName + " --debug --input-buffer=200Mi --event-sizes --allow-errors";
+    TString c4Root_path = "/home/lisa/programs/c4/fast_c4Root";
+    TString ucesb_path = c4Root_path + "/unpack/exps/" + fExpName + "/" + fExpName + " --debug --input-buffer=200Mi --event-sizes --allow-errors ";
     ucesb_path.ReplaceAll("//","/");
 
     std::string config_path = std::string(c4Root_path.Data()) + "/config/" + std::string(fExpName.Data());
@@ -61,16 +46,12 @@ void lisaext_histos()
     FairLogger::GetLogger()->SetColoredLog(true);
 
     // ::: P A T H   O F   F I L E  to read
-    TString inputpath = "/home/lisa/data/server/groups/wimmer/laboratory/trees/";
-
-    TString rootname = "run_0014_0001_tree.root";
+    TString inputpath = "/home/lisa/data/server1/groups/wimmer/laboratory/trees/";
+    TString rootname = "tamex_0030_0001_cal_tree.root";
     TString filename = inputpath + rootname;
 
     // ::: OUTPUT 
-    //TString outputpath = "/u/gandolfo/data/lustre/gamma/LISA/data/ext_daq_debnik/dev_test/"; 
-    //TString outputpath = "/u/gandolfo/data/lisaext/"; 
-    TString outputpath = "/home/lisa/data/server/groups/wimmer/laboratory/histos/"; 
-    //TString outputpath = "/home/lisa/data/"; 
+    TString outputpath = "/home/lisa/data/server1/groups/wimmer/laboratory/histos/"; 
 
     TString outputFilename = outputpath + TString(rootname).ReplaceAll("_tree.root", "_histo.root");
 
@@ -87,37 +68,58 @@ void lisaext_histos()
     TFile* file = TFile::Open(filename);
     TTree* eventTree = (TTree*)file->Get("evt"); 
     Int_t totEvt = eventTree->GetEntries();
-    histo_config(config_path);
+    //histo_config(config_path);
+
+    TLisaFastConfiguration::SetDetectorConfigurationFile(config_path + "/Lisa_Mapping_LaBr3.txt");
+
 
     // :::: ENABLE SYSTEMS  ::::::::::::::::::::::::::::::::::::::::
-    if(TRACE_ON)
-    {
-        TLisaConfiguration::SetTrace(1);
-    }else
-    {
-        TLisaConfiguration::SetTrace(0);
-    }
 
     if (LISA_ON)
     {
 
-        if(LISA_CAL)
-        {
-            LisaNearlineSpectra* nearlinelisa = new LisaNearlineSpectra(lgs);
-            run->AddTask(nearlinelisa);
-        }
+        LisaFastNearlineSpectra* nearlinelisafast = new LisaFastNearlineSpectra();
+        nearlinelisafast->AddRefLaBrForDeltaT(1);
+        nearlinelisafast->AddDeltaTEnergyGate(500,460); 
+
+        //nearlinelisafast->AddDeltaTEnergyGate(825,825); //1172 in det2, 1333 in ref det
+        //nearlinelisafast->AddDeltaTEnergyGate(890,775); //1333 in det2, 1172 in ref det
+
+        //nearlinelisafast->AddDeltaTReferenceEnergyGate(825); //gate in 1333 ref
+        //nearlinelisafast->AddDeltaTReferenceEnergyGate(775); //gate in 1172 ref
+
+
+        run->AddTask(nearlinelisafast);
 
     }
-    
-    //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-    TString histoConfigFile = HISTO_FILE;
 
-    TTree* metaTree = new TTree("info", "Histo info file");
-    metaTree->Branch("histo_config", &histoConfigFile);
-    metaTree->Fill();
+    TLisaFastConfiguration::SetSlowToT_bin(2000);
+    TLisaFastConfiguration::SetSlowToT_max(2000);
+    TLisaFastConfiguration::SetSlowToT_min(0);
+
+    TLisaFastConfiguration::SetFastToT_bin(500);
+    TLisaFastConfiguration::SetFastToT_max(500);
+    TLisaFastConfiguration::SetFastToT_min(0);
+
+    TLisaFastConfiguration::SetEnergy_bin(2000);
+    TLisaFastConfiguration::SetEnergy_max(2000);
+    TLisaFastConfiguration::SetEnergy_min(0);
+
+    TLisaFastConfiguration::SetdT_bin(2000);
+    TLisaFastConfiguration::SetdT_max(20);
+    TLisaFastConfiguration::SetdT_min(-20);
+
+    TLisaFastConfiguration::SetEnergyGateWidth(60);
+
+    //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+    //TString histoConfigFile = HISTO_FILE;
+
+    // TTree* metaTree = new TTree("info", "Histo info file");
+    // metaTree->Branch("histo_config", &histoConfigFile);
+    // metaTree->Fill();
     // Initialise
     run->Init();
-    metaTree->Write(); 
+    //metaTree->Write(); 
 
     // Run
     run->Run(0, totEvt); 

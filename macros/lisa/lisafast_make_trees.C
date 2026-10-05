@@ -30,7 +30,6 @@ std::string readFileToString(const std::string& path)
     return buffer.str();
 }
 
-//void cologne_make_trees(int fileNumber)
 void lisafast_make_trees()
 {   
     const Int_t nev = -1; const Int_t fRunId = 1; const Int_t fExpId = 1;
@@ -61,7 +60,7 @@ void lisafast_make_trees()
     
     // ::: FILE  PATH
     TString inputpath = "/home/lisa/data/server1/groups/wimmer/laboratory/lmd/";
-    TString lmdname = "tamex_0016_0001.lmd";
+    TString lmdname = "tamex_0030_0001.lmd";
     TString filename = inputpath + lmdname;
 
     //TString filename = Form(inputpath + "run_%04d_*.lmd", fileNumber);
@@ -70,7 +69,6 @@ void lisafast_make_trees()
     TString outputpath = "/home/lisa/data/server1/groups/wimmer/laboratory/trees/";
 
     TString outputFilename = outputpath + TString(lmdname).ReplaceAll(".lmd", "_cal_tree.root");
-
 
 
     // ::: Create run
@@ -109,10 +107,10 @@ void lisafast_make_trees()
         LisaFastReader* unpacklisafast = new LisaFastReader((EXT_STR_h101_lisafast_onion*)&ucesb_struct.lisafast, offsetof(EXT_STR_h101, lisafast));
         
         // Do Fine Tie calibration -> produces the file below
-        //unpacklisafast->DoFineTimeCalOnline("/home/lisa/programs/c4/fast_c4Root/config/lisafast/fine_time_histos_1709.root", 100000);
+        //unpacklisafast->DoFineTimeCalOnline("/home/lisa/programs/c4/fast_c4Root/config/lisafast/fine_time_histos_0410.root", 100000);
 
         // Run tree with the fine time calibration defined here
-        unpacklisafast->SetInputFileFineTimeHistos("/home/lisa/programs/c4/fast_c4Root/config/lisafast/fine_time_histos_1709.root");
+        unpacklisafast->SetInputFileFineTimeHistos("/home/lisa/programs/c4/fast_c4Root/config/lisafast/fine_time_histos_0410.root");
         if (LISAFAST_RAW)
         {
             unpacklisafast->SetOnline(false); //false= write to a tree; true=doesn't write to tree
