@@ -165,7 +165,7 @@ void LisaAna2Cal::Exec(Option_t* option)
                 //add theta calculation 
                 
                 
-                if (layer_id == 1) {
+                if (layer_id == 2) {
                 
                		double r0     = 231.0;  // mm
 			double theta0 = 30.0;   // deg
@@ -197,10 +197,10 @@ void LisaAna2Cal::Exec(Option_t* option)
 
 		TVector3 pColumn = center + u * eTheta;
 
-		laboratory_angle = pColumn.Theta() * TMath::RadToDeg();
+		laboratory_angle = p.Theta() * TMath::RadToDeg();
                 }
                 
-                if (layer_id == 2) {
+                if (layer_id == 1) {
                 
                 	double r0     = 218.0;  // mm
 			double theta0 = 45.0;   // deg
@@ -232,7 +232,7 @@ void LisaAna2Cal::Exec(Option_t* option)
 
 		TVector3 pColumn = center + u * eTheta;
 
-		laboratory_angle = pColumn.Theta() * TMath::RadToDeg();
+		laboratory_angle = p.Theta() * TMath::RadToDeg();
 		}
                 
                 //

@@ -355,8 +355,8 @@ InitStatus LisaNearlineSpectra::Init()
         	Form("h3_theta_per_position_layer_%i", i+1),
         	Form("xpos vs ypos vs theta, Layer %i", i+1),
 
-        5, 0, 4,
-        5, 0, 4,
+        6, 0, 5,
+        6, 0, 5,
         40, 20, 60);
 
     	h3_theta_per_position[i]->GetXaxis()->SetTitle("x position [a.u.]");
