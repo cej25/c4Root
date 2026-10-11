@@ -60,7 +60,7 @@ void lisafast_make_trees()
     
     // ::: FILE  PATH
     TString inputpath = "/home/lisa/data/server1/groups/wimmer/laboratory/lmd/";
-    TString lmdname = "tamex_0030_0001.lmd";
+    TString lmdname = "tamex_0037_0001.lmd";
     TString filename = inputpath + lmdname;
 
     //TString filename = Form(inputpath + "run_%04d_*.lmd", fileNumber);
@@ -92,6 +92,9 @@ void lisafast_make_trees()
     // ::: L I S A parameter - Initialise
     //lisa_config(config_path);
     TLisaFastConfiguration::SetDetectorConfigurationFile(config_path + "/Lisa_Mapping_LaBr3.txt");
+    TLisaFastConfiguration::SetDetectorCoefficientFile(config_path + "/LisaFast_calibration_8oct.txt");
+    TLisaFastConfiguration::SetDetectorTimeshiftsFile(config_path + "/LisaFast_time_shift_8oct.txt");
+
 
     //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
     // S U B S Y S T E M S

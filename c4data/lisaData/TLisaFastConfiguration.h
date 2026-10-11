@@ -47,8 +47,8 @@ class TLisaFastConfiguration
         //std::map<int,std::vector<double>> CalibrationCoefficients() const;
 
         bool TimeshiftCalibrationCoefficientsLoaded() const;
-        std::map<std::pair<int,int>,double> TimeshiftCalibrationCoefficients() const;
-        inline double GetTimeshiftCoefficient(int detector_id1, int detector_id2) const;
+        std::map<int, double> TimeshiftCalibrationCoefficients() const;
+        inline double GetTimeshiftCoefficient(int detector_id) const;
 
         bool GainShiftsLoaded() const;
         inline double GetGainShift(int tamex_board, int tamex_channel, uint64_t wr_t) const;
@@ -136,7 +136,7 @@ class TLisaFastConfiguration
 
         void ReadConfiguration();
         void ReadCalibrationCoefficients();
-        void ReadTimeshiftCoefficients();
+        void ReadTimeshiftCoefficientsLaBr();
         void ReadPromptFlashCut();
         void ReadGainShifts();
 
@@ -155,7 +155,7 @@ class TLisaFastConfiguration
         std::map<std::tuple<int,int,int>,std::vector<double>> diamond_calibration_coeffs;
         
         //std::map<int,std::vector<double>> calibration_coeffs; // key: [detector id] -> vector[a0 - a3] index is coefficient number 0 = offset +++ expects quadratic.
-        std::map<std::pair<int,int>,double> timeshift_calibration_coeffs;
+        std::map<int,double> timeshift_calibration_coeffs;
 
         std::set<int> extra_signals;
 
@@ -238,35 +238,22 @@ inline bool TLisaFastConfiguration::GainShiftsLoaded() const {
 }
 
 
-inline std::map<std::pair<int,int>,double> TLisaFastConfiguration::TimeshiftCalibrationCoefficients() const
+inline std::map<int,double> TLisaFastConfiguration::TimeshiftCalibrationCoefficients() const
 {
     return timeshift_calibration_coeffs;
 }
 
-inline double TLisaFastConfiguration::GetTimeshiftCoefficient(int detector_id1, int detector_id2) const
+inline double TLisaFastConfiguration::GetTimeshiftCoefficient(int detector_id) const
 {
-    // where t2 - t1:
-    std::pair<int,int> dets;
-    if (!timeshift_calibration_coeffs_loaded){
-        return 0;
-    }
-    
-    if(detector_id2 > detector_id1){
-        dets.first = detector_id1;
-        dets.second = detector_id2;
-        if (timeshift_calibration_coeffs.count(dets) > 0){
-            return timeshift_calibration_coeffs.at(dets);
-        }else return 0;
+    if (!timeshift_calibration_coeffs_loaded)
+        return 0.0;
 
-    } else if (detector_id1 > detector_id2){
-        dets.first = detector_id2;
-        dets.second = detector_id1;
-        if (timeshift_calibration_coeffs.count(dets) > 0){
-            return - timeshift_calibration_coeffs.at(dets);
-        }else return 0;
-    }else{
-        return 0;
-    }
+    auto it = timeshift_calibration_coeffs.find(detector_id);
+
+    if (it == timeshift_calibration_coeffs.end())
+        return 0.0;
+
+    return it->second;
      
 }
 

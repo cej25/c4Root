@@ -186,7 +186,7 @@ void LisaFastRaw2Cal::PrintDetectorCal()
                       << " a0: " << entry.second.at(0)
                       << " a1: " << entry.second.at(1)
                       << " a2: " << entry.second.at(2)
-                      << " a3: " << entry.second.at(3)
+                      //<< " a3: " << entry.second.at(3)
                       << std::endl;
         }
     }
@@ -208,7 +208,7 @@ void LisaFastRaw2Cal::PrintDetectorCal()
                       << " a0: " << entry.second.at(0)
                       << " a1: " << entry.second.at(1)
                       << " a2: " << entry.second.at(2)
-                      << " a3: " << entry.second.at(3)
+                      //<< " a3: " << entry.second.at(3)
                       << std::endl;
         }
     }
@@ -403,6 +403,19 @@ void LisaFastRaw2Cal::Exec(Option_t* option)
 
             fast_trail_time = (double)(funcal_hit->Get_trail_coarse_T()) * 5.0
                             - (double)(funcal_hit->Get_trail_fine_T());
+            //c4LOG(info,"detector ID: "<< detector_id << " fast lead: " << fast_lead_time);
+
+            // Apply timeshift calibration to LaBr detectors
+            if (detector_type == 0 && lisafast_configuration->TimeshiftCalibrationCoefficientsLoaded())
+            {
+                const double timeshift = lisafast_configuration->GetTimeshiftCoefficient(detector_id);
+
+                fast_lead_time += timeshift;
+                fast_trail_time += timeshift;
+                //c4LOG(info,"applying time shifting");
+            }
+            //c4LOG(info, "detector ID: "<< detector_id << " fast lead after shift: " << fast_lead_time);
+
 
             slow_lead_epoch = (int64_t)(funcal_hit_next->Get_lead_epoch_counter()) * 10240;
 
@@ -453,13 +466,13 @@ void LisaFastRaw2Cal::Exec(Option_t* option)
                     a0 = coeffs.at(0);
                     a1 = coeffs.at(1);
                     a2 = coeffs.at(2);
-                    a3 = coeffs.at(3);
+                    //a3 = coeffs.at(3);
 
                     energy =
                         a0
                         + a1 * slow_ToT
-                        + a2 * slow_ToT * slow_ToT
-                        + a3 * slow_ToT * slow_ToT * slow_ToT;
+                        + a2 * slow_ToT * slow_ToT;
+                        //+ a3 * slow_ToT * slow_ToT * slow_ToT;
                 }
             }
             // if (lisafast_configuration->MappingLoaded()){
@@ -515,6 +528,7 @@ void LisaFastRaw2Cal::Exec(Option_t* option)
             //     //funcal_hit->Get_wr_t(),
             //     //absolute_event_time
             //     );
+            //c4LOG(info, "detector ID: "<< detector_id << " fast lead before filling: " << fast_lead_time);
 
             calibratedHits.emplace_back(
                 funcal_hit->Get_trigger(),

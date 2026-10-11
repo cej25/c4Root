@@ -69,7 +69,7 @@ TLisaFastConfiguration::TLisaFastConfiguration()
 {
     if (configuration_file != "blank") ReadConfiguration();
     if (calibration_file != "blank") ReadCalibrationCoefficients();
-    if (timeshift_calibration_file != "blank") ReadTimeshiftCoefficients();
+    if (timeshift_calibration_file != "blank") ReadTimeshiftCoefficientsLaBr();
     if (promptflash_cut_file != "blank") ReadPromptFlashCut();
     if (gain_shifts_file != "blank") ReadGainShifts();
 }
@@ -272,9 +272,9 @@ void TLisaFastConfiguration::ReadCalibrationCoefficients()
         if (section == "LaBr")
         {
             int detector_id;
-            double a0, a1, a2, a3;
+            double a0, a1, a2;// a3;
 
-            line_ss >> detector_id >> a0 >> a1 >> a2 >> a3;
+            line_ss >> detector_id >> a0 >> a1 >> a2; //>> a3;
 
             if (line_ss.fail())
             {
@@ -283,16 +283,16 @@ void TLisaFastConfiguration::ReadCalibrationCoefficients()
             }
 
             labr_calibration_coeffs[detector_id] =
-                {a0, a1, a2, a3};
+                {a0, a1, a2};//, a3};
         }
         else if (section == "Diamond")
         {
             int layer;
             int x;
             int y;
-            double a0, a1, a2, a3;
+            double a0, a1, a2;// a3;
 
-            line_ss >> layer >> x >> y >> a0 >> a1 >> a2 >> a3;
+            line_ss >> layer >> x >> y >> a0 >> a1 >> a2;// >> a3;
 
             if (line_ss.fail())
             {
@@ -303,24 +303,16 @@ void TLisaFastConfiguration::ReadCalibrationCoefficients()
             auto key = std::make_tuple(layer, x, y);
 
             diamond_calibration_coeffs[key] =
-                {a0, a1, a2, a3};
+                {a0, a1, a2};//, a3};
         }
     }
 
     detector_calibrations_loaded = true;
 
     calibration_coeff_file.close();
-
-    LOG(info) << "LisaFast Calibration coefficients File: "
-              << calibration_file;
-
-    LOG(info) << "Loaded "
-              << labr_calibration_coeffs.size()
-              << " LaBr calibration coefficients.";
-
-    LOG(info) << "Loaded "
-              << diamond_calibration_coeffs.size()
-              << " Diamond calibration coefficients.";
+    LOG(info) << "LisaFast Calibration coefficients File: "<< calibration_file;
+    LOG(info) << "Loaded "<< labr_calibration_coeffs.size()<< " LaBr calibration coefficients.";
+    LOG(info) << "Loaded "<< diamond_calibration_coeffs.size()<< " Diamond calibration coefficients.";
 
     return;
 }
@@ -355,32 +347,72 @@ void TLisaFastConfiguration::ReadCalibrationCoefficients()
 
 
 // Allign the detector to 0 using a reference cascade with "instantaneus" gammas (i.e. 344 - 788 of 152Eu source)
-void TLisaFastConfiguration::ReadTimeshiftCoefficients()
+// void TLisaFastConfiguration::ReadTimeshiftCoefficientsLaBr()
+// {
+//     c4LOG(info, "Reading Timeshift coefficients.");
+//     //c4LOG(info, "File reading");
+//     c4LOG(info, timeshift_calibration_file);
+
+//     std::ifstream timeshift_file (timeshift_calibration_file);
+
+//     int rdetector_id; // temp read variables
+//     double timeshift;
+    
+//     //assumes the first line in the file is num-modules used
+//     while(!timeshift_file.eof()){
+//         if(timeshift_file.peek()=='#') timeshift_file.ignore(256,'\n');
+//         else{
+//             timeshift_file >> rdetector_id >> timeshift;
+            
+//             timeshift_calibration_coeffs[rdetector_id] = timeshift;
+//             c4LOG(info,"detector id: " << rdetector_id << " time shift: " << timeshift);
+//             //timeshift_calibration_coeffs.insert(std::pair<std::pair<int,int>,double>{rdetector_id1,timeshift});
+//             //timeshift_file.ignore(256,'\n');
+//         }
+//     }
+//     timeshift_calibration_coeffs_loaded = 1;
+//     timeshift_file.close();
+//     return; 
+
+// };
+
+void TLisaFastConfiguration::ReadTimeshiftCoefficientsLaBr()
 {
-    c4LOG(info, "Reading Timeshift coefficients.");
-    c4LOG(info, "File reading");
+    c4LOG(info, "Reading timeshift coefficients.");
     c4LOG(info, timeshift_calibration_file);
 
-    std::ifstream timeshift_file (timeshift_calibration_file);
+    std::ifstream timeshift_file(timeshift_calibration_file);
 
-    int rdetector_id1, rdetector_id2; // temp read variables
+    if (!timeshift_file.is_open())c4LOG(fatal, "Could not open timeshift calibration file: "<< timeshift_calibration_file);
+
+    std::string line;
+    int detector_id;
     double timeshift;
-    
-    //assumes the first line in the file is num-modules used
-    while(!timeshift_file.eof()){
-        if(timeshift_file.peek()=='#') timeshift_file.ignore(256,'\n');
-        else{
-            timeshift_file >> rdetector_id1 >> rdetector_id2 >> timeshift;
 
-            timeshift_calibration_coeffs.insert(std::pair<std::pair<int,int>,double>{std::pair<int,int>(rdetector_id1,rdetector_id2),timeshift});
-            timeshift_file.ignore(256,'\n');
+    while (std::getline(timeshift_file, line))
+    {
+        const auto first = line.find_first_not_of(" \t\r\n");
+
+        // Skip empty lines and comments.
+        if (first == std::string::npos || line[first] == '#')
+            continue;
+
+        std::istringstream iss(line);
+
+        if (!(iss >> detector_id >> timeshift))
+        {
+            c4LOG(error, "Invalid timeshift calibration line: " << line);
+            continue;
         }
-    }
-    timeshift_calibration_coeffs_loaded = 1;
-    timeshift_file.close();
-    return; 
 
-};
+        timeshift_calibration_coeffs[detector_id] = timeshift;
+
+        c4LOG(info, "Detector ID: " << detector_id<< ", time shift: " << timeshift);
+    }
+
+    timeshift_calibration_coeffs_loaded = !timeshift_calibration_coeffs.empty();
+    c4LOG(info, "Loaded "<< timeshift_calibration_coeffs.size()<< " timeshift coefficients.");
+}
 
 // This is a VETO for the prompt flash. From En vs dTime create a TCut.
 void TLisaFastConfiguration::ReadPromptFlashCut()

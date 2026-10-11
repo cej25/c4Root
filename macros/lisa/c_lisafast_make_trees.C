@@ -93,6 +93,7 @@ void c_lisafast_make_trees()
     // ::: L I S A parameter - Initialise
     //lisa_config(config_path);
     TLisaFastConfiguration::SetDetectorConfigurationFile("/home/calum/Software/c4Root/config/lisafast/Lisa_Mapping_LaBr3.txt");
+    TLisaFastConfiguration::ReadCalibrationCoefficients("/home/calum/Software/c4Root/config/lisafast/LisaFast_calibration_8oct.txt");
 
     //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
     // S U B S Y S T E M S

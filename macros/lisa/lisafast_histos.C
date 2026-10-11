@@ -47,7 +47,7 @@ void lisafast_histos()
 
     // ::: P A T H   O F   F I L E  to read
     TString inputpath = "/home/lisa/data/server1/groups/wimmer/laboratory/trees/";
-    TString rootname = "tamex_0030_0001_cal_tree.root";
+    TString rootname = "tamex_0037_0001_cal_tree.root";
     TString filename = inputpath + rootname;
 
     // ::: OUTPUT 
@@ -71,6 +71,9 @@ void lisafast_histos()
     //histo_config(config_path);
 
     TLisaFastConfiguration::SetDetectorConfigurationFile(config_path + "/Lisa_Mapping_LaBr3.txt");
+    TLisaFastConfiguration::SetDetectorCoefficientFile(config_path + "/LisaFast_calibration_8oct.txt");
+    TLisaFastConfiguration::SetDetectorTimeshiftsFile(config_path + "/LisaFast_time_shift_8oct.txt");
+
 
 
     // :::: ENABLE SYSTEMS  ::::::::::::::::::::::::::::::::::::::::
@@ -80,7 +83,8 @@ void lisafast_histos()
 
         LisaFastNearlineSpectra* nearlinelisafast = new LisaFastNearlineSpectra();
         nearlinelisafast->AddRefLaBrForDeltaT(1);
-        nearlinelisafast->AddDeltaTEnergyGate(500,460); 
+        //AddDeltaTEnergyGate(other_det, ref_det)
+        nearlinelisafast->AddDeltaTEnergyGate(779,344); 
 
         //nearlinelisafast->AddDeltaTEnergyGate(825,825); //1172 in det2, 1333 in ref det
         //nearlinelisafast->AddDeltaTEnergyGate(890,775); //1333 in det2, 1172 in ref det
@@ -94,22 +98,22 @@ void lisafast_histos()
     }
 
     TLisaFastConfiguration::SetSlowToT_bin(2000);
-    TLisaFastConfiguration::SetSlowToT_max(2000);
-    TLisaFastConfiguration::SetSlowToT_min(0);
+    TLisaFastConfiguration::SetSlowToT_max(1500);
+    TLisaFastConfiguration::SetSlowToT_min(100);
 
     TLisaFastConfiguration::SetFastToT_bin(500);
     TLisaFastConfiguration::SetFastToT_max(500);
     TLisaFastConfiguration::SetFastToT_min(0);
 
     TLisaFastConfiguration::SetEnergy_bin(2000);
-    TLisaFastConfiguration::SetEnergy_max(2000);
+    TLisaFastConfiguration::SetEnergy_max(1500);
     TLisaFastConfiguration::SetEnergy_min(0);
 
     TLisaFastConfiguration::SetdT_bin(2000);
     TLisaFastConfiguration::SetdT_max(20);
     TLisaFastConfiguration::SetdT_min(-20);
 
-    TLisaFastConfiguration::SetEnergyGateWidth(60);
+    TLisaFastConfiguration::SetEnergyGateWidth(10);
 
     //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
     //TString histoConfigFile = HISTO_FILE;

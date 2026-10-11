@@ -1,0 +1,6 @@
+# ==== Time shift value for all detector respect to a reference detector ====
+
+#Det      Time_Shift
+1           0
+2           1.04
+
