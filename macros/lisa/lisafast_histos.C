@@ -47,13 +47,13 @@ void lisafast_histos()
 
     // ::: P A T H   O F   F I L E  to read
     TString inputpath = "/home/lisa/data/server1/groups/wimmer/laboratory/trees/";
-    TString rootname = "tamex_0037_0001_cal_tree.root";
+    TString rootname = "tamex_0037_0001_NEW_tree.root";
     TString filename = inputpath + rootname;
 
     // ::: OUTPUT 
     TString outputpath = "/home/lisa/data/server1/groups/wimmer/laboratory/histos/"; 
 
-    TString outputFilename = outputpath + TString(rootname).ReplaceAll("_tree.root", "_histo.root");
+    TString outputFilename = outputpath + TString(rootname).ReplaceAll("_tree.root", "_noref_histo.root");
 
     
     FairRunAna* run = new FairRunAna();
@@ -82,31 +82,35 @@ void lisafast_histos()
     {
 
         LisaFastNearlineSpectra* nearlinelisafast = new LisaFastNearlineSpectra();
-        nearlinelisafast->AddRefLaBrForDeltaT(1);
+        //nearlinelisafast->AddRefLaBrForDeltaT(1);
         //AddDeltaTEnergyGate(other_det, ref_det)
+        // In general, if there is no ref detector then
+        //  AddDeltaTEnergyGate( energy_current_hit, energ_previous_hit)
+        //  with hits beloingin to different detector, and the defined time window
+        
         nearlinelisafast->AddDeltaTEnergyGate(779,344); // zero crossing
         nearlinelisafast->AddDeltaTEnergyGate(344,779); // tau = 32 ps
 
-        nearlinelisafast->AddDeltaTEnergyGate(1090,344);
-        nearlinelisafast->AddDeltaTEnergyGate(344,1090);
+        // nearlinelisafast->AddDeltaTEnergyGate(1090,344);
+        // nearlinelisafast->AddDeltaTEnergyGate(344,1090);
 
-        nearlinelisafast->AddDeltaTEnergyGate(1299,344); 
-        nearlinelisafast->AddDeltaTEnergyGate(344,1299);
+        // nearlinelisafast->AddDeltaTEnergyGate(1299,344); 
+        // nearlinelisafast->AddDeltaTEnergyGate(344,1299);
 
-        nearlinelisafast->AddDeltaTEnergyGate(1475,344); 
-        nearlinelisafast->AddDeltaTEnergyGate(344,1475);
+        // nearlinelisafast->AddDeltaTEnergyGate(1475,344); 
+        // nearlinelisafast->AddDeltaTEnergyGate(344,1475);
 
-        nearlinelisafast->AddDeltaTEnergyGate(344,411); // tau = 47 ps
-        nearlinelisafast->AddDeltaTEnergyGate(411,344);  
+        // nearlinelisafast->AddDeltaTEnergyGate(344,411); // tau = 47 ps
+        // nearlinelisafast->AddDeltaTEnergyGate(411,344);  
 
-        nearlinelisafast->AddDeltaTEnergyGate(121,1408); // tau = 1.4 ns
-        nearlinelisafast->AddDeltaTEnergyGate(1408,121);
+        // nearlinelisafast->AddDeltaTEnergyGate(121,1408); // tau = 1.4 ns
+        // nearlinelisafast->AddDeltaTEnergyGate(1408,121);
 
-        nearlinelisafast->AddDeltaTEnergyGate(121,964); // tau = 1.4 ns
-        nearlinelisafast->AddDeltaTEnergyGate(964,121);
+        // nearlinelisafast->AddDeltaTEnergyGate(121,964); // tau = 1.4 ns
+        // nearlinelisafast->AddDeltaTEnergyGate(964,121);
 
-        nearlinelisafast->AddDeltaTEnergyGate(121,1122); // tau = 1.4 ns
-        nearlinelisafast->AddDeltaTEnergyGate(1112,121);
+        // nearlinelisafast->AddDeltaTEnergyGate(121,1122); // tau = 1.4 ns
+        // nearlinelisafast->AddDeltaTEnergyGate(1112,121);
     
 
         //nearlinelisafast->AddDeltaTEnergyGate(825,825); //1172 in det2, 1333 in ref det

@@ -170,7 +170,7 @@ InitStatus LisaFastNearlineSpectra::Init()
     {
         h1_lisafast_deltaT_LaBr[detid_idx] =
             MakeTH1(dir_lisafast_dT_event_coin_LaBr,"F",
-                Form("h1_lisafast_dT_%d_to_%d_LaBr",detid_idx + 1, dt_reference_labr),
+                Form("h1_lisafast_dT_det_%d_to_%d_LaBr",detid_idx + 1, dt_reference_labr),
                 Form("LaBr dT t(%d) - t(%d)", detid_idx + 1, dt_reference_labr),
                 lisafast_configuration->dt_bin,
                 lisafast_configuration->dt_min,
@@ -401,7 +401,21 @@ void LisaFastNearlineSpectra::Exec(Option_t* option)
                     h2_E1_vs_E2_all_LaBr->Fill(energy1, energy2);
                     //h3_E1_vs_E2_vs_dt_all_LaBr->Fill(energy1, energy2, dt);
 
-                    if (dt_reference_labr > 0 && detector_id2 == dt_reference_labr)
+                    bool has_reference = (dt_reference_labr > 0);
+                    bool is_coincidence = false;
+
+                    if (has_reference)
+                    {
+                        // Reference mode: preserve existing behaviour
+                        is_coincidence = (detector_id2 == dt_reference_labr);
+                    }
+                    else
+                    {
+                        // No-reference mode: all different detector pairs
+                        is_coincidence = (detector_id1 != detector_id2);
+                    }
+
+                    if (is_coincidence)
                     {
                         
                         // Non-gated
@@ -427,7 +441,7 @@ void LisaFastNearlineSpectra::Exec(Option_t* option)
                                     (TMath::Abs(energy2 - gate_ref) < lisafast_configuration->en_gate_width);
                             }
 
-                            // Gate only on reference detector
+                            // Gate only on reference detector (energy 2)
                             else if (gate_other == 0 &&
                                     gate_ref != 0)
                             {
@@ -467,78 +481,120 @@ void LisaFastNearlineSpectra::Exec(Option_t* option)
                 double time_coin = hit_coin->Get_run_time();
                 double energy_coin = hit_coin->Get_energy();
 
-                double energy_other;
-                double energy_ref;
-                int detector_id_other;
+                //double energy_other;
+                //double energy_ref;
+                //int detector_id_other;
 
+                // Coincidecen is define in different ways depending whether the reference detector is specified or not
+                // Ref detector specified -> coincidence defined respect to the ref detector. This is used for time allignment of the electornics
+                // Ref not specified -> two events are in coincidence regardless from the detector they bleong to (not the same one)
+                
+                // Logic variables
+                bool has_reference = (dt_reference_labr > 0);
+                
                 bool current_is_reference =
                     (detector_id1 == dt_reference_labr);
 
                 bool previous_is_reference =
                     (detector_id_coin == dt_reference_labr);
 
+                bool is_coincidence = false;
+
+                double dt = 0.0;
+                double energy_other = 0.0;
+                double energy_ref = 0.0;
+                int detector_id_other = -1;     
+
+                // MODE 1: Reference detector defined
                 // Only consider coincidences if ref detector is in
-                if (current_is_reference || previous_is_reference)
+                
+                if (has_reference)
                 {
-                    double dt = 0.0;
-
-                    if (current_is_reference)
+                    if (current_is_reference || previous_is_reference)
                     {
-                        // Current hit is the reference
-                        // dt = t_other - t_reference
-                        dt = time_coin - run_time;
-                        energy_ref = energy1;
-                        energy_other = energy_coin;
-                        detector_id_other = detector_id_coin;
-                    }
-                    else
-                    {
-                        // Previous hit is the reference
-                        // dt = t_other - t_reference
-                        dt = run_time - time_coin;
-                        energy_other = energy1;
-                        energy_ref = energy_coin;
-                        detector_id_other = detector_id1;
-                    }
-
-                    if (std::abs(dt) < coin_window_ns)
-                    {
-                        h1_lisafast_dTw_coin_LaBr->Fill(dt);
-                        h2_lisafast_dTw_vs_energy_coin_LaBr->Fill(energy_other, dt);
-                        
-                        h2_E1_vs_E2_dTw_coin_all_LaBr->Fill(energy1,hit_coin->Get_energy());
-
-                        for (size_t igate = 0;igate < dt_reference_detectors_energy_gates.size();++igate)
+                        is_coincidence = true;
+                        if (current_is_reference)
                         {
-                            double gate_other =dt_reference_detectors_energy_gates[igate].first;
-                            double gate_ref =dt_reference_detectors_energy_gates[igate].second;
-                            bool gate_passed = false;
+                            // Current hit is the reference
+                            // dt = t_other - t_reference
+                            dt = time_coin - run_time;
 
-                            // Gate on both detectors
-                            if (gate_other != 0 && gate_ref != 0)
-                            {
-                                gate_passed =
-                                    (TMath::Abs(energy_other - gate_other)
-                                    < lisafast_configuration->en_gate_width)
-                                    &&
-                                    (TMath::Abs(energy_ref - gate_ref)
-                                    < lisafast_configuration->en_gate_width);
-                            }
-                            // Gate only on reference detector
-                            else if (gate_other == 0 && gate_ref != 0)
-                            {
-                                gate_passed =(TMath::Abs(energy_ref - gate_ref)< lisafast_configuration->en_gate_width);
-                            }
-                            
-                            if (gate_passed)
-                            {
-                                h1_lisafast_dTw_LaBr_gated[igate][detector_id_other - 1]->Fill(dt);
-                                h2_lisafast_dTw_vs_energy_LaBr_gated[igate][detector_id_other - 1]->Fill(energy_other, dt);
-                            }
+                            energy_ref = energy1;
+                            energy_other = energy_coin;
+                            detector_id_other = detector_id_coin;
+                        }
+                        else
+                        {
+                            // Previous hit is the reference
+                            // dt = t_other - t_reference
+                            dt = run_time - time_coin;
+
+                            energy_other = energy1;
+                            energy_ref = energy_coin;
+                            detector_id_other = detector_id1;
                         }
 
                     }
                 }
+                else
+                {
+                    // MODE 2: NO Reference detector defined
+                    // All detector pairs are considered
+
+                    is_coincidence = (detector_id1 != detector_id_coin);
+                    // Convention:
+                    // dt = t_current - t_previous
+
+                    dt = run_time - time_coin;
+
+                    energy_other = energy1;
+                    energy_ref = energy_coin;
+
+                    detector_id_other = detector_id1;
+                }
+
+                // Fill the coincidence histograms
+                if (is_coincidence && std::abs(dt) < coin_window_ns)
+                {
+                    h1_lisafast_dTw_coin_LaBr->Fill(dt);
+
+                    h2_lisafast_dTw_vs_energy_coin_LaBr->Fill(energy_other, dt);
+                    
+                    h2_E1_vs_E2_dTw_coin_all_LaBr->Fill(energy1,energy_coin);
+
+                    // Energy-gated coincidences
+                    for (size_t igate = 0;igate < dt_reference_detectors_energy_gates.size();++igate)
+                    {
+                        double gate_other = dt_reference_detectors_energy_gates[igate].first;
+                        double gate_ref = dt_reference_detectors_energy_gates[igate].second;
+                        bool gate_passed = false;
+
+                        // Gate on both detectors
+                        if (gate_other != 0 && gate_ref != 0)
+                        {
+                            gate_passed =
+                                (TMath::Abs(energy_other - gate_other)
+                                < lisafast_configuration->en_gate_width)
+                                &&
+                                (TMath::Abs(energy_ref - gate_ref)
+                                < lisafast_configuration->en_gate_width);
+                        }
+                        // Gate only on reference detector
+                        else if (gate_other == 0 && gate_ref != 0)
+                        {
+                            gate_passed =(TMath::Abs(energy_ref - gate_ref)< lisafast_configuration->en_gate_width);
+                        }
+                        
+                        if (gate_passed)
+                        {
+                            h1_lisafast_dTw_LaBr_gated[igate][detector_id_other - 1]->Fill(dt);
+                            h2_lisafast_dTw_vs_energy_LaBr_gated[igate][detector_id_other - 1]->Fill(energy_other, dt);
+                        }
+                    }
+
+                }
+
+
 
                 ++hit_coin;
             }

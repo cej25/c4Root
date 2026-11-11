@@ -68,7 +68,7 @@ void lisafast_make_trees()
     // ::: OUTPUT 
     TString outputpath = "/home/lisa/data/server1/groups/wimmer/laboratory/trees/";
 
-    TString outputFilename = outputpath + TString(lmdname).ReplaceAll(".lmd", "_cal_tree.root");
+    TString outputFilename = outputpath + TString(lmdname).ReplaceAll(".lmd", "_NEW_tree.root");
 
 
     // ::: Create run
