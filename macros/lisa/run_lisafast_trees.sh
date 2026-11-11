@@ -4,7 +4,7 @@
 macro_path="/home/lisa/programs/c4/fast_c4Root/macros/lisa/lisafast_make_trees_number.C"
 
 # Text file containing the LMD filenames
-number_list="/home/lisa/programs/c4/fast_c4Root/macros/lisa/lisafast_tree_files.txt"
+number_list="/home/lisa/programs/c4/fast_c4Root/macros/lisa/tree_files_lisafast.txt"
 
 # Check that the list exists
 if [[ ! -f "$number_list" ]]; then

@@ -144,7 +144,7 @@ void lisafast_online()
     }
     
     //TLisaFastConfiguration::SetEnergyGateWidth(10);
-    TLisaFastConfiguration::SetSlowToT_bin(2000);
+    TLisaFastConfiguration::SetSlowToT_bin(4000);
     TLisaFastConfiguration::SetSlowToT_max(2000);
     TLisaFastConfiguration::SetSlowToT_min(0);
 
@@ -152,7 +152,7 @@ void lisafast_online()
     TLisaFastConfiguration::SetFastToT_max(500);
     TLisaFastConfiguration::SetFastToT_min(0);
 
-    TLisaFastConfiguration::SetEnergy_bin(2000);
+    TLisaFastConfiguration::SetEnergy_bin(4000);
     TLisaFastConfiguration::SetEnergy_max(2000);
     TLisaFastConfiguration::SetEnergy_min(0);
 

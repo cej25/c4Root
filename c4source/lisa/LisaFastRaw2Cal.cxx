@@ -412,6 +412,7 @@ void LisaFastRaw2Cal::Exec(Option_t* option)
 
                 fast_lead_time += timeshift;
                 fast_trail_time += timeshift;
+                run_time = funcal_hit->Get_run_time() + timeshift;
                 //c4LOG(info,"applying time shifting");
             }
             //c4LOG(info, "detector ID: "<< detector_id << " fast lead after shift: " << fast_lead_time);
@@ -534,7 +535,8 @@ void LisaFastRaw2Cal::Exec(Option_t* option)
                 funcal_hit->Get_trigger(),
                 funcal_hit->Get_board_id(),
                 (int)((funcal_hit->Get_ch_ID() + 1) / 2),
-                funcal_hit->Get_run_time(),
+                run_time,
+                //funcal_hit->Get_run_time(),
                 detector_type,
                 detector_id,
                 layer,

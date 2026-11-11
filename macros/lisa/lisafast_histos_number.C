@@ -80,6 +80,7 @@ void lisafast_histos_number(const char* rootname_arg)
 
     TLisaFastConfiguration::SetDetectorConfigurationFile(config_path + "/Lisa_Mapping_LaBr3.txt");
     TLisaFastConfiguration::SetDetectorCoefficientFile(config_path + "/LisaFast_calibration_8oct.txt");
+    TLisaFastConfiguration::SetDetectorTimeshiftsFile(config_path + "/LisaFast_time_shift_8oct.txt");
 
 
 
@@ -90,21 +91,37 @@ void lisafast_histos_number(const char* rootname_arg)
 
         LisaFastNearlineSpectra* nearlinelisafast = new LisaFastNearlineSpectra();
         nearlinelisafast->AddRefLaBrForDeltaT(1);
-        //AddDeltaTEnergyGate(other_det, ref_det)
-        nearlinelisafast->AddDeltaTEnergyGate(779,344); 
+        
+        nearlinelisafast->AddDeltaTEnergyGate(779,344); // zero crossing
+        nearlinelisafast->AddDeltaTEnergyGate(344,779); // tau = 32 ps
 
-        //nearlinelisafast->AddDeltaTEnergyGate(825,825); //1172 in det2, 1333 in ref det
-        //nearlinelisafast->AddDeltaTEnergyGate(890,775); //1333 in det2, 1172 in ref det
+        nearlinelisafast->AddDeltaTEnergyGate(1090,344);
+        nearlinelisafast->AddDeltaTEnergyGate(344,1090);
 
-        //nearlinelisafast->AddDeltaTReferenceEnergyGate(825); //gate in 1333 ref
-        //nearlinelisafast->AddDeltaTReferenceEnergyGate(775); //gate in 1172 ref
+        nearlinelisafast->AddDeltaTEnergyGate(1299,344); 
+        nearlinelisafast->AddDeltaTEnergyGate(344,1299);
+
+        nearlinelisafast->AddDeltaTEnergyGate(1475,344); 
+        nearlinelisafast->AddDeltaTEnergyGate(344,1475);
+
+        nearlinelisafast->AddDeltaTEnergyGate(344,411); // tau = 47 ps
+        nearlinelisafast->AddDeltaTEnergyGate(411,344);  
+
+        nearlinelisafast->AddDeltaTEnergyGate(121,1408); // tau = 1.4 ns
+        nearlinelisafast->AddDeltaTEnergyGate(1408,121);
+
+        nearlinelisafast->AddDeltaTEnergyGate(121,964); // tau = 1.4 ns
+        nearlinelisafast->AddDeltaTEnergyGate(964,121);
+
+        nearlinelisafast->AddDeltaTEnergyGate(121,1122); // tau = 1.4 ns
+        nearlinelisafast->AddDeltaTEnergyGate(1112,121);
 
 
         run->AddTask(nearlinelisafast);
 
     }
 
-    TLisaFastConfiguration::SetSlowToT_bin(1400);
+    TLisaFastConfiguration::SetSlowToT_bin(2000);
     TLisaFastConfiguration::SetSlowToT_max(1500);
     TLisaFastConfiguration::SetSlowToT_min(100);
 
@@ -112,7 +129,7 @@ void lisafast_histos_number(const char* rootname_arg)
     TLisaFastConfiguration::SetFastToT_max(500);
     TLisaFastConfiguration::SetFastToT_min(0);
 
-    TLisaFastConfiguration::SetEnergy_bin(1500);
+    TLisaFastConfiguration::SetEnergy_bin(2000);
     TLisaFastConfiguration::SetEnergy_max(1500);
     TLisaFastConfiguration::SetEnergy_min(0);
 

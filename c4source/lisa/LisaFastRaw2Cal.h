@@ -66,6 +66,7 @@ class LisaFastRaw2Cal : public FairTask
         double slow_lead_time;
         int64_t slow_trail_epoch;
         double slow_trail_time;
+        double run_time;
 
         int64_t fast_lead_epoch;
         double fast_lead_time;

@@ -4,7 +4,7 @@
 macro_path="/home/lisa/programs/c4/fast_c4Root/macros/lisa/lisafast_histos_number.C"
 
 # Text file containing the ROOT filenames
-number_list="/home/lisa/programs/c4/fast_c4Root/macros/lisa/lisafast_histo_files.txt"
+number_list="/home/lisa/programs/c4/fast_c4Root/macros/lisa/histo_files_lisafast.txt"
 
 # Check that the list exists
 if [[ ! -f "$number_list" ]]; then
