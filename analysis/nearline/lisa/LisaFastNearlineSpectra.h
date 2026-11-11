@@ -140,6 +140,7 @@ class LisaFastNearlineSpectra : public FairTask
         std::vector<std::vector<TH2*>> h2_lisafast_deltaT_vs_energy_LaBr_gated;
 
         // dT window based coincidence
+        std::vector<TH1*> h1_lisafast_dTw_LaBr_gated_global;
         std::vector<std::vector<TH1*>> h1_lisafast_dTw_LaBr_gated;
         std::vector<std::vector<TH2*>> h2_lisafast_dTw_vs_energy_LaBr_gated;
 

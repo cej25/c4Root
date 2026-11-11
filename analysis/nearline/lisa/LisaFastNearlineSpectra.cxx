@@ -206,6 +206,8 @@ InitStatus LisaFastNearlineSpectra::Init()
     dir_lisafast_dTw_Gates_LaBr = dir_lisafast_dTw_coin_LaBr->mkdir("dTw_event_Gates_LaBr");
     h1_lisafast_dTw_LaBr_gated.resize(dt_reference_detectors_energy_gates.size());
     h2_lisafast_dTw_vs_energy_LaBr_gated.resize(dt_reference_detectors_energy_gates.size());
+    
+    h1_lisafast_dTw_LaBr_gated_global.resize(dt_reference_detectors_energy_gates.size());
 
     // Loop over gates
     for (size_t igate = 0; igate < dt_reference_detectors_energy_gates.size(); igate++)
@@ -233,6 +235,18 @@ InitStatus LisaFastNearlineSpectra::Init()
         h1_lisafast_dTw_LaBr_gated[igate].resize(number_labr_detectors);
         h2_lisafast_dTw_vs_energy_LaBr_gated[igate].resize(number_labr_detectors);
 
+        h1_lisafast_dTw_LaBr_gated_global[igate] =
+            MakeTH1(dir_dTw_gate, "F",
+                Form("h1_lisafast_dTw_all_LaBr_energy_gate_%d_%d",
+                    (int)gate_other, (int)gate_ref),
+                Form("Global LaBr dTw - energy gates %d and %d",
+                    (int)gate_other, (int)gate_ref),
+                lisafast_configuration->dt_bin,
+                lisafast_configuration->dt_min,
+                lisafast_configuration->dt_max,
+                "dTw [ns]",
+                kMagenta, kBlue + 2);
+        
         for (int detid_idx = 0;detid_idx < number_labr_detectors;detid_idx++)
         {
             int detid = detid_idx + 1;
@@ -553,6 +567,38 @@ void LisaFastNearlineSpectra::Exec(Option_t* option)
                     detector_id_other = detector_id1;
                 }
 
+                // Global dTw coincidences: all different detector pairs
+                double dt_global = run_time - time_coin;
+
+                if (detector_id1 != detector_id_coin &&
+                    std::abs(dt_global) < coin_window_ns)
+                {
+                    for (size_t igate = 0;
+                        igate < dt_reference_detectors_energy_gates.size();
+                        ++igate)
+                    {
+                        double gate_E1 = dt_reference_detectors_energy_gates[igate].first;
+                        double gate_E2 = dt_reference_detectors_energy_gates[igate].second;
+
+                        bool gate_passed_global = false;
+
+                        // Global dTw histogram: require gates on BOTH events
+                        if (gate_E1 != 0 && gate_E2 != 0)
+                        {
+                            bool gate_passed_global =
+                                (TMath::Abs(energy1 - gate_E1) <
+                                    lisafast_configuration->en_gate_width)
+                                &&
+                                (TMath::Abs(energy_coin - gate_E2) <
+                                    lisafast_configuration->en_gate_width);
+
+                            if (gate_passed_global)
+                            {
+                                h1_lisafast_dTw_LaBr_gated_global[igate]->Fill(dt_global);
+                            }
+                        }
+                    }
+                }
                 // Fill the coincidence histograms
                 if (is_coincidence && std::abs(dt) < coin_window_ns)
                 {
