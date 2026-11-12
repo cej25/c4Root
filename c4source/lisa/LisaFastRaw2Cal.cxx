@@ -405,6 +405,7 @@ void LisaFastRaw2Cal::Exec(Option_t* option)
                             - (double)(funcal_hit->Get_trail_fine_T());
             //c4LOG(info,"detector ID: "<< detector_id << " fast lead: " << fast_lead_time);
 
+            run_time = funcal_hit->Get_run_time();
             // Apply timeshift calibration to LaBr detectors
             if (detector_type == 0 && lisafast_configuration->TimeshiftCalibrationCoefficientsLoaded())
             {
@@ -412,7 +413,7 @@ void LisaFastRaw2Cal::Exec(Option_t* option)
 
                 fast_lead_time += timeshift;
                 fast_trail_time += timeshift;
-                run_time = funcal_hit->Get_run_time() + timeshift;
+                run_time += timeshift;
                 //c4LOG(info,"applying time shifting");
             }
             //c4LOG(info, "detector ID: "<< detector_id << " fast lead after shift: " << fast_lead_time);

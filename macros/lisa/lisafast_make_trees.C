@@ -68,7 +68,7 @@ void lisafast_make_trees()
     // ::: OUTPUT 
     TString outputpath = "/home/lisa/data/server1/groups/wimmer/laboratory/trees/";
 
-    TString outputFilename = outputpath + TString(lmdname).ReplaceAll(".lmd", "_NEW_tree.root");
+    TString outputFilename = outputpath + TString(lmdname).ReplaceAll(".lmd", "_LD_tree.root");
 
 
     // ::: Create run
@@ -91,8 +91,8 @@ void lisafast_make_trees()
 
     // ::: L I S A parameter - Initialise
     //lisa_config(config_path);
-    TLisaFastConfiguration::SetDetectorConfigurationFile(config_path + "/Lisa_Mapping_LaBr3.txt");
-    //TLisaFastConfiguration::SetDetectorCoefficientFile(config_path + "/LisaFast_calibration_8oct.txt");
+    TLisaFastConfiguration::SetDetectorConfigurationFile(config_path + "/Lisa_Mapping_LaBr3_diamond.txt");
+    TLisaFastConfiguration::SetDetectorCoefficientFile(config_path + "/LisaFast_calibration_8oct_Labr_diamond.txt");
     //TLisaFastConfiguration::SetDetectorTimeshiftsFile(config_path + "/LisaFast_time_shift_8oct.txt");
 
 

@@ -107,6 +107,12 @@ class LisaFastNearlineSpectra : public FairTask
         TDirectory* dir_lisafast_energy_spectra_Diamond;
         TDirectory* dir_lisafast_time_spectra_Diamond;
         TDirectory* dir_lisafast_deltaT_Diamond;
+        // Diamond: directories for individual layers
+        std::vector<TDirectory*> dir_lisafast_slowToT_Diamond_layer;
+        std::vector<TDirectory*> dir_lisafast_energy_spectra_Diamond_layer;
+        std::vector<TDirectory*> dir_lisafast_fastToT_Diamond_layer;
+        std::vector<TDirectory*> dir_lisafast_fast_v_slow_Diamond_layer;
+        std::vector<TDirectory*> dir_lisafast_time_spectra_Diamond_layer;
 
         // LaBr-Diamond time differences
         TDirectory* dir_lisafast_dt_LaBr_Diamond;
@@ -139,6 +145,15 @@ class LisaFastNearlineSpectra : public FairTask
         std::vector<std::vector<TH1*>> h1_lisafast_deltaT_LaBr_gated;
         std::vector<std::vector<TH2*>> h2_lisafast_deltaT_vs_energy_LaBr_gated;
 
+        // Event-based: global coincidence histograms
+        TH1* h1_lisafast_deltaT_coin_LaBr;
+        TH2* h2_lisafast_deltaT_vs_energy_coin_LaBr;
+        TH2* h2_E1_vs_E2_deltaT_coin_LaBr;
+
+        // Time-window: detector-specific coincidence histograms
+        std::vector<TH1*> h1_lisafast_dTw_LaBr;
+        std::vector<TH2*> h2_lisafast_dTw_vs_energy_LaBr;
+
         // dT window based coincidence
         std::vector<TH1*> h1_lisafast_dTw_LaBr_gated_global;
         std::vector<std::vector<TH1*>> h1_lisafast_dTw_LaBr_gated;
@@ -153,6 +168,10 @@ class LisaFastNearlineSpectra : public FairTask
         TH2* h2_E1_vs_E2_all_LaBr;
 
         // Diamonds
+        // Diamond: layer-level histograms
+        std::vector<TH1*> h1_lisafast_slowToT_Diamond_layer;
+        std::vector<TH1*> h1_lisafast_energy_Diamond_layer;
+
         std::vector<std::vector<std::vector<TH1*>>> h1_lisafast_slowToT_Diamond;
         std::vector<std::vector<std::vector<TH1*>>> h1_lisafast_fastToT_Diamond;
         std::vector<std::vector<std::vector<TH1*>>> h1_lisafast_energy_Diamond;
@@ -162,10 +181,24 @@ class LisaFastNearlineSpectra : public FairTask
         TH1* h1_lisafast_hitpattern_slow_Diamond;
         TH1* h1_lisafast_hitpattern_fast_Diamond;        
 
-        TH1* h1_lisafast_multiplicity; 
+        TH1* h1_lisafast_event_multiplicity_LaBr;
+        TH1* h1_lisafast_detector_multiplicity_LaBr;
+
+        TH1* h1_lisafast_event_multiplicity_Diamond;
+        TH1* h1_lisafast_detector_multiplicity_Diamond;
         
         TH2* h2_lisafast_energy_vs_detid_Diamond;
         TH2* h2_lisafast_energy_uncal_vs_detid_Diamond;
+
+        std::vector<TH1*> h1_lisafast_fastToT_Diamond_layer;
+
+        // Diamond-Diamond event-based coincidences
+        std::map<std::tuple<int,int,int>, TH1*> h1_lisafast_deltaT_Diamond;
+        std::map<std::tuple<int,int,int>, TH2*> h2_lisafast_deltaT_vs_energy_Diamond;
+
+        // Diamond-Diamond time-window coincidences
+        std::map<std::tuple<int,int,int>, TH1*> h1_lisafast_dTw_Diamond;
+        std::map<std::tuple<int,int,int>, TH2*> h2_lisafast_dTw_vs_energy_Diamond;
 
         // LaBr detector vs Diamond reference
         std::map<int, TH1*> h1_dt_LaBr_vs_Diamond;
@@ -183,7 +216,10 @@ class LisaFastNearlineSpectra : public FairTask
 
         double energygate_width = 20;        
             
-        int event_multiplicity;
+        int event_multiplicity_LaBr = 0;
+        int event_multiplicity_Diamond = 0;
+        int event_multiplicity_tot = 0;
+
 
         // rates
         int64_t saved_lisafast_wr = 0;
@@ -193,6 +229,8 @@ class LisaFastNearlineSpectra : public FairTask
 
         float coin_window_ns = 1500.; // move to config
         std::vector<LisaFastCalData> coin_hits;
+        std::vector<LisaFastCalData> coin_hits_Diamond;
+        std::vector<LisaFastCalData> coin_hits_tot;
 
     public:
         ClassDef(LisaFastNearlineSpectra, 1)
