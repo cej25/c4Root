@@ -21,6 +21,7 @@
 // c4
 #include "BGOTwinpeaksData.h"
 #include "BGOReader.h"
+#include "BGOPackedSafety.h"
 #include "c4Logger.h"
 
 #include "TFile.h"
@@ -350,7 +351,9 @@ Bool_t BGOReader::Read()
         accepted_lead_coarse_T = 0;
         accepted_lead_fine_T = 0;
 
-        for (int it_hits = 0; it_hits < fData->bgo_tamex[it_board_number].event_size/4 - 3 ; it_hits++)
+        const auto hit_budget = bgo_packed_safety::EventHitBudget(
+            fData->bgo_tamex[it_board_number].event_size);
+        for (uint32_t it_hits = 0; it_hits < hit_budget; ++it_hits)
         {
             // now operating under the assumption 16.01.2024:
             /*
@@ -362,7 +365,9 @@ Bool_t BGOReader::Read()
             // check if arrays are overflowing. These could be placed outside this inner loop, but now it sums up the number of lost events in case they are not equal. This indicates an error in UCESB/MBS i believe if this fails.
             if (fData->bgo_tamex[it_board_number].time_epoch <= it_hits) { fNevents_skipped++; continue; }
             if (fData->bgo_tamex[it_board_number].time_fine <= it_hits) { fNevents_skipped++; continue; }
-            if (fData->bgo_tamex[it_board_number].time_coarse <= it_hits) { fNevents_skipped++; continue; } 
+            if (fData->bgo_tamex[it_board_number].time_coarse <= it_hits) { fNevents_skipped++; continue; }
+            if (fData->bgo_tamex[it_board_number].time_channel <= it_hits ||
+                fData->bgo_tamex[it_board_number].time_edge <= it_hits) { fNevents_skipped++; continue; } 
             if (!(fData->bgo_tamex[it_board_number].time_coarse == fData->bgo_tamex[it_board_number].time_fine && fData->bgo_tamex[it_board_number].time_coarse == fData->bgo_tamex[it_board_number].time_epoch)) { fNevents_skipped++; continue; }
 
             // any time you see an epoch - this epoch will apply to the next time data words until a new epoch word is written. If the following data in the buffer is another channel then it must be preceeded with another epoch.
@@ -375,6 +380,13 @@ Bool_t BGOReader::Read()
             }
 
             UInt_t channelid = fData->bgo_tamex[it_board_number].time_channelv[it_hits] & 0x7F; // 0-127
+            if (!bgo_packed_safety::ValidChannel(channelid, NChannels)) { fNevents_skipped++; continue; }
+            if (!bgo_packed_safety::ValidFineBin(
+                    fData->bgo_tamex[it_board_number].time_finev[it_hits], Nbins_fine_time))
+            {
+                fNevents_skipped++;
+                continue;
+            }
         
             if (fData->bgo_tamex[it_board_number].time_finev[it_hits] == 0x3FF) { fNevents_TAMEX_fail[it_board_number][channelid]++; continue; } // this happens if TAMEX loses the fine time - skip it
 
