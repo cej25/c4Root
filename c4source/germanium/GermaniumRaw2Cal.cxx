@@ -139,6 +139,10 @@ void GermaniumRaw2Cal::Exec(Option_t* option)
 {
     if (funcal_data && funcal_data->GetEntriesFast() > 0)
     {
+        // These configuration getters return maps by value. Copy them once per
+        // event rather than repeatedly for every lookup and coefficient.
+        const auto mapping = germanium_configuration->Mapping();
+        const auto calibrations = germanium_configuration->CalibrationCoefficients();
         Int_t event_multiplicity = funcal_data->GetEntriesFast();
         for (Int_t ihit = 0; ihit < event_multiplicity; ihit++)
         {
@@ -152,10 +156,11 @@ void GermaniumRaw2Cal::Exec(Option_t* option)
             {
                 std::pair<int,int> unmapped_det {funcal_hit->Get_board_id(), funcal_hit->Get_channel_id()};
                 
-                if (germanium_configuration->Mapping().count(unmapped_det) > 0)
+                const auto mapped = mapping.find(unmapped_det);
+                if (mapped != mapping.end())
                 {
-                    detector_id = germanium_configuration->Mapping().at(unmapped_det).first; //.find returns an iterator over the pairs matching key.
-                    crystal_id = germanium_configuration->Mapping().at(unmapped_det).second;
+                    detector_id = mapped->second.first;
+                    crystal_id = mapped->second.second;
 
                     if (detector_id == -1 || crystal_id == -1) continue; //skip
 
@@ -166,10 +171,11 @@ void GermaniumRaw2Cal::Exec(Option_t* option)
                 if (germanium_configuration->CalibrationCoefficientsLoaded())
                 {
                     std::pair<int,int> calibdet {detector_id, crystal_id};
-                    if (germanium_configuration->CalibrationCoefficients().count(calibdet) > 0){
-                    double a0 = germanium_configuration->CalibrationCoefficients().at(calibdet).at(0); //.find returns an iterator over the pairs matching key.
-                    double a1 = germanium_configuration->CalibrationCoefficients().at(calibdet).at(1);
-                    double a2 = germanium_configuration->CalibrationCoefficients().at(calibdet).at(2);
+                    const auto calibrated = calibrations.find(calibdet);
+                    if (calibrated != calibrations.end()){
+                    double a0 = calibrated->second.at(0);
+                    double a1 = calibrated->second.at(1);
+                    double a2 = calibrated->second.at(2);
                     channel_energy_cal = a0 + a1*(double) funcal_hit->Get_channel_energy() + a2*(double) funcal_hit->Get_channel_energy()*(double) funcal_hit->Get_channel_energy();
                     }else{
                         //c4LOG(fatal, "Detector Calibrations not set - please set this using SetCalibrationMap to use the Cal Task.");
