@@ -8,6 +8,7 @@ int main()
 {
     using frs_reader_safety::AssembleWhiteRabbitTimestamp;
     using frs_reader_safety::ValidPackedBlock;
+    using frs_reader_safety::ValidOneBasedChannel;
 
     // The four 16-bit input words are in least-significant-first order.
     assert(AssembleWhiteRabbitTimestamp(0, 0, 0, 0) == 0);
@@ -33,6 +34,18 @@ int main()
     assert(!ValidPackedBlock(0, -1, 4, 4, 4096));
     assert(!ValidPackedBlock(0, 1025, 1025, 1025, 1024));
     assert(!ValidPackedBlock(0, 1, 0, 0, 4096));
+
+    // The same one-based channel guards used by SCI, MUSIC and TPC.
+    assert(ValidOneBasedChannel(1, 32));
+    assert(ValidOneBasedChannel(32, 32));
+    assert(!ValidOneBasedChannel(0, 32));
+    assert(!ValidOneBasedChannel(33, 32));
+    assert(!ValidOneBasedChannel(-1, 32));
+    assert(ValidOneBasedChannel(8, 8));
+    assert(!ValidOneBasedChannel(9, 8));
+    assert(ValidOneBasedChannel(128, 128));
+    assert(!ValidOneBasedChannel(129, 128));
+    assert(!ValidOneBasedChannel(1, 0));
 
     return 0;
 }
