@@ -59,3 +59,9 @@ jobs:
             -fsanitize=undefined -fno-sanitize-recover=all \
             tests/fimp_fine_time_bins_test.cxx -o /tmp/fimp_fine_time_bins_test
           /tmp/fimp_fine_time_bins_test
+      - name: Compile and run Germanium FEBEX packed safety tests
+        run: |
+          g++ -std=c++17 -O1 -g -Wall -Wextra -Werror -pedantic \
+            -fsanitize=undefined -fno-sanitize-recover=all \
+            tests/germanium_packed_safety_test.cxx -o /tmp/germanium_packed_safety_test
+          /tmp/germanium_packed_safety_test
