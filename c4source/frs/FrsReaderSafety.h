@@ -3,6 +3,8 @@
 
 #include <cstddef>
 #include <cstdint>
+#include <cstring>
+#include <type_traits>
 
 // Dependency-free helpers shared by the FRS reader and its regression tests.
 namespace frs_reader_safety
@@ -23,6 +25,15 @@ inline bool ValidOneBasedChannel(std::int64_t channel, std::size_t capacity)
 {
     return channel > 0 &&
            static_cast<std::uint64_t>(channel) <= capacity;
+}
+
+// Clear a complete fixed detector array, including every row of multidimensional arrays.
+template <typename T, std::size_t N>
+inline void ZeroDetectorArray(T (&array)[N])
+{
+    static_assert(std::is_trivially_copyable<T>::value,
+                  "ZeroDetectorArray requires trivially copyable elements");
+    std::memset(array, 0, sizeof array);
 }
 
 inline bool ValidPackedBlock(int start,
