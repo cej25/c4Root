@@ -25,6 +25,7 @@
 
 // c4
 #include "BB7FebexRaw2Cal.h"
+#include "BB7FebexIndexSafety.h"
 #include "c4Logger.h"
 
 // ROOT
@@ -97,6 +98,11 @@ void BB7FebexRaw2Cal::Exec(Option_t* option)
                 int dssd = detector_mapping.at(unmapped_channel).first;
                 int side = detector_mapping.at(unmapped_channel).second.first;
                 int strip = detector_mapping.at(unmapped_channel).second.second;
+
+                // Reject invalid mapped coordinates before creating calibrated hits.
+                std::size_t channel_index = 0;
+                if (!bb7_febex_index_safety::TryChannelIndex(
+                        dssd, side, strip, bb7_config->DSSDs(), channel_index)) continue;
 
                 // std::cout << "dssd:: " << dssd << std::endl;
                 // std::cout << "side:: " << side << std::endl;
