@@ -20,6 +20,7 @@
 
 // c4
 #include "StefanReader.h"
+#include "StefanTimestampSafety.h"
 #include "StefanPackedSafety.h"
 #include "c4Logger.h"
 
@@ -76,7 +77,10 @@ Bool_t StefanReader::Read()
     if(!fData) return kTRUE;
     
     //whiterabbit timestamp:
-    wr_t = (((Long64_t)fData->stefan_ts_t[3]) << 48) + (((Long64_t)fData->stefan_ts_t[2]) << 32) + (((Long64_t)fData->stefan_ts_t[1]) << 16) + (Long64_t)(fData->stefan_ts_t[0]);
+    const auto wr_bits = stefan_timestamp_safety::AssembleWhiteRabbitTimestamp(
+        fData->stefan_ts_t[0], fData->stefan_ts_t[1],
+        fData->stefan_ts_t[2], fData->stefan_ts_t[3]);
+    wr_t = static_cast<Long64_t>(wr_bits);
     
 
     for (int it_board_number = 0; it_board_number < NBoards; it_board_number ++)

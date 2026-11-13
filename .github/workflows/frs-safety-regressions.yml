@@ -47,3 +47,9 @@ jobs:
             -fsanitize=undefined -fno-sanitize-recover=all \
             tests/stefan_packed_safety_test.cxx -o /tmp/stefan_packed_safety_test
           /tmp/stefan_packed_safety_test
+      - name: Compile and run Stefan White Rabbit timestamp tests
+        run: |
+          g++ -std=c++17 -O1 -g -Wall -Wextra -Werror -pedantic \
+            -fsanitize=undefined -fno-sanitize-recover=all \
+            tests/stefan_timestamp_safety_test.cxx -o /tmp/stefan_timestamp_safety_test
+          /tmp/stefan_timestamp_safety_test
