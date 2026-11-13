@@ -54,7 +54,7 @@ BB7Raw2Cal::BB7Raw2Cal()
 BB7Raw2Cal::~BB7Raw2Cal()
 {
     if (fTimeMachineArray) delete fTimeMachineArray;
-    delete v7x5array;
+    // v7x5array is a borrowed input managed by the BB7 reader.
     delete implantArray;
     delete decayArray;
     delete residualArray;
