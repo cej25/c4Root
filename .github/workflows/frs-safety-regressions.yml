@@ -35,6 +35,12 @@ jobs:
             -fsanitize=undefined -fno-sanitize-recover=all \
             tests/cluster_time_overlap_test.cxx -o /tmp/cluster_time_overlap_test
           /tmp/cluster_time_overlap_test
+      - name: Compile and run Stefan index safety tests
+        run: |
+          g++ -std=c++17 -O1 -g -Wall -Wextra -Werror -pedantic \
+            -fsanitize=undefined -fno-sanitize-recover=all \
+            tests/stefan_index_safety_test.cxx -o /tmp/stefan_index_safety_test
+          /tmp/stefan_index_safety_test
       - name: Compile and run Stefan packed channel count tests
         run: |
           g++ -std=c++17 -O1 -g -Wall -Wextra -Werror -pedantic \

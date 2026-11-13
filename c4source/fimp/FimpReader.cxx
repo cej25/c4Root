@@ -176,14 +176,10 @@ void FimpReader::ReadFineTimeHistosFromFile()
     {
         TH1I* a = nullptr;
         inputfile->GetObject(Form("fine_time_hits_channel_%i", i), a);
-        if (a)
-        {
-            fine_time_hits[i] = (TH1I*)a->Clone();
-            c4LOG_IF(fatal, fine_time_hits == nullptr, "Failed reading fine time calibration histograms - aborting!");
-            delete a;
-            a = nullptr;
-            fine_time_hits[i]->SetDirectory(0); // this is a trick to access histos after closing inputfile.
-        }
+        c4LOG_IF(fatal, !a, "Missing FIMP fine time calibration histogram for channel " << i);
+        fine_time_hits[i] = static_cast<TH1I*>(a->Clone());
+        c4LOG_IF(fatal, !fine_time_hits[i], "Failed cloning FIMP fine time histogram for channel " << i);
+        fine_time_hits[i]->SetDirectory(nullptr); // Keep the clone after the input file closes.
     }
 
     inputfile->Close();
@@ -342,7 +338,8 @@ Bool_t FimpReader::Read()
                 entry.SetAll(wr_t, 
                             wr_id,
                             trig_time_long, 
-                            prev_channel, 
+                            channel, // Trigger channel 128, not the preceding detector channel
+
                             lead_coarse, // lead coarse
                             lead_fine, // lead fine
                             trail_coarse, // trail coarse
