@@ -56,8 +56,7 @@ GermaniumNearlineSpectra::GermaniumNearlineSpectra(const TString& name, Int_t ve
 GermaniumNearlineSpectra::~GermaniumNearlineSpectra()
 {
     c4LOG(info, "");
-    if (fHitGe)
-        delete fHitGe;
+    // fHitGe is borrowed from FairRootManager.
 }
 
 InitStatus GermaniumNearlineSpectra::Init()
@@ -365,10 +364,7 @@ void GermaniumNearlineSpectra::Exec(Option_t* option){
 
 void GermaniumNearlineSpectra::FinishEvent()
 {
-    if (fHitGe)
-    {
-        fHitGe->Clear();
-    }
+    // Input is cleared by its producing task.
 }
 
 void GermaniumNearlineSpectra::FinishTask()
