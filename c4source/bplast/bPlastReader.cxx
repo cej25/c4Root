@@ -421,7 +421,13 @@ Bool_t bPlastReader::Read() //do fine time here:
 
             //from this point we should have seen an epoch for channel id.
 
-            uint32_t channelid = fData->bplast_tamex[it_board_number].time_channelv[it_hits] & 0x7F; // 0-32
+            uint32_t channelid = fData->bplast_tamex[it_board_number].time_channelv[it_hits] & 0x7F; // decoded channel ID
+            if (channelid >= NChannels)
+            {
+                ++fNevents_skipped;
+                c4LOG(debug2, Form("Skipping TAMEX hit with out-of-range channel %u on board %d", channelid, it_board_number));
+                continue;
+            }
             
             //if (it_board_number == 1) c4LOG(info,Form("ch = %i, coarse = %i, edge = %i", channelid, fData->bplast_tamex[it_board_number].time_coarsev[it_hits], fData->bplast_tamex[it_board_number].time_edgev[it_hits]));
 
