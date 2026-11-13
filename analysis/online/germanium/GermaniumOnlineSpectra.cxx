@@ -430,10 +430,11 @@ void GermaniumOnlineSpectra::Exec(Option_t* option)
             
             int crystal_index1 = std::distance(crystals_to_plot.begin(), std::find(crystals_to_plot.begin(),crystals_to_plot.end(),std::pair<int,int>(detector_id1,crystal_id1)));
 
+            // Hits not present in the configured plot list must not index its arrays.
+            if (crystal_index1 >= static_cast<int>(crystals_to_plot.size())) continue;
+
             detector_counters[crystal_index1]++; // for rates
             germanium_wr = hit1->Get_wr_t();
-
-            if (crystal_index1 >= crystals_to_plot.size()) continue;
             
             h1_germanium_energy[crystal_index1]->Fill(energy1);
             h1_germanium_energy_last[crystal_index1]->Fill(energy1);
