@@ -144,6 +144,9 @@ void GermaniumRaw2Cal::Exec(Option_t* option)
         for (Int_t ihit = 0; ihit < event_multiplicity; ihit++)
         {
             funcal_hit = (GermaniumFebexData*)funcal_data->At(ihit);
+            // Default to raw energy if no calibration file or channel coefficients are available.
+            // Reset for every hit so energy from an earlier hit can never be reused.
+            channel_energy_cal = funcal_hit->Get_channel_energy();
             
             //do the detector mapping here:
             if (germanium_configuration->MappingLoaded())
