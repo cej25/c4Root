@@ -61,8 +61,7 @@ GermaniumLabTest::GermaniumLabTest(const TString& name, Int_t verbose)
 GermaniumLabTest::~GermaniumLabTest()
 {
     c4LOG(info, "");
-    if (fHitGeUncal)
-        delete fHitGeUncal;
+    // fHitGeUncal is borrowed from FairRootManager.
 }
 
 void GermaniumLabTest::SetParContainers()
@@ -861,9 +860,7 @@ void GermaniumLabTest::FinishEvent()
     }
     
     
-    if (fHitGeUncal){
-        fHitGeUncal->Clear();
-    }
+    // Input is reset by GermaniumTraceReader.
 }
 
 void GermaniumLabTest::FinishTask()

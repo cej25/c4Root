@@ -39,9 +39,9 @@ GermaniumCal2Anl::GermaniumCal2Anl()
 fNEvents(0),
 header(nullptr),
 fOnline(kFALSE),
-fcal_ge_data(new TClonesArray("GermaniumCalData")),
+fcal_ge_data(nullptr),
 fanl_ge_data(new TClonesArray("GermaniumCalData")),
-fcal_bgo_data(new TClonesArray("BGOTwinpeaksCalData"))
+fcal_bgo_data(nullptr)
 {
     germanium_configuration = TGermaniumConfiguration::GetInstance();
 }
@@ -54,18 +54,16 @@ GermaniumCal2Anl::GermaniumCal2Anl(const TString& name, Int_t verbose)
     fNEvents(0),
     header(nullptr),
     fOnline(kFALSE),
-    fcal_ge_data(new TClonesArray("GermaniumCalData")),
+    fcal_ge_data(nullptr),
     fanl_ge_data(new TClonesArray("GermaniumCalData")),
-    fcal_bgo_data(new TClonesArray("BGOTwinpeaksCalData"))
+    fcal_bgo_data(nullptr)
 {
     germanium_configuration = TGermaniumConfiguration::GetInstance();
 }
 
 GermaniumCal2Anl::~GermaniumCal2Anl(){
     c4LOG(info, "Deleting GermaniumCal2Anl task");
-    if (fcal_ge_data) delete fcal_ge_data;
     if (fanl_ge_data) delete fanl_ge_data;
-    if (fcal_bgo_data) delete fcal_bgo_data;
 }
 
 
