@@ -20,6 +20,7 @@
 
 // c4
 #include "FimpReader.h"
+#include "FimpMultihitSafety.h"
 #include "c4Logger.h"
 
 // ROOT
@@ -224,10 +225,26 @@ Bool_t FimpReader::Read()
         int current_channel = fData->fimp_data_time_coarseMI[channel_index]; // channel to read now
         int next_channel_start = fData->fimp_data_time_coarseME[channel_index]; // read current channel data until this index
 
+        if (!fimp_multihit_safety::ValidPackedHitBlock(
+                hit_index, next_channel_start,
+                fData->fimp_data_time_coarse, fData->fimp_data_time_fine,
+                fData->fimp_data_lead_or_trail, 33024))
+        {
+            if (next_channel_start > hit_index) hit_index = next_channel_start;
+            continue;
+        }
+        if (current_channel < 0 || current_channel >= chans_per_tdc)
+        {
+            hit_index = next_channel_start;
+            continue;
+        }
+
         for (uint32_t j = hit_index; j < next_channel_start; j++)
         {
             counter++;
             uint16_t raw_ft = fData->fimp_data_time_finev[j];
+            if (!fimp_multihit_safety::ValidFineTimeIndex(
+                    current_channel, chans_per_tdc, raw_ft, max_fine_time_bins)) continue;
             // fill ft calibration histo, or calibrate
             if (!fine_time_calibration_set)
             {
