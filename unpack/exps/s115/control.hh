@@ -22,6 +22,7 @@
 #define __CONTROL_HH__
 
 #define USER_EXTERNAL_UNPACK_STRUCT_FILE "ext_unpacking.hh"
+#define RAW_EVENT_USER_FUNCTION raw_user_function
 
 
 #endif
