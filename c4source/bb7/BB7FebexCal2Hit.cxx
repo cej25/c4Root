@@ -22,6 +22,7 @@
 
 // c4
 #include "BB7FebexCal2Hit.h"
+#include "BB7FebexIndexSafety.h"
 #include "c4Logger.h"
 #include <FairTask.h>
 #include <unordered_map>
@@ -114,7 +115,7 @@ void BB7FebexCal2Hit::Exec(Option_t* option)
         // Check all (X) clusters
         for (auto& i: clusters)
         {
-            if (i.DSSD == -1) continue;
+            if (!bb7_febex_index_safety::ValidDssd(i.DSSD, counts.size())) continue;
 
             // Track highest DSSD with implant and counts per DSSD
             counts[i.DSSD]++;
@@ -160,7 +161,10 @@ void BB7FebexCal2Hit::Exec(Option_t* option)
         std::fill(channels.begin(), channels.end(), 0);
         for (auto& i : *bb7calDecays)
         {
-            channels[i.Strip + i.Side * 32 + i.DSSD * 64]++;
+            std::size_t channel_index = 0;
+            if (!bb7_febex_index_safety::TryChannelIndex(
+                    i.DSSD, i.Side, i.Strip, bb7_config->DSSDs(), channel_index)) continue;
+            channels[channel_index]++;
         }
         int channelM = 0;
         for (size_t i = 0; i < channels.size(); ++i)
