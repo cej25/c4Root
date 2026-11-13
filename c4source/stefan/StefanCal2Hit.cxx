@@ -22,6 +22,7 @@
 
 // c4
 #include "StefanCal2Hit.h"
+#include "StefanIndexSafety.h"
 #include "ClusterTimeOverlap.h"
 #include "c4Logger.h"
 #include <FairTask.h>
@@ -106,7 +107,7 @@ void StefanCal2Hit::Exec(Option_t* option)
         // Check all (X) clusters
         for (auto& i: clusters)
         {
-            if (i.DSSD == -1) continue;
+            if (!stefan_index_safety::ValidDssd(i.DSSD, counts.size())) continue;
 
             // Track highest DSSD with implant and counts per DSSD
             counts[i.DSSD]++;
