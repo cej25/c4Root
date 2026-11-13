@@ -164,7 +164,7 @@ void FrsReader::ScintillatorReader()
             next_channel_start > static_cast<int>(fData->SCI_MHTDC_LOT) ||
             next_channel_start > 4096)
         {
-            hit_index = next_channel_start;
+            if (next_channel_start > hit_index) hit_index = next_channel_start;
             continue;
         }
 
@@ -221,7 +221,7 @@ void FrsReader::MusicReader()
                 next_channel_start > static_cast<int>(fData->MUSIC[i].LOT) ||
                 next_channel_start > 1024)
             {
-                hit_index = next_channel_start;
+            if (next_channel_start > hit_index) hit_index = next_channel_start;
                 continue;
             }
 
@@ -276,7 +276,7 @@ void FrsReader::TpcReader()
             next_channel_start > static_cast<int>(fData->TPC_TDC_LOT) ||
             next_channel_start > 16384)
         {
-            hit_index = next_channel_start;
+            if (next_channel_start > hit_index) hit_index = next_channel_start;
             continue;
         }
 
