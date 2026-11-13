@@ -25,6 +25,11 @@ inline bool ValidTraceChannel(std::uint32_t one_based_channel)
 {
     return one_based_channel >= 1 && one_based_channel <= 16;
 }
+// UCESB's recorded waveform length can be less than the 4000-sample bank.
+inline std::uint32_t PopulatedTraceSamples(std::uint32_t recorded)
+{
+    return std::min(recorded, std::uint32_t{4000});
+}
 } // namespace germanium_packed_safety
 
 #endif
