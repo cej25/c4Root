@@ -374,8 +374,12 @@ Bool_t FatimaReader::Read() //do fine time here:
             if (fData->fatima_tamex[it_board_number].time_epoch <= it_hits) {fNevents_skipped++; continue;}
             if (fData->fatima_tamex[it_board_number].time_fine <= it_hits) {fNevents_skipped++; continue;}
             if (fData->fatima_tamex[it_board_number].time_coarse <= it_hits) {fNevents_skipped++; continue;}
-            if (fData->fatima_tamex[it_board_number].time_channel <= it_hits ||
-                fData->fatima_tamex[it_board_number].time_edge <= it_hits)
+            if (!c4_tamex_packed_safety::HasCompleteHit(
+                    it_hits, fData->fatima_tamex[it_board_number].time_epoch,
+                    fData->fatima_tamex[it_board_number].time_coarse,
+                    fData->fatima_tamex[it_board_number].time_fine,
+                    fData->fatima_tamex[it_board_number].time_channel,
+                    fData->fatima_tamex[it_board_number].time_edge))
             {
                 ++fNevents_skipped;
                 continue;
