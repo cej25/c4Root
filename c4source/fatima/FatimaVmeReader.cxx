@@ -26,6 +26,7 @@
 // c4
 #include "FatimaVmeData.h"
 #include "FatimaVmeReader.h"
+#include "FatimaVmePackedSafety.h"
 #include "TFatimaVmeConfiguration.h"
 #include "c4Logger.h"
 
@@ -174,10 +175,22 @@ Bool_t FatimaVmeReader::Read()
         int geo = fData->fatimavme_tdc[tdc]._geo;
         
         int hit_index = 0;
-        for (uint32_t channel_index = 0; channel_index < fData->fatimavme_tdc[tdc]._measurement_nM; channel_index++)
+        const auto& tdc_data = fData->fatimavme_tdc[tdc];
+        const auto block_count = fatima_vme_packed_safety::BoundedBlockCount(
+            tdc_data._measurement_nM);
+        for (uint32_t channel_index = 0; channel_index < block_count; ++channel_index)
         {
             int current_channel = fData->fatimavme_tdc[tdc]._measurement_nMI[channel_index]; // channel to read now!
             int next_channel_start = fData->fatimavme_tdc[tdc]._measurement_nME[channel_index];
+
+            if (!fatima_vme_packed_safety::ValidTdcBlock(
+                    hit_index, next_channel_start, tdc_data._measurement_n,
+                    tdc_data._measurement_leadOrTrail))
+            {
+                // Do not index malformed blocks; advance only to a forward endpoint.
+                if (next_channel_start > hit_index) hit_index = next_channel_start;
+                continue;
+            }
 
             int current_detector = dets_tdc[std::make_pair(geo, current_channel)];
 
