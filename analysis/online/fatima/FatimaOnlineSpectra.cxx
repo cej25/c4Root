@@ -55,8 +55,7 @@ FatimaOnlineSpectra::FatimaOnlineSpectra(const TString& name, Int_t verbose)
 FatimaOnlineSpectra::~FatimaOnlineSpectra()
 {
     c4LOG(info, "");
-    if (fHitFatimaTwinpeaks)
-        delete fHitFatimaTwinpeaks;
+    // Input array is borrowed from FairRootManager.
 }
 
 void FatimaOnlineSpectra::SetParContainers()
@@ -527,10 +526,7 @@ void FatimaOnlineSpectra::Exec(Option_t* option)
 
 void FatimaOnlineSpectra::FinishEvent()
 {
-    if (fHitFatimaTwinpeaks)
-    {
-        fHitFatimaTwinpeaks->Clear();
-    }
+    // The calibration task clears its output at the event boundary.
 }
 
 void FatimaOnlineSpectra::FinishTask()
