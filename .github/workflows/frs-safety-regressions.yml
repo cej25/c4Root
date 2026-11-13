@@ -23,3 +23,9 @@ jobs:
             -fsanitize=undefined -fno-sanitize-recover=all \
             tests/fimp_multihit_safety_test.cxx -o /tmp/fimp_multihit_safety_test
           /tmp/fimp_multihit_safety_test
+      - name: Compile and run BB7 FEBEX coordinate safety tests
+        run: |
+          g++ -std=c++17 -O1 -g -Wall -Wextra -Werror -pedantic \
+            -fsanitize=undefined -fno-sanitize-recover=all \
+            tests/bb7_febex_index_safety_test.cxx -o /tmp/bb7_febex_index_safety_test
+          /tmp/bb7_febex_index_safety_test
