@@ -162,9 +162,9 @@ Bool_t FatimaVmeReader::Read()
             {
                 // Copy only complete triplets; UCESB stores a separate sample
                 // count for each of the three waveform banks.
-                const auto& first = qdc_data._sample_one[channels_fired[channel]];
-                const auto& second = qdc_data._sample_two[channels_fired[channel]];
-                const auto& third = qdc_data._sample_three[channels_fired[channel]];
+                const auto& first = qdc_data._sample_one[channel];
+                const auto& second = qdc_data._sample_two[channel];
+                const auto& third = qdc_data._sample_three[channel];
                 const auto triplets = fatima_vme_qdc_safety::CompleteWaveformTriplets(
                     first._, second._, third._);
                 waveform_one.reserve(3 * triplets);
