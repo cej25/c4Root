@@ -158,6 +158,16 @@ void FrsReader::ScintillatorReader()
         int current_channel = fData->SCI_MHTDC_TMI[channel_index];
         int next_channel_start = fData->SCI_MHTDC_TME[channel_index];
 
+        // Both packed arrays must cover the complete channel block.
+        if (next_channel_start < hit_index ||
+            next_channel_start > static_cast<int>(fData->SCI_MHTDC_T) ||
+            next_channel_start > static_cast<int>(fData->SCI_MHTDC_LOT) ||
+            next_channel_start > 4096)
+        {
+            if (next_channel_start > hit_index) hit_index = next_channel_start;
+            continue;
+        }
+
         if (current_channel < 1 || current_channel > 32)
         {
             hit_index = next_channel_start;
@@ -205,6 +215,16 @@ void FrsReader::MusicReader()
             int current_channel = fData->MUSIC[i].TMI[channel_index];
             int next_channel_start = fData->MUSIC[i].TME[channel_index];
 
+            // Both packed arrays must cover the complete channel block.
+            if (next_channel_start < hit_index ||
+                next_channel_start > static_cast<int>(fData->MUSIC[i].T) ||
+                next_channel_start > static_cast<int>(fData->MUSIC[i].LOT) ||
+                next_channel_start > 1024)
+            {
+                if (next_channel_start > hit_index) hit_index = next_channel_start;
+                continue;
+            }
+
             if (current_channel < 1 || current_channel > 8)
             {
                 hit_index = next_channel_start;
@@ -249,6 +269,16 @@ void FrsReader::TpcReader()
     {
         int current_channel = fData->TPC_TDC_TMI[channel_index];
         int next_channel_start = fData->TPC_TDC_TME[channel_index];
+
+        // Both packed arrays must cover the complete channel block.
+        if (next_channel_start < hit_index ||
+            next_channel_start > static_cast<int>(fData->TPC_TDC_T) ||
+            next_channel_start > static_cast<int>(fData->TPC_TDC_LOT) ||
+            next_channel_start > 16384)
+        {
+            if (next_channel_start > hit_index) hit_index = next_channel_start;
+            continue;
+        }
 
         if (current_channel < 1 || current_channel > 128)
         {
