@@ -29,3 +29,9 @@ jobs:
             -fsanitize=undefined -fno-sanitize-recover=all \
             tests/bb7_febex_index_safety_test.cxx -o /tmp/bb7_febex_index_safety_test
           /tmp/bb7_febex_index_safety_test
+      - name: Compile and run cluster time-overlap tests
+        run: |
+          g++ -std=c++17 -O1 -g -Wall -Wextra -Werror -pedantic \
+            -fsanitize=undefined -fno-sanitize-recover=all \
+            tests/cluster_time_overlap_test.cxx -o /tmp/cluster_time_overlap_test
+          /tmp/cluster_time_overlap_test
