@@ -53,8 +53,7 @@ bPlastNearlineSpectra::bPlastNearlineSpectra(const TString& name, Int_t verbose)
 bPlastNearlineSpectra::~bPlastNearlineSpectra()
 {
     c4LOG(info, "");
-    if (fHitbPlastTwinpeaks)
-        delete fHitbPlastTwinpeaks;
+    // Input array is borrowed from FairRootManager.
 }
 
 InitStatus bPlastNearlineSpectra::Init()
@@ -246,10 +245,7 @@ void bPlastNearlineSpectra::Exec(Option_t* option)
 
 void bPlastNearlineSpectra::FinishEvent()
 {
-    if (fHitbPlastTwinpeaks)
-    {
-        fHitbPlastTwinpeaks->Clear();
-    }
+    // The calibration task clears its output at the event boundary.
 }
 
 void bPlastNearlineSpectra::FinishTask()
