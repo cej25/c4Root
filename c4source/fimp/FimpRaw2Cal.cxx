@@ -24,6 +24,7 @@
 
 // c4
 #include "FimpRaw2Cal.h"
+#include "FimpMultihitSafety.h"
 #include "c4Logger.h"
 
 // ROOT
@@ -80,8 +81,9 @@ void FimpRaw2Cal::Exec(Option_t* option)
         std::vector<double> trail_fine_time = fimpItem.Get_trail_fine_time();
 
         // Each reconstructed pair requires both coarse and fine times for each edge.
-        const auto matched_hits = std::min({lead_coarse_time.size(), lead_fine_time.size(),
-                                            trail_coarse_time.size(), trail_fine_time.size()});
+        const auto matched_hits = fimp_multihit_safety::MatchedHitCount(
+            lead_coarse_time.size(), lead_fine_time.size(),
+            trail_coarse_time.size(), trail_fine_time.size());
         for (std::size_t i = 0; i < matched_hits; i++)
         {
             double lead_time = (double)lead_coarse_time[i] * (double)CYCLE_TIME  - (double)lead_fine_time[i];
