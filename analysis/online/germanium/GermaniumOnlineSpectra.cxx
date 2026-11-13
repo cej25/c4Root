@@ -673,7 +673,6 @@ void GermaniumOnlineSpectra::FinishEvent()
     */
     
 
-    if (fHitGe) fHitGe->Clear();
 
 }
 
