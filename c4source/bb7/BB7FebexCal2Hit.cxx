@@ -22,6 +22,7 @@
 
 // c4
 #include "BB7FebexCal2Hit.h"
+#include "ClusterTimeOverlap.h"
 #include "BB7FebexIndexSafety.h"
 #include "c4Logger.h"
 #include <FairTask.h>
@@ -460,8 +461,7 @@ bool BB7Cluster::IsGoodTime(BB7Cluster const& event, int window) const
 {
   if (DSSD == -1) return true;
 
-  if (event.TimeMin >= TimeMin - window && event.TimeMin <= TimeMax + window) return true;
-  if (event.TimeMax >= TimeMin - window && event.TimeMax <= TimeMax + window) return true;
-  return false;
+  return c4_cluster_time::IntervalsOverlap(TimeMin, TimeMax,
+                                           event.TimeMin, event.TimeMax, window);
 }
 

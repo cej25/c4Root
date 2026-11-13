@@ -22,6 +22,7 @@
 
 // c4
 #include "StefanCal2Hit.h"
+#include "ClusterTimeOverlap.h"
 #include "c4Logger.h"
 #include <FairTask.h>
 #include <unordered_map>
@@ -372,8 +373,7 @@ bool StefanCluster::IsGoodTime(StefanCluster const& event, int window) const
 {
   if (DSSD == -1) return true;
 
-  if (event.TimeMin >= TimeMin - window && event.TimeMin <= TimeMax + window) return true;
-  if (event.TimeMax >= TimeMin - window && event.TimeMax <= TimeMax + window) return true;
-  return false;
+  return c4_cluster_time::IntervalsOverlap(TimeMin, TimeMax,
+                                           event.TimeMin, event.TimeMax, window);
 }
 
