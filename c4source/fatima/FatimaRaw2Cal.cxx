@@ -42,7 +42,7 @@ FatimaRaw2Cal::FatimaRaw2Cal()
 fNEvents(0),
 header(nullptr),
 fOnline(kFALSE),
-funcal_data(new TClonesArray("FatimaTwinpeaksData")),
+funcal_data(nullptr),
 fcal_data(new TClonesArray("FatimaTwinpeaksCalData")),
 ftime_machine_array(new TClonesArray("TimeMachineData"))
 {
@@ -57,7 +57,7 @@ FatimaRaw2Cal::FatimaRaw2Cal(const TString& name, Int_t verbose)
     fNEvents(0),
     header(nullptr),
     fOnline(kFALSE),
-    funcal_data(new TClonesArray("FatimaTwinpeaksData")),
+    funcal_data(nullptr),
     fcal_data(new TClonesArray("FatimaTwinpeaksCalData")),
     ftime_machine_array(new TClonesArray("TimeMachineData"))
 {
@@ -68,7 +68,6 @@ Clearing old constructed objects.
 */
 FatimaRaw2Cal::~FatimaRaw2Cal(){
     c4LOG(info, "Deleting FatimaRaw2Cal task");
-    if (funcal_data) delete funcal_data;
     if (fcal_data) delete fcal_data;
     if(ftime_machine_array) delete ftime_machine_array;
 }
@@ -100,7 +99,6 @@ InitStatus FatimaRaw2Cal::Init()
     FairRootManager::Instance()->Register("FatimaTimeMachineData", "FatimaTimeMachineDataFolder", ftime_machine_array, !fOnline);
 
     fcal_data->Clear();
-    funcal_data->Clear();
 
     return kSUCCESS;
 };
@@ -368,8 +366,7 @@ Clears the TClonesArray used in the function. If they are not cleared after each
 */
 void FatimaRaw2Cal::FinishEvent()
 {
-    // reset output array
-    funcal_data->Clear();
+    // Reset only arrays produced by this task; the reader resets raw input.
     fcal_data->Clear();
     ftime_machine_array->Clear();
 };
