@@ -55,7 +55,7 @@ bPlastOnlineSpectra::bPlastOnlineSpectra(const TString& name, Int_t verbose)
 bPlastOnlineSpectra::~bPlastOnlineSpectra()
 {
     c4LOG(info, "");
-    if (fHitbPlastTwinpeaks) delete fHitbPlastTwinpeaks;
+    // Input array is borrowed from FairRootManager.
 }
 
 void bPlastOnlineSpectra::SetParContainers()
@@ -398,10 +398,7 @@ void bPlastOnlineSpectra::Exec(Option_t* option)
 
 void bPlastOnlineSpectra::FinishEvent()
 {
-    if (fHitbPlastTwinpeaks)
-    {
-        fHitbPlastTwinpeaks->Clear();
-    }
+    // The calibration task clears its output at the event boundary.
 }
 
 void bPlastOnlineSpectra::FinishTask()
