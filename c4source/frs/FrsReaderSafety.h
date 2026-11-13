@@ -18,6 +18,13 @@ inline std::uint64_t AssembleWhiteRabbitTimestamp(std::uint32_t word0,
            std::uint64_t{word0};
 }
 
+// Hardware channels are one-based; zero and values past capacity are invalid.
+inline bool ValidOneBasedChannel(std::int64_t channel, std::size_t capacity)
+{
+    return channel > 0 &&
+           static_cast<std::uint64_t>(channel) <= capacity;
+}
+
 inline bool ValidPackedBlock(int start,
                              int end,
                              std::uint32_t time_count,

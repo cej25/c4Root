@@ -134,7 +134,7 @@ void FrsReader::ScintillatorReader()
     for (int i = 0; i < fData->SCI_TAC_DE; i++)
     {
         const uint32_t raw_channel = fData->SCI_TAC_DEI[i];
-        if (raw_channel == 0 || raw_channel > 32) continue;
+        if (!frs_reader_safety::ValidOneBasedChannel(raw_channel, 32)) continue;
         uint32_t channel = raw_channel - 1;
         uint32_t data = fData->SCI_TAC_DEv[i];
         
@@ -145,7 +145,7 @@ void FrsReader::ScintillatorReader()
     for (int i = 0; i < fData->SCI_TAC_DT; i++)
     {
         const uint32_t raw_channel = fData->SCI_TAC_DTI[i];
-        if (raw_channel == 0 || raw_channel > 32) continue;
+        if (!frs_reader_safety::ValidOneBasedChannel(raw_channel, 32)) continue;
         uint32_t channel = raw_channel - 1;
         uint32_t data = fData->SCI_TAC_DTv[i];
 
@@ -167,7 +167,7 @@ void FrsReader::ScintillatorReader()
             continue;
         }
 
-        if (current_channel < 1 || current_channel > 32)
+        if (!frs_reader_safety::ValidOneBasedChannel(current_channel, 32))
         {
             hit_index = next_channel_start;
             continue;
@@ -199,7 +199,7 @@ void FrsReader::MusicReader()
         for (int j = 0; j < fData->MUSIC[i].E; j++)
         {
             const uint32_t raw_channel = fData->MUSIC[i].EI[j];
-            if (raw_channel == 0 || raw_channel > 8) continue;
+            if (!frs_reader_safety::ValidOneBasedChannel(raw_channel, 8)) continue;
             uint32_t channel = raw_channel - 1;
             uint32_t data = fData->MUSIC[i].Ev[j];
 
@@ -222,7 +222,7 @@ void FrsReader::MusicReader()
                 continue;
             }
 
-            if (current_channel < 1 || current_channel > 8)
+            if (!frs_reader_safety::ValidOneBasedChannel(current_channel, 8))
             {
                 hit_index = next_channel_start;
                 continue;
@@ -253,7 +253,7 @@ void FrsReader::TpcReader()
         for (int j = 0; j < fData->TPC_ADC[i]._; j++)
         {   
             const uint32_t raw_channel = fData->TPC_ADC[i].I[j];
-            if (raw_channel == 0 || raw_channel > 8) continue;
+            if (!frs_reader_safety::ValidOneBasedChannel(raw_channel, 8)) continue;
             uint32_t channel = raw_channel - 1;
             uint32_t data = fData->TPC_ADC[i].v[j];
 
@@ -275,7 +275,7 @@ void FrsReader::TpcReader()
             continue;
         }
 
-        if (current_channel < 1 || current_channel > 128)
+        if (!frs_reader_safety::ValidOneBasedChannel(current_channel, 128))
         {
             hit_index = next_channel_start;
             continue;
