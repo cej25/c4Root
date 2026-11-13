@@ -37,7 +37,7 @@ H10MCPRaw2Cal::H10MCPRaw2Cal()
     ,   fNEvents(0)
     ,   header(nullptr)
     ,   fOnline(kFALSE)
-    ,   funcal_data(new TClonesArray("H10MCPTwinpeaksData"))
+    ,   funcal_data(nullptr)
     ,   fcal_data(new TClonesArray("H10MCPTwinpeaksCalData"))
     ,   ftime_machine_array(new TClonesArray("TimeMachineData"))
 {
@@ -52,7 +52,7 @@ H10MCPRaw2Cal::H10MCPRaw2Cal(const TString& name, Int_t verbose)
     ,   fNEvents(0)
     ,   header(nullptr)
     ,   fOnline(kFALSE) 
-    ,   funcal_data(new TClonesArray("H10MCPTwinpeaksData"))
+    ,   funcal_data(nullptr)
     ,   fcal_data(new TClonesArray("H10MCPTwinpeaksCalData"))
     ,   ftime_machine_array(new TClonesArray("TimeMachineData"))
 {
@@ -87,7 +87,6 @@ InitStatus H10MCPRaw2Cal::Init()
     FairRootManager::Instance()->Register("H10MCPTimeMachineData", "H10MCPTimeMachineDataFolder", ftime_machine_array, !fOnline);
 
     fcal_data->Clear();
-    funcal_data->Clear();
 
 
     return kSUCCESS;
@@ -437,8 +436,9 @@ void H10MCPRaw2Cal::Exec(Option_t* option)
 
 void H10MCPRaw2Cal::FinishEvent()
 {
-    // reset output array
+    // Clear only arrays produced by this task; the reader resets raw input.
     fcal_data->Clear();
+    ftime_machine_array->Clear();
 };
 
 /*
