@@ -43,7 +43,7 @@ class TGermaniumConfiguration
         }
 
         inline bool IsInsidePromptFlashCutMulti(double timediff, double energy, int id) const{
-            if ((prompt_flash_cut_multi.size() >= 1) && (prompt_flash_cut_multi.size() >= id)){
+            if (id >= 0 && static_cast<std::size_t>(id) < prompt_flash_cut_multi.size()){
                 return prompt_flash_cut_multi.at(id)->IsInside(timediff,energy);
             }else{
                 return IsInsidePromptFlashCut(timediff, energy);
