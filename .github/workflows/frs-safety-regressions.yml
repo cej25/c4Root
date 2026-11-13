@@ -53,3 +53,9 @@ jobs:
             -fsanitize=undefined -fno-sanitize-recover=all \
             tests/stefan_timestamp_safety_test.cxx -o /tmp/stefan_timestamp_safety_test
           /tmp/stefan_timestamp_safety_test
+      - name: Compile and run FIMP fine-time histogram bin mapping tests
+        run: |
+          g++ -std=c++17 -O1 -g -Wall -Wextra -Werror -pedantic \
+            -fsanitize=undefined -fno-sanitize-recover=all \
+            tests/fimp_fine_time_bins_test.cxx -o /tmp/fimp_fine_time_bins_test
+          /tmp/fimp_fine_time_bins_test
