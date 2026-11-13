@@ -65,3 +65,9 @@ jobs:
             -fsanitize=undefined -fno-sanitize-recover=all \
             tests/germanium_packed_safety_test.cxx -o /tmp/germanium_packed_safety_test
           /tmp/germanium_packed_safety_test
+      - name: Compile and run BGO TAMEX payload bounds tests
+        run: |
+          g++ -std=c++17 -O1 -g -Wall -Wextra -Werror -pedantic \
+            -fsanitize=undefined -fno-sanitize-recover=all \
+            tests/bgo_packed_safety_test.cxx -o /tmp/bgo_packed_safety_test
+          /tmp/bgo_packed_safety_test
