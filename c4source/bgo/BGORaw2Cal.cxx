@@ -41,7 +41,7 @@ BGORaw2Cal::BGORaw2Cal()
 fNEvents(0),
 header(nullptr),
 fOnline(kFALSE),
-funcal_data(new TClonesArray("BGOTwinpeaksData")),
+funcal_data(nullptr),
 fcal_data(new TClonesArray("BGOTwinpeaksCalData")),
 ftime_machine_array(new TClonesArray("TimeMachineData"))
 {
@@ -56,7 +56,7 @@ BGORaw2Cal::BGORaw2Cal(const TString& name, Int_t verbose)
     fNEvents(0),
     header(nullptr),
     fOnline(kFALSE),
-    funcal_data(new TClonesArray("BGOTwinpeaksData")),
+    funcal_data(nullptr),
     fcal_data(new TClonesArray("BGOTwinpeaksCalData")),
     ftime_machine_array(new TClonesArray("TimeMachineData"))
 {
@@ -67,7 +67,6 @@ Clearing old constructed objects.
 */
 BGORaw2Cal::~BGORaw2Cal(){
     c4LOG(info, "Deleting BGORaw2Cal task");
-    if (funcal_data) delete funcal_data;
     if (fcal_data) delete fcal_data;
     if(ftime_machine_array) delete ftime_machine_array;
 }
@@ -98,7 +97,6 @@ InitStatus BGORaw2Cal::Init()
     FairRootManager::Instance()->Register("BGOTimeMachineData", "BGOTimeMachineDataFolder", ftime_machine_array, !fOnline);
 
     fcal_data->Clear();
-    funcal_data->Clear();
 
     return kSUCCESS;
 };
@@ -321,8 +319,7 @@ Clears the TClonesArray used in the function. If they are not cleared after each
 */
 void BGORaw2Cal::FinishEvent()
 {
-    // reset output array
-    funcal_data->Clear();
+    // Reset only this task's outputs; the BGO reader resets raw input.
     fcal_data->Clear();
     ftime_machine_array->Clear();
 };
