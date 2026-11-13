@@ -338,7 +338,8 @@ Bool_t FimpReader::Read()
                 entry.SetAll(wr_t, 
                             wr_id,
                             trig_time_long, 
-                            prev_channel, 
+                            channel, // Trigger channel 128, not the preceding detector channel
+
                             lead_coarse, // lead coarse
                             lead_fine, // lead fine
                             trail_coarse, // trail coarse
