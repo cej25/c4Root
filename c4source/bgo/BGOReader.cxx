@@ -287,15 +287,14 @@ void BGOReader::ReadFineTimeHistosFromFile()
             if (fine_time_hits[i][j] != nullptr) { c4LOG(fatal,"fine_time_hits[i][j] not declared."); }
             TH1I* a = nullptr;
             inputfile->GetObject(Form("fine_time_hits_%i_%i", i, j), a);
-            if (a) 
-            {
-                c4LOG(debug1, Form("Accessing i = %i, j = %i", i, j));
-                fine_time_hits[i][j] = (TH1I*)a->Clone();
-                c4LOG_IF(fatal, fine_time_hits == nullptr, "Failed reading the file for fine time calibration histograms");
-                delete a;
-                a = nullptr;
-                fine_time_hits[i][j]->SetDirectory(0); // this was the trick to access the histos after closing the inputfile.
-            }
+            c4LOG_IF(fatal, !a, "Missing BGO fine-time histogram for board "
+                << i << ", channel " << j);
+            c4LOG(debug1, Form("Accessing i = %i, j = %i", i, j));
+            fine_time_hits[i][j] = static_cast<TH1I*>(a->Clone());
+            c4LOG_IF(fatal, !fine_time_hits[i][j],
+                "Failed cloning BGO fine-time histogram for board "
+                << i << ", channel " << j);
+            fine_time_hits[i][j]->SetDirectory(nullptr); // Keep the clone after closing the input file.
         }
     }
 
