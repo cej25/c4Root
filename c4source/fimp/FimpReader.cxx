@@ -20,6 +20,7 @@
 
 // c4
 #include "FimpReader.h"
+#include "FimpFineTimeBins.h"
 #include "FimpMultihitSafety.h"
 #include "c4Logger.h"
 
@@ -121,8 +122,9 @@ void FimpReader::DoFineTimeCalibration()
                 continue;
             }
             // not sure why we would need to divide by 2? is it for lead/trail? or fast/slow?
-            fine_time_calibration_coeffs[i][j] = cycle_time * ((double)running_sum + (double)fine_time_hits[i]->GetBinContent(j)) / (double)total_counts;
-            running_sum += fine_time_hits[i]->GetBinContent(j);
+            const double bin_counts = fine_time_hits[i]->GetBinContent(fimp_fine_time_bins::RootBinForRawFineTime(j));
+            fine_time_calibration_coeffs[i][j] = cycle_time * ((double)running_sum + bin_counts) / (double)total_counts;
+            running_sum += bin_counts;
             
         }
     }
