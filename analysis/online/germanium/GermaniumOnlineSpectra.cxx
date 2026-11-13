@@ -58,8 +58,7 @@ GermaniumOnlineSpectra::GermaniumOnlineSpectra(const TString& name, Int_t verbos
 GermaniumOnlineSpectra::~GermaniumOnlineSpectra()
 {
     c4LOG(info, "");
-    if (fHitGe)
-        delete fHitGe;
+    // fHitGe is borrowed from FairRootManager; it is not owned by this task.
 }
 
 void GermaniumOnlineSpectra::SetParContainers()
