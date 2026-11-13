@@ -22,6 +22,7 @@
 #include "FairLogger.h"
 
 
+#include <cmath>
 #include <iostream>
 #include <sstream>
 #include <string>
@@ -127,57 +128,93 @@ Takes second order polynomials
 */
 void TGermaniumConfiguration::ReadCalibrationCoefficients()
 {
+    std::ifstream input(calibration_file);
+    if (!input) c4LOG(fatal, "Could not open Germanium calibration coefficients: " << calibration_file);
 
-    std::ifstream cal_map_file (calibration_file);
-    if (cal_map_file.fail()) c4LOG(fatal, "Could not open Germanium calibration coefficients");    
-
-    int rdetector_id,rcrystal_id; // temp read variables
-    double a0,a1,a2;
-    
-    //assumes the first line in the file is num-modules used
-    while(!cal_map_file.eof()){
-        if(cal_map_file.peek()=='#') cal_map_file.ignore(256,'\n');
-        else{
-            cal_map_file >> rdetector_id >> rcrystal_id >> a0 >> a1 >> a2;
-            std::pair<int,int> detector_crystal = {rdetector_id,rcrystal_id};
-            std::vector<double> cals = {a0,a1,a2};
-            calibration_coeffs.insert(std::pair<std::pair<int,int>,std::vector<double>>{detector_crystal,cals});
-            cal_map_file.ignore(256,'\n');
+    std::string line;
+    std::size_t line_number = 0;
+    while (std::getline(input, line))
+    {
+        ++line_number;
+        // Allow blank lines, comments, and trailing comments.
+        line = line.substr(0, line.find('#'));
+        std::istringstream row(line);
+        int detector_id, crystal_id;
+        double first, second, third;
+        if (!(row >> detector_id))
+        {
+            if (row.eof()) continue;
+            c4LOG(fatal, "Invalid Germanium calibration line " << line_number << " in " << calibration_file);
         }
+        if (!(row >> crystal_id >> first >> second))
+            c4LOG(fatal, "Incomplete Germanium calibration line " << line_number << " in " << calibration_file);
+
+        // Standard format: det crystal a0 a1 a2.
+        // Legacy four-column format (a1, a0): det crystal a1 a0.
+        std::vector<double> coefficients;
+        if (row >> third)
+        {
+            coefficients = {first, second, third};
+        }
+        else if (row.eof())
+        {
+            coefficients = {second, first, 0.0};
+            row.clear();
+        }
+        else
+        {
+            c4LOG(fatal, "Invalid Germanium calibration coefficient on line " << line_number << " in " << calibration_file);
+        }
+
+        std::string unexpected;
+        if (row >> unexpected)
+            c4LOG(fatal, "Extra column in Germanium calibration line " << line_number << " in " << calibration_file);
+        if (!std::isfinite(coefficients[0]) || !std::isfinite(coefficients[1]) || !std::isfinite(coefficients[2]))
+            c4LOG(fatal, "Non-finite Germanium calibration coefficient on line " << line_number << " in " << calibration_file);
+
+        if (!calibration_coeffs.emplace(std::make_pair(detector_id, crystal_id), coefficients).second)
+            c4LOG(fatal, "Duplicate Germanium calibration entry on line " << line_number << " in " << calibration_file);
     }
+
     detector_calibrations_loaded = 1;
-    cal_map_file.close();
-
     LOG(info) << "Germanium Calibration File: " + calibration_file;
-};
-
+}
 
 void TGermaniumConfiguration::ReadTimeshiftCoefficients()
 {
-    std::ifstream timeshift_file (timeshift_calibration_file);
+    std::ifstream input(timeshift_calibration_file);
+    if (!input) c4LOG(fatal, "Could not open Germanium timeshifts: " << timeshift_calibration_file);
 
-
-    if (timeshift_file.fail()) c4LOG(fatal, "Could not open Germanium timeshifts");    
-    int rdetector_id,rcrystal_id; // temp read variables
-    double t0;
-    
-    //assumes the first line in the file is num-modules used
-    while(!timeshift_file.eof()){
-        if(timeshift_file.peek()=='#') timeshift_file.ignore(256,'\n');
-        else{
-            timeshift_file >> rdetector_id >> rcrystal_id >> t0;
-            c4LOG(info,Form("det = %i , cr = %i, t = %f",rdetector_id,rcrystal_id,t0));
-            std::pair<int,int> detector_crystal = {rdetector_id,rcrystal_id};
-            timeshift_calibration_coeffs.insert(std::pair<std::pair<int,int>,double>{detector_crystal,t0});
-            timeshift_file.ignore(256,'\n');
+    std::string line;
+    std::size_t line_number = 0;
+    while (std::getline(input, line))
+    {
+        ++line_number;
+        line = line.substr(0, line.find('#'));
+        std::istringstream row(line);
+        int detector_id, crystal_id;
+        double timeshift;
+        if (!(row >> detector_id))
+        {
+            if (row.eof()) continue;
+            c4LOG(fatal, "Invalid Germanium timeshift line " << line_number << " in " << timeshift_calibration_file);
         }
+        if (!(row >> crystal_id >> timeshift))
+            c4LOG(fatal, "Incomplete Germanium timeshift line " << line_number << " in " << timeshift_calibration_file);
+
+        std::string unexpected;
+        if (row >> unexpected)
+            c4LOG(fatal, "Extra column in Germanium timeshift line " << line_number << " in " << timeshift_calibration_file);
+        if (!std::isfinite(timeshift))
+            c4LOG(fatal, "Non-finite Germanium timeshift on line " << line_number << " in " << timeshift_calibration_file);
+
+        if (!timeshift_calibration_coeffs.emplace(std::make_pair(detector_id, crystal_id), timeshift).second)
+            c4LOG(fatal, "Duplicate Germanium timeshift entry on line " << line_number << " in " << timeshift_calibration_file);
     }
+
     timeshift_calibration_coeffs_loaded = 1;
-
-    timeshift_file.close();
-
     LOG(info) << "Germanium Timeshift File: " + timeshift_calibration_file;
-};
+}
 
 void TGermaniumConfiguration::ReadPromptFlashCut()
 {
