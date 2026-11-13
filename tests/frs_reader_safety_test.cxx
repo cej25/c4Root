@@ -9,6 +9,7 @@ int main()
     using frs_reader_safety::AssembleWhiteRabbitTimestamp;
     using frs_reader_safety::ValidPackedBlock;
     using frs_reader_safety::ValidOneBasedChannel;
+    using frs_reader_safety::ZeroDetectorArray;
 
     // The four 16-bit input words are in least-significant-first order.
     assert(AssembleWhiteRabbitTimestamp(0, 0, 0, 0) == 0);
@@ -46,6 +47,27 @@ int main()
     assert(ValidOneBasedChannel(128, 128));
     assert(!ValidOneBasedChannel(129, 128));
     assert(!ValidOneBasedChannel(1, 0));
+
+    // Reproduce all five FrsReader fixed-array shapes used by Reset().
+    // Fill every element, including the last channel/row, as event 1 data.
+    std::uint32_t sciDE[32], sciDT[32], musicE[5][8], musicT[5][8], adcData[7][8];
+    for (auto &value : sciDE) value = 123;
+    for (auto &value : sciDT) value = 456;
+    for (auto &row : musicE) for (auto &value : row) value = 789;
+    for (auto &row : musicT) for (auto &value : row) value = 321;
+    for (auto &row : adcData) for (auto &value : row) value = 654;
+
+    // Event 2 has no new hits; every element must be reset to zero.
+    ZeroDetectorArray(sciDE);
+    ZeroDetectorArray(sciDT);
+    ZeroDetectorArray(musicE);
+    ZeroDetectorArray(musicT);
+    ZeroDetectorArray(adcData);
+    for (auto value : sciDE) assert(value == 0);
+    for (auto value : sciDT) assert(value == 0);
+    for (const auto &row : musicE) for (auto value : row) assert(value == 0);
+    for (const auto &row : musicT) for (auto value : row) assert(value == 0);
+    for (const auto &row : adcData) for (auto value : row) assert(value == 0);
 
     return 0;
 }
