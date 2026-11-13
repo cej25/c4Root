@@ -8,6 +8,7 @@ int main()
 {
     using germanium_packed_safety::CompleteChannelCount;
     using germanium_packed_safety::ValidTraceChannel;
+    using germanium_packed_safety::PopulatedTraceSamples;
 
     assert(CompleteChannelCount(0, 0, 0, 0, 0, 0) == 0);
     assert(CompleteChannelCount(1, 1, 1, 1, 1, 1) == 1);
@@ -26,5 +27,11 @@ int main()
     assert(!ValidTraceChannel(0));
     assert(!ValidTraceChannel(17));
     assert(!ValidTraceChannel(std::numeric_limits<std::uint32_t>::max()));
+    assert(PopulatedTraceSamples(0) == 0);
+    assert(PopulatedTraceSamples(1) == 1);
+    assert(PopulatedTraceSamples(1250) == 1250);
+    assert(PopulatedTraceSamples(4000) == 4000);
+    assert(PopulatedTraceSamples(4001) == 4000);
+    assert(PopulatedTraceSamples(std::numeric_limits<std::uint32_t>::max()) == 4000);
     return 0;
 }
