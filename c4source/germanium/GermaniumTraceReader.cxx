@@ -21,6 +21,7 @@
 // c4
 #include "GermaniumFebexData.h"
 #include "GermaniumTraceReader.h"
+#include "GermaniumPackedSafety.h"
 #include "c4Logger.h"
 
 #include "TClonesArray.h"
@@ -104,7 +105,11 @@ Bool_t GermaniumTraceReader::Read()
         //the fData->germ.channel_energy/channel_cfd/etc contain the length of their individual arrays, and the channel_energyI arrays are the indices that they were written with in ucesb, which in our case is the channel id. Lastly the channel_energyv is the value.
         if (fData->germanium_traces_data[it_board_number].channel_energy != fData->germanium_traces_data[it_board_number].channel_cfd) c4LOG(warning,"Inconsistent size of arrays");
 
-        for (int index = 0; index < fData->germanium_traces_data[it_board_number].channel_energy; index++)
+        const auto& board = fData->germanium_traces_data[it_board_number];
+        const auto complete_channels = germanium_packed_safety::CompleteChannelCount(
+            board.channel_energy, board.channel_cfd, board.channel_trigger_time_hi,
+            board.channel_trigger_time_lo, board.pileup, board.overflow);
+        for (uint32_t index = 0; index < complete_channels; index++)
         {   
             
             
@@ -142,6 +147,11 @@ Bool_t GermaniumTraceReader::Read()
 
 
 
+
+            // The trace bank is indexed by (hardware channel - 1); reject
+            // invalid one-based identifiers before constructing an output hit.
+            if (!germanium_packed_safety::ValidTraceChannel(
+                    board.channel_energyI[index])) continue;
 
             GermaniumFebexTraceData * last_entry = new ((*fArray)[fArray->GetEntriesFast()]) GermaniumFebexTraceData(
                 fData->germanium_traces_data[it_board_number].channel_energy,
