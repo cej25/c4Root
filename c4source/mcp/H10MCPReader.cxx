@@ -364,8 +364,12 @@ Bool_t H10MCPReader::Read() //do fine time here:
             if (fData->mcp_tamex[it_board_number].time_epoch <= it_hits) { fNevents_skipped++; continue; }
             if (fData->mcp_tamex[it_board_number].time_fine <= it_hits) { fNevents_skipped++; continue; }
             if (fData->mcp_tamex[it_board_number].time_coarse <= it_hits) { fNevents_skipped++; continue; }
-            if (fData->mcp_tamex[it_board_number].time_channel <= it_hits ||
-                fData->mcp_tamex[it_board_number].time_edge <= it_hits)
+            if (!c4_tamex_packed_safety::HasCompleteHit(
+                    it_hits, fData->mcp_tamex[it_board_number].time_epoch,
+                    fData->mcp_tamex[it_board_number].time_coarse,
+                    fData->mcp_tamex[it_board_number].time_fine,
+                    fData->mcp_tamex[it_board_number].time_channel,
+                    fData->mcp_tamex[it_board_number].time_edge))
             {
                 ++fNevents_skipped;
                 continue;
