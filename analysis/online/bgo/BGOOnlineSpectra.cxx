@@ -59,8 +59,7 @@ BGOOnlineSpectra::BGOOnlineSpectra(const TString& name, Int_t verbose)
 BGOOnlineSpectra::~BGOOnlineSpectra()
 {
     c4LOG(info, "");
-    if (fHitGe)
-        delete fHitGe;
+    // Both Germanium and BGO input arrays are borrowed from FairRootManager.
 }
 
 void BGOOnlineSpectra::SetParContainers()
@@ -310,14 +309,7 @@ void BGOOnlineSpectra::Exec(Option_t* option)
 
 void BGOOnlineSpectra::FinishEvent()
 {
-    if (fHitGe)
-    {
-        fHitGe->Clear();
-    }
-    if (fHitBGO)
-    {
-        fHitBGO->Clear();
-    }
+    // Shared input arrays are cleared by their producing tasks.
 }
 
 void BGOOnlineSpectra::FinishTask()
