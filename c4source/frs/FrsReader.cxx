@@ -309,12 +309,12 @@ void FrsReader::Reset()
     sciArray->clear();
     musicArray->clear();
     tpcArray->clear();
-    memset(sciDE, 0, sizeof sciDE);
-    memset(sciDT, 0, sizeof sciDT);
+    frs_reader_safety::ZeroDetectorArray(sciDE);
+    frs_reader_safety::ZeroDetectorArray(sciDT);
     for (int i = 0; i < 32; i++) sciMHTDC[i].clear();
-    memset(musicE, 0, sizeof musicE);
-    memset(musicT, 0, sizeof musicT);
-    memset(adcData, 0, sizeof adcData);
+    frs_reader_safety::ZeroDetectorArray(musicE);
+    frs_reader_safety::ZeroDetectorArray(musicT);
+    frs_reader_safety::ZeroDetectorArray(adcData);
     for (int i = 0; i < 128; i++) tdcData[i].clear();
 
 }
