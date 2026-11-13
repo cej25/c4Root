@@ -61,8 +61,7 @@ GermaniumResolution::GermaniumResolution(const TString& name, Int_t verbose)
 GermaniumResolution::~GermaniumResolution()
 {
     c4LOG(info, "");
-    if (fHitGe)
-        delete fHitGe;
+    // fHitGe is borrowed from FairRootManager.
 }
 
 InitStatus GermaniumResolution::Init()
@@ -152,10 +151,7 @@ void GermaniumResolution::Exec(Option_t* option){
 
 void GermaniumResolution::FinishEvent()
 {
-    if (fHitGe)
-    {
-        fHitGe->Clear();
-    }
+    // Input is cleared by its producing task.
 
     if (((int64_t)current_wr - (int64_t)last_wr > 600e9)) // 10 mins
     {
