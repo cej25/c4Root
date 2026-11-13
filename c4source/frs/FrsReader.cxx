@@ -21,6 +21,7 @@
 // c4
 #include "FrsData.h"
 #include "FrsReader.h"
+#include "FrsReaderSafety.h"
 #include "c4Logger.h"
 
 #include "TClonesArray.h"
@@ -88,14 +89,14 @@ Bool_t FrsReader::Read()
     if (!fData) return kTRUE;
     if (fData == nullptr) return kFALSE;
 
-    const uint64_t wr_bits = (uint64_t{fData->WR_T[3]} << 48) | (uint64_t{fData->WR_T[2]} << 32) | (uint64_t{fData->WR_T[1]} << 16) | uint64_t{fData->WR_T[0]};
+    const uint64_t wr_bits = frs_reader_safety::AssembleWhiteRabbitTimestamp(fData->WR_T[0], fData->WR_T[1], fData->WR_T[2], fData->WR_T[3]);
     const int64_t wr_t = static_cast<int64_t>(wr_bits);
     // if (wr_t == 0) return kTRUE; // CEJ: does this screw things up for spillflag? untested, yes most likely
 
     int16_t tpat = fData->TPAT;
     
  
-    const uint64_t travmus_bits = (uint64_t{fData->TM_WR_T[3]} << 48) | (uint64_t{fData->TM_WR_T[2]} << 32) | (uint64_t{fData->TM_WR_T[1]} << 16) | uint64_t{fData->TM_WR_T[0]};
+    const uint64_t travmus_bits = frs_reader_safety::AssembleWhiteRabbitTimestamp(fData->TM_WR_T[0], fData->TM_WR_T[1], fData->TM_WR_T[2], fData->TM_WR_T[3]);
     const Long64_t travmus_wr_t = static_cast<Long64_t>(travmus_bits);
 
     auto & entry = tpatArray->emplace_back();
@@ -159,10 +160,8 @@ void FrsReader::ScintillatorReader()
         int next_channel_start = fData->SCI_MHTDC_TME[channel_index];
 
         // Both packed arrays must cover the complete channel block.
-        if (next_channel_start < hit_index ||
-            next_channel_start > static_cast<int>(fData->SCI_MHTDC_T) ||
-            next_channel_start > static_cast<int>(fData->SCI_MHTDC_LOT) ||
-            next_channel_start > 4096)
+        if (!frs_reader_safety::ValidPackedBlock(hit_index, next_channel_start,
+                                                 fData->SCI_MHTDC_T, fData->SCI_MHTDC_LOT, 4096))
         {
             if (next_channel_start > hit_index) hit_index = next_channel_start;
             continue;
@@ -216,10 +215,8 @@ void FrsReader::MusicReader()
             int next_channel_start = fData->MUSIC[i].TME[channel_index];
 
             // Both packed arrays must cover the complete channel block.
-            if (next_channel_start < hit_index ||
-                next_channel_start > static_cast<int>(fData->MUSIC[i].T) ||
-                next_channel_start > static_cast<int>(fData->MUSIC[i].LOT) ||
-                next_channel_start > 1024)
+            if (!frs_reader_safety::ValidPackedBlock(hit_index, next_channel_start,
+                                                     fData->MUSIC[i].T, fData->MUSIC[i].LOT, 1024))
             {
                 if (next_channel_start > hit_index) hit_index = next_channel_start;
                 continue;
@@ -271,10 +268,8 @@ void FrsReader::TpcReader()
         int next_channel_start = fData->TPC_TDC_TME[channel_index];
 
         // Both packed arrays must cover the complete channel block.
-        if (next_channel_start < hit_index ||
-            next_channel_start > static_cast<int>(fData->TPC_TDC_T) ||
-            next_channel_start > static_cast<int>(fData->TPC_TDC_LOT) ||
-            next_channel_start > 16384)
+        if (!frs_reader_safety::ValidPackedBlock(hit_index, next_channel_start,
+                                                 fData->TPC_TDC_T, fData->TPC_TDC_LOT, 16384))
         {
             if (next_channel_start > hit_index) hit_index = next_channel_start;
             continue;

@@ -1,0 +1,19 @@
+name: FRS standalone safety regressions
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+
+jobs:
+  frs-safety:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Compile and run FRS safety tests (no ROOT/FairRoot required)
+        run: |
+          g++ -std=c++17 -O1 -g -Wall -Wextra -Werror -pedantic \
+            -fsanitize=undefined -fno-sanitize-recover=all \
+            tests/frs_reader_safety_test.cxx -o /tmp/frs_reader_safety_test
+          /tmp/frs_reader_safety_test
