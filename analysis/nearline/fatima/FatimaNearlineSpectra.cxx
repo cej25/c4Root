@@ -56,8 +56,7 @@ FatimaNearlineSpectra::FatimaNearlineSpectra(const TString& name, Int_t verbose)
 FatimaNearlineSpectra::~FatimaNearlineSpectra()
 {
     c4LOG(info, "");
-    if (fHitFatimaTwinpeaks)
-        delete fHitFatimaTwinpeaks;
+    // Input array is borrowed from FairRootManager.
 }
 
 InitStatus FatimaNearlineSpectra::Init()
@@ -440,10 +439,7 @@ void FatimaNearlineSpectra::Exec(Option_t* option)
 
 void FatimaNearlineSpectra::FinishEvent()
 {
-    if (fHitFatimaTwinpeaks)
-    {
-        fHitFatimaTwinpeaks->Clear();
-    }
+    // The calibration task clears its output at the event boundary.
 }
 
 void FatimaNearlineSpectra::FinishTask()
