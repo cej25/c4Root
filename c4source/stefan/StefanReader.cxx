@@ -20,6 +20,7 @@
 
 // c4
 #include "StefanReader.h"
+#include "StefanPackedSafety.h"
 #include "c4Logger.h"
 
 #include "TClonesArray.h"
@@ -95,7 +96,12 @@ Bool_t StefanReader::Read()
                 }
         
 
-        for (int index = 0; index < fData->stefan_data[it_board_number].channel_energy; index++)
+        const auto & board = fData->stefan_data[it_board_number];
+        const auto complete_channels = stefan_packed_safety::CompleteChannelCount(
+            board.channel_energy, board.channel_cfd, board.channel_trigger_time_lo,
+            board.pileup, board.overflow);
+
+        for (uint32_t index = 0; index < complete_channels; index++)
         {   
 
             
