@@ -46,11 +46,25 @@ FimpReader::FimpReader(EXT_STR_h101_fimp_onion* data, size_t offset)
 {
 }
 
-FimpReader::~FimpReader() 
+FimpReader::~FimpReader()
 {
     c4LOG(info, "Counter: " << counter);
     c4LOG(info, "unmatched lead trail counter: " << lead_trail_unmatched_counter);
     c4LOG(info, "fNEvents: " << fNEvent);
+
+    if (fine_time_hits)
+    {
+        for (int i = 0; i < chans_per_tdc; ++i) delete fine_time_hits[i];
+        delete[] fine_time_hits;
+    }
+
+    if (fine_time_calibration_coeffs)
+    {
+        for (int i = 0; i < chans_per_tdc; ++i) delete[] fine_time_calibration_coeffs[i];
+        delete[] fine_time_calibration_coeffs;
+    }
+
+    delete fimpArray; // The FimpData output container is created and owned by this reader.
 }
 
 Bool_t FimpReader::Init(ext_data_struct_info* a_struct_info)
@@ -82,7 +96,13 @@ Bool_t FimpReader::Init(ext_data_struct_info* a_struct_info)
     else
     {
         fine_time_hits = new TH1I*[chans_per_tdc];
-        for (int i = 0; i < chans_per_tdc; i++) fine_time_hits[i] = new TH1I(Form("fine_time_hits_channel_%i", i), Form("fine_time_hits_channel_%i", i), max_fine_time_bins, 0, max_fine_time_bins);
+        for (int i = 0; i < chans_per_tdc; i++)
+        {
+            fine_time_hits[i] = new TH1I(Form("fine_time_hits_channel_%i", i),
+                                        Form("fine_time_hits_channel_%i", i),
+                                        max_fine_time_bins, 0, max_fine_time_bins);
+            fine_time_hits[i]->SetDirectory(nullptr); // Reader owns the histogram.
+        }
         fine_time_calibration_set = false;
     }
 
@@ -150,7 +170,12 @@ void FimpReader::WriteFineTimeHistosToFile()
 
     TFile* outputfile = TFile::Open(Form("%s", fine_time_histo_outfile.Data()), "RECREATE");
 
-    if (!outputfile->IsOpen()) { c4LOG(warn, "Fine Time histogram file was not opened, cannot write calibrations to file!"); return; }
+    if (!outputfile || !outputfile->IsOpen())
+    {
+        c4LOG(warn, "Fine Time histogram file was not opened, cannot write calibrations to file!");
+        delete outputfile;
+        return;
+    }
 
     for (int i = 0; i < chans_per_tdc; i++)
     { 
@@ -162,6 +187,7 @@ void FimpReader::WriteFineTimeHistosToFile()
 
     LOG(info) << "Fimp Fine Time calibrations (i.e. raw fine time histograms) written to " << fine_time_histo_outfile.Data();
     outputfile->Close();
+    delete outputfile;
 
     c4LOG(info, "You have successfully done fine time calibration. These are written to file - please restart the program and add set the correct fine time calibration file for FimpReader.");
 }
@@ -185,6 +211,7 @@ void FimpReader::ReadFineTimeHistosFromFile()
     }
 
     inputfile->Close();
+    delete inputfile;
     LOG(info) << Form("Fatima fine time calibration read from file: %s", fine_time_histo_infile.Data());
 
 }
