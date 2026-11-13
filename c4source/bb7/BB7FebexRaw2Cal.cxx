@@ -48,7 +48,7 @@ BB7FebexRaw2Cal::BB7FebexRaw2Cal()
 
 BB7FebexRaw2Cal::~BB7FebexRaw2Cal()
 {
-    delete bb7array;
+    // bb7array is a borrowed input managed by the BB7 FEBEX reader.
     delete bb7calImplants;
     delete bb7calDecays;
 }
