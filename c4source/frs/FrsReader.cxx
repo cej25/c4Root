@@ -221,7 +221,7 @@ void FrsReader::MusicReader()
                 next_channel_start > static_cast<int>(fData->MUSIC[i].LOT) ||
                 next_channel_start > 1024)
             {
-            if (next_channel_start > hit_index) hit_index = next_channel_start;
+                if (next_channel_start > hit_index) hit_index = next_channel_start;
                 continue;
             }
 
