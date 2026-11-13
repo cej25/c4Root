@@ -37,7 +37,7 @@ H10MCPCal2Ana::H10MCPCal2Ana()
     ,   fNEvents(0)
     ,   header(nullptr)
     ,   fOnline(kFALSE)
-    ,   fcal_data(new TClonesArray("H10MCPTwinpeaksCalData"))
+    ,   fcal_data(nullptr)
     ,   fana_data(new TClonesArray("H10MCPTwinpeaksAnaData"))
 {
 
@@ -51,7 +51,7 @@ H10MCPCal2Ana::H10MCPCal2Ana(const TString& name, Int_t verbose)
     ,   fNEvents(0)
     ,   header(nullptr)
     ,   fOnline(kFALSE)
-    ,   fcal_data(new TClonesArray("H10MCPTwinpeaksCalData"))
+    ,   fcal_data(nullptr)
     ,   fana_data(new TClonesArray("H10MCPTwinpeaksAnaData"))
 {
 
@@ -82,7 +82,6 @@ InitStatus H10MCPCal2Ana::Init()
     //need to have the name of the detector subsystem here:
     FairRootManager::Instance()->Register("H10MCPTwinpeaksAnaData", "H10MCPTwinpeaksAnaDataFolder", fana_data, !fOnline);
 
-    fcal_data->Clear();
     fana_data->Clear();
 
     return kSUCCESS;
