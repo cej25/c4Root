@@ -102,8 +102,8 @@ class FimpReader : public c4Reader
 
         TString fine_time_histo_outfile;
         TString fine_time_histo_infile;
-        TH1I** fine_time_hits;
-        double** fine_time_calibration_coeffs;
+        TH1I** fine_time_hits = nullptr;
+        double** fine_time_calibration_coeffs = nullptr;
         int fine_time_calibration_after = 100000;
         bool fine_time_calibration_set = false;
         bool fine_time_calibration_save = false;
