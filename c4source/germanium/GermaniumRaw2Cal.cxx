@@ -40,7 +40,7 @@ GermaniumRaw2Cal::GermaniumRaw2Cal()
 fNEvents(0),
 header(nullptr),
 fOnline(kFALSE),
-funcal_data(new TClonesArray("GermaniumFebexData")),
+funcal_data(nullptr),
 fcal_data(new TClonesArray("GermaniumCalData")),
 ftime_machine_array(new TClonesArray("TimeMachineData"))
 {
@@ -55,7 +55,7 @@ GermaniumRaw2Cal::GermaniumRaw2Cal(const TString& name, Int_t verbose)
     fNEvents(0),
     header(nullptr),
     fOnline(kFALSE),
-    funcal_data(new TClonesArray("GermaniumFebexData")),
+    funcal_data(nullptr),
     fcal_data(new TClonesArray("GermaniumCalData")),
     ftime_machine_array(new TClonesArray("TimeMachineData"))
 {
@@ -64,7 +64,6 @@ GermaniumRaw2Cal::GermaniumRaw2Cal(const TString& name, Int_t verbose)
 
 GermaniumRaw2Cal::~GermaniumRaw2Cal(){
     c4LOG(info, "Deleting GermaniumRaw2Cal task");
-    if (funcal_data) delete funcal_data;
     if (fcal_data) delete fcal_data;
     if (ftime_machine_array) delete ftime_machine_array;
 }
