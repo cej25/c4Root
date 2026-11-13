@@ -169,10 +169,11 @@ Bool_t GermaniumTraceReader::Read()
 
 
 
-            for (int trace_index = 0; trace_index < MAX_TRACE_LENGTH; trace_index++){
-                
-
-                last_entry->Set_trace_value(fData->germanium_traces_data[it_board_number].traces[fData->germanium_traces_data[it_board_number].channel_energyI[index]-1].v[trace_index],trace_index);
+            const auto & trace = board.traces[board.channel_energyI[index] - 1];
+            const auto samples = germanium_packed_safety::PopulatedTraceSamples(trace._);
+            for (uint32_t trace_index = 0; trace_index < samples; ++trace_index)
+            {
+                last_entry->Set_trace_value(trace.v[trace_index], trace_index);
             }
         }
 
