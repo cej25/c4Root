@@ -130,7 +130,9 @@ void FrsReader::ScintillatorReader()
     // TAC - DE
     for (int i = 0; i < fData->SCI_TAC_DE; i++)
     {
-        uint32_t channel = fData->SCI_TAC_DEI[i] - 1;
+        const uint32_t raw_channel = fData->SCI_TAC_DEI[i];
+        if (raw_channel == 0 || raw_channel > 32) continue;
+        uint32_t channel = raw_channel - 1;
         uint32_t data = fData->SCI_TAC_DEv[i];
         
         sciDE[channel] = data;
@@ -139,7 +141,9 @@ void FrsReader::ScintillatorReader()
     // TAC - DT
     for (int i = 0; i < fData->SCI_TAC_DT; i++)
     {
-        uint32_t channel = fData->SCI_TAC_DTI[i] - 1;
+        const uint32_t raw_channel = fData->SCI_TAC_DTI[i];
+        if (raw_channel == 0 || raw_channel > 32) continue;
+        uint32_t channel = raw_channel - 1;
         uint32_t data = fData->SCI_TAC_DTv[i];
 
         sciDT[channel] = data;
@@ -151,6 +155,12 @@ void FrsReader::ScintillatorReader()
     {
         int current_channel = fData->SCI_MHTDC_TMI[channel_index];
         int next_channel_start = fData->SCI_MHTDC_TME[channel_index];
+
+        if (current_channel < 1 || current_channel > 32)
+        {
+            hit_index = next_channel_start;
+            continue;
+        }
 
         for (int j = hit_index; j < next_channel_start; j++)
         {
@@ -177,7 +187,9 @@ void FrsReader::MusicReader()
         // MUSIC E
         for (int j = 0; j < fData->MUSIC[i].E; j++)
         {
-            uint32_t channel = fData->MUSIC[i].EI[j] - 1;
+            const uint32_t raw_channel = fData->MUSIC[i].EI[j];
+            if (raw_channel == 0 || raw_channel > 8) continue;
+            uint32_t channel = raw_channel - 1;
             uint32_t data = fData->MUSIC[i].Ev[j];
 
             musicE[i][channel] = data;
@@ -190,7 +202,13 @@ void FrsReader::MusicReader()
         {
             int current_channel = fData->MUSIC[i].TMI[channel_index];
             int next_channel_start = fData->MUSIC[i].TME[channel_index];
-            
+
+            if (current_channel < 1 || current_channel > 8)
+            {
+                hit_index = next_channel_start;
+                continue;
+            }
+
             for (int j = hit_index; j < next_channel_start; j++)
             {
                 uint32_t channel = current_channel - 1;
@@ -215,7 +233,9 @@ void FrsReader::TpcReader()
     {
         for (int j = 0; j < fData->TPC_ADC[i]._; j++)
         {   
-            uint32_t channel = fData->TPC_ADC[i].I[j] - 1;
+            const uint32_t raw_channel = fData->TPC_ADC[i].I[j];
+            if (raw_channel == 0 || raw_channel > 8) continue;
+            uint32_t channel = raw_channel - 1;
             uint32_t data = fData->TPC_ADC[i].v[j];
 
             adcData[i][channel] = data;
@@ -227,6 +247,12 @@ void FrsReader::TpcReader()
     {
         int current_channel = fData->TPC_TDC_TMI[channel_index];
         int next_channel_start = fData->TPC_TDC_TME[channel_index];
+
+        if (current_channel < 1 || current_channel > 128)
+        {
+            hit_index = next_channel_start;
+            continue;
+        }
 
         for (uint32_t j = hit_index; j < next_channel_start; j++)
         {   
