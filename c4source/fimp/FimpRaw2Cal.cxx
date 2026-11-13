@@ -28,6 +28,7 @@
 
 // ROOT
 
+#include <algorithm>
 #include <vector>
 #include <numeric>
 
@@ -78,7 +79,10 @@ void FimpRaw2Cal::Exec(Option_t* option)
         std::vector<uint16_t> trail_coarse_time = fimpItem.Get_trail_coarse_time();
         std::vector<double> trail_fine_time = fimpItem.Get_trail_fine_time();
 
-        for (int i = 0; i < std::min(lead_coarse_time.size(), trail_coarse_time.size()); i++)
+        // Each reconstructed pair requires both coarse and fine times for each edge.
+        const auto matched_hits = std::min({lead_coarse_time.size(), lead_fine_time.size(),
+                                            trail_coarse_time.size(), trail_fine_time.size()});
+        for (std::size_t i = 0; i < matched_hits; i++)
         {
             double lead_time = (double)lead_coarse_time[i] * (double)CYCLE_TIME  - (double)lead_fine_time[i];
             double trail_time = (double)trail_coarse_time[i] * (double)CYCLE_TIME - (double)trail_fine_time[i];
