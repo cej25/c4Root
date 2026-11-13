@@ -47,7 +47,7 @@ FimpRaw2Cal::FimpRaw2Cal()
 
 FimpRaw2Cal::~FimpRaw2Cal()
 {
-    delete fimpArray;
+    // FimpData is borrowed from FairRootManager; only the output is owned here.
     delete fimpCalArray;
 }
 
