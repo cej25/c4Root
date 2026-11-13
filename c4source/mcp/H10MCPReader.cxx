@@ -25,6 +25,7 @@
 
 // c4
 #include "H10MCPReader.h"
+#include "TamexPackedSafety.h"
 #include "c4Logger.h"
 
 #include "TClonesArray.h"
@@ -348,7 +349,9 @@ Bool_t H10MCPReader::Read() //do fine time here:
         accepted_lead_coarse_T = 0;
         accepted_lead_fine_T = 0;
 
-        for (int it_hits = 0; it_hits < fData->mcp_tamex[it_board_number].event_size/4 - 3 ; it_hits++)
+        const auto hit_budget = c4_tamex_packed_safety::EventHitBudget(
+            fData->mcp_tamex[it_board_number].event_size);
+        for (uint32_t it_hits = 0; it_hits < hit_budget; ++it_hits)
         {
             // now operating under the assumption 16.01.2024:
             /*
@@ -361,6 +364,16 @@ Bool_t H10MCPReader::Read() //do fine time here:
             if (fData->mcp_tamex[it_board_number].time_epoch <= it_hits) { fNevents_skipped++; continue; }
             if (fData->mcp_tamex[it_board_number].time_fine <= it_hits) { fNevents_skipped++; continue; }
             if (fData->mcp_tamex[it_board_number].time_coarse <= it_hits) { fNevents_skipped++; continue; }
+            if (!c4_tamex_packed_safety::HasCompleteHit(
+                    it_hits, fData->mcp_tamex[it_board_number].time_epoch,
+                    fData->mcp_tamex[it_board_number].time_coarse,
+                    fData->mcp_tamex[it_board_number].time_fine,
+                    fData->mcp_tamex[it_board_number].time_channel,
+                    fData->mcp_tamex[it_board_number].time_edge))
+            {
+                ++fNevents_skipped;
+                continue;
+            }
             //the length of the arrays should be equal. 
             if (!(fData->mcp_tamex[it_board_number].time_coarse == fData->mcp_tamex[it_board_number].time_fine && fData->mcp_tamex[it_board_number].time_coarse == fData->mcp_tamex[it_board_number].time_epoch)) { fNevents_skipped++; continue; }
 
@@ -377,6 +390,13 @@ Bool_t H10MCPReader::Read() //do fine time here:
             //from this point we should have seen an epoch for channel id.
 
             uint32_t channelid = fData->mcp_tamex[it_board_number].time_channelv[it_hits] & 0x7F; // 0-32
+            if (!c4_tamex_packed_safety::ValidChannel(channelid, NChannels) ||
+                !c4_tamex_packed_safety::ValidFineBin(
+                    fData->mcp_tamex[it_board_number].time_finev[it_hits], Nbins_fine_time))
+            {
+                ++fNevents_skipped;
+                continue;
+            }
 
             //std::cout << "channel id:: " << channelid << " - board:: " << it_board_number << std::endl;
  

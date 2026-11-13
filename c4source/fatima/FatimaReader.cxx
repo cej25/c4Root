@@ -26,6 +26,7 @@
 // c4
 #include "FatimaTwinpeaksData.h"
 #include "FatimaReader.h"
+#include "TamexPackedSafety.h"
 #include "c4Logger.h"
 
 #include "TClonesArray.h"
@@ -358,7 +359,9 @@ Bool_t FatimaReader::Read() //do fine time here:
         //c4LOG(info,Form("time_epoch =  %i, time_coarse = %i, time_fine = %i, time_edge = %i, time_channel = %i",fData->fatima_tamex[it_board_number].time_epoch,fData->fatima_tamex[it_board_number].time_coarse,fData->fatima_tamex[it_board_number].time_fine,fData->fatima_tamex[it_board_number].time_edge,fData->fatima_tamex[it_board_number].time_channel));
         //c4LOG(info,"Here comes data:");
 
-        for (int it_hits = 0; it_hits < fData->fatima_tamex[it_board_number].event_size/4 - 3 ; it_hits++)
+        const auto hit_budget = c4_tamex_packed_safety::EventHitBudget(
+            fData->fatima_tamex[it_board_number].event_size);
+        for (uint32_t it_hits = 0; it_hits < hit_budget; ++it_hits)
         {
             // now operating under the assumption 16.01.2024:
             /*
@@ -371,6 +374,16 @@ Bool_t FatimaReader::Read() //do fine time here:
             if (fData->fatima_tamex[it_board_number].time_epoch <= it_hits) {fNevents_skipped++; continue;}
             if (fData->fatima_tamex[it_board_number].time_fine <= it_hits) {fNevents_skipped++; continue;}
             if (fData->fatima_tamex[it_board_number].time_coarse <= it_hits) {fNevents_skipped++; continue;}
+            if (!c4_tamex_packed_safety::HasCompleteHit(
+                    it_hits, fData->fatima_tamex[it_board_number].time_epoch,
+                    fData->fatima_tamex[it_board_number].time_coarse,
+                    fData->fatima_tamex[it_board_number].time_fine,
+                    fData->fatima_tamex[it_board_number].time_channel,
+                    fData->fatima_tamex[it_board_number].time_edge))
+            {
+                ++fNevents_skipped;
+                continue;
+            }
             //the length of the arrays should be equal. 
             if (!(fData->fatima_tamex[it_board_number].time_coarse == fData->fatima_tamex[it_board_number].time_fine && fData->fatima_tamex[it_board_number].time_coarse == fData->fatima_tamex[it_board_number].time_epoch)) {fNevents_skipped++; continue;}
 
@@ -388,6 +401,13 @@ Bool_t FatimaReader::Read() //do fine time here:
             //from this point we should have seen an epoch for channel id.
 
             uint32_t channelid = fData->fatima_tamex[it_board_number].time_channelv[it_hits] & 0x7F; // decoded channel ID
+            if (!c4_tamex_packed_safety::ValidChannel(channelid, NChannels) ||
+                !c4_tamex_packed_safety::ValidFineBin(
+                    fData->fatima_tamex[it_board_number].time_finev[it_hits], Nbins_fine_time))
+            {
+                ++fNevents_skipped;
+                continue;
+            }
             if (channelid >= NChannels)
             {
                 ++fNevents_skipped;
