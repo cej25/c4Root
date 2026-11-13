@@ -227,7 +227,7 @@ void GermaniumRaw2Cal::Exec(Option_t* option)
 Very important function - all TClonesArray must be cleared after each event.
 */
 void GermaniumRaw2Cal::FinishEvent(){
-    funcal_data->Clear();
+    // Raw input is reset by GermaniumReader.
     fcal_data->Clear();
     ftime_machine_array->Clear();
 };
