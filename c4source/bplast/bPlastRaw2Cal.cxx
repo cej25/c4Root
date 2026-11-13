@@ -43,7 +43,7 @@ bPlastRaw2Cal::bPlastRaw2Cal()
 fNEvents(0),
 header(nullptr),
 fOnline(kFALSE),
-funcal_data(new TClonesArray("bPlastTwinpeaksData")),
+funcal_data(nullptr),
 fcal_data(new TClonesArray("bPlastTwinpeaksCalData")),
 ftime_machine_array(new TClonesArray("TimeMachineData"))
 {
@@ -58,7 +58,7 @@ bPlastRaw2Cal::bPlastRaw2Cal(const TString& name, Int_t verbose)
     fNEvents(0),
     header(nullptr),
     fOnline(kFALSE),
-    funcal_data(new TClonesArray("bPlastTwinpeaksData")),
+    funcal_data(nullptr),
     fcal_data(new TClonesArray("bPlastTwinpeaksCalData")),
     ftime_machine_array(new TClonesArray("TimeMachineData"))
 {
@@ -70,7 +70,6 @@ Clearing old constructed objects.
 */
 bPlastRaw2Cal::~bPlastRaw2Cal(){
     c4LOG(info, "Deleting bPlastRaw2Cal task");
-    if (funcal_data) delete funcal_data;
     if (fcal_data) delete fcal_data;
     if (ftime_machine_array) delete ftime_machine_array;
 }
@@ -111,7 +110,6 @@ InitStatus bPlastRaw2Cal::Init()
     FairRootManager::Instance()->Register("bPlastTimeMachineData", "bPlast Time Machine Data", ftime_machine_array, !fOnline);
 
     fcal_data->Clear();
-    funcal_data->Clear();
 
     return kSUCCESS;
 }
@@ -427,8 +425,7 @@ Clears the TClonesArray used in the function. If they are not cleared after each
 */
 void bPlastRaw2Cal::FinishEvent()
 {
-    // reset output array
-    funcal_data->Clear();
+    // Reset only arrays produced by this task; the reader resets raw input.
     fcal_data->Clear();
     ftime_machine_array->Clear();
 };
