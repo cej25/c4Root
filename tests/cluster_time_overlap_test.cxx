@@ -19,10 +19,26 @@ int main()
     assert(!IntervalsOverlap(200, 100, 150, 160, 0));
     assert(!IntervalsOverlap(100, 200, 150, 160, -1));
 
+    // Production BB7/Stefan point-to-cluster matching now shares this helper.
+    assert(IntervalsOverlap(100, 200, 100, 100, 0));
+    assert(IntervalsOverlap(100, 200, 200, 200, 0));
+    assert(IntervalsOverlap(100, 200, 90, 90, 10));
+    assert(IntervalsOverlap(100, 200, 210, 210, 10));
+    assert(!IntervalsOverlap(100, 200, 89, 89, 10));
+    assert(!IntervalsOverlap(100, 200, 211, 211, 10));
+    assert(!IntervalsOverlap(100, 200, 150, 150, -1));
+
     const auto low = std::numeric_limits<std::int64_t>::min();
     const auto high = std::numeric_limits<std::int64_t>::max();
     assert(!IntervalsOverlap(low, low, high, high, 100));
     assert(IntervalsOverlap(low, low + 5, low + 10, low + 15, 5));
     assert(IntervalsOverlap(high - 15, high - 10, high - 5, high, 5));
+    assert(IntervalsOverlap(low, low + 10, low, low, 0));
+    assert(IntervalsOverlap(high - 10, high, high, high, 0));
+    assert(IntervalsOverlap(low + 10, low + 20, low, low, 10));
+    assert(IntervalsOverlap(high - 20, high - 10, high, high, 10));
+    assert(!IntervalsOverlap(low + 11, low + 20, low, low, 10));
+    assert(!IntervalsOverlap(high - 20, high - 11, high, high, 10));
+    assert(!IntervalsOverlap(low, low, high, high, high));
     return 0;
 }
