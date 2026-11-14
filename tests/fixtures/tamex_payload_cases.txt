@@ -1,0 +1,16 @@
+# case event_bytes hit_index epoch_count coarse_count fine_count channel_count edge_count channel_id fine_code expected_budget expected_complete expected_accepted
+valid_first 16 0 1 1 1 1 1 0 0 1 1 1
+valid_last_channel 20 1 2 2 2 2 2 32 1023 2 1 1
+zero_event 0 0 1 1 1 1 1 0 0 0 1 0
+header_only 12 0 1 1 1 1 1 0 0 0 1 0
+partial_header 11 0 1 1 1 1 1 0 0 0 1 0
+short_epoch 20 1 1 2 2 2 2 4 2 2 0 0
+short_coarse 20 1 2 1 2 2 2 4 2 2 0 0
+short_fine 20 1 2 2 1 2 2 4 2 2 0 0
+short_channel 20 1 2 2 2 1 2 4 2 2 0 0
+short_edge 20 1 2 2 2 2 1 4 2 2 0 0
+invalid_channel_33 16 0 1 1 1 1 1 33 0 1 1 0
+invalid_channel_127 16 0 1 1 1 1 1 127 0 1 1 0
+invalid_fine_bin 16 0 1 1 1 1 1 5 1024 1 1 0
+oversized_event 4294967295 1023 1024 1024 1024 1024 1024 32 1023 1024 1 1
+beyond_budget 16 1 2 2 2 2 2 4 1 1 1 0
