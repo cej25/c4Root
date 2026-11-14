@@ -26,6 +26,7 @@
 // c4
 #include "bPlastTwinpeaksData.h"
 #include "bPlastReader.h"
+#include "TamexPackedSafety.h"
 #include "c4Logger.h"
 
 #include "TClonesArray.h"
@@ -392,7 +393,9 @@ Bool_t bPlastReader::Read() //do fine time here:
         //c4LOG(info,Form("time_epoch =  %i, time_coarse = %i, time_fine = %i, time_edge = %i, time_channel = %i",fData->bplast_tamex[it_board_number].time_epoch,fData->bplast_tamex[it_board_number].time_coarse,fData->bplast_tamex[it_board_number].time_fine,fData->bplast_tamex[it_board_number].time_edge,fData->bplast_tamex[it_board_number].time_channel));
         //c4LOG(info,"Here comes data:");
 
-        for (int it_hits = 0; it_hits < fData->bplast_tamex[it_board_number].event_size/4 - 3 ; it_hits++)
+        const auto hit_budget = c4_tamex_packed_safety::EventHitBudget(
+            fData->bplast_tamex[it_board_number].event_size);
+        for (uint32_t it_hits = 0; it_hits < hit_budget; ++it_hits)
         {
             // now operating under the assumption 16.01.2024:
             /*
@@ -405,6 +408,16 @@ Bool_t bPlastReader::Read() //do fine time here:
             if (fData->bplast_tamex[it_board_number].time_epoch <= it_hits) {fNevents_skipped++; continue;}
             if (fData->bplast_tamex[it_board_number].time_fine <= it_hits) {fNevents_skipped++; continue;}
             if (fData->bplast_tamex[it_board_number].time_coarse <= it_hits) {fNevents_skipped++; continue;}
+            if (!c4_tamex_packed_safety::HasCompleteHit(
+                    it_hits, fData->bplast_tamex[it_board_number].time_epoch,
+                    fData->bplast_tamex[it_board_number].time_coarse,
+                    fData->bplast_tamex[it_board_number].time_fine,
+                    fData->bplast_tamex[it_board_number].time_channel,
+                    fData->bplast_tamex[it_board_number].time_edge))
+            {
+                ++fNevents_skipped;
+                continue;
+            }
             //the length of the arrays should be equal. 
             if (!(fData->bplast_tamex[it_board_number].time_coarse == fData->bplast_tamex[it_board_number].time_fine && fData->bplast_tamex[it_board_number].time_coarse == fData->bplast_tamex[it_board_number].time_epoch)) {fNevents_skipped++; continue;}
 
@@ -431,6 +444,12 @@ Bool_t bPlastReader::Read() //do fine time here:
             
             //if (it_board_number == 1) c4LOG(info,Form("ch = %i, coarse = %i, edge = %i", channelid, fData->bplast_tamex[it_board_number].time_coarsev[it_hits], fData->bplast_tamex[it_board_number].time_edgev[it_hits]));
 
+            if (!c4_tamex_packed_safety::ValidFineBin(
+                    fData->bplast_tamex[it_board_number].time_finev[it_hits], Nbins_fine_time))
+            {
+                ++fNevents_skipped;
+                continue;
+            }
             if (fData->bplast_tamex[it_board_number].time_finev[it_hits] == 0x3FF) {fNevents_TAMEX_fail[it_board_number][channelid]++; continue;} // this happens if TAMEX loses the fine time - skip it
 
             if (channelid != 0 && channelid != last_channel_read && !last_word_read_was_epoch){fNevents_lacking_epoch[it_board_number][channelid]++; c4LOG(debug2, "Event lacking epoch.");} // if the channel has changed but no epoch word was seen in between, channel 0 is always the first one so dont check if that s the case.
