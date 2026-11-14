@@ -1,0 +1,14 @@
+# name index coarse extended fine qlong qshort wave1 wave2 wave3 expected_hit expected_triplets
+complete_first 0 1 1 1 1 1 120 120 120 1 120
+complete_last 63 64 64 64 64 64 224 224 224 1 120
+no_entries 0 0 0 0 0 0 0 0 0 0 0
+short_coarse 1 1 2 2 2 2 120 120 120 0 120
+short_extended 1 2 1 2 2 2 120 120 120 0 120
+short_fine 1 2 2 1 2 2 120 120 120 0 120
+short_qlong 1 2 2 2 1 2 120 120 120 0 120
+short_qshort 1 2 2 2 2 1 120 120 120 0 120
+over_capacity 64 65 65 65 65 65 120 120 120 0 120
+short_wave_first 0 1 1 1 1 1 12 120 120 1 12
+short_wave_second 0 1 1 1 1 1 120 7 120 1 7
+short_wave_third 0 1 1 1 1 1 120 120 8 1 8
+empty_wave 0 1 1 1 1 1 120 0 120 1 0
