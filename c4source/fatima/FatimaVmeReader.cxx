@@ -26,6 +26,7 @@
 // c4
 #include "FatimaVmeData.h"
 #include "FatimaVmeReader.h"
+#include "FatimaVmeQdcSafety.h"
 #include "FatimaVmePackedSafety.h"
 #include "TFatimaVmeConfiguration.h"
 #include "c4Logger.h"
@@ -114,7 +115,13 @@ Bool_t FatimaVmeReader::Read()
         std::vector<int> channels_fired = Get_Channels(channel_mask);
 
         for (UInt_t channel = 0; channel < channels_fired.size(); channel++)
-        {  
+        {
+            const auto& qdc_data = fData->fatimavme_qdc[qdc];
+            if (!fatima_vme_qdc_safety::CompleteEntry(
+                    channel, qdc_data._channel_time, qdc_data._chan_ext_time,
+                    qdc_data._chan_fine_time, qdc_data._qlong, qdc_data._qshort))
+                continue;
+
             auto & entry = qdcArray->emplace_back();
 
             int current_detector = dets_qdc[std::make_pair(board_id, channels_fired[channel])];
@@ -153,11 +160,19 @@ Bool_t FatimaVmeReader::Read()
             std::vector<UInt_t> waveform_one = {};
             if (1) // trace_enabled_flag
             {
-                for (int i = 0; i < 120; i++) 
+                // Copy only complete triplets; UCESB stores a separate sample
+                // count for each of the three waveform banks.
+                const auto& first = qdc_data._sample_one[channel];
+                const auto& second = qdc_data._sample_two[channel];
+                const auto& third = qdc_data._sample_three[channel];
+                const auto triplets = fatima_vme_qdc_safety::CompleteWaveformTriplets(
+                    first._, second._, third._);
+                waveform_one.reserve(3 * triplets);
+                for (uint32_t i = 0; i < triplets; ++i)
                 {
-                    waveform_one.emplace_back(fData->fatimavme_qdc[qdc]._sample_one[channel].v[i]);
-                    waveform_one.emplace_back(fData->fatimavme_qdc[qdc]._sample_two[channel].v[i]);
-                    waveform_one.emplace_back(fData->fatimavme_qdc[qdc]._sample_three[channel].v[i]);
+                    waveform_one.emplace_back(first.v[i]);
+                    waveform_one.emplace_back(second.v[i]);
+                    waveform_one.emplace_back(third.v[i]);
                 }
             }
 
