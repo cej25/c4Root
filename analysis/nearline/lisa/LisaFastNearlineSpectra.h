@@ -84,6 +84,7 @@ class LisaFastNearlineSpectra : public FairTask
         std::tuple<int,int,int> dt_reference_diamond = std::make_tuple(-1, -1, -1);
         TDirectory* dir_lisafast;
 
+
         // LaBr
         TDirectory* dir_lisafast_LaBr;
         TDirectory* dir_lisafast_slowToT_LaBr;
@@ -114,6 +115,20 @@ class LisaFastNearlineSpectra : public FairTask
         std::vector<TDirectory*> dir_lisafast_fast_v_slow_Diamond_layer;
         std::vector<TDirectory*> dir_lisafast_time_spectra_Diamond_layer;
 
+        // Diamond-Diamond coincidences
+        TDirectory* dir_lisafast_Diamond_Coincidences;
+        TDirectory* dir_lisafast_Diamond_dT_event;
+        TDirectory* dir_lisafast_Diamond_dT_event_Gates;
+        TDirectory* dir_lisafast_Diamond_dT_window;
+        TDirectory* dir_lisafast_Diamond_dTw_Gates;
+
+        // Layer-Layer coincidences
+        TDirectory* dir_lisafast_Layer_Coincidences;
+        TDirectory* dir_lisafast_Layer_dT_event;
+        TDirectory* dir_lisafast_Layer_dT_event_Gates;
+        TDirectory* dir_lisafast_Layer_dT_window;
+        TDirectory* dir_lisafast_Layer_dTw_Gates;
+
         // LaBr-Diamond time differences
         TDirectory* dir_lisafast_dt_LaBr_Diamond;
         TDirectory* dir_dt_LaBr_vs_Diamond;
@@ -124,8 +139,8 @@ class LisaFastNearlineSpectra : public FairTask
         int number_diamond_detectors = 0;
         std::vector<std::pair<double, double>> dt_reference_detectors_energy_gates;
     
-        // Histograms 
-        // LaBr
+        // ======== Histograms ========
+        // ::::LaBr
         std::vector<TH1*> h1_lisafast_slowToT_LaBr;
         std::vector<TH1*> h1_lisafast_fastToT_LaBr;
         std::vector<TH1*> h1_lisafast_energy_LaBr;
@@ -149,6 +164,7 @@ class LisaFastNearlineSpectra : public FairTask
         TH1* h1_lisafast_deltaT_coin_LaBr;
         TH2* h2_lisafast_deltaT_vs_energy_coin_LaBr;
         TH2* h2_E1_vs_E2_deltaT_coin_LaBr;
+        std::vector<TH1*> h1_lisafast_deltaT_LaBr_gated_global;
 
         // Time-window: detector-specific coincidence histograms
         std::vector<TH1*> h1_lisafast_dTw_LaBr;
@@ -167,7 +183,7 @@ class LisaFastNearlineSpectra : public FairTask
         TH2* h2_E1_vs_E2_dTw_coin_all_LaBr;
         TH2* h2_E1_vs_E2_all_LaBr;
 
-        // Diamonds
+        // :::: Diamonds
         // Diamond: layer-level histograms
         std::vector<TH1*> h1_lisafast_slowToT_Diamond_layer;
         std::vector<TH1*> h1_lisafast_energy_Diamond_layer;
@@ -192,27 +208,75 @@ class LisaFastNearlineSpectra : public FairTask
 
         std::vector<TH1*> h1_lisafast_fastToT_Diamond_layer;
 
-        // Diamond-Diamond event-based coincidences
-        std::map<std::tuple<int,int,int>, TH1*> h1_lisafast_deltaT_Diamond;
-        std::map<std::tuple<int,int,int>, TH2*> h2_lisafast_deltaT_vs_energy_Diamond;
+        // ================================================
+        // Diamond-Diamond coincidences
 
-        // Diamond-Diamond time-window coincidences
-        std::map<std::tuple<int,int,int>, TH1*> h1_lisafast_dTw_Diamond;
-        std::map<std::tuple<int,int,int>, TH2*> h2_lisafast_dTw_vs_energy_Diamond;
+        // Event-based: individual Diamond histograms [layer][x][y]
+        std::vector<std::vector<std::vector<TH1*>>> h1_lisafast_deltaT_Diamond;
+        std::vector<std::vector<std::vector<TH2*>>> h2_lisafast_deltaT_vs_energy_Diamond;
 
-        // LaBr detector vs Diamond reference
-        std::map<int, TH1*> h1_dt_LaBr_vs_Diamond;
-        std::map<int, TH2*> h2_dt_LaBr_vs_Diamond_vs_energy;
+        // Event-based: energy-gated [gate][layer][x][y]
+        std::vector<std::vector<std::vector<std::vector<TH1*>>>> h1_lisafast_deltaT_Diamond_gated;
+        std::vector<std::vector<std::vector<std::vector<TH2*>>>> h2_lisafast_deltaT_vs_energy_Diamond_gated;
+
+        // Event-based: global histograms
+        TH1* h1_lisafast_deltaT_coin_Diamond;
+        TH2* h2_lisafast_deltaT_vs_energy_coin_Diamond;
+        TH2* h2_E1_vs_E2_deltaT_coin_Diamond;
+        std::vector<TH1*> h1_lisafast_deltaT_Diamond_gated_global;
+
+        // Time-window: individual Diamond histograms [layer][x][y]
+        std::vector<std::vector<std::vector<TH1*>>> h1_lisafast_dTw_Diamond;
+        std::vector<std::vector<std::vector<TH2*>>> h2_lisafast_dTw_vs_energy_Diamond;
+
+        // Time-window: energy-gated [gate][layer][x][y]
+        std::vector<std::vector<std::vector<std::vector<TH1*>>>> h1_lisafast_dTw_Diamond_gated;
+        std::vector<std::vector<std::vector<std::vector<TH2*>>>> h2_lisafast_dTw_vs_energy_Diamond_gated;
+
+        // Time-window: global histograms
+        std::vector<TH1*> h1_lisafast_dTw_Diamond_gated_global;
+        TH1* h1_lisafast_dTw_coin_Diamond;
+        TH2* h2_lisafast_dTw_vs_energy_coin_Diamond;
+        TH2* h2_E1_vs_E2_dTw_coin_Diamond;
 
 
-        // Diamond detector vs LaBr reference
-        std::map<std::tuple<int,int,int>, TH1*> h1_dt_Diamond_vs_LaBr;
-        std::map<std::tuple<int,int,int>, TH2*> h2_dt_Diamond_vs_LaBr_vs_energy;
+        // ================================================
+        // Layer-Layer coincidences
+
+        // Event-based: individual layer histograms
+        std::vector<TH1*> h1_lisafast_deltaT_Layer;
+        std::vector<TH2*> h2_lisafast_deltaT_vs_energy_Layer;
+
+        // Event-based: energy-gated [gate][layer]
+        std::vector<std::vector<TH1*>> h1_lisafast_deltaT_Layer_gated;
+        std::vector<std::vector<TH2*>> h2_lisafast_deltaT_vs_energy_Layer_gated;
+        std::vector<std::vector<TH2*>> h2_lisafast_dTw_Layer_gated;
+        std::vector<TH1*> h1_lisafast_deltaT_Layer_gated_global;
+
+        // Event-based: global histograms
+        TH1* h1_lisafast_deltaT_coin_Layer;
+        TH2* h2_lisafast_deltaT_vs_energy_coin_Layer;
+        TH2* h2_E1_vs_E2_deltaT_coin_Layer;
+
+        // Time-window: individual layer histograms
+        std::vector<TH1*> h1_lisafast_dTw_Layer;
+        std::vector<TH2*> h2_lisafast_dTw_vs_energy_Layer;
+
+        // Time-window: energy-gated [gate][layer]
+        std::vector<std::vector<TH1*>> h1_lisafast_dTw_Layer_gated;
+        std::vector<std::vector<TH2*>> h2_lisafast_dTw_vs_energy_Layer_gated;
+
+        // Time-window: global histograms
+        std::vector<TH1*> h1_lisafast_dTw_Layer_gated_global;
+        TH1* h1_lisafast_dTw_coin_Layer;
+        TH2* h2_lisafast_dTw_vs_energy_coin_Layer;
+        TH2* h2_E1_vs_E2_dTw_coin_Layer;
 
 
         // LaBr reference vs Diamond reference
         TH1* h1_dt_reference_LaBr_vs_Diamond;
         TH2* h2_dt_reference_LaBr_vs_Diamond_vs_energy;
+
 
         double energygate_width = 20;        
             

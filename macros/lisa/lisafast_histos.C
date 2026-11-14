@@ -47,13 +47,13 @@ void lisafast_histos()
 
     // ::: P A T H   O F   F I L E  to read
     TString inputpath = "/home/lisa/data/server1/groups/wimmer/laboratory/trees/";
-    TString rootname = "tamex_0037_0001_LD_tree.root";
+    TString rootname = "tamex_0037_0001_DD_tree.root";
     TString filename = inputpath + rootname;
 
     // ::: OUTPUT 
     TString outputpath = "/home/lisa/data/server1/groups/wimmer/laboratory/histos/"; 
 
-    TString outputFilename = outputpath + TString(rootname).ReplaceAll("_tree.root", "_histo.root");
+    TString outputFilename = outputpath + TString(rootname).ReplaceAll("_tree.root", "_noref_histo.root");
 
     
     FairRunAna* run = new FairRunAna();
@@ -70,8 +70,14 @@ void lisafast_histos()
     Int_t totEvt = eventTree->GetEntries();
     //histo_config(config_path);
 
-    TLisaFastConfiguration::SetDetectorConfigurationFile(config_path + "/Lisa_Mapping_LaBr3_diamond.txt");
+    //TLisaFastConfiguration::SetDetectorConfigurationFile(config_path + "/Lisa_Mapping_diamond.txt");
+    //TLisaFastConfiguration::SetDetectorCoefficientFile(config_path + "/LisaFast_calibration_8oct_Labr_diamond.txt");
+
+    TLisaFastConfiguration::SetDetectorConfigurationFile(config_path + "/Lisa_Mapping_diamond.txt");
     TLisaFastConfiguration::SetDetectorCoefficientFile(config_path + "/LisaFast_calibration_8oct_Labr_diamond.txt");
+
+    //TLisaFastConfiguration::SetDetectorConfigurationFile(config_path + "/Lisa_Mapping_LaBr3.txt");
+    //TLisaFastConfiguration::SetDetectorCoefficientFile(config_path + "/LisaFast_calibration_8oct.txt");
     //TLisaFastConfiguration::SetDetectorTimeshiftsFile(config_path + "/LisaFast_time_shift_8oct.txt");
 
 
@@ -83,6 +89,8 @@ void lisafast_histos()
 
         LisaFastNearlineSpectra* nearlinelisafast = new LisaFastNearlineSpectra();
         //nearlinelisafast->AddRefLaBrForDeltaT(1);
+        //nearlinelisafast->AddRefDiamondForDeltaT(1,3,1);
+
         //AddDeltaTEnergyGate(other_det, ref_det)
         // In general, if there is no ref detector then
         //  AddDeltaTEnergyGate( energy_current_hit, energ_previous_hit)
@@ -140,7 +148,7 @@ void lisafast_histos()
     TLisaFastConfiguration::SetdT_max(20);
     TLisaFastConfiguration::SetdT_min(-20);
 
-    TLisaFastConfiguration::SetEnergyGateWidth(10);
+    TLisaFastConfiguration::SetEnergyGateWidth(30);
 
     //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
     //TString histoConfigFile = HISTO_FILE;
