@@ -366,8 +366,8 @@ bool StefanCluster::IsGoodTime(StefanCalItem const& item, int window) const
 {
   if (DSSD == -1) return true;
 
-  if (item.AbsoluteTime >= TimeMin - window && item.AbsoluteTime <= TimeMax + window) return true;
-  return false;
+  return c4_cluster_time::IntervalsOverlap(TimeMin, TimeMax,
+                                           item.AbsoluteTime, item.AbsoluteTime, window);
 }
 
 bool StefanCluster::IsGoodTime(StefanCluster const& event, int window) const
