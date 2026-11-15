@@ -25,6 +25,26 @@ struct PackedBoardView
     std::uint32_t edge_count = 0;
 };
 
+// Generated UCESB TAMEX board records share these field names regardless of
+// which detector bank contains them. Borrow their arrays without copying.
+template <typename Board>
+PackedBoardView MakeBoardView(const Board& bank)
+{
+    return PackedBoardView{
+        bank.event_size,
+        bank.time_epochv,
+        bank.time_coarsev,
+        bank.time_finev,
+        bank.time_channelv,
+        bank.time_edgev,
+        bank.time_epoch,
+        bank.time_coarse,
+        bank.time_fine,
+        bank.time_channel,
+        bank.time_edge
+    };
+}
+
 enum class WordKind : std::uint8_t { Epoch, Edge };
 
 // Raw electronics facts, deliberately not a detector hit or a lead/trail pair.
