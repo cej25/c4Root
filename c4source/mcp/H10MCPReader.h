@@ -91,7 +91,7 @@ class H10MCPReader : public c4Reader
 
         TClonesArray* fArray;
 
-        Long64_t wr_t;
+        uint64_t wr_t;
 
 
         static const int NBoards = sizeof(fData->mcp_tamex) / sizeof(fData->mcp_tamex[0]);

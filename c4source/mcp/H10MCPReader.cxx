@@ -25,6 +25,7 @@
 
 // c4
 #include "H10MCPReader.h"
+#include "McpTimestampSafety.h"
 #include "TamexPackedSafety.h"
 #include "c4Logger.h"
 
@@ -324,7 +325,9 @@ Bool_t H10MCPReader::Read() //do fine time here:
     }
     
     //whiterabbit timestamp:
-    wr_t = (((Long64_t)fData->mcp_ts_t[3]) << 48) + (((Long64_t)fData->mcp_ts_t[2]) << 32) + (((Long64_t)fData->mcp_ts_t[1]) << 16) + (Long64_t)(fData->mcp_ts_t[0]);
+    wr_t = mcp_timestamp_safety::AssembleWhiteRabbitTimestamp(
+        fData->mcp_ts_t[0], fData->mcp_ts_t[1],
+        fData->mcp_ts_t[2], fData->mcp_ts_t[3]);
     
 
     for (int it_board_number = 0; it_board_number < NBoards; it_board_number++)
