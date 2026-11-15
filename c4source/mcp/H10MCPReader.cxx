@@ -64,39 +64,40 @@ And prints some statistics for the run.
 */
 H10MCPReader::~H10MCPReader() 
 {
-    for (int i = 0; i < NBoards; i++) {
-        for (int j = 0; j < NChannels; j++) {
-            if (fine_time_calibration_coeffs[i][j] != nullptr) {
+    if (fine_time_calibration_coeffs != nullptr)
+    {
+        for (int i = 0; i < NBoards; ++i)
+        {
+            if (fine_time_calibration_coeffs[i] == nullptr) continue;
+            for (int j = 0; j < NChannels; ++j)
                 delete[] fine_time_calibration_coeffs[i][j];
-                fine_time_calibration_coeffs[i][j] = nullptr;
-            }
-        }
-
-        if (fine_time_calibration_coeffs[i] != nullptr) {
             delete[] fine_time_calibration_coeffs[i];
-            fine_time_calibration_coeffs[i] = nullptr;
         }
-
-        if (fine_time_hits[i] != nullptr) {
-            delete[] fine_time_hits[i];
-            fine_time_hits[i] = nullptr;
-        }
-    }
-
-    if (fine_time_hits != nullptr) {
-        delete[] fine_time_hits;
-        fine_time_hits = nullptr;
-    }
-
-    if (fine_time_calibration_coeffs != nullptr) {
         delete[] fine_time_calibration_coeffs;
         fine_time_calibration_coeffs = nullptr;
     }
 
+    if (fine_time_hits != nullptr)
+    {
+        for (int i = 0; i < NBoards; ++i)
+        {
+            if (fine_time_hits[i] == nullptr) continue;
+            for (int j = 0; j < NChannels; ++j)
+                delete fine_time_hits[i][j];
+            delete[] fine_time_hits[i];
+        }
+        delete[] fine_time_hits;
+        fine_time_hits = nullptr;
+    }
+
     if (fArray != nullptr) delete fArray;
 
-    for (int i = 0; i < 21; i++) c4LOG(info, hits[i] << " hits in channel " << i << " (" + hits[i]/fNEvent << ")");
-    c4LOG(info, "Average execution time: " << (double)total_time_microsecs/fNEvent << " microseconds.");
+    for (int i = 0; i < 21; ++i)
+        c4LOG(info, hits[i] << " hits in channel " << i << " ("
+            << (fNEvent > 0 ? static_cast<double>(hits[i]) / fNEvent : 0.0)
+            << " hits/event)");
+    if (fNEvent > 0)
+        c4LOG(info, "Average execution time: " << (double)total_time_microsecs/fNEvent << " microseconds.");
     c4LOG(info, "Events: " << fNEvent);
     c4LOG(info, "Destroyed H10MCPReader properly.");
 
@@ -122,9 +123,9 @@ Bool_t H10MCPReader::Init(ext_data_struct_info* a_struct_info)
     }
 
     //allocated 3D array for the fine time calibration look-up table: fine_time_calibration_coeffs[board nr][channel nr][tdc value nr]
-    fine_time_calibration_coeffs = new double**[NBoards];
+    fine_time_calibration_coeffs = new double**[NBoards]{};
     for (int i = 0; i < NBoards; i++) {
-        fine_time_calibration_coeffs[i] = new double*[NChannels];    
+        fine_time_calibration_coeffs[i] = new double*[NChannels]{};    
         for (int j = 0; j < NChannels; j++) {
             fine_time_calibration_coeffs[i][j] = new double[Nbins_fine_time];
             for (int k = 0; k<Nbins_fine_time; k++) fine_time_calibration_coeffs[i][j][k] = 0.0;
@@ -148,11 +149,12 @@ Bool_t H10MCPReader::Init(ext_data_struct_info* a_struct_info)
     }
     else
     {
-        fine_time_hits = new TH1I**[NBoards];
+        fine_time_hits = new TH1I**[NBoards]{};
         for (int i = 0; i < NBoards; i++) {
-            fine_time_hits[i] = new TH1I*[NChannels];
+            fine_time_hits[i] = new TH1I*[NChannels]{};
             for (int j = 0; j<NChannels; j++){
                 fine_time_hits[i][j] = new TH1I(Form("fine_time_hits_%i_%i", i, j),Form("fine_time_hits_%i_%i", i, j),Nbins_fine_time,0,Nbins_fine_time);
+                fine_time_hits[i][j]->SetDirectory(nullptr); // Histogram owned by reader.
             }
         }
         fine_time_calibration_set = false;
@@ -251,6 +253,7 @@ void H10MCPReader::WriteFineTimeHistosToFile()
     LOG(info) << Form("MCP fine time calibrations (i.e. raw fine time histograms) written to  %s",fine_time_histo_outfile.Data());
 
     outputfile->Close();
+    delete outputfile;
 
     c4LOG(info,"You have successfully done fine time calibration. These are written to file. Please restart the program and add ReadFineTimehistosFromFile instead for H10MCPReader.\n (yeah this is not a fatal error per se just restart it with your fresh calibrations :) )");
 
@@ -270,9 +273,9 @@ void H10MCPReader::ReadFineTimeHistosFromFile()
         c4LOG(fatal, "File to read histos not opened.");
     }
 
-    fine_time_hits = new TH1I**[NBoards];
+    fine_time_hits = new TH1I**[NBoards]{};
     for (int i = 0; i < NBoards; i++) {
-        fine_time_hits[i] = new TH1I*[NChannels];
+        fine_time_hits[i] = new TH1I*[NChannels]{};
         for (int j = 0; j < NChannels; j++) fine_time_hits[i][j] = nullptr;
     }
 
@@ -296,6 +299,7 @@ void H10MCPReader::ReadFineTimeHistosFromFile()
     }
 
     inputfile->Close();
+    delete inputfile;
     LOG(info) << Form("MCP fine time calibration read from file: %s", fine_time_histo_infile.Data());
 }
 
