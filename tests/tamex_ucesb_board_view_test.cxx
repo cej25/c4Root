@@ -67,6 +67,15 @@ int main()
     board.time_finev[1] = 12;
     assert(input.fine[1] == 12);
 
+    const std::uint32_t wr_words[4] = {0x5678, 0x1234, 0xdef0, 0x9abc};
+    assert(tamex::AssembleWhiteRabbitTimestamp(wr_words) ==
+           UINT64_C(0x9abcdef012345678));
+    const std::uint32_t wr_max[4] = {0xffff, 0xffff, 0xffff, 0xffff};
+    assert(tamex::AssembleWhiteRabbitTimestamp(wr_max) == UINT64_MAX);
+    const std::uint32_t wr_high_bit[4] = {0, 0, 0, 0x8000};
+    assert(tamex::AssembleWhiteRabbitTimestamp(wr_high_bit) ==
+           (UINT64_C(1) << 63));
+
     // Empty trigger-only board: no decoded words, but its trigger can be kept
     // by the reader when it constructs the board-level Raw data record.
     UcesbBoardFixture trigger_only{};
