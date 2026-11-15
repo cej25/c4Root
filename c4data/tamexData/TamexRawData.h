@@ -35,10 +35,11 @@ class TamexRawData : public TObject
 {
 public:
     TamexRawData() = default;
-    TamexRawData(std::uint16_t board, std::uint16_t trigger,
+    TamexRawData(std::uint16_t source, std::uint16_t board, std::uint16_t trigger,
                  std::uint16_t wr_subsystem, std::uint64_t wr_timestamp,
                  std::uint16_t format_version);
 
+    std::uint16_t Source() const { return source_; }
     std::uint16_t Board() const { return board_; }
     std::uint16_t Trigger() const { return trigger_; }
     std::uint16_t WrSubsystem() const { return wr_subsystem_; }
@@ -54,6 +55,7 @@ public:
     ClassDef(TamexRawData, 1);
 
 private:
+    std::uint16_t source_ = 0;
     std::uint16_t board_ = 0;
     std::uint16_t trigger_ = 0;
     std::uint16_t wr_subsystem_ = 0;
