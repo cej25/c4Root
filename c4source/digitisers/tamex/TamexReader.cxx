@@ -156,8 +156,9 @@ Bool_t TamexReader::Init(ext_data_struct_info* info)
 
     // Distinct sources can coexist, provided their identifiers are unique.
     // Branch persistence follows the same online/offline convention as readers.
+    const TString branch = TString::Format("TamexRawData_%u", static_cast<unsigned>(fSource));
     FairRootManager::Instance()->Register(
-        "TamexRawData", "TamexRawDataFolder", fArray, !fOnline);
+        branch.Data(), "TamexRawDataFolder", fArray, !fOnline);
     fArray->Clear("C");
     return kTRUE;
 }
