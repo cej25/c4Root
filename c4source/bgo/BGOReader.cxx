@@ -65,40 +65,38 @@ BGOReader::~BGOReader() {
         PrintStatistics();    
     }
 
-    for (int i = 0; i < NBoards; i++) {
-        for (int j = 0; j < NChannels; j++) {
-            if (fine_time_calibration_coeffs[i][j] != nullptr) {
+    if (fine_time_calibration_coeffs != nullptr)
+    {
+        for (int i = 0; i < NBoards; ++i)
+        {
+            if (fine_time_calibration_coeffs[i] == nullptr) continue;
+            for (int j = 0; j < NChannels; ++j)
                 delete[] fine_time_calibration_coeffs[i][j];
-                fine_time_calibration_coeffs[i][j] = nullptr;
-            }
-        }
-
-        if (fine_time_calibration_coeffs[i] != nullptr) {
             delete[] fine_time_calibration_coeffs[i];
-            fine_time_calibration_coeffs[i] = nullptr;
         }
-
-        if (fine_time_hits[i] != nullptr) {
-            delete[] fine_time_hits[i];
-            fine_time_hits[i] = nullptr;
-        }
-    }
-
-    if (fine_time_hits != nullptr) {
-        delete[] fine_time_hits;
-        fine_time_hits = nullptr;
-    }
-
-    if (fine_time_calibration_coeffs != nullptr) {
         delete[] fine_time_calibration_coeffs;
         fine_time_calibration_coeffs = nullptr;
     }
 
+    if (fine_time_hits != nullptr)
+    {
+        for (int i = 0; i < NBoards; ++i)
+        {
+            if (fine_time_hits[i] == nullptr) continue;
+            for (int j = 0; j < NChannels; ++j)
+                delete fine_time_hits[i][j];
+            delete[] fine_time_hits[i];
+        }
+        delete[] fine_time_hits;
+        fine_time_hits = nullptr;
+    }
+
     if (fArray != nullptr) delete fArray;
 
-    c4LOG(info, "Average execution time: " << (double)total_time_microsecs/fNEvent << " microseconds.");
+    if (fNEvent > 0)
+        c4LOG(info, "Average execution time: " << (double)total_time_microsecs/fNEvent << " microseconds.");
     c4LOG(info, "Events: " << fNEvent);
-    c4LOG(info, "Destroyed FatimaReader properly.");
+    c4LOG(info, "Destroyed BGOReader properly.");
 
 }
 
@@ -122,10 +120,10 @@ Bool_t BGOReader::Init(ext_data_struct_info* a_struct_info)
     }
 
     // allocated 3D array for the fine time calibration look-up table: fine_time_calibration_coeffs[board nr][channel nr][tdc value nr]
-    fine_time_calibration_coeffs = new Double_t**[NBoards];
+    fine_time_calibration_coeffs = new Double_t**[NBoards]{};
     for (int i = 0; i < NBoards; i++) 
     {
-        fine_time_calibration_coeffs[i] = new Double_t*[NChannels];    
+        fine_time_calibration_coeffs[i] = new Double_t*[NChannels]{};    
         for (int j = 0; j < NChannels; j++) 
         {
             fine_time_calibration_coeffs[i][j] = new Double_t[Nbins_fine_time];
@@ -150,13 +148,14 @@ Bool_t BGOReader::Init(ext_data_struct_info* a_struct_info)
     }
     else
     {
-        fine_time_hits = new TH1I**[NBoards];
+        fine_time_hits = new TH1I**[NBoards]{};
         for (int i = 0; i < NBoards; i++) 
         {
-            fine_time_hits[i] = new TH1I*[NChannels];
+            fine_time_hits[i] = new TH1I*[NChannels]{};
             for (int j = 0; j < NChannels; j++)
             {
                 fine_time_hits[i][j] = new TH1I(Form("fine_time_hits_%i_%i", i, j), Form("fine_time_hits_%i_%i", i, j), Nbins_fine_time, 0, Nbins_fine_time);
+                fine_time_hits[i][j]->SetDirectory(nullptr); // Reader owns the histogram.
             }
         }
         fine_time_calibration_set = false;
@@ -271,10 +270,10 @@ void BGOReader::ReadFineTimeHistosFromFile()
 
     c4LOG(info,"Reading the histograms used in fine time calibration from file.");
     
-    fine_time_hits = new TH1I**[NBoards];
+    fine_time_hits = new TH1I**[NBoards]{};
     for (int i = 0; i < NBoards; i++) 
     {
-        fine_time_hits[i] = new TH1I*[NChannels];
+        fine_time_hits[i] = new TH1I*[NChannels]{};
         for (int j = 0; j < NChannels; j++) fine_time_hits[i][j] = nullptr;
     }
 
@@ -300,6 +299,7 @@ void BGOReader::ReadFineTimeHistosFromFile()
     }
 
     inputfile->Close();
+    delete inputfile;
     c4LOG(info, Form("Read fine time calibrations (i.e. raw fine time histograms) from %s", fine_time_histo_infile.Data()));
 }
 
