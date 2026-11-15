@@ -50,7 +50,11 @@ public:
     void AddWord(const TamexRawWord& word) { words_.push_back(word); }
     void ReserveWords(std::size_t count) { words_.reserve(count); }
 
+    void SetMetadata(std::uint16_t source, std::uint16_t board,
+                     std::uint16_t trigger, std::uint16_t wr_subsystem,
+                     std::uint64_t wr_timestamp, std::uint16_t format_version);
     void Reset();
+    void Clear(Option_t* option = "") override;
 
     ClassDef(TamexRawData, 1);
 
