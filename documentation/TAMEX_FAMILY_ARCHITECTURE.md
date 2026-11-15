@@ -1,4 +1,4 @@
-# TAMEX digitiser family — architecture and legacy audit
+# TAMEX digitiser family
 
 Status: **initial specification / non-production prototype**. The old detector readers
 remain in use. Do not switch experiments to the new decoder without event-level
