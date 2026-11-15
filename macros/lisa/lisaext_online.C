@@ -53,11 +53,11 @@ void lisaext_online()
     // ::: P A T H   O F   F I L E  to read
     
     // ::: ONLINE READING
-    TString filename = "stream://134.95.192.248:6002"; 
+    //TString filename = "stream://134.95.192.248:6002"; 
 
     // ::: OFFLINE READING - For testing
-    //TString inputpath = "/home/lisa/data/server/lmd/";                   
-    //TString filename = inputpath + "run_0076_0001.lmd"; 
+    TString inputpath = "/home/lisa/data/server1/experiments/staging/2026_IKP_LISA_hermes/lmd/";                   
+    TString filename = inputpath + "febex_0004_000*.lmd"; 
     
     // ::: OUTPUT - does not write a tree if it is not set later
     TString outputpath = "/home/lisa/data/"; //testing
@@ -65,7 +65,7 @@ void lisaext_online()
     
     // ::: Create online run
     Int_t refresh = 10; // Refresh rate for online histograms
-    Int_t port = 2222;
+    Int_t port = 1111;
      
     FairRunOnline* run = new FairRunOnline();
     EventHeader* EvtHead = new EventHeader();
@@ -90,19 +90,19 @@ void lisaext_online()
     // ::: Lisa config
 
     // ::: Mapping
-    TLisaConfiguration::SetMappingFile(config_path + "/Lisa_Mapping_5x5_Versoek_0-180deg_v1.txt");
+    TLisaConfiguration::SetMappingFile(config_path + "/Lisa_Mapping_3x3_Versoek_15Nov.txt");
     
     // ::: Gain Matching Febex, MWD, dEdX
-    TLisaConfiguration::SetGMFile(config_path + "/Lisa_GainMatching_5x5_Versoek_0-180deg_v3.txt");
-    TLisaConfiguration::SetGMFileMWD(config_path + "/Lisa_GainMatching_MWD_5x5_Versoek_0-0deg_v0.txt");
-    TLisaConfiguration::SetGMFiledEdX(config_path + "/Lisa_GainMatching_dedx_5x5_Versoek_0-0deg_v0.txt");
+    TLisaConfiguration::SetGMFile(config_path + "/Lisa_GainMatching_3x3_Versoek_15Nov_fake.txt");
+    TLisaConfiguration::SetGMFileMWD(config_path + "/Lisa_GainMatching_3x3_Versoek_15Nov_fake.txt");
+    TLisaConfiguration::SetGMFiledEdX(config_path + "/Lisa_GainMatching_3x3_Versoek_15Nov_fake.txt");
     
     // ::: MWD parameters
     TLisaConfiguration::SetMWDParametersFile(config_path + "/Lisa_MWD_Parameters_v1.txt");
     
-    TLisaConfiguration::SetExcludedChannels({
-    std::make_tuple(1,0,0),
-    }); 
+    // TLisaConfiguration::SetExcludedChannels({
+    // std::make_tuple(1,0,0),
+    // }); 
 
 
     //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
@@ -149,8 +149,8 @@ void lisaext_online()
 
     // ::: LISA
     //      Channel Energy 
-    TLisaConfiguration::SetEnergyRange(0,120); 
-    TLisaConfiguration::SetEnergyBin(500); 
+    TLisaConfiguration::SetEnergyRange(0,900000); 
+    TLisaConfiguration::SetEnergyBin(1000); 
 
     //      MWD histos
     TLisaConfiguration::SetEnergyRangeMWD(0,500);
