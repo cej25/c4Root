@@ -48,19 +48,7 @@ void ReadBoards(const Board (&banks)[N], std::uint16_t source,
                          static_cast<std::uint16_t>(bank.trig),
                          wr_subsystem, wr_timestamp, 4);
 
-        const tamex::PackedBoardView view{
-            bank.event_size,
-            bank.time_epochv,
-            bank.time_coarsev,
-            bank.time_finev,
-            bank.time_channelv,
-            bank.time_edgev,
-            bank.time_epoch,
-            bank.time_coarse,
-            bank.time_fine,
-            bank.time_channel,
-            bank.time_edge
-        };
+        const auto view = tamex::MakeBoardView(bank);
         raw->ReserveWords(c4_tamex_packed_safety::EventHitBudget(bank.event_size));
         tamex::Tamex4Decoder::Decode(
             view, static_cast<std::uint16_t>(i),
