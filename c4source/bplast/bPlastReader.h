@@ -117,8 +117,8 @@ class bPlastReader : public c4Reader
 
         const int Nbins_fine_time = 1024; //number of bins in the fine time - it is a 10 bit word (2^10 = 1024) but seemingly no event is >512 - true, fine time calibration does this.
 
-        TH1I *** fine_time_hits; //array of TH1 hisots [NBoards][NChannels]
-        double *** fine_time_calibration_coeffs; //[NBoards][NChannels][1024] last index is bin nr. - this is the lookup table
+        TH1I *** fine_time_hits = nullptr; //array of TH1 hisots [NBoards][NChannels]
+        double *** fine_time_calibration_coeffs = nullptr; //[NBoards][NChannels][1024] last index is bin nr. - this is the lookup table
         
         int fine_time_calibration_after = 10000000;
         double TAMEX_fine_time_clock = 5.0; // ns in one fine time cycle.
