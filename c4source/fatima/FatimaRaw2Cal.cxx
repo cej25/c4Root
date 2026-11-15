@@ -41,6 +41,8 @@
 
 #include <array>
 #include <cstdint>
+#include <cmath>
+#include <limits>
 
 /*
 empty constructor required for FairRoot.
@@ -147,7 +149,10 @@ InitStatus FatimaRaw2Cal::Init()
                 for (std::size_t bin = 0; bin < counts.size(); ++bin)
                 {
                     const double count = histogram->GetBinContent(static_cast<int>(bin + 1));
-                    if (count < 0 || count != static_cast<double>(static_cast<std::uint64_t>(count)))
+                    if (!std::isfinite(count) || count < 0 ||
+                        static_cast<long double>(count) >=
+                            static_cast<long double>(std::numeric_limits<std::uint64_t>::max()) ||
+                        std::trunc(count) != count)
                     {
                         c4LOG(error, "Invalid fine-time histogram occupancy: " << name);
                         return kFATAL;
@@ -256,7 +261,7 @@ void FatimaRaw2Cal::BuildTamexLegacyHits()
             builder.Process(word, true, fine_time, [this, board](const fatima::PairedPulse& pulse) {
                 new ((*fTamexLegacyHits)[fTamexLegacyHits->GetEntriesFast()]) FatimaTwinpeaksData(
                     board->Trigger(), board->Board(), pulse.channel,
-                    pulse.accepted_trigger_ns,
+                    static_cast<std::int64_t>(pulse.accepted_trigger_ns),
                     pulse.accepted_trigger.epoch, pulse.accepted_trigger.coarse,
                     pulse.accepted_trigger.fine_ns,
                     pulse.lead.epoch, pulse.lead.coarse, pulse.lead.fine_ns,
