@@ -33,6 +33,14 @@
 #include <chrono>
 
 #include "FatimaRaw2Cal.h"
+#include "FatimaLegacyPulseBuilder.h"
+#include "TamexFineTimeCalibration.h"
+#include "TamexRawData.h"
+#include "TFile.h"
+#include "TH1.h"
+
+#include <array>
+#include <cstdint>
 
 /*
 empty constructor required for FairRoot.
@@ -70,8 +78,17 @@ FatimaRaw2Cal::~FatimaRaw2Cal(){
     c4LOG(info, "Deleting FatimaRaw2Cal task");
     if (fcal_data) delete fcal_data;
     if(ftime_machine_array) delete ftime_machine_array;
+    delete fTamexLegacyHits;
 }
 
+
+
+void FatimaRaw2Cal::UseTamexRawInput(std::uint16_t source, const TString& fine_time_histograms)
+{
+    fUseTamexRaw = true;
+    fTamexSource = source;
+    fTamexFineTimeFile = fine_time_histograms;
+}
 
 void FatimaRaw2Cal::SetParContainers()
 {
@@ -91,8 +108,68 @@ InitStatus FatimaRaw2Cal::Init()
     header = (EventHeader*)mgr->GetObject("EventHeader.");
     c4LOG_IF(error, !header, "Branch EventHeader. not found");
 
-    funcal_data = (TClonesArray*)mgr->GetObject("FatimaTwinpeaksData");
-    c4LOG_IF(fatal, !funcal_data, "Fatima branch of FatimaTwinpeaksData not found.");
+    if (fUseTamexRaw)
+    {
+        const TString branch = TString::Format("TamexRawData_%u",
+                                                static_cast<unsigned>(fTamexSource));
+        fTamexInput = dynamic_cast<TClonesArray*>(mgr->GetObject(branch.Data()));
+        if (!fTamexInput)
+        {
+            c4LOG(error, "FATIMA TAMEX Raw input branch not found: " << branch);
+            return kFATAL;
+        }
+
+        TFile calibration_file(fTamexFineTimeFile, "READ");
+        if (calibration_file.IsZombie())
+        {
+            c4LOG(error, "FATIMA TAMEX migration requires existing fine-time histograms: "
+                         << fTamexFineTimeFile);
+            return kFATAL;
+        }
+        constexpr std::size_t channels_per_board = 33;
+        constexpr std::size_t boards = 4; // Existing FATIMA UCESB bank layout
+        fTamexFineTimes.resize(boards * channels_per_board);
+        for (std::size_t board = 0; board < boards; ++board)
+        {
+            for (std::size_t channel = 0; channel < channels_per_board; ++channel)
+            {
+                const TString name = TString::Format("fine_time_hits_%u_%u",
+                    static_cast<unsigned>(board), static_cast<unsigned>(channel));
+                TH1* histogram = nullptr;
+                calibration_file.GetObject(name.Data(), histogram);
+                if (!histogram || histogram->GetNbinsX() != 1024)
+                {
+                    c4LOG(error, "Missing or incompatible FATIMA fine-time histogram: " << name);
+                    return kFATAL;
+                }
+
+                std::array<std::uint64_t, 1024> counts{};
+                for (std::size_t bin = 0; bin < counts.size(); ++bin)
+                {
+                    const double count = histogram->GetBinContent(static_cast<int>(bin + 1));
+                    if (count < 0 || count != static_cast<double>(static_cast<std::uint64_t>(count)))
+                    {
+                        c4LOG(error, "Invalid fine-time histogram occupancy: " << name);
+                        return kFATAL;
+                    }
+                    counts[bin] = static_cast<std::uint64_t>(count);
+                }
+                tamex::FineTimeCalibration<> calibration;
+                calibration.SetCounts(counts);
+                calibration.Calculate();
+                auto& times = fTamexFineTimes[board * channels_per_board + channel];
+                for (std::size_t bin = 0; bin < times.size(); ++bin)
+                    times[bin] = calibration.Time(bin);
+            }
+        }
+        fTamexLegacyHits = new TClonesArray("FatimaTwinpeaksData");
+        funcal_data = fTamexLegacyHits; // Reuse existing calibrated-output algorithm
+    }
+    else
+    {
+        funcal_data = dynamic_cast<TClonesArray*>(mgr->GetObject("FatimaTwinpeaksData"));
+        c4LOG_IF(fatal, !funcal_data, "Fatima branch of FatimaTwinpeaksData not found.");
+    }
     
     //need to have the name of the detector subsystem here:
     FairRootManager::Instance()->Register("FatimaTwinpeaksCalData", "FatimaTwinpeaksCalDataFolder", fcal_data, !fOnline);
@@ -151,8 +228,48 @@ If no detector map is set then be careful with how the mapping happens: tamex mo
 
 Writes the times in ns!
 */
+void FatimaRaw2Cal::BuildTamexLegacyHits()
+{
+    if (!fTamexInput || !fTamexLegacyHits) return;
+    fTamexLegacyHits->Clear();
+    constexpr std::size_t channels_per_board = 33;
+    for (Int_t i = 0; i < fTamexInput->GetEntriesFast(); ++i)
+    {
+        const auto* board = static_cast<const TamexRawData*>(fTamexInput->At(i));
+        if (!board || board->Source() != fTamexSource || board->FormatVersion() != 4 ||
+            board->Board() >= 4)
+        {
+            c4LOG(error, "Unsupported source, format or FATIMA board in TAMEX Raw input");
+            continue;
+        }
+        fatima::LegacyPulseBuilder builder;
+        builder.Reset();
+        const std::size_t board_index = board->Board();
+        const auto fine_time = [this, board_index](std::uint16_t channel, std::uint32_t fine) {
+            return fTamexFineTimes[board_index * channels_per_board + channel][fine];
+        };
+        for (const auto& word : board->Words())
+        {
+            if (word.kind != TamexRawWord::Epoch && word.kind != TamexRawWord::Edge) continue;
+            if (word.kind == TamexRawWord::Edge &&
+                (word.channel >= channels_per_board || word.fine >= 1024)) continue;
+            builder.Process(word, true, fine_time, [this, board](const fatima::PairedPulse& pulse) {
+                new ((*fTamexLegacyHits)[fTamexLegacyHits->GetEntriesFast()]) FatimaTwinpeaksData(
+                    board->Trigger(), board->Board(), pulse.channel,
+                    pulse.accepted_trigger_ns,
+                    pulse.accepted_trigger.epoch, pulse.accepted_trigger.coarse,
+                    pulse.accepted_trigger.fine_ns,
+                    pulse.lead.epoch, pulse.lead.coarse, pulse.lead.fine_ns,
+                    pulse.trail.epoch, pulse.trail.coarse, pulse.trail.fine_ns,
+                    board->WrSubsystem(), board->WrTimestamp());
+            });
+        }
+    }
+}
+
 void FatimaRaw2Cal::Exec(Option_t* option)
 {
+    if (fUseTamexRaw) BuildTamexLegacyHits();
     auto start = std::chrono::high_resolution_clock::now();
     
     if (funcal_data && funcal_data->GetEntriesFast() > 1)
@@ -369,6 +486,7 @@ void FatimaRaw2Cal::FinishEvent()
     // Reset only arrays produced by this task; the reader resets raw input.
     fcal_data->Clear();
     ftime_machine_array->Clear();
+    if (fTamexLegacyHits) fTamexLegacyHits->Clear();
 };
 
 /*
