@@ -36,7 +36,7 @@ struct RawWord
     std::uint32_t epoch = 0;
     std::uint16_t channel = 0;
     std::uint16_t coarse = 0;
-    std::uint16_t fine = 0;
+    std::uint32_t fine = 0;
     bool leading = false;
     bool has_preceding_epoch = false;
     bool changed_channel_without_epoch = false;
@@ -124,7 +124,7 @@ public:
             word.epoch = previous_epoch;
             word.channel = static_cast<std::uint16_t>(channel);
             word.coarse = static_cast<std::uint16_t>(input.coarse[i] & Format::coarse_mask);
-            word.fine = static_cast<std::uint16_t>(input.fine[i]);
+            word.fine = input.fine[i];
             word.leading = (input.edge[i] & Format::leading_mask) != 0;
             word.has_preceding_epoch = has_epoch;
             word.changed_channel_without_epoch =
