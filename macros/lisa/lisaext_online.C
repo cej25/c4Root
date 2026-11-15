@@ -53,7 +53,7 @@ void lisaext_online()
     // ::: P A T H   O F   F I L E  to read
     
     // ::: ONLINE READING
-    TString filename = "stream://134.95.192.248:6002"; 
+    TString filename = "stream://134.95.192.83:6002"; 
 
     // ::: OFFLINE READING - For testing
     //TString inputpath = "/home/lisa/data/server/lmd/";                   
@@ -90,12 +90,12 @@ void lisaext_online()
     // ::: Lisa config
 
     // ::: Mapping
-    TLisaConfiguration::SetMappingFile(config_path + "/Lisa_Mapping_5x5_L2_180deg.txt");
+    TLisaConfiguration::SetMappingFile(config_path + "/Lisa_Mapping_3x3_Num9_6nov.txt");
     
     // ::: Gain Matching Febex, MWD, dEdX
-    TLisaConfiguration::SetGMFile(config_path +     "/Lisa_GainMatching_5x5_L2_180deg.txt");
-    TLisaConfiguration::SetGMFileMWD(config_path +  "/Lisa_GainMatching_5x5_L2_180deg.txt");
-    TLisaConfiguration::SetGMFiledEdX(config_path + "/Lisa_GainMatching_5x5_L2_180deg.txt");
+    TLisaConfiguration::SetGMFile(config_path +     "/Lisa_GainMatching_3x3_fake.txt");
+    TLisaConfiguration::SetGMFileMWD(config_path +  "/Lisa_GainMatching_3x3_fake.txt");
+    TLisaConfiguration::SetGMFiledEdX(config_path + "/Lisa_GainMatching_3x3_fake.txt");
     
     // ::: MWD parameters
     TLisaConfiguration::SetMWDParametersFile(config_path + "/Lisa_MWD_Parameters_v1.txt");
@@ -149,12 +149,12 @@ void lisaext_online()
 
     // ::: LISA
     //      Channel Energy 
-    TLisaConfiguration::SetEnergyRange(0,120000); 
+    TLisaConfiguration::SetEnergyRange(0,900000); //This was 120000
     TLisaConfiguration::SetEnergyBin(1000); 
 
     //      MWD histos
-    TLisaConfiguration::SetEnergyRangeMWD(0,200);
-    TLisaConfiguration::SetEnergyBinMWD(1000);
+    TLisaConfiguration::SetEnergyRangeMWD(0,200); //This was 200
+    TLisaConfiguration::SetEnergyBinMWD(1000);  //This was 1000
 
     //      LISA WR Time Difference 
     TLisaConfiguration::SetBrDiffRange(0,100000000);
@@ -163,7 +163,7 @@ void lisaext_online()
     TLisaConfiguration::SetBrRateBin(900);
 
     //      LISA Traces Ranges 
-    TLisaConfiguration::SetTracesRange(0,950);
+    //TLisaConfiguration::SetTracesRange(0,2000);
     //TLisaConfiguration::SetTracesBin(20);
     //TLisaConfiguration::SetAmplitudeMin(5000);
     //TLisaConfiguration::SetAmplitudeMax(16000);

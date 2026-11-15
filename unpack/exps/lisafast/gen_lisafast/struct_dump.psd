@@ -1,0 +1,1000 @@
+
+/** BEGIN_INPUT_DEFINITION *********************************************
+ *
+ * All specifications as seen by the parser.
+ *
+ * Do not edit - automatically generated.
+ */
+
+/**********************************************************
+ * Dump of all structures:
+ */
+
+class TAMEX4_EPOCH_DATA
+{
+  ;
+} ;
+class TAMEX4_HEADER
+{
+  DATA16 post_trig_ns;
+  DATA16 pre_trig_ns;
+} ;
+class TAMEX4_PADDING
+{
+  ;
+} ;
+class TAMEX4_TIME_DATA
+{
+  ;
+} ;
+class TAMEX4_SFP
+{
+  DATA16 trig;
+  DATA32 event_size;
+  raw_list_ii_zero_suppress<DATA12,DATA12,1024> time_coarse;
+  raw_list_ii_zero_suppress<DATA12,DATA12,1024> time_fine;
+  raw_list_ii_zero_suppress<DATA12,DATA12,1024> time_edge;
+  raw_list_ii_zero_suppress<DATA12,DATA12,1024> time_channel;
+  raw_list_ii_zero_suppress<DATA32,DATA32,1024> time_epoch;
+  TAMEX4_EPOCH_DATA epoch;
+  TAMEX4_TIME_DATA time;
+} ;
+class TIMESTAMP_WHITERABBIT
+{
+  DATA12 subsystem_id;
+  DATA16 t1;
+  DATA16 t2;
+  DATA16 t3;
+  DATA16 t4;
+} ;
+class TIMESTAMP_WHITERABBIT_EXTENDED
+{
+  DATA16 subsystem_id;
+  DATA16 t1;
+  DATA16 t2;
+  DATA16 t3;
+  DATA16 t4;
+} ;
+class TIMESTAMP_WHITERABBIT_EXTERNAL
+{
+  DATA32 subsystem_id;
+  DATA32 run;
+  DATA32 t1;
+  DATA32 t2;
+} ;
+class WR_MULTI
+{
+  DATA32 time_hi;
+  DATA32 time_lo;
+} ;
+class lisa_tamex_subev : public unpack_subevent_base
+{
+  TAMEX4_PADDING padding;
+  TAMEX4_SFP tamex[4];
+  TAMEX4_HEADER trigger_window;
+} ;
+class unpack_event : public unpack_event_base
+{
+  lisa_tamex_subev lisafast;
+} ;
+class unpack_sticky_event : public unpack_sticky_event_base
+{
+  ;
+} ;
+/**********************************************************/
+
+/** END_INPUT_DEFINITION **********************************************/
+
+
+/** BEGIN_MIRROR_STRUCT ************************************************
+ *
+ * Mirror (1 to 1) structure.
+ *
+ * Do not edit - automatically generated.
+ */
+
+#include "gen/default_mirror_define.hh"
+
+#ifndef USER_DEF_TAMEX4_EPOCH_DATA
+STRUCT_MIRROR_TEMPLATE
+class STRUCT_MIRROR_STRUCT(TAMEX4_EPOCH_DATA)
+{
+public:
+  STRUCT_MIRROR_FCNS_DECL(TAMEX4_EPOCH_DATA);
+};
+#endif//USER_DEF_TAMEX4_EPOCH_DATA
+
+#ifndef USER_DEF_TAMEX4_HEADER
+STRUCT_MIRROR_TEMPLATE
+class STRUCT_MIRROR_STRUCT(TAMEX4_HEADER)
+{
+public:
+  STRUCT_MIRROR_ITEM_CTRL(post_trig_ns);
+  STRUCT_MIRROR_TYPE(DATA16) STRUCT_MIRROR_TYPE_TEMPLATE_FULL STRUCT_MIRROR_NAME(post_trig_ns);
+  STRUCT_MIRROR_ITEM_CTRL(pre_trig_ns);
+  STRUCT_MIRROR_TYPE(DATA16) STRUCT_MIRROR_TYPE_TEMPLATE_FULL STRUCT_MIRROR_NAME(pre_trig_ns);
+  STRUCT_MIRROR_FCNS_DECL(TAMEX4_HEADER);
+};
+#endif//USER_DEF_TAMEX4_HEADER
+
+#ifndef USER_DEF_TAMEX4_PADDING
+STRUCT_MIRROR_TEMPLATE
+class STRUCT_MIRROR_STRUCT(TAMEX4_PADDING)
+{
+public:
+  STRUCT_MIRROR_FCNS_DECL(TAMEX4_PADDING);
+};
+#endif//USER_DEF_TAMEX4_PADDING
+
+#ifndef USER_DEF_TAMEX4_TIME_DATA
+STRUCT_MIRROR_TEMPLATE
+class STRUCT_MIRROR_STRUCT(TAMEX4_TIME_DATA)
+{
+public:
+  STRUCT_MIRROR_FCNS_DECL(TAMEX4_TIME_DATA);
+};
+#endif//USER_DEF_TAMEX4_TIME_DATA
+
+#ifndef USER_DEF_TAMEX4_SFP
+STRUCT_MIRROR_TEMPLATE
+class STRUCT_MIRROR_STRUCT(TAMEX4_SFP)
+{
+public:
+  STRUCT_MIRROR_ITEM_CTRL(trig);
+  STRUCT_MIRROR_TYPE(DATA16) STRUCT_MIRROR_TYPE_TEMPLATE_FULL STRUCT_MIRROR_NAME(trig);
+  STRUCT_MIRROR_ITEM_CTRL(event_size);
+  STRUCT_MIRROR_TYPE(DATA32) STRUCT_MIRROR_TYPE_TEMPLATE_FULL STRUCT_MIRROR_NAME(event_size);
+  STRUCT_MIRROR_ITEM_CTRL(time_coarse);
+  STRUCT_MIRROR_TYPE(raw_list_ii_zero_suppress) < STRUCT_MIRROR_TYPE_TEMPLATE STRUCT_MIRROR_TEMPLATE_ARG(DATA12),STRUCT_MIRROR_TEMPLATE_ARG(DATA12),1024> STRUCT_MIRROR_NAME(time_coarse);
+  STRUCT_MIRROR_ITEM_CTRL(time_fine);
+  STRUCT_MIRROR_TYPE(raw_list_ii_zero_suppress) < STRUCT_MIRROR_TYPE_TEMPLATE STRUCT_MIRROR_TEMPLATE_ARG(DATA12),STRUCT_MIRROR_TEMPLATE_ARG(DATA12),1024> STRUCT_MIRROR_NAME(time_fine);
+  STRUCT_MIRROR_ITEM_CTRL(time_edge);
+  STRUCT_MIRROR_TYPE(raw_list_ii_zero_suppress) < STRUCT_MIRROR_TYPE_TEMPLATE STRUCT_MIRROR_TEMPLATE_ARG(DATA12),STRUCT_MIRROR_TEMPLATE_ARG(DATA12),1024> STRUCT_MIRROR_NAME(time_edge);
+  STRUCT_MIRROR_ITEM_CTRL(time_channel);
+  STRUCT_MIRROR_TYPE(raw_list_ii_zero_suppress) < STRUCT_MIRROR_TYPE_TEMPLATE STRUCT_MIRROR_TEMPLATE_ARG(DATA12),STRUCT_MIRROR_TEMPLATE_ARG(DATA12),1024> STRUCT_MIRROR_NAME(time_channel);
+  STRUCT_MIRROR_ITEM_CTRL(time_epoch);
+  STRUCT_MIRROR_TYPE(raw_list_ii_zero_suppress) < STRUCT_MIRROR_TYPE_TEMPLATE STRUCT_MIRROR_TEMPLATE_ARG(DATA32),STRUCT_MIRROR_TEMPLATE_ARG(DATA32),1024> STRUCT_MIRROR_NAME(time_epoch);
+  STRUCT_MIRROR_ITEM_CTRL(epoch);
+  STRUCT_MIRROR_TYPE(TAMEX4_EPOCH_DATA) STRUCT_MIRROR_TYPE_TEMPLATE_FULL STRUCT_MIRROR_NAME(epoch);
+  STRUCT_MIRROR_ITEM_CTRL(time);
+  STRUCT_MIRROR_TYPE(TAMEX4_TIME_DATA) STRUCT_MIRROR_TYPE_TEMPLATE_FULL STRUCT_MIRROR_NAME(time);
+  STRUCT_MIRROR_FCNS_DECL(TAMEX4_SFP);
+};
+#endif//USER_DEF_TAMEX4_SFP
+
+#ifndef USER_DEF_TIMESTAMP_WHITERABBIT
+STRUCT_MIRROR_TEMPLATE
+class STRUCT_MIRROR_STRUCT(TIMESTAMP_WHITERABBIT)
+{
+public:
+  STRUCT_MIRROR_ITEM_CTRL(subsystem_id);
+  STRUCT_MIRROR_TYPE(DATA12) STRUCT_MIRROR_TYPE_TEMPLATE_FULL STRUCT_MIRROR_NAME(subsystem_id);
+  STRUCT_MIRROR_ITEM_CTRL(t1);
+  STRUCT_MIRROR_TYPE(DATA16) STRUCT_MIRROR_TYPE_TEMPLATE_FULL STRUCT_MIRROR_NAME(t1);
+  STRUCT_MIRROR_ITEM_CTRL(t2);
+  STRUCT_MIRROR_TYPE(DATA16) STRUCT_MIRROR_TYPE_TEMPLATE_FULL STRUCT_MIRROR_NAME(t2);
+  STRUCT_MIRROR_ITEM_CTRL(t3);
+  STRUCT_MIRROR_TYPE(DATA16) STRUCT_MIRROR_TYPE_TEMPLATE_FULL STRUCT_MIRROR_NAME(t3);
+  STRUCT_MIRROR_ITEM_CTRL(t4);
+  STRUCT_MIRROR_TYPE(DATA16) STRUCT_MIRROR_TYPE_TEMPLATE_FULL STRUCT_MIRROR_NAME(t4);
+  STRUCT_MIRROR_FCNS_DECL(TIMESTAMP_WHITERABBIT);
+};
+#endif//USER_DEF_TIMESTAMP_WHITERABBIT
+
+#ifndef USER_DEF_TIMESTAMP_WHITERABBIT_EXTENDED
+STRUCT_MIRROR_TEMPLATE
+class STRUCT_MIRROR_STRUCT(TIMESTAMP_WHITERABBIT_EXTENDED)
+{
+public:
+  STRUCT_MIRROR_ITEM_CTRL(subsystem_id);
+  STRUCT_MIRROR_TYPE(DATA16) STRUCT_MIRROR_TYPE_TEMPLATE_FULL STRUCT_MIRROR_NAME(subsystem_id);
+  STRUCT_MIRROR_ITEM_CTRL(t1);
+  STRUCT_MIRROR_TYPE(DATA16) STRUCT_MIRROR_TYPE_TEMPLATE_FULL STRUCT_MIRROR_NAME(t1);
+  STRUCT_MIRROR_ITEM_CTRL(t2);
+  STRUCT_MIRROR_TYPE(DATA16) STRUCT_MIRROR_TYPE_TEMPLATE_FULL STRUCT_MIRROR_NAME(t2);
+  STRUCT_MIRROR_ITEM_CTRL(t3);
+  STRUCT_MIRROR_TYPE(DATA16) STRUCT_MIRROR_TYPE_TEMPLATE_FULL STRUCT_MIRROR_NAME(t3);
+  STRUCT_MIRROR_ITEM_CTRL(t4);
+  STRUCT_MIRROR_TYPE(DATA16) STRUCT_MIRROR_TYPE_TEMPLATE_FULL STRUCT_MIRROR_NAME(t4);
+  STRUCT_MIRROR_FCNS_DECL(TIMESTAMP_WHITERABBIT_EXTENDED);
+};
+#endif//USER_DEF_TIMESTAMP_WHITERABBIT_EXTENDED
+
+#ifndef USER_DEF_TIMESTAMP_WHITERABBIT_EXTERNAL
+STRUCT_MIRROR_TEMPLATE
+class STRUCT_MIRROR_STRUCT(TIMESTAMP_WHITERABBIT_EXTERNAL)
+{
+public:
+  STRUCT_MIRROR_ITEM_CTRL(subsystem_id);
+  STRUCT_MIRROR_TYPE(DATA32) STRUCT_MIRROR_TYPE_TEMPLATE_FULL STRUCT_MIRROR_NAME(subsystem_id);
+  STRUCT_MIRROR_ITEM_CTRL(run);
+  STRUCT_MIRROR_TYPE(DATA32) STRUCT_MIRROR_TYPE_TEMPLATE_FULL STRUCT_MIRROR_NAME(run);
+  STRUCT_MIRROR_ITEM_CTRL(t1);
+  STRUCT_MIRROR_TYPE(DATA32) STRUCT_MIRROR_TYPE_TEMPLATE_FULL STRUCT_MIRROR_NAME(t1);
+  STRUCT_MIRROR_ITEM_CTRL(t2);
+  STRUCT_MIRROR_TYPE(DATA32) STRUCT_MIRROR_TYPE_TEMPLATE_FULL STRUCT_MIRROR_NAME(t2);
+  STRUCT_MIRROR_FCNS_DECL(TIMESTAMP_WHITERABBIT_EXTERNAL);
+};
+#endif//USER_DEF_TIMESTAMP_WHITERABBIT_EXTERNAL
+
+#ifndef USER_DEF_WR_MULTI
+STRUCT_MIRROR_TEMPLATE
+class STRUCT_MIRROR_STRUCT(WR_MULTI)
+{
+public:
+  STRUCT_MIRROR_ITEM_CTRL(time_hi);
+  STRUCT_MIRROR_TYPE(DATA32) STRUCT_MIRROR_TYPE_TEMPLATE_FULL STRUCT_MIRROR_NAME(time_hi);
+  STRUCT_MIRROR_ITEM_CTRL(time_lo);
+  STRUCT_MIRROR_TYPE(DATA32) STRUCT_MIRROR_TYPE_TEMPLATE_FULL STRUCT_MIRROR_NAME(time_lo);
+  STRUCT_MIRROR_FCNS_DECL(WR_MULTI);
+};
+#endif//USER_DEF_WR_MULTI
+
+#ifndef USER_DEF_lisa_tamex_subev
+STRUCT_MIRROR_TEMPLATE
+class STRUCT_MIRROR_STRUCT(lisa_tamex_subev) : public STRUCT_MIRROR_BASE(unpack_subevent_base)
+{
+public:
+  STRUCT_MIRROR_ITEM_CTRL_BASE(unpack_subevent_base);
+  STRUCT_MIRROR_ITEM_CTRL(padding);
+  STRUCT_MIRROR_TYPE(TAMEX4_PADDING) STRUCT_MIRROR_TYPE_TEMPLATE_FULL STRUCT_MIRROR_NAME(padding);
+  STRUCT_MIRROR_ITEM_CTRL(tamex);
+  STRUCT_MIRROR_ITEM_CTRL_ARRAY(tamex__i0,,4);
+  STRUCT_MIRROR_TYPE(TAMEX4_SFP) STRUCT_MIRROR_TYPE_TEMPLATE_FULL STRUCT_MIRROR_NAME(tamex[4]);
+  STRUCT_MIRROR_ITEM_CTRL(trigger_window);
+  STRUCT_MIRROR_TYPE(TAMEX4_HEADER) STRUCT_MIRROR_TYPE_TEMPLATE_FULL STRUCT_MIRROR_NAME(trigger_window);
+  STRUCT_MIRROR_FCNS_DECL(lisa_tamex_subev);
+};
+#endif//USER_DEF_lisa_tamex_subev
+
+#ifndef USER_DEF_unpack_event
+STRUCT_MIRROR_TEMPLATE
+class STRUCT_MIRROR_STRUCT(unpack_event) : public STRUCT_MIRROR_BASE(unpack_event_base)
+{
+public:
+  STRUCT_MIRROR_ITEM_CTRL_BASE(unpack_event_base);
+  STRUCT_MIRROR_ITEM_CTRL(lisafast);
+  STRUCT_MIRROR_TYPE(lisa_tamex_subev) STRUCT_MIRROR_TYPE_TEMPLATE_FULL STRUCT_MIRROR_NAME(lisafast);
+  STRUCT_MIRROR_FCNS_DECL(unpack_event);
+};
+#endif//USER_DEF_unpack_event
+
+#ifndef USER_DEF_unpack_sticky_event
+STRUCT_MIRROR_TEMPLATE
+class STRUCT_MIRROR_STRUCT(unpack_sticky_event) : public STRUCT_MIRROR_BASE(unpack_sticky_event_base)
+{
+public:
+  STRUCT_MIRROR_ITEM_CTRL_BASE(unpack_sticky_event_base);
+  STRUCT_MIRROR_FCNS_DECL(unpack_sticky_event);
+};
+#endif//USER_DEF_unpack_sticky_event
+
+#include "gen/default_mirror_undef.hh"
+
+
+/** END_MIRROR_STRUCT *************************************************/
+
+
+/** BEGIN_MIRROR_DECL_STRUCT *******************************************
+ *
+ * Mirror structure names.
+ *
+ * Do not edit - automatically generated.
+ */
+
+#include "gen/default_mirror_define.hh"
+
+STRUCT_MIRROR_TEMPLATE
+struct STRUCT_MIRROR_STRUCT(TAMEX4_EPOCH_DATA);
+
+STRUCT_MIRROR_TEMPLATE
+struct STRUCT_MIRROR_STRUCT(TAMEX4_HEADER);
+
+STRUCT_MIRROR_TEMPLATE
+struct STRUCT_MIRROR_STRUCT(TAMEX4_PADDING);
+
+STRUCT_MIRROR_TEMPLATE
+struct STRUCT_MIRROR_STRUCT(TAMEX4_TIME_DATA);
+
+STRUCT_MIRROR_TEMPLATE
+struct STRUCT_MIRROR_STRUCT(TAMEX4_SFP);
+
+STRUCT_MIRROR_TEMPLATE
+struct STRUCT_MIRROR_STRUCT(TIMESTAMP_WHITERABBIT);
+
+STRUCT_MIRROR_TEMPLATE
+struct STRUCT_MIRROR_STRUCT(TIMESTAMP_WHITERABBIT_EXTENDED);
+
+STRUCT_MIRROR_TEMPLATE
+struct STRUCT_MIRROR_STRUCT(TIMESTAMP_WHITERABBIT_EXTERNAL);
+
+STRUCT_MIRROR_TEMPLATE
+struct STRUCT_MIRROR_STRUCT(WR_MULTI);
+
+STRUCT_MIRROR_TEMPLATE
+struct STRUCT_MIRROR_STRUCT(lisa_tamex_subev);
+
+STRUCT_MIRROR_TEMPLATE
+struct STRUCT_MIRROR_STRUCT(unpack_event);
+
+STRUCT_MIRROR_TEMPLATE
+struct STRUCT_MIRROR_STRUCT(unpack_sticky_event);
+
+#include "gen/default_mirror_undef.hh"
+
+
+/** END_MIRROR_DECL_STRUCT ********************************************/
+
+
+/** BEGIN_FUNCTION_CALL_PER_MEMBER *************************************
+ *
+ * Recursive function calls per member.
+ *
+ * Do not edit - automatically generated.
+ */
+
+#include "gen/default_fcncall_define.hh"
+
+#ifndef USER_DEF_TAMEX4_EPOCH_DATA
+FCNCALL_TEMPLATE
+FCNCALL_RET_TYPE FCNCALL_CLASS_NAME(TAMEX4_EPOCH_DATA)::FCNCALL_NAME(TAMEX4_EPOCH_DATA)
+{
+  FCNCALL_INIT;
+  FCNCALL_RET;
+}
+#endif//USER_DEF_TAMEX4_EPOCH_DATA
+
+#ifndef USER_DEF_TAMEX4_HEADER
+FCNCALL_TEMPLATE
+FCNCALL_RET_TYPE FCNCALL_CLASS_NAME(TAMEX4_HEADER)::FCNCALL_NAME(TAMEX4_HEADER)
+{
+  FCNCALL_INIT;
+  // DATA16 post_trig_ns;
+  {
+  FCNCALL_SUBNAME("post_trig_ns");
+  { FCNCALL_CALL_CTRL_WRAP(post_trig_ns,post_trig_ns.FCNCALL_CALL(post_trig_ns)); }
+  FCNCALL_SUBNAME_END;
+  }
+  // DATA16 pre_trig_ns;
+  {
+  FCNCALL_SUBNAME("pre_trig_ns");
+  { FCNCALL_CALL_CTRL_WRAP(pre_trig_ns,pre_trig_ns.FCNCALL_CALL(pre_trig_ns)); }
+  FCNCALL_SUBNAME_END;
+  }
+  FCNCALL_RET;
+}
+#endif//USER_DEF_TAMEX4_HEADER
+
+#ifndef USER_DEF_TAMEX4_PADDING
+FCNCALL_TEMPLATE
+FCNCALL_RET_TYPE FCNCALL_CLASS_NAME(TAMEX4_PADDING)::FCNCALL_NAME(TAMEX4_PADDING)
+{
+  FCNCALL_INIT;
+  FCNCALL_RET;
+}
+#endif//USER_DEF_TAMEX4_PADDING
+
+#ifndef USER_DEF_TAMEX4_TIME_DATA
+FCNCALL_TEMPLATE
+FCNCALL_RET_TYPE FCNCALL_CLASS_NAME(TAMEX4_TIME_DATA)::FCNCALL_NAME(TAMEX4_TIME_DATA)
+{
+  FCNCALL_INIT;
+  FCNCALL_RET;
+}
+#endif//USER_DEF_TAMEX4_TIME_DATA
+
+#ifndef USER_DEF_TAMEX4_SFP
+FCNCALL_TEMPLATE
+FCNCALL_RET_TYPE FCNCALL_CLASS_NAME(TAMEX4_SFP)::FCNCALL_NAME(TAMEX4_SFP)
+{
+  FCNCALL_INIT;
+  // DATA16 trig;
+  {
+  FCNCALL_SUBNAME("trig");
+  { FCNCALL_CALL_CTRL_WRAP(trig,trig.FCNCALL_CALL(trig)); }
+  FCNCALL_SUBNAME_END;
+  }
+  // DATA32 event_size;
+  {
+  FCNCALL_SUBNAME("event_size");
+  { FCNCALL_CALL_CTRL_WRAP(event_size,event_size.FCNCALL_CALL(event_size)); }
+  FCNCALL_SUBNAME_END;
+  }
+  // raw_list_ii_zero_suppress<DATA12,DATA12,1024> time_coarse;
+  {
+  FCNCALL_SUBNAME("time_coarse");
+  { FCNCALL_CALL_CTRL_WRAP(time_coarse,time_coarse.FCNCALL_CALL(time_coarse)); }
+  FCNCALL_SUBNAME_END;
+  }
+  // raw_list_ii_zero_suppress<DATA12,DATA12,1024> time_fine;
+  {
+  FCNCALL_SUBNAME("time_fine");
+  { FCNCALL_CALL_CTRL_WRAP(time_fine,time_fine.FCNCALL_CALL(time_fine)); }
+  FCNCALL_SUBNAME_END;
+  }
+  // raw_list_ii_zero_suppress<DATA12,DATA12,1024> time_edge;
+  {
+  FCNCALL_SUBNAME("time_edge");
+  { FCNCALL_CALL_CTRL_WRAP(time_edge,time_edge.FCNCALL_CALL(time_edge)); }
+  FCNCALL_SUBNAME_END;
+  }
+  // raw_list_ii_zero_suppress<DATA12,DATA12,1024> time_channel;
+  {
+  FCNCALL_SUBNAME("time_channel");
+  { FCNCALL_CALL_CTRL_WRAP(time_channel,time_channel.FCNCALL_CALL(time_channel)); }
+  FCNCALL_SUBNAME_END;
+  }
+  // raw_list_ii_zero_suppress<DATA32,DATA32,1024> time_epoch;
+  {
+  FCNCALL_SUBNAME("time_epoch");
+  { FCNCALL_CALL_CTRL_WRAP(time_epoch,time_epoch.FCNCALL_CALL(time_epoch)); }
+  FCNCALL_SUBNAME_END;
+  }
+  // TAMEX4_EPOCH_DATA epoch;
+  {
+  FCNCALL_SUBNAME("epoch");
+  { FCNCALL_CALL_CTRL_WRAP(epoch,epoch.FCNCALL_CALL(epoch)); }
+  FCNCALL_SUBNAME_END;
+  }
+  // TAMEX4_TIME_DATA time;
+  {
+  FCNCALL_SUBNAME("time");
+  { FCNCALL_CALL_CTRL_WRAP(time,time.FCNCALL_CALL(time)); }
+  FCNCALL_SUBNAME_END;
+  }
+  FCNCALL_RET;
+}
+#endif//USER_DEF_TAMEX4_SFP
+
+#ifndef USER_DEF_TIMESTAMP_WHITERABBIT
+FCNCALL_TEMPLATE
+FCNCALL_RET_TYPE FCNCALL_CLASS_NAME(TIMESTAMP_WHITERABBIT)::FCNCALL_NAME(TIMESTAMP_WHITERABBIT)
+{
+  FCNCALL_INIT;
+  // DATA12 subsystem_id;
+  {
+  FCNCALL_SUBNAME("subsystem_id");
+  { FCNCALL_CALL_CTRL_WRAP(subsystem_id,subsystem_id.FCNCALL_CALL(subsystem_id)); }
+  FCNCALL_SUBNAME_END;
+  }
+  // DATA16 t1;
+  {
+  FCNCALL_SUBNAME("t1");
+  { FCNCALL_CALL_CTRL_WRAP(t1,t1.FCNCALL_CALL(t1)); }
+  FCNCALL_SUBNAME_END;
+  }
+  // DATA16 t2;
+  {
+  FCNCALL_SUBNAME("t2");
+  { FCNCALL_CALL_CTRL_WRAP(t2,t2.FCNCALL_CALL(t2)); }
+  FCNCALL_SUBNAME_END;
+  }
+  // DATA16 t3;
+  {
+  FCNCALL_SUBNAME("t3");
+  { FCNCALL_CALL_CTRL_WRAP(t3,t3.FCNCALL_CALL(t3)); }
+  FCNCALL_SUBNAME_END;
+  }
+  // DATA16 t4;
+  {
+  FCNCALL_SUBNAME("t4");
+  { FCNCALL_CALL_CTRL_WRAP(t4,t4.FCNCALL_CALL(t4)); }
+  FCNCALL_SUBNAME_END;
+  }
+  FCNCALL_RET;
+}
+#endif//USER_DEF_TIMESTAMP_WHITERABBIT
+
+#ifndef USER_DEF_TIMESTAMP_WHITERABBIT_EXTENDED
+FCNCALL_TEMPLATE
+FCNCALL_RET_TYPE FCNCALL_CLASS_NAME(TIMESTAMP_WHITERABBIT_EXTENDED)::FCNCALL_NAME(TIMESTAMP_WHITERABBIT_EXTENDED)
+{
+  FCNCALL_INIT;
+  // DATA16 subsystem_id;
+  {
+  FCNCALL_SUBNAME("subsystem_id");
+  { FCNCALL_CALL_CTRL_WRAP(subsystem_id,subsystem_id.FCNCALL_CALL(subsystem_id)); }
+  FCNCALL_SUBNAME_END;
+  }
+  // DATA16 t1;
+  {
+  FCNCALL_SUBNAME("t1");
+  { FCNCALL_CALL_CTRL_WRAP(t1,t1.FCNCALL_CALL(t1)); }
+  FCNCALL_SUBNAME_END;
+  }
+  // DATA16 t2;
+  {
+  FCNCALL_SUBNAME("t2");
+  { FCNCALL_CALL_CTRL_WRAP(t2,t2.FCNCALL_CALL(t2)); }
+  FCNCALL_SUBNAME_END;
+  }
+  // DATA16 t3;
+  {
+  FCNCALL_SUBNAME("t3");
+  { FCNCALL_CALL_CTRL_WRAP(t3,t3.FCNCALL_CALL(t3)); }
+  FCNCALL_SUBNAME_END;
+  }
+  // DATA16 t4;
+  {
+  FCNCALL_SUBNAME("t4");
+  { FCNCALL_CALL_CTRL_WRAP(t4,t4.FCNCALL_CALL(t4)); }
+  FCNCALL_SUBNAME_END;
+  }
+  FCNCALL_RET;
+}
+#endif//USER_DEF_TIMESTAMP_WHITERABBIT_EXTENDED
+
+#ifndef USER_DEF_TIMESTAMP_WHITERABBIT_EXTERNAL
+FCNCALL_TEMPLATE
+FCNCALL_RET_TYPE FCNCALL_CLASS_NAME(TIMESTAMP_WHITERABBIT_EXTERNAL)::FCNCALL_NAME(TIMESTAMP_WHITERABBIT_EXTERNAL)
+{
+  FCNCALL_INIT;
+  // DATA32 subsystem_id;
+  {
+  FCNCALL_SUBNAME("subsystem_id");
+  { FCNCALL_CALL_CTRL_WRAP(subsystem_id,subsystem_id.FCNCALL_CALL(subsystem_id)); }
+  FCNCALL_SUBNAME_END;
+  }
+  // DATA32 run;
+  {
+  FCNCALL_SUBNAME("run");
+  { FCNCALL_CALL_CTRL_WRAP(run,run.FCNCALL_CALL(run)); }
+  FCNCALL_SUBNAME_END;
+  }
+  // DATA32 t1;
+  {
+  FCNCALL_SUBNAME("t1");
+  { FCNCALL_CALL_CTRL_WRAP(t1,t1.FCNCALL_CALL(t1)); }
+  FCNCALL_SUBNAME_END;
+  }
+  // DATA32 t2;
+  {
+  FCNCALL_SUBNAME("t2");
+  { FCNCALL_CALL_CTRL_WRAP(t2,t2.FCNCALL_CALL(t2)); }
+  FCNCALL_SUBNAME_END;
+  }
+  FCNCALL_RET;
+}
+#endif//USER_DEF_TIMESTAMP_WHITERABBIT_EXTERNAL
+
+#ifndef USER_DEF_WR_MULTI
+FCNCALL_TEMPLATE
+FCNCALL_RET_TYPE FCNCALL_CLASS_NAME(WR_MULTI)::FCNCALL_NAME(WR_MULTI)
+{
+  FCNCALL_INIT;
+  // DATA32 time_hi;
+  {
+  FCNCALL_SUBNAME("time_hi");
+  { FCNCALL_CALL_CTRL_WRAP(time_hi,time_hi.FCNCALL_CALL(time_hi)); }
+  FCNCALL_SUBNAME_END;
+  }
+  // DATA32 time_lo;
+  {
+  FCNCALL_SUBNAME("time_lo");
+  { FCNCALL_CALL_CTRL_WRAP(time_lo,time_lo.FCNCALL_CALL(time_lo)); }
+  FCNCALL_SUBNAME_END;
+  }
+  FCNCALL_RET;
+}
+#endif//USER_DEF_WR_MULTI
+
+#ifndef USER_DEF_lisa_tamex_subev
+FCNCALL_TEMPLATE
+FCNCALL_RET_TYPE FCNCALL_CLASS_NAME(lisa_tamex_subev)::FCNCALL_NAME(lisa_tamex_subev)
+{
+  FCNCALL_INIT;
+  FCNCALL_CALL_CTRL_WRAP(unpack_subevent_base,FCNCALL_CLASS_NAME(unpack_subevent_base)::FCNCALL_CALL_BASE());
+  // TAMEX4_PADDING padding;
+  {
+  FCNCALL_SUBNAME("padding");
+  { FCNCALL_CALL_CTRL_WRAP(padding,padding.FCNCALL_CALL(padding)); }
+  FCNCALL_SUBNAME_END;
+  }
+  // TAMEX4_SFP tamex[4];
+  {
+  FCNCALL_SUBNAME("tamex");
+  FCNCALL_FOR(__i0,4)
+  {
+    FCNCALL_SUBINDEX(__i0);
+    { FCNCALL_CALL_CTRL_WRAP_ARRAY(tamex__i0,,__i0,tamex[__i0].FCNCALL_CALL(tamex[__i0])); }
+    FCNCALL_SUBINDEX_END(__i0);
+  }
+  FCNCALL_SUBNAME_END;
+  }
+  // TAMEX4_HEADER trigger_window;
+  {
+  FCNCALL_SUBNAME("trigger_window");
+  { FCNCALL_CALL_CTRL_WRAP(trigger_window,trigger_window.FCNCALL_CALL(trigger_window)); }
+  FCNCALL_SUBNAME_END;
+  }
+  FCNCALL_RET;
+}
+#endif//USER_DEF_lisa_tamex_subev
+
+#ifndef USER_DEF_unpack_event
+FCNCALL_TEMPLATE
+FCNCALL_RET_TYPE FCNCALL_CLASS_NAME(unpack_event)::FCNCALL_NAME(unpack_event)
+{
+  FCNCALL_INIT;
+  FCNCALL_CALL_CTRL_WRAP(unpack_event_base,FCNCALL_CLASS_NAME(unpack_event_base)::FCNCALL_CALL_BASE());
+  // lisa_tamex_subev lisafast;
+  {
+  FCNCALL_SUBNAME("lisafast");
+  { FCNCALL_CALL_CTRL_WRAP(lisafast,lisafast.FCNCALL_CALL(lisafast)); }
+  FCNCALL_SUBNAME_END;
+  }
+  FCNCALL_RET;
+}
+#endif//USER_DEF_unpack_event
+
+#ifndef USER_DEF_unpack_sticky_event
+FCNCALL_TEMPLATE
+FCNCALL_RET_TYPE FCNCALL_CLASS_NAME(unpack_sticky_event)::FCNCALL_NAME(unpack_sticky_event)
+{
+  FCNCALL_INIT;
+  FCNCALL_CALL_CTRL_WRAP(unpack_sticky_event_base,FCNCALL_CLASS_NAME(unpack_sticky_event_base)::FCNCALL_CALL_BASE());
+  FCNCALL_RET;
+}
+#endif//USER_DEF_unpack_sticky_event
+
+#include "gen/default_fcncall_undef.hh"
+
+
+/** END_FUNCTION_CALL_PER_MEMBER **************************************/
+
+
+/** BEGIN_CORR_STRUCT **************************************************
+ *
+ * Correlation structure.
+ *
+ * Do not edit - automatically generated.
+ */
+
+// Corr struct for: TAMEX4_EPOCH_DATA
+// 
+// size= 1  chunks=  1  mem=   1  line=2  total=2
+// 
+// corr structure: TAMEX4_EPOCH_DATA
+// .TAMEX4_EPOCH_DATA// 
+// size= 1  chunks=  1  mem=   1  line=2  total=2
+// 
+// corr structure: TAMEX4_EPOCH_DATA
+// .TAMEX4_EPOCH_DATA// 
+// size= 1  chunks=  1  mem=   1  line=2  total=2
+// 
+// corr structure: TAMEX4_EPOCH_DATA
+// .TAMEX4_EPOCH_DATA
+// Corr struct for: TAMEX4_HEADER
+// DATA16  .post_trig_ns
+// DATA16  .pre_trig_ns
+// DATA16 .post_trig_ns
+// DATA16 .pre_trig_ns
+// 
+// size= 1  chunks=  2  mem=   2  line=4  total=8
+// size= 2  chunks=  1  mem=   2  line=3  total=6
+// 
+// corr structure: TAMEX4_HEADER
+  // DATA16 .post_trig_ns
+  // DATA16 .pre_trig_ns
+// .TAMEX4_HEADER/2/.post_trig_ns
+                 // .pre_trig_ns// 
+// size= 1  chunks=  1  mem=   1  line=2  total=2
+// 
+// corr structure: TAMEX4_HEADER
+// .TAMEX4_HEADER// 
+// size= 1  chunks=  1  mem=   1  line=2  total=2
+// 
+// corr structure: TAMEX4_HEADER
+// .TAMEX4_HEADER
+// Corr struct for: TAMEX4_PADDING
+// 
+// size= 1  chunks=  1  mem=   1  line=2  total=2
+// 
+// corr structure: TAMEX4_PADDING
+// .TAMEX4_PADDING// 
+// size= 1  chunks=  1  mem=   1  line=2  total=2
+// 
+// corr structure: TAMEX4_PADDING
+// .TAMEX4_PADDING// 
+// size= 1  chunks=  1  mem=   1  line=2  total=2
+// 
+// corr structure: TAMEX4_PADDING
+// .TAMEX4_PADDING
+// Corr struct for: TAMEX4_TIME_DATA
+// 
+// size= 1  chunks=  1  mem=   1  line=2  total=2
+// 
+// corr structure: TAMEX4_TIME_DATA
+// .TAMEX4_TIME_DATA// 
+// size= 1  chunks=  1  mem=   1  line=2  total=2
+// 
+// corr structure: TAMEX4_TIME_DATA
+// .TAMEX4_TIME_DATA// 
+// size= 1  chunks=  1  mem=   1  line=2  total=2
+// 
+// corr structure: TAMEX4_TIME_DATA
+// .TAMEX4_TIME_DATA
+// Corr struct for: TAMEX4_SFP
+// DATA16  .trig
+// DATA32  .event_size
+  // ---
+// raw_list_ii_zero_suppress  .time_coarse(DATA12)[1024]
+// raw_list_ii_zero_suppress  .time_fine(DATA12)[1024]
+// raw_list_ii_zero_suppress  .time_edge(DATA12)[1024]
+// raw_list_ii_zero_suppress  .time_channel(DATA12)[1024]
+// raw_list_ii_zero_suppress  .time_epoch(DATA32)[1024]
+  // ---
+// TAMEX4_EPOCH_DATA  .epoch
+// TAMEX4_TIME_DATA  .time
+// DATA16 .trig
+// DATA12 .time_coarse[1024]
+// DATA12 .time_fine[1024]
+// DATA12 .time_edge[1024]
+// DATA12 .time_channel[1024]
+// 
+// size= 1  chunks=4097  mem=4097  line=8194  total=33570818
+// size=1024  chunks=  5  mem=5120  line=5125  total=20997125
+// size=4097  chunks=  1  mem=4097  line=4098  total=16789506
+// 
+// corr structure: TAMEX4_SFP
+  // DATA16 .trig
+  // DATA12 .time_coarse[1024]
+  // DATA12 .time_fine[1024]
+  // DATA12 .time_edge[1024]
+  // DATA12 .time_channel[1024]
+// .TAMEX4_SFP/4097/.trig
+                 // .time_coarse/1024/[1024]
+                 // .time_fine/1024/[1024]
+                 // .time_edge/1024/[1024]
+                 // .time_channel/1024/[1024]// 
+// size= 1  chunks=  1  mem=   1  line=2  total=2
+// 
+// corr structure: TAMEX4_SFP
+// .TAMEX4_SFP// 
+// size= 1  chunks=  1  mem=   1  line=2  total=2
+// 
+// corr structure: TAMEX4_SFP
+// .TAMEX4_SFP
+// Corr struct for: TIMESTAMP_WHITERABBIT
+// DATA12  .subsystem_id
+// DATA16  .t1
+// DATA16  .t2
+// DATA16  .t3
+// DATA16  .t4
+// DATA12 .subsystem_id
+// DATA16 .t1
+// DATA16 .t2
+// DATA16 .t3
+// DATA16 .t4
+// 
+// size= 1  chunks=  5  mem=   5  line=10  total=50
+// size= 5  chunks=  1  mem=   5  line=6  total=30
+// 
+// corr structure: TIMESTAMP_WHITERABBIT
+  // DATA12 .subsystem_id
+  // DATA16 .t1
+  // DATA16 .t2
+  // DATA16 .t3
+  // DATA16 .t4
+// .TIMESTAMP_WHITERABBIT/5/.subsystem_id
+                         // .t1
+                         // .t2
+                         // .t3
+                         // .t4// 
+// size= 1  chunks=  1  mem=   1  line=2  total=2
+// 
+// corr structure: TIMESTAMP_WHITERABBIT
+// .TIMESTAMP_WHITERABBIT// 
+// size= 1  chunks=  1  mem=   1  line=2  total=2
+// 
+// corr structure: TIMESTAMP_WHITERABBIT
+// .TIMESTAMP_WHITERABBIT
+// Corr struct for: TIMESTAMP_WHITERABBIT_EXTENDED
+// DATA16  .subsystem_id
+// DATA16  .t1
+// DATA16  .t2
+// DATA16  .t3
+// DATA16  .t4
+// DATA16 .subsystem_id
+// DATA16 .t1
+// DATA16 .t2
+// DATA16 .t3
+// DATA16 .t4
+// 
+// size= 1  chunks=  5  mem=   5  line=10  total=50
+// size= 5  chunks=  1  mem=   5  line=6  total=30
+// 
+// corr structure: TIMESTAMP_WHITERABBIT_EXTENDED
+  // DATA16 .subsystem_id
+  // DATA16 .t1
+  // DATA16 .t2
+  // DATA16 .t3
+  // DATA16 .t4
+// .TIMESTAMP_WHITERABBIT_EXTENDED/5/.subsystem_id
+                                  // .t1
+                                  // .t2
+                                  // .t3
+                                  // .t4// 
+// size= 1  chunks=  1  mem=   1  line=2  total=2
+// 
+// corr structure: TIMESTAMP_WHITERABBIT_EXTENDED
+// .TIMESTAMP_WHITERABBIT_EXTENDED// 
+// size= 1  chunks=  1  mem=   1  line=2  total=2
+// 
+// corr structure: TIMESTAMP_WHITERABBIT_EXTENDED
+// .TIMESTAMP_WHITERABBIT_EXTENDED
+// Corr struct for: TIMESTAMP_WHITERABBIT_EXTERNAL
+// DATA32  .subsystem_id
+  // ---
+// DATA32  .run
+  // ---
+// DATA32  .t1
+  // ---
+// DATA32  .t2
+  // ---
+// 
+// size= 1  chunks=  1  mem=   1  line=2  total=2
+// 
+// corr structure: TIMESTAMP_WHITERABBIT_EXTERNAL
+// .TIMESTAMP_WHITERABBIT_EXTERNAL// 
+// size= 1  chunks=  1  mem=   1  line=2  total=2
+// 
+// corr structure: TIMESTAMP_WHITERABBIT_EXTERNAL
+// .TIMESTAMP_WHITERABBIT_EXTERNAL// 
+// size= 1  chunks=  1  mem=   1  line=2  total=2
+// 
+// corr structure: TIMESTAMP_WHITERABBIT_EXTERNAL
+// .TIMESTAMP_WHITERABBIT_EXTERNAL
+// Corr struct for: WR_MULTI
+// DATA32  .time_hi
+  // ---
+// DATA32  .time_lo
+  // ---
+// 
+// size= 1  chunks=  1  mem=   1  line=2  total=2
+// 
+// corr structure: WR_MULTI
+// .WR_MULTI// 
+// size= 1  chunks=  1  mem=   1  line=2  total=2
+// 
+// corr structure: WR_MULTI
+// .WR_MULTI// 
+// size= 1  chunks=  1  mem=   1  line=2  total=2
+// 
+// corr structure: WR_MULTI
+// .WR_MULTI
+// Corr struct for: lisa_tamex_subev
+//  : public unpack_subevent_base
+// ---
+// TAMEX4_PADDING  .padding
+// TAMEX4_SFP  .tamex[4]
+  // DATA16  .trig
+  // DATA32  .event_size
+    // ---
+  // raw_list_ii_zero_suppress  .time_coarse(DATA12)[1024]
+  // raw_list_ii_zero_suppress  .time_fine(DATA12)[1024]
+  // raw_list_ii_zero_suppress  .time_edge(DATA12)[1024]
+  // raw_list_ii_zero_suppress  .time_channel(DATA12)[1024]
+  // raw_list_ii_zero_suppress  .time_epoch(DATA32)[1024]
+    // ---
+  // TAMEX4_EPOCH_DATA  .epoch
+  // TAMEX4_TIME_DATA  .time
+// TAMEX4_HEADER  .trigger_window
+  // DATA16  .post_trig_ns
+  // DATA16  .pre_trig_ns
+// DATA16 .tamex[4].trig
+// DATA12 .tamex[4].time_coarse[1024]
+// DATA12 .tamex[4].time_fine[1024]
+// DATA12 .tamex[4].time_edge[1024]
+// DATA12 .tamex[4].time_channel[1024]
+// DATA16 .trigger_window.post_trig_ns
+// DATA16 .trigger_window.pre_trig_ns
+// 
+// size= 1  chunks=16390  mem=16390  line=32780  total=537264200
+// size= 2  chunks=16389  mem=32778  line=49167  total=805847130
+// size=1024  chunks= 21  mem=21504  line=21525  total=352794750
+// size=4097  chunks=  5  mem=20485  line=20490  total=335831100
+// size=16388  chunks=  2  mem=32776  line=32778  total=537231420
+// size=16390  chunks=  1  mem=16390  line=16391  total=268648490
+// 
+// corr structure: lisa_tamex_subev
+  // DATA16 .tamex[4].trig
+  // DATA12 .tamex[4].time_coarse[1024]
+  // DATA12 .tamex[4].time_fine[1024]
+  // DATA12 .tamex[4].time_edge[1024]
+  // DATA12 .tamex[4].time_channel[1024]
+  // DATA16 .trigger_window.post_trig_ns
+  // DATA16 .trigger_window.pre_trig_ns
+// .lisa_tamex_subev/16390/.tamex/16388/[4]/4097/.trig
+                                              // .time_coarse/1024/[1024]
+                                              // .time_fine/1024/[1024]
+                                              // .time_edge/1024/[1024]
+                                              // .time_channel/1024/[1024]
+                        // .trigger_window/2/.post_trig_ns
+                                          // .pre_trig_ns// 
+// size= 1  chunks=  1  mem=   1  line=2  total=2
+// 
+// corr structure: lisa_tamex_subev
+// .lisa_tamex_subev// 
+// size= 1  chunks=  1  mem=   1  line=2  total=2
+// 
+// corr structure: lisa_tamex_subev
+// .lisa_tamex_subev
+// Corr struct for: unpack_event
+//  : public unpack_event_base
+// ---
+// lisa_tamex_subev  .lisafast
+  //  : public unpack_subevent_base
+  // ---
+  // TAMEX4_PADDING  .padding
+  // TAMEX4_SFP  .tamex[4]
+    // DATA16  .trig
+    // DATA32  .event_size
+      // ---
+    // raw_list_ii_zero_suppress  .time_coarse(DATA12)[1024]
+    // raw_list_ii_zero_suppress  .time_fine(DATA12)[1024]
+    // raw_list_ii_zero_suppress  .time_edge(DATA12)[1024]
+    // raw_list_ii_zero_suppress  .time_channel(DATA12)[1024]
+    // raw_list_ii_zero_suppress  .time_epoch(DATA32)[1024]
+      // ---
+    // TAMEX4_EPOCH_DATA  .epoch
+    // TAMEX4_TIME_DATA  .time
+  // TAMEX4_HEADER  .trigger_window
+    // DATA16  .post_trig_ns
+    // DATA16  .pre_trig_ns
+// DATA16 .lisafast.tamex[4].trig
+// DATA12 .lisafast.tamex[4].time_coarse[1024]
+// DATA12 .lisafast.tamex[4].time_fine[1024]
+// DATA12 .lisafast.tamex[4].time_edge[1024]
+// DATA12 .lisafast.tamex[4].time_channel[1024]
+// DATA16 .lisafast.trigger_window.post_trig_ns
+// DATA16 .lisafast.trigger_window.pre_trig_ns
+// 
+// size= 1  chunks=16390  mem=16390  line=32780  total=537264200
+// size= 2  chunks=16389  mem=32778  line=49167  total=805847130
+// size=1024  chunks= 21  mem=21504  line=21525  total=352794750
+// size=4097  chunks=  5  mem=20485  line=20490  total=335831100
+// size=16388  chunks=  2  mem=32776  line=32778  total=537231420
+// size=16390  chunks=  1  mem=16390  line=16391  total=268648490
+// 
+// corr structure: unpack_event
+  // DATA16 .lisafast.tamex[4].trig
+  // DATA12 .lisafast.tamex[4].time_coarse[1024]
+  // DATA12 .lisafast.tamex[4].time_fine[1024]
+  // DATA12 .lisafast.tamex[4].time_edge[1024]
+  // DATA12 .lisafast.tamex[4].time_channel[1024]
+  // DATA16 .lisafast.trigger_window.post_trig_ns
+  // DATA16 .lisafast.trigger_window.pre_trig_ns
+// .unpack_event/16390/.lisafast/16390/.tamex/16388/[4]/4097/.trig
+                                                          // .time_coarse/1024/[1024]
+                                                          // .time_fine/1024/[1024]
+                                                          // .time_edge/1024/[1024]
+                                                          // .time_channel/1024/[1024]
+                                    // .trigger_window/2/.post_trig_ns
+                                                      // .pre_trig_ns// 
+// size= 1  chunks=  1  mem=   1  line=2  total=2
+// 
+// corr structure: unpack_event
+// .unpack_event// 
+// size= 1  chunks=  1  mem=   1  line=2  total=2
+// 
+// corr structure: unpack_event
+// .unpack_event
+// Corr struct for: unpack_sticky_event
+//  : public unpack_sticky_event_base
+// 
+// size= 1  chunks=  1  mem=   1  line=2  total=2
+// 
+// corr structure: unpack_sticky_event
+// .unpack_sticky_event// 
+// size= 1  chunks=  1  mem=   1  line=2  total=2
+// 
+// corr structure: unpack_sticky_event
+// .unpack_sticky_event// 
+// size= 1  chunks=  1  mem=   1  line=2  total=2
+// 
+// corr structure: unpack_sticky_event
+// .unpack_sticky_event
+
+/** END_CORR_STRUCT ***************************************************/
+

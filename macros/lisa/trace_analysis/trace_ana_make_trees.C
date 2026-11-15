@@ -22,7 +22,7 @@ void trace_ana_make_trees(int fileNumber)
 {   
     const Int_t nev = -1; const Int_t fRunId = 1; const Int_t fExpId = 1;
     //:::::::::Experiment name
-    TString fExpName = "shiyan";
+    TString fExpName = "lisaext"; //shiyan
 
     //:::::::::Here you define commonly used path
     TString c4Root_path = "/u/gandolfo/c4/c4Root";

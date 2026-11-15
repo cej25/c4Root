@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Path to the ROOT macro
-macro_path="macros/versoek_histos.C"
+macro_path="/home/lisa/programs/c4/pl_c4Root/macros/lisa/versoek_histos.C"
 
 # Read list of run numbers to convert to histos
 number_list="histos_numbers.txt"

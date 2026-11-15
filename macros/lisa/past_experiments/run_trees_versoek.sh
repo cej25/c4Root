@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Path to the ROOT macro
-macro_path="macros/versoek_make_trees.C"
+macro_path="/home/lisa/programs/c4/pl_c4Root/macros/lisa/versoek_make_trees.C"
 
 # Read list of run numbers to convert to trees
 number_list="tree_numbers.txt"
@@ -58,3 +58,5 @@ while read -r number; do
 done < "$number_list"
 
 echo "All files processed successfully."
+
+
