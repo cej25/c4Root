@@ -4,12 +4,12 @@
 #include <cstdint>
 #include <vector>
 
-using c4_tamex::PackedBoardView;
-using c4_tamex::RawWord;
-using c4_tamex::Tamex4Decoder;
-using c4_tamex::WordKind;
+using tamex::PackedBoardView;
+using tamex::RawWord;
+using tamex::Tamex4Decoder;
+using tamex::WordKind;
 
-static std::vector<RawWord> Decode(const PackedBoardView& input, c4_tamex::DecodeStats& stats)
+static std::vector<RawWord> Decode(const PackedBoardView& input, tamex::DecodeStats& stats)
 {
     std::vector<RawWord> output;
     stats = Tamex4Decoder::Decode(input, 7, [&](const RawWord& word) {
@@ -28,7 +28,7 @@ int main()
     const std::uint32_t edges[] = {0, 1, 1, 0, 0};
     const PackedBoardView input{32, epochs, coarse, fine, channels, edges, 5, 5, 5, 5, 5};
     // 32 bytes => 8 words minus 3 headers = 5 unpacked positions.
-    c4_tamex::DecodeStats stats{};
+    tamex::DecodeStats stats{};
     auto words = Decode(input, stats);
     assert(words.size() == 5);
     assert(stats.epoch_words == 2 && stats.edge_words == 3);
