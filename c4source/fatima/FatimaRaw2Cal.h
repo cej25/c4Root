@@ -48,6 +48,7 @@ class FatimaRaw2Cal : public FairTask
 
 
     private:
+        void BuildTamexLegacyHits();
 
         TFatimaTwinpeaksConfiguration const* fatima_configuration;
 
