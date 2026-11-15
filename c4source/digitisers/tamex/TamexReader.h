@@ -35,14 +35,14 @@ public:
     void SetOnline(Bool_t online) { fOnline = online; }
 
 private:
-    enum class InputKind : std::uint8_t { Bgo, Fatima, Bplast, Mcp };
+    enum class InputKind : std::uint8_t { BGO, Fatima, bPlast, MCP };
     TamexReader(void* input, std::size_t offset, std::uint16_t source,
                 InputKind kind);
 
     void* fInput = nullptr; //! UCESB owns this memory
     std::size_t fOffset = 0;
     std::uint16_t fSource = 0;
-    InputKind fKind = InputKind::Bgo;
+    InputKind fKind = InputKind::BGO;
     Bool_t fOnline = kFALSE;
     TClonesArray* fArray = nullptr; //! FairRoot output branch
 

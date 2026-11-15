@@ -81,7 +81,7 @@ TamexReader::TamexReader(void* input, std::size_t offset,
 
 TamexReader::TamexReader(EXT_STR_h101_bgo_onion_t* input, std::size_t offset,
                          std::uint16_t source)
-    : TamexReader(input, offset, source, InputKind::Bgo) {}
+    : TamexReader(input, offset, source, InputKind::BGO) {}
 
 TamexReader::TamexReader(EXT_STR_h101_fatima_onion_t* input, std::size_t offset,
                          std::uint16_t source)
@@ -89,11 +89,11 @@ TamexReader::TamexReader(EXT_STR_h101_fatima_onion_t* input, std::size_t offset,
 
 TamexReader::TamexReader(EXT_STR_h101_bplast_onion_t* input, std::size_t offset,
                          std::uint16_t source)
-    : TamexReader(input, offset, source, InputKind::Bplast) {}
+    : TamexReader(input, offset, source, InputKind::bPlast) {}
 
 TamexReader::TamexReader(EXT_STR_h101_mcp_onion_t* input, std::size_t offset,
                          std::uint16_t source)
-    : TamexReader(input, offset, source, InputKind::Mcp) {}
+    : TamexReader(input, offset, source, InputKind::MCP) {}
 
 TamexReader::~TamexReader()
 {
@@ -111,7 +111,7 @@ Bool_t TamexReader::Init(ext_data_struct_info* info)
     Int_t ok = 0;
     switch (fKind)
     {
-    case InputKind::Bgo:
+    case InputKind::BGO:
         EXT_STR_h101_bgo_ITEMS_INFO(ok, *info, fOffset, EXT_STR_h101_bgo, 0);
         if (ok) std::memset(fInput, 0, sizeof(EXT_STR_h101_bgo_onion));
         break;
@@ -119,11 +119,11 @@ Bool_t TamexReader::Init(ext_data_struct_info* info)
         EXT_STR_h101_fatima_ITEMS_INFO(ok, *info, fOffset, EXT_STR_h101_fatima, 0);
         if (ok) std::memset(fInput, 0, sizeof(EXT_STR_h101_fatima_onion));
         break;
-    case InputKind::Bplast:
+    case InputKind::bPlast:
         EXT_STR_h101_bplast_ITEMS_INFO(ok, *info, fOffset, EXT_STR_h101_bplast, 0);
         if (ok) std::memset(fInput, 0, sizeof(EXT_STR_h101_bplast_onion));
         break;
-    case InputKind::Mcp:
+    case InputKind::MCP:
         EXT_STR_h101_mcp_ITEMS_INFO(ok, *info, fOffset, EXT_STR_h101_mcp, 0);
         if (ok) std::memset(fInput, 0, sizeof(EXT_STR_h101_mcp_onion));
         break;
@@ -149,7 +149,7 @@ Bool_t TamexReader::Read()
     fArray->Clear("C");
     switch (fKind)
     {
-    case InputKind::Bgo:
+    case InputKind::BGO:
     {
         const auto& data = *static_cast<const EXT_STR_h101_bgo_onion*>(fInput);
         ReadBoards(data.bgo_tamex, fSource, static_cast<std::uint16_t>(data.bgo_ts_subsystem_id),
@@ -163,14 +163,14 @@ Bool_t TamexReader::Read()
                    tamex::AssembleWhiteRabbitTimestamp(data.fatima_ts_t), *fArray);
         break;
     }
-    case InputKind::Bplast:
+    case InputKind::bPlast:
     {
         const auto& data = *static_cast<const EXT_STR_h101_bplast_onion*>(fInput);
         ReadBoards(data.bplast_tamex, fSource, static_cast<std::uint16_t>(data.bplast_ts_subsystem_id),
                    tamex::AssembleWhiteRabbitTimestamp(data.bplast_ts_t), *fArray);
         break;
     }
-    case InputKind::Mcp:
+    case InputKind::MCP:
     {
         const auto& data = *static_cast<const EXT_STR_h101_mcp_onion*>(fInput);
         ReadBoards(data.mcp_tamex, fSource, static_cast<std::uint16_t>(data.mcp_ts_subsystem_id),
