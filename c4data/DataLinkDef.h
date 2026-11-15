@@ -85,6 +85,11 @@
 #pragma link C++ class GermaniumCalData+;
 #pragma link C++ class GermaniumFebexTraceData+;
 
+// Shared TAMEX electronics Raw data
+#pragma link C++ class TamexRawWord+;
+#pragma link C++ class std::vector<TamexRawWord>+;
+#pragma link C++ class TamexRawData+;
+
 // HISPEC10 MCP
 #pragma link C++ class H10MCPTwinpeaksData+;
 #pragma link C++ class H10MCPTwinpeaksCalData+;
