@@ -4,6 +4,9 @@
 #include "FairTask.h"
 #include "TFatimaTwinpeaksConfiguration.h"
 #include "TClonesArray.h"
+#include <array>
+#include <cstdint>
+#include <vector>
 
 class TClonesArray;
 class EventHeader;
@@ -36,6 +39,11 @@ class FatimaRaw2Cal : public FairTask
 
         void SetMultiplicityFilter(bool v, int s){ApplyMultiplicityCondition = v; MultiplicityGate = s;}
 
+        // Opt-in to the generic electronics Raw branch. Requires a pre-existing
+        // legacy FATIMA fine-time histogram file for comparison-mode parity.
+        // Call before Init(); the calibrated output branch stays unchanged.
+        void UseTamexRawInput(std::uint16_t source, const TString& fine_time_histograms);
+
         int CountMultiplicity(TClonesArray *);
 
 
@@ -48,6 +56,13 @@ class FatimaRaw2Cal : public FairTask
         TClonesArray* fcal_data;
         TClonesArray* funcal_data;
         TClonesArray* ftime_machine_array;
+
+        bool fUseTamexRaw = false;
+        std::uint16_t fTamexSource = 0;
+        TString fTamexFineTimeFile;
+        TClonesArray* fTamexInput = nullptr; //! Borrowed from FairRootManager
+        TClonesArray* fTamexLegacyHits = nullptr; //! Owned transient compatibility hits
+        std::vector<std::array<double, 1024>> fTamexFineTimes; //! per (board*33 + channel)
 
 
         FatimaTwinpeaksData* funcal_hit;
