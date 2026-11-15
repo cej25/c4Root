@@ -22,14 +22,6 @@ extern "C"
 
 namespace
 {
-std::uint64_t WhiteRabbit(const std::uint32_t (&words)[4])
-{
-    return (std::uint64_t{words[3] & 0xffffu} << 48) |
-           (std::uint64_t{words[2] & 0xffffu} << 32) |
-           (std::uint64_t{words[1] & 0xffffu} << 16) |
-           std::uint64_t{words[0] & 0xffffu};
-}
-
 template <typename Board, std::size_t N>
 void ReadBoards(const Board (&banks)[N], std::uint16_t source,
                 std::uint16_t wr_subsystem, std::uint64_t wr_timestamp,
@@ -161,28 +153,28 @@ Bool_t TamexReader::Read()
     {
         const auto& data = *static_cast<const EXT_STR_h101_bgo_onion*>(fInput);
         ReadBoards(data.bgo_tamex, fSource, static_cast<std::uint16_t>(data.bgo_ts_subsystem_id),
-                   WhiteRabbit(data.bgo_ts_t), *fArray);
+                   tamex::AssembleWhiteRabbitTimestamp(data.bgo_ts_t), *fArray);
         break;
     }
     case InputKind::Fatima:
     {
         const auto& data = *static_cast<const EXT_STR_h101_fatima_onion*>(fInput);
         ReadBoards(data.fatima_tamex, fSource, static_cast<std::uint16_t>(data.fatima_ts_subsystem_id),
-                   WhiteRabbit(data.fatima_ts_t), *fArray);
+                   tamex::AssembleWhiteRabbitTimestamp(data.fatima_ts_t), *fArray);
         break;
     }
     case InputKind::Bplast:
     {
         const auto& data = *static_cast<const EXT_STR_h101_bplast_onion*>(fInput);
         ReadBoards(data.bplast_tamex, fSource, static_cast<std::uint16_t>(data.bplast_ts_subsystem_id),
-                   WhiteRabbit(data.bplast_ts_t), *fArray);
+                   tamex::AssembleWhiteRabbitTimestamp(data.bplast_ts_t), *fArray);
         break;
     }
     case InputKind::Mcp:
     {
         const auto& data = *static_cast<const EXT_STR_h101_mcp_onion*>(fInput);
         ReadBoards(data.mcp_tamex, fSource, static_cast<std::uint16_t>(data.mcp_ts_subsystem_id),
-                   WhiteRabbit(data.mcp_ts_t), *fArray);
+                   tamex::AssembleWhiteRabbitTimestamp(data.mcp_ts_t), *fArray);
         break;
     }
     }
