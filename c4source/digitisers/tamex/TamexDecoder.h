@@ -6,7 +6,7 @@
 #include <cstdint>
 #include <utility>
 
-namespace c4_tamex
+namespace tamex
 {
 // Borrowed view of one board's UCESB-unpacked packed-word columns.
 // Each count is independent; the owning unpacker retains the memory.
@@ -148,6 +148,6 @@ public:
 };
 
 using Tamex4Decoder = Decoder<Tamex4Format>;
-} // namespace c4_tamex
+} // namespace tamex
 
 #endif
