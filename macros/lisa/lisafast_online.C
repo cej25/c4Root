@@ -47,12 +47,12 @@ void lisafast_online()
 
     // ::: ONLINE READING
     //
-    TString filename = "stream://134.95.192.83:6002"; //new ip address
+    //TString filename = "stream://134.95.192.83:6002"; //new ip address
     //TString filename = "stream://134.95.192.248:6002";
 
     // ::: OFFLINE READING - For testing
-    //TString inputpath = "/home/lisa/data/lmd/"; 
-    //TString filename = inputpath + "tamex_0021_0001.lmd";
+    TString inputpath = "/home/lisa/data/server1/groups/wimmer/laboratory/lmd/"; 
+    TString filename = inputpath + "tamex_0037_0001.lmd";
 
     // ::: OUTPUT - does not write a tree if it is not set later
     TString outputpath = "/home/lisa/data/"; //testing
@@ -84,8 +84,9 @@ void lisafast_online()
 
     // ------------------------------------------------------------------------------------ //
     // *** Load Detector Configurations *************************************************** //
-    TLisaFastConfiguration::SetDetectorConfigurationFile(config_path + "/Lisa_Mapping_LaBr3.txt");
-    //TLisaFastConfiguration::SetDetectorCoefficientFile(config_path + "/lisafast");
+    TLisaFastConfiguration::SetDetectorConfigurationFile(config_path + "/Lisa_Mapping_diamond.txt");
+    //TLisaFastConfiguration::SetDetectorCoefficientFile(config_path + "/LisaFast_calibration_8oct_Labr_diamond.txt");
+
     //TLisaFastConfiguration::SetDetectorTimeshiftsFile(config_path + "/lisafast");
     
 
@@ -99,8 +100,12 @@ void lisafast_online()
     if (LISAFAST_ON)
     {
         LisaFastReader* unpacklisafast = new LisaFastReader((EXT_STR_h101_lisafast_onion*)&ucesb_struct.lisafast, offsetof(EXT_STR_h101, lisafast));
+        
+        // Do Fine Tie calibration -> produces the file below
         //unpacklisafast->DoFineTimeCalOnline(config_path + "/lisafast/fine_time_histos_1709.root", 100000);
-        unpacklisafast->SetInputFileFineTimeHistos(config_path + "/fine_time_histos_1709.root");
+
+        // Run tree with the fine time calibration defined here
+        unpacklisafast->SetInputFileFineTimeHistos(config_path + "/fine_time_histos_0410.root");
 
         unpacklisafast->SetOnline(true);
         source->AddReader(unpacklisafast);
@@ -131,15 +136,20 @@ void lisafast_online()
     {
         LisaFastOnlineSpectra* onlinelisafast = new LisaFastOnlineSpectra();
         
-        onlinelisafast->AddRefLaBrForDeltaT(1);
-        onlinelisafast->AddDeltaTEnergyGate(490,480);
-        onlinelisafast->AddDeltaTEnergyGate(490,481);
+        onlinelisafast->AddRefDiamondForDeltaT(1,3,1);
+        //nearlinelisafast->AddDeltaTEnergyGate(779,344); // zero crossing
+        //nearlinelisafast->AddDeltaTEnergyGate(344,779); // tau = 32 ps
 
 
-        //onlinelisafast->AddReferenceDetectorForTimeDifferencesWithEnergyGates(1,1730);
-        //AddReferenceDetectorForTimeDifferencesWithEnergyGates (#reference detector, Energy of #N detector, Energy of Ref detector)
+        //AddDeltaTEnergyGate(other_det, ref_det)
+        // In general, if there is no ref detector then
+        //  AddDeltaTEnergyGate( energy_current_hit, energ_previous_hit)
+        //  with hits beloingin to different detector, and the defined time window
+        //nearlinelisafast->AddRefLaBrForDeltaT(1);
+        //nearlinelisafast->AddRefDiamondForDeltaT(1,3,1);
+
         //onlinelisafast->SetEnergyGateWidth(20);
-        
+
         run->AddTask(onlinelisafast);
     }
     
@@ -159,6 +169,9 @@ void lisafast_online()
     TLisaFastConfiguration::SetdT_bin(2000);
     TLisaFastConfiguration::SetdT_max(50);
     TLisaFastConfiguration::SetdT_min(-50);
+
+    TLisaFastConfiguration::SetEnergyGateWidth(30);
+
 
     // Initialise
     run->Init();
