@@ -22,6 +22,7 @@ ${C4ROOT_SOURCE_DIR}/c4source/bb7
 ${C4ROOT_SOURCE_DIR}/c4source/fimp
 ${C4ROOT_SOURCE_DIR}/c4source/mcp
 ${C4ROOT_SOURCE_DIR}/c4source/stefan
+${C4ROOT_SOURCE_DIR}/c4source/digitisers/tamex
 ${C4ROOT_SOURCE_DIR}/c4data
 ${C4ROOT_SOURCE_DIR}/c4data/frsData
 ${C4ROOT_SOURCE_DIR}/c4data/lisaData
@@ -37,6 +38,7 @@ ${C4ROOT_SOURCE_DIR}/c4data/bb7Data
 ${C4ROOT_SOURCE_DIR}/c4data/fimpData
 ${C4ROOT_SOURCE_DIR}/c4data/mcpData
 ${C4ROOT_SOURCE_DIR}/c4data/stefanData
+${C4ROOT_SOURCE_DIR}/c4data/tamexData
 ${C4ROOT_SOURCE_DIR}/c4data/baseData
 )
 
@@ -56,6 +58,7 @@ set(SRCS
 ./base/c4Reader.cxx
 ./base/CorrelationsMap.cxx
 ./base/GainShift.cxx
+./digitisers/tamex/TamexReader.cxx
 ./aida/AidaReader.cxx
 ./aida/AidaCal2Hit.cxx
 ./aida/AidaUnpack2Cal.cxx

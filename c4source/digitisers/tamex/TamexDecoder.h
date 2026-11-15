@@ -25,6 +25,35 @@ struct PackedBoardView
     std::uint32_t edge_count = 0;
 };
 
+// Assemble the four 16-bit White Rabbit words using unsigned arithmetic.
+inline std::uint64_t AssembleWhiteRabbitTimestamp(const std::uint32_t (&words)[4])
+{
+    return (std::uint64_t{words[3] & 0xffffu} << 48) |
+           (std::uint64_t{words[2] & 0xffffu} << 32) |
+           (std::uint64_t{words[1] & 0xffffu} << 16) |
+           std::uint64_t{words[0] & 0xffffu};
+}
+
+// Generated UCESB TAMEX board records share these field names regardless of
+// which detector bank contains them. Borrow their arrays without copying.
+template <typename Board>
+PackedBoardView MakeBoardView(const Board& bank)
+{
+    return PackedBoardView{
+        bank.event_size,
+        bank.time_epochv,
+        bank.time_coarsev,
+        bank.time_finev,
+        bank.time_channelv,
+        bank.time_edgev,
+        bank.time_epoch,
+        bank.time_coarse,
+        bank.time_fine,
+        bank.time_channel,
+        bank.time_edge
+    };
+}
+
 enum class WordKind : std::uint8_t { Epoch, Edge };
 
 // Raw electronics facts, deliberately not a detector hit or a lead/trail pair.

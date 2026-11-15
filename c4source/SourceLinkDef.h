@@ -32,6 +32,7 @@
 #pragma link C++ class FatimaReader+;
 #pragma link C++ class FatimaRaw2Cal+;
 #pragma link C++ class BGOReader+;
+#pragma link C++ class TamexReader+;
 #pragma link C++ class BGORaw2Cal+;
 #pragma link C++ class FatimaVmeReader+;
 #pragma link C++ class FatimaVmeRaw2Cal+;

@@ -12,6 +12,23 @@ TamexRawData::TamexRawData(std::uint16_t source, std::uint16_t board, std::uint1
 {
 }
 
+void TamexRawData::SetMetadata(std::uint16_t source, std::uint16_t board,
+                               std::uint16_t trigger, std::uint16_t wr_subsystem,
+                               std::uint64_t wr_timestamp, std::uint16_t format_version)
+{
+    source_ = source;
+    board_ = board;
+    trigger_ = trigger;
+    wr_subsystem_ = wr_subsystem;
+    wr_timestamp_ = wr_timestamp;
+    format_version_ = format_version;
+}
+
+void TamexRawData::Clear(Option_t*)
+{
+    Reset();
+}
+
 void TamexRawData::Reset()
 {
     source_ = 0;
