@@ -1,3 +1,5 @@
 USE_LMD_INPUT=1
 CXXFLAGS+=-DCONTROL_INCLUDE -Wfatal-errors -std=c++11
 OBJS += unpack_aida.o
+
+include foot/foot_ext.mk
