@@ -41,6 +41,13 @@
 #include <set>
 #include <tuple>
 #include <cmath>
+#include <iterator>
+
+const double diamond_E1_min = 400.;
+const double diamond_E1_max = 500.;
+
+const double diamond_E2_min = 700.;
+const double diamond_E2_max = 900.;
 
 LisaFastOnlineSpectra::LisaFastOnlineSpectra() : LisaFastOnlineSpectra("LisaFastOnlineSpectra")
 {
@@ -133,6 +140,28 @@ InitStatus LisaFastOnlineSpectra::Init()
     dir_lisafast_Diamond_dT_event_single = dir_lisafast_Diamond_dT_event->mkdir("Single_Diamond");
     dir_lisafast_Diamond_dTw_single = dir_lisafast_Diamond_dT_window->mkdir("Single_Diamond");
 
+    // ================================================
+    // Diamond detector index for coincidence matrices
+    // ================================================
+
+    diamond_det_bin_map.clear();
+
+
+    int diamond_bin = 1;
+
+    for (const auto& [tamex_bc, info] : diamond_mapping)
+    {
+        int layer = info.first.first;
+        int x = info.first.second.first;
+        int y = info.first.second.second;
+
+        auto key = std::make_tuple(layer, x, y);
+
+        if (diamond_det_bin_map.find(key) == diamond_det_bin_map.end())
+        {
+            diamond_det_bin_map[key] = diamond_bin++;
+        }
+    }
     // Prepare one subdirectory per Diamond layer
     dir_lisafast_slowToT_Diamond_layer.resize(max_layer, nullptr);
     dir_lisafast_energy_spectra_Diamond_layer.resize(max_layer, nullptr);
@@ -579,7 +608,7 @@ InitStatus LisaFastOnlineSpectra::Init()
         h1_lisafast_detector_multiplicity_Diamond = MakeTH1(dir_lisafast_hitpattern_Diamond, "I",
             "h1_lisafast_detector_multiplicity_Diamond",
             "Diamond detector multiplicity",
-            100, 0, 100,"Number of distinct Diamond pixels per event", kBlue, kBlack);
+            100, 0, 100,"Number of distinct Diamond det per event", kBlue, kBlack);
 
         h1_lisafast_detector_multiplicity_Diamond->Draw();
 
@@ -615,7 +644,7 @@ InitStatus LisaFastOnlineSpectra::Init()
         h1_lisafast_energy_Diamond_layer.resize(max_layer, nullptr);
         h1_lisafast_fastToT_Diamond_layer.resize(max_layer, nullptr);
 
-        // Resize per-pixel histogram arrays
+        // Resize per-det histogram arrays
         h1_lisafast_slowToT_Diamond.resize(max_layer);
         h1_lisafast_energy_Diamond.resize(max_layer);
         h1_lisafast_fastToT_Diamond.resize(max_layer);
@@ -956,6 +985,84 @@ InitStatus LisaFastOnlineSpectra::Init()
                 lisafast_configuration->energy_max,
                 "Energy 1 [keV]", "Energy 2 [keV]");
 
+        // ================================================
+        // Diamond detector-pair coincidence matrices
+        // ================================================
+
+
+        int n_diamond_det = diamond_det_bin_map.size();
+
+        if (n_diamond_det > 0)
+        {
+            // Event-based: ungated
+            h2_Diamond_det_coincidence_event = MakeTH2(
+                dir_lisafast_Diamond_dT_event, "F",
+                "h2_Diamond_det_coincidence_event",
+                "Diamond det-pair coincidences (same event)",
+                n_diamond_det, 0.5, n_diamond_det + 0.5,
+                n_diamond_det, 0.5, n_diamond_det + 0.5,
+                "Diamond det", "Diamond det");
+
+            // Time-window: ungated
+            h2_Diamond_det_coincidence_dTw = MakeTH2(
+                dir_lisafast_Diamond_dT_window, "F",
+                "h2_Diamond_det_coincidence_dTw",
+                "Diamond det-pair coincidences (time window)",
+                n_diamond_det, 0.5, n_diamond_det + 0.5,
+                n_diamond_det, 0.5, n_diamond_det + 0.5,
+                "Diamond det", "Diamond det");
+
+            // Event-based: energy gated
+            h2_Diamond_det_coincidence_event_gated = MakeTH2(
+                dir_lisafast_Diamond_dT_event, "F",
+                "h2_Diamond_det_coincidence_event_gated",
+                Form("Diamond event coincidences: E1=[%.0f,%.0f] keV, E2=[%.0f,%.0f] keV",
+                    diamond_E1_min, diamond_E1_max,
+                    diamond_E2_min, diamond_E2_max),
+                n_diamond_det, 0.5, n_diamond_det + 0.5,
+                n_diamond_det, 0.5, n_diamond_det + 0.5,
+                "Diamond det", "Diamond det");
+
+            // Time-window: energy gated
+            h2_Diamond_det_coincidence_dTw_gated = MakeTH2(
+                dir_lisafast_Diamond_dT_window, "F",
+                "h2_Diamond_det_coincidence_dTw_gated",
+                Form("Diamond time-window coincidences: E1=[%.0f,%.0f] keV, E2=[%.0f,%.0f] keV",
+                    diamond_E1_min, diamond_E1_max,
+                    diamond_E2_min, diamond_E2_max),
+                n_diamond_det, 0.5, n_diamond_det + 0.5,
+                n_diamond_det, 0.5, n_diamond_det + 0.5,
+                "Diamond det", "Diamond det");
+
+            // Label both axes with the corresponding Diamond coordinates
+            for (const auto& [dets, bin] : diamond_det_bin_map)
+            {
+                int layer = std::get<0>(dets);
+                int x = std::get<1>(dets);
+                int y = std::get<2>(dets);
+
+                TString label = Form("%d_%d%d", layer, x, y);
+
+                h2_Diamond_det_coincidence_event->GetXaxis()->SetBinLabel(bin, label);
+                h2_Diamond_det_coincidence_event->GetYaxis()->SetBinLabel(bin, label);
+
+                h2_Diamond_det_coincidence_dTw->GetXaxis()->SetBinLabel(bin, label);
+                h2_Diamond_det_coincidence_dTw->GetYaxis()->SetBinLabel(bin, label);
+
+                h2_Diamond_det_coincidence_event_gated->GetXaxis()->SetBinLabel(bin, label);
+                h2_Diamond_det_coincidence_event_gated->GetYaxis()->SetBinLabel(bin, label);
+
+                h2_Diamond_det_coincidence_dTw_gated->GetXaxis()->SetBinLabel(bin, label);
+                h2_Diamond_det_coincidence_dTw_gated->GetYaxis()->SetBinLabel(bin, label);
+            }
+
+            h2_Diamond_det_coincidence_event->SetStats(0);
+            h2_Diamond_det_coincidence_dTw->SetStats(0);
+            h2_Diamond_det_coincidence_event_gated->SetStats(0);
+            h2_Diamond_det_coincidence_dTw_gated->SetStats(0);
+        }
+
+
     }
       
     run->GetHttpServer()->RegisterCommand("Reset_LISA_Fast_Histos", Form("/Objects/%s/->Reset_Histo()", GetName()));
@@ -985,6 +1092,7 @@ void LisaFastOnlineSpectra::Exec(Option_t* option)
 
     std::set<int> fired_LaBr_detectors;
     std::set<std::tuple<int, int, int>> fired_Diamond_detectors;
+    std::map<std::tuple<int, int, int>, std::vector<double>> fired_Diamond_energies;
 
     if (fHitLisaFast && fHitLisaFast->GetEntriesFast() > 0)
     {   
@@ -1024,6 +1132,9 @@ void LisaFastOnlineSpectra::Exec(Option_t* option)
                 double fast_lead = hit->Get_fast_lead_time();
                 int64_t fast_lead_epoch = hit->Get_fast_lead_epoch();
 
+                auto det = std::make_tuple(hit->Get_layer(), x, y);
+                fired_Diamond_energies[det].push_back(energy);
+
                 // Per-diamond histograms
                 if (h1_lisafast_slowToT_Diamond[layer][x][y])
                     h1_lisafast_slowToT_Diamond[layer][x][y]->Fill(slow_ToT);
@@ -1057,49 +1168,109 @@ void LisaFastOnlineSpectra::Exec(Option_t* option)
                 int ref_x = std::get<1>(dt_reference_diamond);
                 int ref_y = std::get<2>(dt_reference_diamond);
 
-                // Do not process coincidences if no reference diamond is configured
-                bool current_is_reference = (hit->Get_layer() == ref_layer && x == ref_x && y == ref_y);
+                bool has_reference = (ref_layer > 0);
 
-                if (nHits >= 2 && ref_layer > 0 && !current_is_reference)
+                bool current_is_reference =
+                    has_reference &&
+                    (hit->Get_layer() == ref_layer && x == ref_x && y == ref_y);
+
+                if (nHits >= 2 && (!has_reference || !current_is_reference))
                 {
                     for (Int_t ihit2 = 0; ihit2 < nHits; ihit2++)
                     {
                         if (ihit2 == ihit) continue;
 
-                        LisaFastCalData* hit2 = (LisaFastCalData*)fHitLisaFast->At(ihit2);
+                        LisaFastCalData* hit2 =
+                            (LisaFastCalData*)fHitLisaFast->At(ihit2);
 
                         if (!hit2 || hit2->Get_detector_type() != 1) continue;
 
-                        // Check whether hit2 is the reference Diamond
-                        if (hit2->Get_layer() != ref_layer ||
-                            hit2->Get_x() != ref_x ||
-                            hit2->Get_y() != ref_y)
-                            continue;
+                        int layer2 = hit2->Get_layer();
+                        int x2 = hit2->Get_x();
+                        int y2 = hit2->Get_y();
+
+                        bool same_diamond = (layer == layer2 && x == x2 && y == y2);
+
+                        bool is_coincidence = false;
+
+                        // Reference detector configured
+                        if (has_reference)
+                        {
+                            bool hit2_is_reference = (layer2 == ref_layer && x2 == ref_x && y2 == ref_y);
+
+                            if (hit2_is_reference && !same_diamond) is_coincidence = true;
+                        }
+                        // No reference detector configured
+                        else
+                        {
+                            if (!same_diamond) is_coincidence = true;
+                        }
+
+                        if (!is_coincidence) continue;
 
                         double fast_lead_ref = hit2->Get_fast_lead_time();
                         double energy_ref = hit2->Get_energy();
 
                         double dt = fast_lead - fast_lead_ref;
 
-                        // Per-diamond histograms
-                        if (h1_lisafast_deltaT_Diamond[layer][x][y]) h1_lisafast_deltaT_Diamond[layer][x][y]->Fill(dt);
+                        // Per-Diamond histograms
+                        if (h1_lisafast_deltaT_Diamond[layer][x][y])
+                            h1_lisafast_deltaT_Diamond[layer][x][y]->Fill(dt);
 
-                        if (h2_lisafast_deltaT_vs_energy_Diamond[layer][x][y]) h2_lisafast_deltaT_vs_energy_Diamond[layer][x][y]->Fill(energy, dt);
+                        if (h2_lisafast_deltaT_vs_energy_Diamond[layer][x][y])
+                            h2_lisafast_deltaT_vs_energy_Diamond[layer][x][y]->Fill(energy, dt);
 
-                        // Global histograms
+                        // Global event-based histograms
                         h1_lisafast_deltaT_coin_Diamond->Fill(dt);
                         h2_lisafast_deltaT_vs_energy_coin_Diamond->Fill(energy, dt);
                         h2_E1_vs_E2_deltaT_coin_Diamond->Fill(energy, energy_ref);
                     }
                 }
+                // int ref_layer = std::get<0>(dt_reference_diamond);
+                // int ref_x = std::get<1>(dt_reference_diamond);
+                // int ref_y = std::get<2>(dt_reference_diamond);
+
+                // // Do not process coincidences if no reference diamond is configured
+                // bool current_is_reference = (hit->Get_layer() == ref_layer && x == ref_x && y == ref_y);
+
+                // if (nHits >= 2 && ref_layer > 0 && !current_is_reference)
+                // {
+                //     for (Int_t ihit2 = 0; ihit2 < nHits; ihit2++)
+                //     {
+                //         if (ihit2 == ihit) continue;
+
+                //         LisaFastCalData* hit2 = (LisaFastCalData*)fHitLisaFast->At(ihit2);
+
+                //         if (!hit2 || hit2->Get_detector_type() != 1) continue;
+
+                //         // Check whether hit2 is the reference Diamond
+                //         if (hit2->Get_layer() != ref_layer ||
+                //             hit2->Get_x() != ref_x ||
+                //             hit2->Get_y() != ref_y)
+                //             continue;
+
+                //         double fast_lead_ref = hit2->Get_fast_lead_time();
+                //         double energy_ref = hit2->Get_energy();
+
+                //         double dt = fast_lead - fast_lead_ref;
+
+                //         // Per-diamond histograms
+                //         if (h1_lisafast_deltaT_Diamond[layer][x][y]) h1_lisafast_deltaT_Diamond[layer][x][y]->Fill(dt);
+
+                //         if (h2_lisafast_deltaT_vs_energy_Diamond[layer][x][y]) h2_lisafast_deltaT_vs_energy_Diamond[layer][x][y]->Fill(energy, dt);
+
+                //         // Global histograms
+                //         h1_lisafast_deltaT_coin_Diamond->Fill(dt);
+                //         h2_lisafast_deltaT_vs_energy_coin_Diamond->Fill(energy, dt);
+                //         h2_E1_vs_E2_deltaT_coin_Diamond->Fill(energy, energy_ref);
+                //     }
+                // }
 
                 // ================================================
                 // Diamond-Diamond time-window coincidences
                 // ================================================
 
                 double run_time = hit->Get_run_time();
-
-                bool has_reference = (ref_layer > 0);
 
                 for (auto hit_coin = coin_hits_Diamond.begin();
                     hit_coin != coin_hits_Diamond.end(); )
@@ -1117,21 +1288,101 @@ void LisaFastOnlineSpectra::Exec(Option_t* option)
 
                     int layer_coin_idx = layer_coin - 1;
 
+                    // ================================================
+                    // Diamond-Diamond time-window coincidence matrix
+                    // Independent of reference detector configuration
+                    // ================================================
+
+                    double time_coin = hit_coin->Get_run_time();
+
+                    bool same_pixel_for_matrix =
+                        (hit->Get_layer() == layer_coin &&
+                        x == x_coin &&
+                        y == y_coin);
+
+                    double dt_matrix = std::abs(run_time - time_coin);
+
+                    if (!same_pixel_for_matrix && dt_matrix < coin_window_ns &&
+                        h2_Diamond_det_coincidence_dTw)
+                    {
+                        auto current_pixel = std::make_tuple(hit->Get_layer(), x, y);
+                        auto previous_pixel = std::make_tuple(layer_coin, x_coin, y_coin);
+
+                        auto current_bin = diamond_det_bin_map.find(current_pixel);
+                        auto previous_bin = diamond_det_bin_map.find(previous_pixel);
+
+                        if (current_bin != diamond_det_bin_map.end() &&
+                            previous_bin != diamond_det_bin_map.end())
+                        {
+                            int bin1 = current_bin->second;
+                            int bin2 = previous_bin->second;
+
+                            // Fill both orientations
+                            h2_Diamond_det_coincidence_dTw->Fill(bin1, bin2);
+                            h2_Diamond_det_coincidence_dTw->Fill(bin2, bin1);
+                        }
+                    }
+
                     // Check previous hit coordinates
                     if (layer_coin_idx < 0 ||
                         layer_coin_idx >= (int)h1_lisafast_dTw_Diamond.size() ||
-                        x_coin < 0 || x_coin >= (int)h1_lisafast_dTw_Diamond[layer_coin_idx].size() ||
-                        y_coin < 0 || y_coin >= (int)h1_lisafast_dTw_Diamond[layer_coin_idx][x_coin].size())
+                        x_coin < 0 ||
+                        x_coin >= (int)h1_lisafast_dTw_Diamond[layer_coin_idx].size() ||
+                        y_coin < 0 ||
+                        y_coin >= (int)h1_lisafast_dTw_Diamond[layer_coin_idx][x_coin].size())
                     {
                         ++hit_coin;
                         continue;
                     }
 
-                    double time_coin = hit_coin->Get_run_time();
+                    //double time_coin = hit_coin->Get_run_time();
                     double energy_coin = hit_coin->Get_energy();
 
-                    bool same_diamond = (layer == layer_coin && x == x_coin && y == y_coin);
-                    bool previous_is_reference = (layer_coin == ref_layer && x_coin == ref_x && y_coin == ref_y);
+                    // ================================================
+                    // Diamond-Diamond time-window coincidence matrix
+                    // with energy gates
+                    // ================================================
+
+                    bool gate_1_2 =
+                        (energy >= diamond_E1_min && energy <= diamond_E1_max) &&
+                        (energy_coin >= diamond_E2_min && energy_coin <= diamond_E2_max);
+
+                    bool gate_2_1 =
+                        (energy >= diamond_E2_min && energy <= diamond_E2_max) &&
+                        (energy_coin >= diamond_E1_min && energy_coin <= diamond_E1_max);
+
+                    if (!same_pixel_for_matrix &&
+                        dt_matrix < coin_window_ns &&
+                        (gate_1_2 || gate_2_1) &&
+                        h2_Diamond_det_coincidence_dTw_gated)
+                    {
+                        auto current_pixel = std::make_tuple(hit->Get_layer(), x, y);
+                        auto previous_pixel = std::make_tuple(layer_coin, x_coin, y_coin);
+
+                        auto current_bin = diamond_det_bin_map.find(current_pixel);
+                        auto previous_bin = diamond_det_bin_map.find(previous_pixel);
+
+                        if (current_bin != diamond_det_bin_map.end() &&
+                            previous_bin != diamond_det_bin_map.end())
+                        {
+                            int bin1 = current_bin->second;
+                            int bin2 = previous_bin->second;
+
+                            // Fill both orientations
+                            h2_Diamond_det_coincidence_dTw_gated->Fill(bin1, bin2);
+                            h2_Diamond_det_coincidence_dTw_gated->Fill(bin2, bin1);
+                        }
+                    }
+
+                    bool same_diamond = (layer == layer_coin &&
+                                        x == x_coin &&
+                                        y == y_coin);
+
+                    bool previous_is_reference =
+                        (layer_coin == ref_layer &&
+                        x_coin == ref_x &&
+                        y_coin == ref_y);
+
                     bool is_coincidence = false;
 
                     double dt = 0.;
@@ -1142,11 +1393,13 @@ void LisaFastOnlineSpectra::Exec(Option_t* option)
                     int other_x = -1;
                     int other_y = -1;
 
+                    // Reference detector configured
                     if (has_reference)
                     {
                         if (current_is_reference && !previous_is_reference)
                         {
                             is_coincidence = true;
+
                             dt = time_coin - run_time;
 
                             energy_ref = energy;
@@ -1159,6 +1412,7 @@ void LisaFastOnlineSpectra::Exec(Option_t* option)
                         else if (previous_is_reference && !current_is_reference)
                         {
                             is_coincidence = true;
+
                             dt = run_time - time_coin;
 
                             energy_other = energy;
@@ -1169,9 +1423,11 @@ void LisaFastOnlineSpectra::Exec(Option_t* option)
                             other_y = y;
                         }
                     }
+                    // No reference detector configured
                     else if (!same_diamond)
                     {
                         is_coincidence = true;
+
                         dt = run_time - time_coin;
 
                         energy_other = energy;
@@ -1182,25 +1438,40 @@ void LisaFastOnlineSpectra::Exec(Option_t* option)
                         other_y = y;
                     }
 
-                    if (is_coincidence && std::abs(dt) < coin_window_ns)
+                    // Fill histograms only for valid coincidences
+                    if (is_coincidence)
                     {
-                        // Global histograms
-                        h1_lisafast_dTw_coin_Diamond->Fill(dt);
-                        h2_lisafast_dTw_vs_energy_coin_Diamond->Fill(energy_other, dt);
-                        h2_E1_vs_E2_dTw_coin_Diamond->Fill(energy_other, energy_ref);
+                        dt = std::abs(dt);
 
-                        // Individual histogram of the non-reference pixel
-                        if (h1_lisafast_dTw_Diamond[other_layer][other_x][other_y]) h1_lisafast_dTw_Diamond[other_layer][other_x][other_y]->Fill(dt);
-
-                        if (h2_lisafast_dTw_vs_energy_Diamond[other_layer][other_x][other_y]) h2_lisafast_dTw_vs_energy_Diamond[other_layer][other_x][other_y]->Fill(energy_other, dt);
-
-                        // Without a reference, also fill the previous diamond
-                        // with the opposite time difference
-                        if (!has_reference)
+                        if (dt < coin_window_ns)
                         {
-                            if (h1_lisafast_dTw_Diamond[layer_coin_idx][x_coin][y_coin])h1_lisafast_dTw_Diamond[layer_coin_idx][x_coin][y_coin]->Fill(-dt);
+                            // Global time-window coincidence histograms
+                            h1_lisafast_dTw_coin_Diamond->Fill(dt);
 
-                            if (h2_lisafast_dTw_vs_energy_Diamond[layer_coin_idx][x_coin][y_coin])h2_lisafast_dTw_vs_energy_Diamond[layer_coin_idx][x_coin][y_coin]->Fill(energy_coin, -dt);
+                            h2_lisafast_dTw_vs_energy_coin_Diamond->Fill(
+                                energy_other, dt);
+
+                            h2_E1_vs_E2_dTw_coin_Diamond->Fill(
+                                energy_other, energy_ref);
+
+                            // Individual histogram of the non-reference det
+                            if (h1_lisafast_dTw_Diamond[other_layer][other_x][other_y])
+                                h1_lisafast_dTw_Diamond[other_layer][other_x][other_y]->Fill(dt);
+
+                            if (h2_lisafast_dTw_vs_energy_Diamond[other_layer][other_x][other_y])
+                                h2_lisafast_dTw_vs_energy_Diamond[other_layer][other_x][other_y]->Fill(
+                                    energy_other, dt);
+
+                            // Without a reference, also fill the previous Diamond det
+                            if (!has_reference)
+                            {
+                                if (h1_lisafast_dTw_Diamond[layer_coin_idx][x_coin][y_coin])
+                                    h1_lisafast_dTw_Diamond[layer_coin_idx][x_coin][y_coin]->Fill(dt);
+
+                                if (h2_lisafast_dTw_vs_energy_Diamond[layer_coin_idx][x_coin][y_coin])
+                                    h2_lisafast_dTw_vs_energy_Diamond[layer_coin_idx][x_coin][y_coin]->Fill(
+                                        energy_coin, dt);
+                            }
                         }
                     }
 
@@ -1209,6 +1480,116 @@ void LisaFastOnlineSpectra::Exec(Option_t* option)
 
                 // Store current hit for future cross-event coincidences
                 coin_hits_Diamond.push_back(*hit);
+
+                //double run_time = hit->Get_run_time();
+                // for (auto hit_coin = coin_hits_Diamond.begin();
+                //     hit_coin != coin_hits_Diamond.end(); )
+                // {
+                //     // Remove hits outside the coincidence window
+                //     if ((run_time - hit_coin->Get_run_time()) > coin_window_ns)
+                //     {
+                //         hit_coin = coin_hits_Diamond.erase(hit_coin);
+                //         continue;
+                //     }
+
+                //     int layer_coin = hit_coin->Get_layer();
+                //     int x_coin = hit_coin->Get_x();
+                //     int y_coin = hit_coin->Get_y();
+
+                //     int layer_coin_idx = layer_coin - 1;
+
+                //     // Check previous hit coordinates
+                //     if (layer_coin_idx < 0 ||
+                //         layer_coin_idx >= (int)h1_lisafast_dTw_Diamond.size() ||
+                //         x_coin < 0 || x_coin >= (int)h1_lisafast_dTw_Diamond[layer_coin_idx].size() ||
+                //         y_coin < 0 || y_coin >= (int)h1_lisafast_dTw_Diamond[layer_coin_idx][x_coin].size())
+                //     {
+                //         ++hit_coin;
+                //         continue;
+                //     }
+
+                //     double time_coin = hit_coin->Get_run_time();
+                //     double energy_coin = hit_coin->Get_energy();
+
+                //     bool same_diamond = (layer == layer_coin && x == x_coin && y == y_coin);
+                //     bool previous_is_reference = (layer_coin == ref_layer && x_coin == ref_x && y_coin == ref_y);
+                //     bool is_coincidence = false;
+
+                //     double dt = 0.;
+                //     double energy_other = 0.;
+                //     double energy_ref = 0.;
+
+                //     int other_layer = -1;
+                //     int other_x = -1;
+                //     int other_y = -1;
+
+                //     if (has_reference)
+                //     {
+                //         if (current_is_reference && !previous_is_reference)
+                //         {
+                //             is_coincidence = true;
+                //             dt = time_coin - run_time;
+
+                //             energy_ref = energy;
+                //             energy_other = energy_coin;
+
+                //             other_layer = layer_coin_idx;
+                //             other_x = x_coin;
+                //             other_y = y_coin;
+                //         }
+                //         else if (previous_is_reference && !current_is_reference)
+                //         {
+                //             is_coincidence = true;
+                //             dt = run_time - time_coin;
+
+                //             energy_other = energy;
+                //             energy_ref = energy_coin;
+
+                //             other_layer = layer;
+                //             other_x = x;
+                //             other_y = y;
+                //         }
+                //     }
+                //     else if (!same_diamond)
+                //     {
+                //         is_coincidence = true;
+                //         dt = run_time - time_coin;
+
+                //         energy_other = energy;
+                //         energy_ref = energy_coin;
+
+                //         other_layer = layer;
+                //         other_x = x;
+                //         other_y = y;
+                //     }
+
+                //     if (is_coincidence && std::abs(dt) < coin_window_ns)
+                //     {
+                //         // Global histograms
+                //         h1_lisafast_dTw_coin_Diamond->Fill(dt);
+                //         h2_lisafast_dTw_vs_energy_coin_Diamond->Fill(energy_other, dt);
+                //         h2_E1_vs_E2_dTw_coin_Diamond->Fill(energy_other, energy_ref);
+
+                //         // Individual histogram of the non-reference det
+                //         if (h1_lisafast_dTw_Diamond[other_layer][other_x][other_y]) h1_lisafast_dTw_Diamond[other_layer][other_x][other_y]->Fill(dt);
+
+                //         if (h2_lisafast_dTw_vs_energy_Diamond[other_layer][other_x][other_y]) h2_lisafast_dTw_vs_energy_Diamond[other_layer][other_x][other_y]->Fill(energy_other, dt);
+
+                //         // Without a reference, also fill the previous diamond
+                //         // with the opposite time difference
+                //         if (!has_reference)
+                //         {
+                //             if (h1_lisafast_dTw_Diamond[layer_coin_idx][x_coin][y_coin])h1_lisafast_dTw_Diamond[layer_coin_idx][x_coin][y_coin]->Fill(-dt);
+
+                //             if (h2_lisafast_dTw_vs_energy_Diamond[layer_coin_idx][x_coin][y_coin])h2_lisafast_dTw_vs_energy_Diamond[layer_coin_idx][x_coin][y_coin]->Fill(energy_coin, -dt);
+                //         }
+                //     }
+
+                //     ++hit_coin;
+                // }
+
+                // Store current hit for future cross-event coincidences
+                //coin_hits_Diamond.push_back(*hit);
 
                 continue;
             }
@@ -1431,6 +1812,101 @@ void LisaFastOnlineSpectra::Exec(Option_t* option)
         {
             h1_lisafast_event_multiplicity_Diamond->Fill(event_multiplicity_Diamond);
             h1_lisafast_detector_multiplicity_Diamond->Fill(fired_Diamond_detectors.size());
+
+            // ================================================
+            // Diamond-Diamond event-based coincidence matrix
+            // ================================================
+
+            if (h2_Diamond_det_coincidence_event && fired_Diamond_detectors.size() >= 2)
+            {
+                for (auto it1 = fired_Diamond_detectors.begin();
+                    it1 != fired_Diamond_detectors.end(); ++it1)
+                {
+                    auto it2 = std::next(it1);
+
+                    for (; it2 != fired_Diamond_detectors.end(); ++it2)
+                    {
+                        auto bin1_it = diamond_det_bin_map.find(*it1);
+                        auto bin2_it = diamond_det_bin_map.find(*it2);
+
+                        if (bin1_it == diamond_det_bin_map.end() ||
+                            bin2_it == diamond_det_bin_map.end())
+                            continue;
+
+                        int bin1 = bin1_it->second;
+                        int bin2 = bin2_it->second;
+
+                        // Fill both orientations
+                        h2_Diamond_det_coincidence_event->Fill(bin1, bin2);
+                        h2_Diamond_det_coincidence_event->Fill(bin2, bin1);
+                    }
+                }
+            }
+            // ================================================
+            // Energy-gated event-based Diamond-Diamond matrix
+            // ================================================
+
+            if (h2_Diamond_det_coincidence_event_gated &&
+                fired_Diamond_detectors.size() >= 2)
+            {
+                for (auto it1 = fired_Diamond_detectors.begin();
+                    it1 != fired_Diamond_detectors.end(); ++it1)
+                {
+                    auto it2 = std::next(it1);
+
+                    for (; it2 != fired_Diamond_detectors.end(); ++it2)
+                    {
+                        auto bin1_it = diamond_det_bin_map.find(*it1);
+                        auto bin2_it = diamond_det_bin_map.find(*it2);
+
+                        if (bin1_it == diamond_det_bin_map.end() ||
+                            bin2_it == diamond_det_bin_map.end())
+                            continue;
+
+                        auto energies1_it = fired_Diamond_energies.find(*it1);
+                        auto energies2_it = fired_Diamond_energies.find(*it2);
+
+                        if (energies1_it == fired_Diamond_energies.end() ||
+                            energies2_it == fired_Diamond_energies.end())
+                            continue;
+
+                        bool energy_gate_passed = false;
+
+                        for (double E1 : energies1_it->second)
+                        {
+                            for (double E2 : energies2_it->second)
+                            {
+                                bool gate_1_2 =
+                                    (E1 >= diamond_E1_min && E1 <= diamond_E1_max) &&
+                                    (E2 >= diamond_E2_min && E2 <= diamond_E2_max);
+
+                                bool gate_2_1 =
+                                    (E1 >= diamond_E2_min && E1 <= diamond_E2_max) &&
+                                    (E2 >= diamond_E1_min && E2 <= diamond_E1_max);
+
+                                if (gate_1_2 || gate_2_1)
+                                {
+                                    energy_gate_passed = true;
+                                    break;
+                                }
+                            }
+
+                            if (energy_gate_passed)
+                                break;
+                        }
+
+                        if (energy_gate_passed)
+                        {
+                            int bin1 = bin1_it->second;
+                            int bin2 = bin2_it->second;
+
+                            h2_Diamond_det_coincidence_event_gated->Fill(bin1, bin2);
+                            h2_Diamond_det_coincidence_event_gated->Fill(bin2, bin1);
+                        }
+                    }
+                }
+            }
+
         }
 
     }

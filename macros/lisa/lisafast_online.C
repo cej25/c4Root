@@ -136,7 +136,7 @@ void lisafast_online()
     {
         LisaFastOnlineSpectra* onlinelisafast = new LisaFastOnlineSpectra();
         
-        onlinelisafast->AddRefDiamondForDeltaT(1,3,1);
+        //onlinelisafast->AddRefDiamondForDeltaT(1,3,1);
         //nearlinelisafast->AddDeltaTEnergyGate(779,344); // zero crossing
         //nearlinelisafast->AddDeltaTEnergyGate(344,779); // tau = 32 ps
 

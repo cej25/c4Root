@@ -191,6 +191,17 @@ class LisaFastOnlineSpectra : public FairTask
 
         TDirectory* dir_lisafast_Diamond_dT_event_single;
         TDirectory* dir_lisafast_Diamond_dTw_single;
+
+
+        // Diamond pixel-pair coincidence matrices
+        // Key: (layer, x, y), value: histogram bin
+        std::map<std::tuple<int, int, int>, int> diamond_det_bin_map;
+
+        TH2* h2_Diamond_det_coincidence_event = nullptr;
+        TH2* h2_Diamond_det_coincidence_dTw = nullptr;
+        
+        TH2* h2_Diamond_det_coincidence_event_gated = nullptr;
+        TH2* h2_Diamond_det_coincidence_dTw_gated = nullptr;
         
         int number_labr_detectors = 0;
         int number_diamond_detectors = 0;
