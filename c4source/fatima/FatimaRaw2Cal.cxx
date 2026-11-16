@@ -92,6 +92,14 @@ void FatimaRaw2Cal::UseTamexRawInput(std::uint16_t source, const TString& fine_t
     fTamexFineTimeFile = fine_time_histograms;
 }
 
+void FatimaRaw2Cal::CalibrateTamexFineTimeOnline(
+    const TString& output_file, std::uint64_t events_to_collect)
+{
+    fTamexCalibrateOnline = true;
+    fTamexCalibrationEvents = events_to_collect;
+    fTamexFineTimeOutput = output_file;
+}
+
 void FatimaRaw2Cal::SetParContainers()
 {
     FairRuntimeDb *rtdb = FairRuntimeDb::instance();
@@ -121,51 +129,70 @@ InitStatus FatimaRaw2Cal::Init()
             return kFATAL;
         }
 
-        TFile calibration_file(fTamexFineTimeFile, "READ");
-        if (calibration_file.IsZombie())
-        {
-            c4LOG(error, "FATIMA TAMEX migration requires existing fine-time histograms: "
-                         << fTamexFineTimeFile);
-            return kFATAL;
-        }
         constexpr std::size_t channels_per_board = 33;
-        constexpr std::size_t boards = 4; // Existing FATIMA UCESB bank layout
+        constexpr std::size_t boards = 4; // Current FATIMA UCESB bank layout
         fTamexFineTimes.resize(boards * channels_per_board);
-        for (std::size_t board = 0; board < boards; ++board)
-        {
-            for (std::size_t channel = 0; channel < channels_per_board; ++channel)
-            {
-                const TString name = TString::Format("fine_time_hits_%u_%u",
-                    static_cast<unsigned>(board), static_cast<unsigned>(channel));
-                TH1* histogram = nullptr;
-                calibration_file.GetObject(name.Data(), histogram);
-                if (!histogram || histogram->GetNbinsX() != 1024)
-                {
-                    c4LOG(error, "Missing or incompatible FATIMA fine-time histogram: " << name);
-                    return kFATAL;
-                }
 
-                std::array<std::uint64_t, 1024> counts{};
-                for (std::size_t bin = 0; bin < counts.size(); ++bin)
+        if (fTamexCalibrateOnline)
+        {
+            if (fTamexCalibrationEvents == 0)
+            {
+                c4LOG(error, "TAMEX fine-time learning requires at least one event");
+                return kFATAL;
+            }
+            fTamexFineCounts.resize(boards * channels_per_board);
+            fTamexCalibrationReady = false;
+        }
+        else
+        {
+            if (fTamexFineTimeFile.IsNull())
+            {
+                c4LOG(error, "TAMEX input requires a calibration file or online calibration");
+                return kFATAL;
+            }
+            TFile calibration_file(fTamexFineTimeFile, "READ");
+            if (calibration_file.IsZombie())
+            {
+                c4LOG(error, "Cannot open FATIMA fine-time histograms: " << fTamexFineTimeFile);
+                return kFATAL;
+            }
+            for (std::size_t board = 0; board < boards; ++board)
+            {
+                for (std::size_t channel = 0; channel < channels_per_board; ++channel)
                 {
-                    const double count = histogram->GetBinContent(static_cast<int>(bin + 1));
-                    if (!std::isfinite(count) || count < 0 ||
-                        static_cast<long double>(count) >=
-                            static_cast<long double>(std::numeric_limits<std::uint64_t>::max()) ||
-                        std::trunc(count) != count)
+                    const TString name = TString::Format("fine_time_hits_%u_%u",
+                        static_cast<unsigned>(board), static_cast<unsigned>(channel));
+                    TH1* histogram = nullptr;
+                    calibration_file.GetObject(name.Data(), histogram);
+                    if (!histogram || histogram->GetNbinsX() != 1024)
                     {
-                        c4LOG(error, "Invalid fine-time histogram occupancy: " << name);
+                        c4LOG(error, "Missing or incompatible FATIMA histogram: " << name);
                         return kFATAL;
                     }
-                    counts[bin] = static_cast<std::uint64_t>(count);
+
+                    std::array<std::uint64_t, 1024> counts{};
+                    for (std::size_t bin = 0; bin < counts.size(); ++bin)
+                    {
+                        const double count = histogram->GetBinContent(static_cast<int>(bin + 1));
+                        if (!std::isfinite(count) || count < 0 ||
+                            static_cast<long double>(count) >=
+                                static_cast<long double>(std::numeric_limits<std::uint64_t>::max()) ||
+                            std::trunc(count) != count)
+                        {
+                            c4LOG(error, "Invalid fine-time histogram occupancy: " << name);
+                            return kFATAL;
+                        }
+                        counts[bin] = static_cast<std::uint64_t>(count);
+                    }
+                    tamex::FineTimeCalibration<> calibration;
+                    calibration.SetCounts(counts);
+                    calibration.Calculate();
+                    auto& times = fTamexFineTimes[board * channels_per_board + channel];
+                    for (std::size_t bin = 0; bin < times.size(); ++bin)
+                        times[bin] = calibration.Time(bin);
                 }
-                tamex::FineTimeCalibration<> calibration;
-                calibration.SetCounts(counts);
-                calibration.Calculate();
-                auto& times = fTamexFineTimes[board * channels_per_board + channel];
-                for (std::size_t bin = 0; bin < times.size(); ++bin)
-                    times[bin] = calibration.Time(bin);
             }
+            fTamexCalibrationReady = true;
         }
         fTamexLegacyHits = new TClonesArray("FatimaTwinpeaksData");
         funcal_data = fTamexLegacyHits; // Reuse existing calibrated-output algorithm
@@ -233,6 +260,80 @@ If no detector map is set then be careful with how the mapping happens: tamex mo
 
 Writes the times in ns!
 */
+void FatimaRaw2Cal::AccumulateTamexFineTime()
+{
+    if (!fTamexInput) return;
+    constexpr std::size_t channels_per_board = 33;
+    for (Int_t i = 0; i < fTamexInput->GetEntriesFast(); ++i)
+    {
+        const auto* board = static_cast<const TamexRawData*>(fTamexInput->At(i));
+        if (!board || board->Source() != fTamexSource ||
+            board->FormatVersion() != 4 || board->Board() >= 4) continue;
+
+        for (const auto& word : board->Words())
+        {
+            if (word.kind != TamexRawWord::Edge || !word.leading ||
+                (word.flags & TamexRawWord::InvalidFine) ||
+                word.channel >= channels_per_board || word.fine >= 1024 ||
+                word.fine == 0x3ffu) continue;
+
+            ++fTamexFineCounts[static_cast<std::size_t>(board->Board()) *
+                               channels_per_board + word.channel][word.fine];
+        }
+    }
+}
+
+void FatimaRaw2Cal::WriteTamexFineTimeHistograms()
+{
+    if (fTamexFineTimeOutput.IsNull()) return;
+    TFile output(fTamexFineTimeOutput, "RECREATE");
+    if (output.IsZombie())
+    {
+        c4LOG(error, "Cannot write FATIMA fine-time histograms: " << fTamexFineTimeOutput);
+        return;
+    }
+    constexpr std::size_t channels_per_board = 33;
+    for (std::size_t board = 0; board < 4; ++board)
+    {
+        for (std::size_t channel = 0; channel < channels_per_board; ++channel)
+        {
+            const TString name = TString::Format("fine_time_hits_%u_%u",
+                static_cast<unsigned>(board), static_cast<unsigned>(channel));
+            TH1D histogram(name, name, 1024, 0, 1024);
+            const auto& counts = fTamexFineCounts[board * channels_per_board + channel];
+            double total = 0.0;
+            for (std::size_t bin = 0; bin < counts.size(); ++bin)
+            {
+                const double count = static_cast<double>(counts[bin]);
+                histogram.SetBinContent(static_cast<int>(bin + 1), count);
+                total += count;
+            }
+            histogram.SetEntries(total);
+            histogram.Write();
+        }
+    }
+    output.Close();
+    c4LOG(info, "FATIMA TAMEX fine-time histograms written to " << fTamexFineTimeOutput);
+}
+
+void FatimaRaw2Cal::FinaliseTamexFineTime()
+{
+    if (fTamexCalibrationReady || fTamexFineCounts.empty()) return;
+    for (std::size_t index = 0; index < fTamexFineCounts.size(); ++index)
+    {
+        tamex::FineTimeCalibration<> calibration;
+        calibration.SetCounts(fTamexFineCounts[index]);
+        calibration.Calculate();
+        auto& times = fTamexFineTimes[index];
+        for (std::size_t bin = 0; bin < times.size(); ++bin)
+            times[bin] = calibration.Time(bin);
+    }
+    fTamexCalibrationReady = true;
+    WriteTamexFineTimeHistograms();
+    c4LOG(info, "FATIMA TAMEX fine-time calibration completed after "
+                 << fTamexEventsSeen << " input events");
+}
+
 void FatimaRaw2Cal::BuildTamexLegacyHits()
 {
     if (!fTamexInput || !fTamexLegacyHits) return;
@@ -274,7 +375,22 @@ void FatimaRaw2Cal::BuildTamexLegacyHits()
 
 void FatimaRaw2Cal::Exec(Option_t* option)
 {
-    if (fUseTamexRaw) BuildTamexLegacyHits();
+    if (fUseTamexRaw)
+    {
+        if (!fTamexCalibrationReady)
+        {
+            // Match legacy behaviour: use the first N events for histogram
+            // accumulation, then start reconstructing on event N+1.
+            if (fTamexEventsSeen < fTamexCalibrationEvents)
+            {
+                AccumulateTamexFineTime();
+                ++fTamexEventsSeen;
+                return;
+            }
+            FinaliseTamexFineTime();
+        }
+        BuildTamexLegacyHits();
+    }
     auto start = std::chrono::high_resolution_clock::now();
     
     if (funcal_data && funcal_data->GetEntriesFast() > 1)
@@ -499,6 +615,13 @@ Some stats are written when finishing.
 */
 void FatimaRaw2Cal::FinishTask()
 {
+    // Short calibration-only runs still produce reusable histogram files.
+    if (fUseTamexRaw && fTamexCalibrateOnline && !fTamexCalibrationReady)
+    {
+        c4LOG(warning, "Fine-time calibration event target not reached; "
+                       "writing preliminary histograms, no reconstructed hits produced");
+        WriteTamexFineTimeHistograms();
+    }
     c4LOG(info, Form("Wrote %i events.",fNEvents));
     c4LOG(info, Form("%i events are unmatched (not written).",fNunmatched));
     c4LOG(info, "Average execution time: " << (double)total_time_microsecs/fExecs << " microseconds.");
