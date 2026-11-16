@@ -299,11 +299,18 @@ void FatimaRaw2Cal::WriteTamexFineTimeHistograms()
         {
             const TString name = TString::Format("fine_time_hits_%u_%u",
                 static_cast<unsigned>(board), static_cast<unsigned>(channel));
-            TH1D histogram(name, name, 1024, 0, 1024);
+            TH1I histogram(name, name, 1024, 0, 1024);
             const auto& counts = fTamexFineCounts[board * channels_per_board + channel];
             double total = 0.0;
             for (std::size_t bin = 0; bin < counts.size(); ++bin)
             {
+                // Preserve compatibility with legacy FatimaReader (TH1I).
+                if (counts[bin] > static_cast<std::uint64_t>(std::numeric_limits<int>::max()))
+                {
+                    c4LOG(error, "FATIMA fine-time histogram bin exceeds TH1I capacity: " << name);
+                    output.Close();
+                    return;
+                }
                 const double count = static_cast<double>(counts[bin]);
                 histogram.SetBinContent(static_cast<int>(bin + 1), count);
                 total += count;
