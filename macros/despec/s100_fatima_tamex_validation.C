@@ -131,7 +131,7 @@ void s100_fatima_tamex_validation(
     run->Run((max_events < 0) ? max_events : 0,
              (max_events < 0) ? 0 : max_events);
 
-    std::cout << "FATIMA validation output: " << output_file << '\\n';
+    std::cout << "FATIMA validation output: " << output_file << std::endl;
     if (automatic_calibration)
-        std::cout << "Fine-time histograms: " << fine_time_output << '\\n';
+        std::cout << "Fine-time histograms: " << fine_time_output << std::endl;
 }
