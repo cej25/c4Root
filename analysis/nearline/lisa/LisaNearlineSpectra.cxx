@@ -45,6 +45,10 @@
 #include <string>
 #include "TColor.h"
 #include "TStyle.h"
+#include <set>
+#include <iterator>
+#include <map>
+#include <tuple>
 
 LisaNearlineSpectra::LisaNearlineSpectra()  :   LisaNearlineSpectra("LisaNearlineSpectra")
 {
@@ -237,6 +241,104 @@ InitStatus LisaNearlineSpectra::Init()
     h1_layer_fired->GetXaxis()->SetTitle("Layer");
     h1_layer_fired->SetLineColor(kBlack);
     h1_layer_fired->SetFillColor(kRed-3);
+
+    // ::: Diamond-Diamond Coincidences :::
+
+    dir_stats->cd();
+    dir_diamond_coincidences = dir_stats->mkdir("DiamondCoincidences");
+    diamond_bin_map.clear();
+
+    for (const auto& detector : detector_mapping)
+    {
+        int layer_d = detector.second.first.first;
+        int x = detector.second.first.second.first;
+        int y = detector.second.first.second.second;
+
+        // Skip non-detector signals in the mapping
+        if (layer_d < 1 || layer_d > layer_number)
+            continue;
+
+        auto position = std::make_tuple(layer_d, x, y);
+
+        // Assign one bin to each diamond
+        if (diamond_bin_map.find(position) == diamond_bin_map.end())
+        {
+            int bin = diamond_bin_map.size();
+            diamond_bin_map[position] = bin;
+        }
+    }
+
+    int n_diamonds = diamond_bin_map.size();
+
+    dir_diamond_coincidences->cd();
+
+    h2_diamond_coincidence = new TH2I(
+        "h2_diamond_coincidence",
+        "Diamond-Diamond Coincidences",
+        n_diamonds, 0, n_diamonds,
+        n_diamonds, 0, n_diamonds
+    );
+
+    h2_diamond_coincidence->SetOption("COLZ");
+    h2_diamond_coincidence->SetStats(0);
+
+    h2_diamond_coincidence->GetXaxis()->SetTitle("Diamond");
+    h2_diamond_coincidence->GetYaxis()->SetTitle("Diamond");
+
+    // Set detector labels
+    for (const auto& detector : diamond_bin_map)
+    {
+        int layer_id = std::get<0>(detector.first);
+        int x = std::get<1>(detector.first);
+        int y = std::get<2>(detector.first);
+
+        int bin = detector.second;
+
+        TString label = Form("%d%d%d", layer_id, x, y);
+
+        h2_diamond_coincidence->GetXaxis()->SetBinLabel(bin + 1, label);
+        h2_diamond_coincidence->GetYaxis()->SetBinLabel(bin + 1, label);
+    }
+
+    // ::: Gated coincidence matrices :::
+
+    TDirectory* dir_gated = dir_diamond_coincidences->mkdir("Gated");
+    dir_gated->cd();
+
+    h2_diamond_coincidence_gated.resize(gate_number);
+
+    for (int g = 0; g < gate_number; ++g)
+    {
+        h2_diamond_coincidence_gated[g] = new TH2I(
+            Form("h2_diamond_coincidence_gated_%d", g),
+            Form("Diamond-Diamond Coincidences - Gate %s",
+                febex_gates[g]->GetName().c_str()),
+            n_diamonds, 0, n_diamonds,
+            n_diamonds, 0, n_diamonds
+        );
+
+        h2_diamond_coincidence_gated[g]->SetOption("COLZ");
+        h2_diamond_coincidence_gated[g]->SetStats(0);
+
+        h2_diamond_coincidence_gated[g]->GetXaxis()->SetTitle("Diamond");
+        h2_diamond_coincidence_gated[g]->GetYaxis()->SetTitle("Diamond");
+
+        for (const auto& detector : diamond_bin_map)
+        {
+            int bin = detector.second;
+
+            int layer_id = std::get<0>(detector.first);
+            int x = std::get<1>(detector.first);
+            int y = std::get<2>(detector.first);
+
+            TString label = Form("%d%d%d", layer_id, x, y);
+
+            h2_diamond_coincidence_gated[g]->GetXaxis()->SetBinLabel(bin + 1, label);
+            h2_diamond_coincidence_gated[g]->GetYaxis()->SetBinLabel(bin + 1, label);
+        }
+    }
+
+    dir_stats->cd();
 
     //::: Hit Patterns :::
     dir_stats->cd();
@@ -955,6 +1057,13 @@ void LisaNearlineSpectra::Exec(Option_t* option)
     std::vector<float> energy_MWD_xy_gated[mwd_gate_number][layer_number][xmax][ymax];
     std::vector<float> de_dx_xy_gated[mwd_dedx_gate_number][layer_number][xmax][ymax];
     
+    // ::: Diamond-Diamond Coincidences :::
+
+    // Unique diamonds fired in this event
+    std::set<int> fired_diamonds;
+
+    // Unique diamonds passing each FEBEX gate in this event
+    std::vector<std::set<int>> fired_diamonds_gated(gate_number);
 
     for (auto const & lisaCalItem : *lisaCalArray)
     {
@@ -983,6 +1092,11 @@ void LisaNearlineSpectra::Exec(Option_t* option)
         float energy_MWD_GM = lisaCalItem.Get_energy_MWD_GM();
 
         std::vector<float> trace = lisaCalItem.Get_trace_febex();
+
+        // Find the corresponding diamond histogram bin
+        auto diamond_position = std::make_tuple(layer, xpos, ypos);
+
+        auto diamond_it = diamond_bin_map.find(diamond_position);
 
         uint64_t evtno = header->GetEventno();
         
@@ -1041,6 +1155,13 @@ void LisaNearlineSpectra::Exec(Option_t* option)
 
         // ::: Exclude channels but keep multiplicity :::
         if (excluded.count(std::make_tuple(layer, xpos, ypos)) != 0) continue;
+    
+        // ::: Ungated coincidence: diamond fired :::
+
+        if (diamond_it != diamond_bin_map.end())
+        {
+            fired_diamonds.insert(diamond_it->second);
+        }
 
         // ::: FOR     E N E R G Y
         int xp_gate = lisa_config->xpos_gate;
@@ -1060,6 +1181,14 @@ void LisaNearlineSpectra::Exec(Option_t* option)
                 //c4LOG(info,"fill gated energy");
                 energy_layer_gated[g][layer-1].push_back(energy_GM);
                 energy_xy_gated[g][layer-1][xpos][ypos].push_back(energy_GM);
+            
+                // ::: Gated coincidence :::
+
+                if (diamond_it != diamond_bin_map.end())
+                {
+                    fired_diamonds_gated[g].insert(diamond_it->second);
+                }
+            
             }
             g++;
         }
@@ -1128,6 +1257,42 @@ void LisaNearlineSpectra::Exec(Option_t* option)
     }
     //c4LOG(info, "LISA_time_mins: " << LISA_time_mins << " br time: "<< std::fixed << std::setprecision(10)<< wr_time);
 
+    // ::: Fill ungated coincidence matrix :::
+
+    for (auto it1 = fired_diamonds.begin();
+        it1 != fired_diamonds.end(); ++it1)
+    {
+        for (auto it2 = std::next(it1);
+            it2 != fired_diamonds.end(); ++it2)
+        {
+            int bin1 = *it1;
+            int bin2 = *it2;
+
+            // Symmetric filling
+            h2_diamond_coincidence->Fill(bin1 + 0.5, bin2 + 0.5);
+            h2_diamond_coincidence->Fill(bin2 + 0.5, bin1 + 0.5);
+        }
+    }
+
+    // ::: Fill gated coincidence matrices :::
+
+    for (int g = 0; g < gate_number; ++g)
+    {
+        for (auto it1 = fired_diamonds_gated[g].begin();
+            it1 != fired_diamonds_gated[g].end(); ++it1)
+        {
+            for (auto it2 = std::next(it1);
+                it2 != fired_diamonds_gated[g].end(); ++it2)
+            {
+                int bin1 = *it1;
+                int bin2 = *it2;
+
+                // Symmetric filling
+                h2_diamond_coincidence_gated[g]->Fill(bin1 + 0.5, bin2 + 0.5);
+                h2_diamond_coincidence_gated[g]->Fill(bin2 + 0.5, bin1 + 0.5);
+            }
+        }
+    }
     // ::: BR Time Difference
 
     if (lisa_config->br_enable == true) 

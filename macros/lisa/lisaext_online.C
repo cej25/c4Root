@@ -53,11 +53,11 @@ void lisaext_online()
     // ::: P A T H   O F   F I L E  to read
     
     // ::: ONLINE READING
-    //TString filename = "stream://134.95.192.248:6002"; 
+    TString filename = "stream://134.95.192.83:6002"; 
 
     // ::: OFFLINE READING - For testing
-    TString inputpath = "/home/lisa/data/server1/experiments/staging/2026_IKP_LISA_hermes/lmd/";                   
-    TString filename = inputpath + "febex_0004_000*.lmd"; 
+    //TString inputpath = "/home/lisa/data/server1/experiments/staging/2026_IKP_LISA_hermes/lmd/";                   
+    //TString filename = inputpath + "febex_0004_000*.lmd"; 
     
     // ::: OUTPUT - does not write a tree if it is not set later
     TString outputpath = "/home/lisa/data/"; //testing
@@ -65,7 +65,7 @@ void lisaext_online()
     
     // ::: Create online run
     Int_t refresh = 10; // Refresh rate for online histograms
-    Int_t port = 1111;
+    Int_t port = 2222;
      
     FairRunOnline* run = new FairRunOnline();
     EventHeader* EvtHead = new EventHeader();
@@ -98,7 +98,7 @@ void lisaext_online()
     TLisaConfiguration::SetGMFiledEdX(config_path + "/Lisa_GainMatching_3x3_Versoek_15Nov_fake.txt");
     
     // ::: MWD parameters
-    TLisaConfiguration::SetMWDParametersFile(config_path + "/Lisa_MWD_Parameters_v1.txt");
+    TLisaConfiguration::SetMWDParametersFile(config_path + "/Lisa_MWD_Parameters_3x3_CS.txt");
     
     // TLisaConfiguration::SetExcludedChannels({
     // std::make_tuple(1,0,0),
@@ -163,7 +163,7 @@ void lisaext_online()
     TLisaConfiguration::SetBrRateBin(900);
 
     //      LISA Traces Ranges 
-    TLisaConfiguration::SetTracesRange(0,950);
+    TLisaConfiguration::SetTracesRange(0,1900);
     //TLisaConfiguration::SetTracesBin(20);
     //TLisaConfiguration::SetAmplitudeMin(5000);
     //TLisaConfiguration::SetAmplitudeMax(16000);

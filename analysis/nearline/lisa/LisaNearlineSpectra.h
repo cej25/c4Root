@@ -19,6 +19,7 @@
 #include "TString.h"
 #include "TExperimentConfiguration.h"
 #include <Rtypes.h>
+#include <map>
 
 
 //Debugging. Replaced std::string with TString 8nov24
@@ -149,6 +150,15 @@ class LisaNearlineSpectra : public FairTask
         TDirectory* dir_gated_dedx;
         TDirectory** dir_mwd_dedx_gates;
         TDirectory** dir_mwd_dedx_gates_channel;
+
+        // ::: Diamond-Diamond Coincidences
+        TDirectory* dir_diamond_coincidences = nullptr;
+
+        TH2I* h2_diamond_coincidence = nullptr;
+        std::vector<TH2I*> h2_diamond_coincidence_gated;
+
+        // Maps (layer, x, y) to the corresponding histogram bin
+        std::map<std::tuple<int, int, int>, int> diamond_bin_map; //!
      
         // ::: Histograms :::
         // ::: Stats
@@ -165,6 +175,9 @@ class LisaNearlineSpectra : public FairTask
         std::vector<TH1I*> h1_multiplicity_per_layer; ;
         TH1I* h1_layer_multiplicity;
         TH1I* h1_layer_fired;
+
+        // ::: Gate hit pattern
+        TH2I* h2_diamond_hitpattern;
 
         //  ::: Energy
         //      Febex

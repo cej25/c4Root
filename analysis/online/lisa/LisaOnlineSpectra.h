@@ -13,6 +13,9 @@
 #include "TH2I.h"
 #include "TGraph.h"
 #include "TString.h"
+#include <map>
+#include <tuple>
+#include <set>
 
 //Debugging. Replaced std::string with TString nov24
 
@@ -101,6 +104,15 @@ class LisaOnlineSpectra : public FairTask
         TDirectory* dir_febex_channel;
         TDirectory* dir_MWD_channel;
 
+        // ::: Diamond-Diamond Coincidences
+        TDirectory* dir_diamond_coincidences = nullptr;
+
+        TH2I* h2_diamond_coincidence = nullptr;
+        std::vector<TH2I*> h2_diamond_coincidence_gated;
+
+        // Maps (layer, x, y) to the corresponding histogram bin
+        std::map<std::tuple<int, int, int>, int> diamond_bin_map; //!
+
         TDirectory* dir_traces;    
 
         // ::: Canvas
@@ -129,6 +141,7 @@ class LisaOnlineSpectra : public FairTask
         std::vector<TCanvas*> c_traces_ch;
         TCanvas* c_energy_MWD_layer_vs_layer;
         TCanvas* c_energy_MWD_first_vs_last;
+
     
         // ::: Histograms
         //     Stats
@@ -144,6 +157,9 @@ class LisaOnlineSpectra : public FairTask
         TH1I* h1_multiplicity;
         std::vector<TH1I*> h1_multiplicity_per_layer; ;
         TH1I* h1_layer_multiplicity;
+        // Gated hit pattern
+        TH2I* h2_diamond_hitpattern;
+
         // ::: Energy
         //      Febex 
         std::vector<std::vector<std::vector<TH1F*>>> h1_energy_ch;

@@ -1,0 +1,11 @@
+# :::     G A T E S    :::
+# :::       Febex      :::
+# ::: Lisa layer gates :::
+
+# Layer ID | min gate | max gate|
+
+1      30000       90000
+2      30000       90000
+
+
+

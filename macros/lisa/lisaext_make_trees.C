@@ -11,7 +11,7 @@
 #define WR_ENABLED 1
 
 // Definition of setup and configuration files
-#define LISA_CONFIG_FILE "../../config/lisaext/general/lisa_config_0-180deg_v6.C"
+#define LISA_CONFIG_FILE "../../config/lisaext/general/lisa_config_16nov.C"
 
 // :::  Define LISA setup.C file; place in /config/cologne/general
 extern "C"
@@ -67,8 +67,8 @@ void lisaext_make_trees()
 
     
     // ::: FILE  PATH
-    TString inputpath = "/home/lisa/data/server1/experiments/staging/2026_IKP_LISA_test/lmd/";
-    TString lmdname = "run_0127_0003.lmd";
+    TString inputpath = "/home/lisa/data/server1/experiments/staging/2026_IKP_LISA_hermes/lmd/";
+    TString lmdname = "run_0005_0001.lmd";
     TString filename = inputpath + lmdname;
     /*
     TString inputpath = "/u/gandolfo/data/lustre/gamma/LISA/data/ext_daq_debnik/dev_test/";
@@ -80,7 +80,7 @@ void lisaext_make_trees()
     // ::: OUTPUT 
     //TString outputpath = "/u/gandolfo/data/lustre/gamma/LISA/data/ext_daq_debnik/dev_test/"; 
     //TString outputpath = "/u/gandolfo/data/lisaext/"; 
-    TString outputpath = "/home/lisa/data/server1/experiments/staging/2026_IKP_LISA_test/trees/";
+    TString outputpath = "/home/lisa/data/server1/experiments/staging/2026_IKP_LISA_hermes/trees/";
 
     TString outputFilename = outputpath + TString(lmdname).ReplaceAll(".lmd", "_tree.root");
 

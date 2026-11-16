@@ -16,7 +16,7 @@
 //................................................
 
 // Definition of histo ranges for lisa and frs
-#define HISTO_FILE "../../config/lisaext/general/histo_config_0-180deg_v4.C"
+#define HISTO_FILE "../../config/lisaext/general/histo_config_16nov.C"
 
 extern "C"
 {
@@ -61,15 +61,15 @@ void lisaext_histos()
     FairLogger::GetLogger()->SetColoredLog(true);
 
     // ::: P A T H   O F   F I L E  to read
-    TString inputpath = "/home/lisa/data/server1/experiments/staging/2026_IKP_LISA_test/trees/";
+    TString inputpath = "/home/lisa/data/server1/experiments/staging/2026_IKP_LISA_hermes/trees/";
 
-    TString rootname = "run_0127_0003_tree.root";
+    TString rootname = "run_0005_0001_tree.root";
     TString filename = inputpath + rootname;
 
     // ::: OUTPUT 
     //TString outputpath = "/u/gandolfo/data/lustre/gamma/LISA/data/ext_daq_debnik/dev_test/"; 
     //TString outputpath = "/u/gandolfo/data/lisaext/"; 
-    TString outputpath = "/home/lisa/data/server1/experiments/staging/2026_IKP_LISA_test/histos/"; 
+    TString outputpath = "/home/lisa/data/server1/experiments/staging/2026_IKP_LISA_hermes/histos/"; 
     //TString outputpath = "/home/lisa/data/"; 
 
     TString outputFilename = outputpath + TString(rootname).ReplaceAll("_tree.root", "_histo.root");
