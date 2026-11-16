@@ -61,7 +61,7 @@ void s100_fatima_tamex_validation(
 
     const TString config_path = c4root_path + "/config/s100";
     const TString calibration_file =
-        config_path + "/fatima/fine_time_4apr_test.root";
+        config_path + "/fatima/fine_time_23apr_beamON.root";
     const TString output_file = use_tamex
         ? "s100_fatima_tamex_validation.root"
         : "s100_fatima_legacy_validation.root";
