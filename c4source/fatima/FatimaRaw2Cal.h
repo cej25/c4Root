@@ -39,16 +39,21 @@ class FatimaRaw2Cal : public FairTask
 
         void SetMultiplicityFilter(bool v, int s){ApplyMultiplicityCondition = v; MultiplicityGate = s;}
 
-        // Opt-in to the generic electronics Raw branch. Requires a pre-existing
-        // legacy FATIMA fine-time histogram file for comparison-mode parity.
-        // Call before Init(); the calibrated output branch stays unchanged.
-        void UseTamexRawInput(std::uint16_t source, const TString& fine_time_histograms);
+        // Opt in to the generic TAMEX Raw branch. Omit the file only when
+        // CalibrateTamexFineTimeOnline is also called before Init().
+        void UseTamexRawInput(std::uint16_t source, const TString& fine_time_histograms = "");
+        // Learn from leading edges in the first N events, then reconstruct
+        // subsequent events. Output uses legacy ROOT histogram names.
+        void CalibrateTamexFineTimeOnline(const TString& output_file, std::uint64_t events_to_collect);
 
         int CountMultiplicity(TClonesArray *);
 
 
     private:
         void BuildTamexLegacyHits();
+        void AccumulateTamexFineTime();
+        void FinaliseTamexFineTime();
+        void WriteTamexFineTimeHistograms();
 
         TFatimaTwinpeaksConfiguration const* fatima_configuration;
 
@@ -61,6 +66,12 @@ class FatimaRaw2Cal : public FairTask
         bool fUseTamexRaw = false;
         std::uint16_t fTamexSource = 0;
         TString fTamexFineTimeFile;
+        TString fTamexFineTimeOutput;
+        bool fTamexCalibrateOnline = false;
+        bool fTamexCalibrationReady = false;
+        std::uint64_t fTamexCalibrationEvents = 0;
+        std::uint64_t fTamexEventsSeen = 0;
+        std::vector<std::array<std::uint64_t, 1024>> fTamexFineCounts; //! board*33 + channel
         TClonesArray* fTamexInput = nullptr; //! Borrowed from FairRootManager
         TClonesArray* fTamexLegacyHits = nullptr; //! Owned transient compatibility hits
         std::vector<std::array<double, 1024>> fTamexFineTimes; //! per (board*33 + channel)
