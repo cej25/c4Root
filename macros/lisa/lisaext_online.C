@@ -53,11 +53,11 @@ void lisaext_online()
     // ::: P A T H   O F   F I L E  to read
     
     // ::: ONLINE READING
-    TString filename = "stream://134.95.192.83:6002"; 
+    //TString filename = "stream://134.95.192.83:6002"; 
 
     // ::: OFFLINE READING - For testing
-    //TString inputpath = "/home/lisa/data/server1/experiments/staging/2026_IKP_LISA_hermes/lmd/";                   
-    //TString filename = inputpath + "febex_0004_000*.lmd"; 
+    TString inputpath = "/home/lisa/data/server1/experiments/staging/2026_IKP_LISA_hermes/lmd/";                   
+    TString filename = inputpath + "run_0005_000*.lmd"; 
     
     // ::: OUTPUT - does not write a tree if it is not set later
     TString outputpath = "/home/lisa/data/"; //testing
@@ -65,7 +65,7 @@ void lisaext_online()
     
     // ::: Create online run
     Int_t refresh = 10; // Refresh rate for online histograms
-    Int_t port = 2222;
+    Int_t port = 1111;
      
     FairRunOnline* run = new FairRunOnline();
     EventHeader* EvtHead = new EventHeader();
