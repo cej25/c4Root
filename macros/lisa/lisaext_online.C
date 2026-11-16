@@ -56,8 +56,8 @@ void lisaext_online()
     TString filename = "stream://134.95.192.83:6002"; 
 
     // ::: OFFLINE READING - For testing
-    //TString inputpath = "/home/lisa/data/server/lmd/";                   
-    //TString filename = inputpath + "run_0076_0001.lmd"; 
+    //TString inputpath = "/home/lisa/data/server1/experiments/staging/2026_IKP_LISA_hermes/lmd/";                   
+    //TString filename = inputpath + "run_0001_0001.lmd"; 
     
     // ::: OUTPUT - does not write a tree if it is not set later
     TString outputpath = "/home/lisa/data/"; //testing
@@ -90,12 +90,12 @@ void lisaext_online()
     // ::: Lisa config
 
     // ::: Mapping
-    TLisaConfiguration::SetMappingFile(config_path + "/Lisa_Mapping_3x3_Num9_6nov.txt");
+    TLisaConfiguration::SetMappingFile(config_path + "/Lisa_Mapping_3x3_Versoek_15Nov.txt");
     
     // ::: Gain Matching Febex, MWD, dEdX
-    TLisaConfiguration::SetGMFile(config_path +     "/Lisa_GainMatching_3x3_fake.txt");
-    TLisaConfiguration::SetGMFileMWD(config_path +  "/Lisa_GainMatching_3x3_fake.txt");
-    TLisaConfiguration::SetGMFiledEdX(config_path + "/Lisa_GainMatching_3x3_fake.txt");
+    TLisaConfiguration::SetGMFile(config_path +     "/Lisa_GainMatching_3x3_fake_2layer.txt");
+    TLisaConfiguration::SetGMFileMWD(config_path +  "/Lisa_GainMatching_3x3_fake_2layer.txt");
+    TLisaConfiguration::SetGMFiledEdX(config_path + "/Lisa_GainMatching_3x3_fake_2layer.txt");
     
     // ::: MWD parameters
     TLisaConfiguration::SetMWDParametersFile(config_path + "/Lisa_MWD_Parameters_v1.txt");
@@ -163,7 +163,7 @@ void lisaext_online()
     TLisaConfiguration::SetBrRateBin(900);
 
     //      LISA Traces Ranges 
-    //TLisaConfiguration::SetTracesRange(0,2000);
+    TLisaConfiguration::SetTracesRange(0,1900);
     //TLisaConfiguration::SetTracesBin(20);
     //TLisaConfiguration::SetAmplitudeMin(5000);
     //TLisaConfiguration::SetAmplitudeMax(16000);

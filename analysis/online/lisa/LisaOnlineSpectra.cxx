@@ -66,7 +66,7 @@ void LisaOnlineSpectra::SetParContainers()
 
 InitStatus LisaOnlineSpectra::Init()
 {
-    c4LOG(info,"init start");
+    //c4LOG(info,"init start");
     FairRootManager* mgr = FairRootManager::Instance();
     c4LOG_IF(fatal, NULL == mgr, "FairRootManager not found");
 
@@ -844,6 +844,7 @@ void LisaOnlineSpectra::Exec(Option_t* option)
     energy_layer.resize(layer_number);
     std::vector<std::vector<float>> energy_MWD_layer(layer_number);
     energy_MWD_layer.resize(layer_number);
+    //c4LOG(info,"before item loop");
     //........................................
     // ::: LOOP OVER ITEM :::
     for (auto const & lisaCalItem : *lisaCalArray)
@@ -870,6 +871,8 @@ void LisaOnlineSpectra::Exec(Option_t* option)
         float energy_MWD = lisaCalItem.Get_energy_MWD();
         float energy_MWD_GM = lisaCalItem.Get_energy_MWD_GM();
         trace = lisaCalItem.Get_trace_febex();
+
+        c4LOG(info,"layer: " << layer << " xpos: " << xpos << " ypos: " << ypos);
         //uint64_t evtno = header->GetEventno();
         // ::: FOR    R A T E S :::
         layer_counter[layer-1]++;
