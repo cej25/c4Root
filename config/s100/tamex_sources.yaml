@@ -1,3 +1,7 @@
 tamex:
   - name: FATIMA
     procid: 75
+  - name: bPlast
+    procid: 80
+  - name: BGO
+    procid: 100
