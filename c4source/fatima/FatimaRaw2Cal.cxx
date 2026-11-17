@@ -351,7 +351,7 @@ void FatimaRaw2Cal::BuildTamexLegacyHits()
         if (!board || board->ProcId() != fTamexProcId || board->FormatVersion() != 4 ||
             board->Board() >= 4)
         {
-            c4LOG(error, "Unsupported source, format or FATIMA board in TAMEX Raw input");
+            c4LOG(error, "Unsupported procid, format or FATIMA board in TAMEX Raw input");
             continue;
         }
         fatima::LegacyPulseBuilder builder;
