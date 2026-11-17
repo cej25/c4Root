@@ -36,12 +36,12 @@ bool LoadTamexProcId(const TString& path, const std::string& wanted,
     std::ifstream file(path.Data());
     if (!file)
     {
-        std::cerr << "Cannot open TAMEX source configuration: " << path << '\\n';
+        std::cerr << "Cannot open TAMEX source configuration: " << path << '\n';
         return false;
     }
 
-    const std::regex name_pattern(R"(^\\s*-\\s*name:\\s*([A-Za-z0-9_-]+)\\s*$)");
-    const std::regex procid_pattern(R"(^\\s*procid:\\s*([0-9]+)\\s*$)");
+    const std::regex name_pattern(R"(^\s*-\s*name:\s*([A-Za-z0-9_-]+)\s*$)");
+    const std::regex procid_pattern(R"(^\s*procid:\s*([0-9]+)\s*$)");
     std::string line, current_name;
     bool found = false;
     while (std::getline(file, line))
@@ -56,7 +56,7 @@ bool LoadTamexProcId(const TString& path, const std::string& wanted,
         {
             if (found)
             {
-                std::cerr << "Duplicate TAMEX procid entry for " << wanted << '\\n';
+                std::cerr << "Duplicate TAMEX procid entry for " << wanted << '\n';
                 return false;
             }
             try
@@ -64,7 +64,7 @@ bool LoadTamexProcId(const TString& path, const std::string& wanted,
                 const auto value = std::stoul(match[1].str());
                 if (value > std::numeric_limits<std::uint16_t>::max())
                 {
-                    std::cerr << "TAMEX procid out of range for " << wanted << '\\n';
+                    std::cerr << "TAMEX procid out of range for " << wanted << '\n';
                     return false;
                 }
                 result = static_cast<std::uint16_t>(value);
@@ -72,12 +72,12 @@ bool LoadTamexProcId(const TString& path, const std::string& wanted,
             }
             catch (const std::exception&)
             {
-                std::cerr << "Invalid TAMEX procid for " << wanted << '\\n';
+                std::cerr << "Invalid TAMEX procid for " << wanted << '\n';
                 return false;
             }
         }
     }
-    if (!found) std::cerr << "No TAMEX procid configured for " << wanted << '\\n';
+    if (!found) std::cerr << "No TAMEX procid configured for " << wanted << '\n';
     return found;
 }
 } // namespace
