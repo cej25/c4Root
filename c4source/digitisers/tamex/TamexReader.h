@@ -5,6 +5,7 @@
 
 #include <cstddef>
 #include <cstdint>
+#include <string>
 
 class TClonesArray;
 class ext_data_struct_info;
@@ -19,13 +20,13 @@ class TamexReader : public c4Reader
 {
 public:
     TamexReader(EXT_STR_h101_bgo_onion_t* input, std::size_t offset,
-                std::uint16_t source);
+                std::uint16_t procid, const std::string& detectorName = "");
     TamexReader(EXT_STR_h101_fatima_onion_t* input, std::size_t offset,
-                std::uint16_t source);
+                std::uint16_t procid, const std::string& detectorName = "");
     TamexReader(EXT_STR_h101_bplast_onion_t* input, std::size_t offset,
-                std::uint16_t source);
+                std::uint16_t procid, const std::string& detectorName = "");
     TamexReader(EXT_STR_h101_mcp_onion_t* input, std::size_t offset,
-                std::uint16_t source);
+                std::uint16_t procid, const std::string& detectorName = "");
     ~TamexReader() override;
 
     Bool_t Init(ext_data_struct_info*) override;
@@ -36,12 +37,13 @@ public:
 
 private:
     enum class InputKind : std::uint8_t { BGO, Fatima, bPlast, MCP };
-    TamexReader(void* input, std::size_t offset, std::uint16_t source,
-                InputKind kind);
+    TamexReader(void* input, std::size_t offset, std::uint16_t procid,
+                InputKind kind, const std::string& detectorName);
 
     void* fInput = nullptr; //! UCESB owns this memory
     std::size_t fOffset = 0;
-    std::uint16_t fSource = 0;
+    std::uint16_t fProcId = 0;
+    std::string fDetectorName;
     InputKind fKind = InputKind::BGO;
     Bool_t fOnline = kFALSE;
     TClonesArray* fArray = nullptr; //! Shared FairRoot output branch
