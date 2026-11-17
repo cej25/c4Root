@@ -28,57 +28,77 @@ extern "C"
 
 namespace
 {
-// Minimal reader for the name/procid entries in the s100 TAMEX source configuration.
-// This is a configured label, not a procid extracted independently from UCESB.
+// Read the small experiment.yaml mapping without introducing a YAML dependency
+// into the validation macro. This handles the flat, detector-keyed schema below,
+// not arbitrary YAML. Procid is configured metadata, not read from the MBS header.
 bool LoadTamexProcId(const TString& path, const std::string& wanted,
                      std::uint16_t& result)
 {
     std::ifstream file(path.Data());
     if (!file)
     {
-        std::cerr << "Cannot open TAMEX source configuration: " << path << '\n';
+        std::cerr << "Cannot open experiment configuration: " << path << '\\n';
         return false;
     }
 
-    const std::regex name_pattern(R"(^\s*-\s*name:\s*([A-Za-z0-9_-]+)\s*$)");
-    const std::regex procid_pattern(R"(^\s*procid:\s*([0-9]+)\s*$)");
-    std::string line, current_name;
-    bool found = false;
+    const std::regex detector_pattern(R"(^([A-Za-z][A-Za-z0-9_-]*):\\s*(?:#.*)?$)");
+    const std::regex procid_pattern(R"(^[ \\t]+procid:\\s*([0-9]+)\\s*(?:#.*)?$)");
+    const std::regex tamex_pattern(R"(^[ \\t]+tamex:\\s*([0-9]+)\\s*(?:#.*)?$)");
+    std::string line, current_detector;
+    bool found_procid = false;
+    bool found_tamex = false;
+    bool duplicate_detector = false;
+    unsigned long value = 0;
+
     while (std::getline(file, line))
     {
         std::smatch match;
-        if (std::regex_match(line, match, name_pattern))
+        if (std::regex_match(line, match, detector_pattern))
         {
-            current_name = match[1].str();
+            if (current_detector == wanted)
+            {
+                // A complete section must not be silently overwritten.
+                if (!found_procid || !found_tamex) break;
+            }
+            current_detector = match[1].str();
+            if (current_detector == wanted && (found_procid || found_tamex))
+            {
+                duplicate_detector = true;
+                break;
+            }
+            continue;
         }
-        else if (std::regex_match(line, match, procid_pattern) &&
-                 current_name == wanted)
+        if (current_detector != wanted) continue;
+
+        if (std::regex_match(line, match, procid_pattern))
         {
-            if (found)
+            if (found_procid) { duplicate_detector = true; break; }
+            try { value = std::stoul(match[1].str()); }
+            catch (const std::exception&) { return false; }
+            if (value > std::numeric_limits<std::uint16_t>::max()) return false;
+            result = static_cast<std::uint16_t>(value);
+            found_procid = true;
+        }
+        else if (std::regex_match(line, match, tamex_pattern))
+        {
+            if (found_tamex) { duplicate_detector = true; break; }
+            // This reader currently handles TAMEX4 only.
+            if (match[1].str() != "4")
             {
-                std::cerr << "Duplicate TAMEX procid entry for " << wanted << '\n';
+                std::cerr << "Unsupported TAMEX version for " << wanted << '\\n';
                 return false;
             }
-            try
-            {
-                const auto value = std::stoul(match[1].str());
-                if (value > std::numeric_limits<std::uint16_t>::max())
-                {
-                    std::cerr << "TAMEX procid out of range for " << wanted << '\n';
-                    return false;
-                }
-                result = static_cast<std::uint16_t>(value);
-                found = true;
-            }
-            catch (const std::exception&)
-            {
-                std::cerr << "Invalid TAMEX procid for " << wanted << '\n';
-                return false;
-            }
+            found_tamex = true;
         }
     }
-    if (!found) std::cerr << "No TAMEX procid configured for " << wanted << '\n';
-    return found;
+
+    if (duplicate_detector || !found_procid || !found_tamex)
+    {
+        std::cerr << "Missing or duplicate TAMEX/procid configuration for "
+                  << wanted << " in " << path << '\\n';
+        return false;
+    }
+    return true;
 }
 } // namespace
 
@@ -130,7 +150,7 @@ void s100_fatima_tamex_validation(
     const TString fine_time_output = "s100_fatima_tamex_fine_time.root";
 
     std::uint16_t fatima_procid = 0;
-    if (use_tamex && !LoadTamexProcId(config_path + "/tamex_sources.yaml",
+    if (use_tamex && !LoadTamexProcId(config_path + "/experiment.yaml",
                                       "FATIMA", fatima_procid)) return;
 
     TFatimaTwinpeaksConfiguration::SetDetectorConfigurationFile(
