@@ -5,6 +5,7 @@
 
 #include "FairRootManager.h"
 #include "TClonesArray.h"
+#include "TClass.h"
 #include "c4Logger.h"
 #include "ext_data_struct_info.hh"
 
