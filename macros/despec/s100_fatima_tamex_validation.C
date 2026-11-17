@@ -16,6 +16,7 @@
 
 extern "C"
 {
+#include "ext_data_client.h"
 #include "ext_h101_unpack.h"
 #include "ext_h101_fatima.h"
 }
@@ -61,18 +62,18 @@ void s100_fatima_tamex_validation(
 
     const TString config_path = c4root_path + "/config/s100";
     const TString calibration_file =
-        config_path + "/fatima/fine_time_23apr_beamON.root";
+        config_path + "/fatima/fine_time_4apr_test.root";
     const TString output_file = use_tamex
         ? "s100_fatima_tamex_validation.root"
         : "s100_fatima_legacy_validation.root";
     const TString fine_time_output = "s100_fatima_tamex_fine_time.root";
 
     TFatimaTwinpeaksConfiguration::SetDetectorConfigurationFile(
-        config_path + "/fatima/fatima_alloc_apr18.txt");
+        (config_path + "/fatima/fatima_alloc_apr18.txt").Data());
     TFatimaTwinpeaksConfiguration::SetDetectorCoefficientFile(
-        config_path + "/fatima/fatima_cal_apr18.txt");
+        (config_path + "/fatima/fatima_cal_apr18.txt").Data());
     TFatimaTwinpeaksConfiguration::SetDetectorTimeshiftsFile(
-        config_path + "/fatima/fatima_timeshifts_apr20.txt");
+        (config_path + "/fatima/fatima_timeshifts_apr20.txt").Data());
 
     auto* run = new FairRunOnline();
     run->SetEventHeader(new EventHeader());
