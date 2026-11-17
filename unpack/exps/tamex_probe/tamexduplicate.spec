@@ -8,7 +8,7 @@ SUBEVENT(tamex4_stream)
 }
 EVENT
 {
-    tamex = tamex4_stream(type=10,subtype=1,procid=75,control=20);
-    tamex = tamex4_stream(type=10,subtype=1,procid=80,control=20);
+    tamex = tamex4_stream(procid=75);
+    tamex = tamex4_stream(procid=80);
     ignore_unknown_subevent;
 };
