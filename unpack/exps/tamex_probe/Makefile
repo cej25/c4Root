@@ -1,3 +1,3 @@
 # Standalone compile-time probe for repeated generic TAMEX subevent types.
-TARGETS:=tamex_probe
+TARGETS:=tamexprobe
 include ../makefile_common.mk
