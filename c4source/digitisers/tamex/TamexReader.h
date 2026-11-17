@@ -44,7 +44,8 @@ private:
     std::uint16_t fSource = 0;
     InputKind fKind = InputKind::BGO;
     Bool_t fOnline = kFALSE;
-    TClonesArray* fArray = nullptr; //! FairRoot output branch
+    TClonesArray* fArray = nullptr; //! Shared FairRoot output branch
+    bool fOwnsArray = false; //! Only the registering reader owns the array
 
 public:
     ClassDefOverride(TamexReader, 0);
