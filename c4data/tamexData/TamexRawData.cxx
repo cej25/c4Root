@@ -1,9 +1,10 @@
 #include "TamexRawData.h"
 
-TamexRawData::TamexRawData(std::uint16_t sourceValue, std::uint16_t boardValue, std::uint16_t triggerValue,
+TamexRawData::TamexRawData(std::uint16_t procidValue, std::uint16_t boardValue, std::uint16_t triggerValue,
                            std::uint16_t wr_subsystemValue, std::uint64_t wr_timestampValue,
-                           std::uint16_t format_versionValue)
-    : source(sourceValue),
+                           std::uint16_t format_versionValue, const std::string& detectorNameValue)
+    : procid(procidValue),
+      detector_name(detectorNameValue),
       board(boardValue),
       trigger(triggerValue),
       wr_subsystem(wr_subsystemValue),
@@ -12,11 +13,13 @@ TamexRawData::TamexRawData(std::uint16_t sourceValue, std::uint16_t boardValue, 
 {
 }
 
-void TamexRawData::SetMetadata(std::uint16_t sourceValue, std::uint16_t boardValue,
+void TamexRawData::SetMetadata(std::uint16_t procidValue, std::uint16_t boardValue,
                                std::uint16_t triggerValue, std::uint16_t wr_subsystemValue,
-                               std::uint64_t wr_timestampValue, std::uint16_t format_versionValue)
+                               std::uint64_t wr_timestampValue, std::uint16_t format_versionValue,
+                               const std::string& detectorNameValue)
 {
-    this->source = sourceValue;
+    this->procid = procidValue;
+    this->detector_name = detectorNameValue;
     this->board = boardValue;
     this->trigger = triggerValue;
     this->wr_subsystem = wr_subsystemValue;
@@ -31,7 +34,8 @@ void TamexRawData::Clear(Option_t*)
 
 void TamexRawData::Reset()
 {
-    source = 0;
+    procid = 0;
+    detector_name.clear();
     board = 0;
     trigger = 0;
     wr_subsystem = 0;
