@@ -85,10 +85,10 @@ FatimaRaw2Cal::~FatimaRaw2Cal(){
 
 
 
-void FatimaRaw2Cal::UseTamexRawInput(std::uint16_t source, const TString& fine_time_histograms)
+void FatimaRaw2Cal::UseTamexRawInput(std::uint16_t procid, const TString& fine_time_histograms)
 {
     fUseTamexRaw = true;
-    fTamexSource = source;
+    fTamexProcId = procid;
     fTamexFineTimeFile = fine_time_histograms;
 }
 
@@ -266,7 +266,7 @@ void FatimaRaw2Cal::AccumulateTamexFineTime()
     for (Int_t i = 0; i < fTamexInput->GetEntriesFast(); ++i)
     {
         const auto* board = static_cast<const TamexRawData*>(fTamexInput->At(i));
-        if (!board || board->Source() != fTamexSource ||
+        if (!board || board->ProcId() != fTamexProcId ||
             board->FormatVersion() != 4 || board->Board() >= 4) continue;
 
         for (const auto& word : board->Words())
@@ -348,7 +348,7 @@ void FatimaRaw2Cal::BuildTamexLegacyHits()
     for (Int_t i = 0; i < fTamexInput->GetEntriesFast(); ++i)
     {
         const auto* board = static_cast<const TamexRawData*>(fTamexInput->At(i));
-        if (!board || board->Source() != fTamexSource || board->FormatVersion() != 4 ||
+        if (!board || board->ProcId() != fTamexProcId || board->FormatVersion() != 4 ||
             board->Board() >= 4)
         {
             c4LOG(error, "Unsupported source, format or FATIMA board in TAMEX Raw input");
