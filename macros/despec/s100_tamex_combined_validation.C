@@ -20,6 +20,16 @@ extern "C"
 #include "ext_h101_bgo.h"
 }
 
+// UcesbSource expects the global EXT_STR_h101_t type, as in the working
+// FATIMA reference macro. The struct layout must match the reader offsets.
+typedef struct EXT_STR_h101_t
+{
+    EXT_STR_h101_unpack_t eventheaders;
+    EXT_STR_h101_fatima_onion_t fatima;
+    EXT_STR_h101_bplast_onion_t bplast;
+    EXT_STR_h101_bgo_onion_t bgo;
+} EXT_STR_h101;
+
 // Electronics-only smoke test: one event-level TamexRawData branch from
 // three independent UCESB input structures. No detector calibration is run.
 void s100_tamex_combined_validation(
@@ -50,14 +60,6 @@ void s100_tamex_combined_validation(
         std::cerr << "experiment.yaml differs from the current compiled s100 UCESB routing.\n";
         return;
     }
-
-    struct EXT_STR_h101
-    {
-        EXT_STR_h101_unpack_t eventheaders;
-        EXT_STR_h101_fatima_onion_t fatima;
-        EXT_STR_h101_bplast_onion_t bplast;
-        EXT_STR_h101_bgo_onion_t bgo;
-    };
 
     auto* unpacked = new EXT_STR_h101{};
     auto* run = new FairRunOnline();
