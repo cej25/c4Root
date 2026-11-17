@@ -25,8 +25,8 @@ extern "C"
 namespace
 {
 template <typename Board, std::size_t N>
-void ReadBoards(const Board (&banks)[N], std::uint16_t source,
-                std::uint16_t wr_subsystem, std::uint64_t wr_timestamp,
+void ReadBoards(const Board (&banks)[N], std::uint16_t procid,
+                const std::string& detectorName, std::uint16_t wr_subsystem, std::uint64_t wr_timestamp,
                 TClonesArray& output)
 {
     static_assert(N <= 65535, "TAMEX board identifier exceeds Raw data capacity");
@@ -38,9 +38,9 @@ void ReadBoards(const Board (&banks)[N], std::uint16_t source,
 
         const auto index = output.GetEntriesFast();
         auto* raw = static_cast<TamexRawData*>(output.ConstructedAt(index));
-        raw->SetMetadata(source, static_cast<std::uint16_t>(i),
+        raw->SetMetadata(procid, static_cast<std::uint16_t>(i),
                          static_cast<std::uint16_t>(bank.trig),
-                         wr_subsystem, wr_timestamp, 4);
+                         wr_subsystem, wr_timestamp, 4, detectorName);
 
         const auto view = tamex::MakeBoardView(bank);
         raw->ReserveWords(c4_tamex_packed_safety::EventHitBudget(bank.event_size));
@@ -71,30 +71,32 @@ void ReadBoards(const Board (&banks)[N], std::uint16_t source,
 } // namespace
 
 TamexReader::TamexReader(void* input, std::size_t offset,
-                         std::uint16_t source, InputKind kind)
+                         std::uint16_t procid, InputKind kind,
+                         const std::string& detectorName)
     : c4Reader("TamexReader"),
       fInput(input),
       fOffset(offset),
-      fSource(source),
+      fProcId(procid),
+      fDetectorName(detectorName),
       fKind(kind)
 {
 }
 
 TamexReader::TamexReader(EXT_STR_h101_bgo_onion_t* input, std::size_t offset,
-                         std::uint16_t source)
-    : TamexReader(input, offset, source, InputKind::BGO) {}
+                         std::uint16_t procid, const std::string& detectorName)
+    : TamexReader(input, offset, procid, InputKind::BGO, detectorName) {}
 
 TamexReader::TamexReader(EXT_STR_h101_fatima_onion_t* input, std::size_t offset,
-                         std::uint16_t source)
-    : TamexReader(input, offset, source, InputKind::Fatima) {}
+                         std::uint16_t procid, const std::string& detectorName)
+    : TamexReader(input, offset, procid, InputKind::Fatima, detectorName) {}
 
 TamexReader::TamexReader(EXT_STR_h101_bplast_onion_t* input, std::size_t offset,
-                         std::uint16_t source)
-    : TamexReader(input, offset, source, InputKind::bPlast) {}
+                         std::uint16_t procid, const std::string& detectorName)
+    : TamexReader(input, offset, procid, InputKind::bPlast, detectorName) {}
 
 TamexReader::TamexReader(EXT_STR_h101_mcp_onion_t* input, std::size_t offset,
-                         std::uint16_t source)
-    : TamexReader(input, offset, source, InputKind::MCP) {}
+                         std::uint16_t procid, const std::string& detectorName)
+    : TamexReader(input, offset, procid, InputKind::MCP, detectorName) {}
 
 TamexReader::~TamexReader()
 {
@@ -136,7 +138,7 @@ Bool_t TamexReader::Init(ext_data_struct_info* info)
     }
 
     // All TAMEX readers append board records to the same event-level collection.
-    // Source/procid is stored in each TamexRawData record, not the branch name.
+    // Configured procid and detector name are stored in each board record, not the branch name.
     // UcesbSource calls each reader's Reset() after the event, so no Read()
     // may clear this shared array.
     auto* mgr = FairRootManager::Instance();
@@ -168,28 +170,28 @@ Bool_t TamexReader::Read()
     case InputKind::BGO:
     {
         const auto& data = *static_cast<const EXT_STR_h101_bgo_onion*>(fInput);
-        ReadBoards(data.bgo_tamex, fSource, static_cast<std::uint16_t>(data.bgo_ts_subsystem_id),
+        ReadBoards(data.bgo_tamex, fProcId, fDetectorName, static_cast<std::uint16_t>(data.bgo_ts_subsystem_id),
                    tamex::AssembleWhiteRabbitTimestamp(data.bgo_ts_t), *fArray);
         break;
     }
     case InputKind::Fatima:
     {
         const auto& data = *static_cast<const EXT_STR_h101_fatima_onion*>(fInput);
-        ReadBoards(data.fatima_tamex, fSource, static_cast<std::uint16_t>(data.fatima_ts_subsystem_id),
+        ReadBoards(data.fatima_tamex, fProcId, fDetectorName, static_cast<std::uint16_t>(data.fatima_ts_subsystem_id),
                    tamex::AssembleWhiteRabbitTimestamp(data.fatima_ts_t), *fArray);
         break;
     }
     case InputKind::bPlast:
     {
         const auto& data = *static_cast<const EXT_STR_h101_bplast_onion*>(fInput);
-        ReadBoards(data.bplast_tamex, fSource, static_cast<std::uint16_t>(data.bplast_ts_subsystem_id),
+        ReadBoards(data.bplast_tamex, fProcId, fDetectorName, static_cast<std::uint16_t>(data.bplast_ts_subsystem_id),
                    tamex::AssembleWhiteRabbitTimestamp(data.bplast_ts_t), *fArray);
         break;
     }
     case InputKind::MCP:
     {
         const auto& data = *static_cast<const EXT_STR_h101_mcp_onion*>(fInput);
-        ReadBoards(data.mcp_tamex, fSource, static_cast<std::uint16_t>(data.mcp_ts_subsystem_id),
+        ReadBoards(data.mcp_tamex, fProcId, fDetectorName, static_cast<std::uint16_t>(data.mcp_ts_subsystem_id),
                    tamex::AssembleWhiteRabbitTimestamp(data.mcp_ts_t), *fArray);
         break;
     }
