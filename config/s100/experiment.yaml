@@ -1,14 +1,19 @@
-# Experiment-level electronics routing for s100.
-# procid identifies the UCESB/MBS subevent; tamex is the digitiser generation.
-# Board indices remain local to each procid.
+# s100 detector electronics. Board indices are local to each procid.
+# whiterabbit is the subsystem ID matched by the UCESB timestamp parser.
 FATIMA:
-  tamex: 4
+  digitiser: tamex
+  version: 4
   procid: 75
+  whiterabbit: 0x1600
 
 bPlast:
-  tamex: 4
+  digitiser: tamex
+  version: 4
   procid: 80
+  whiterabbit: 0x500
 
 BGO:
-  tamex: 4
+  digitiser: tamex
+  version: 4
   procid: 100
+  whiterabbit: 0x1900
