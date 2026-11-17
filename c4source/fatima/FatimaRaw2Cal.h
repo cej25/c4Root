@@ -41,7 +41,7 @@ class FatimaRaw2Cal : public FairTask
 
         // Opt in to the generic TAMEX Raw branch. Omit the file only when
         // CalibrateTamexFineTimeOnline is also called before Init().
-        void UseTamexRawInput(std::uint16_t source, const TString& fine_time_histograms = "");
+        void UseTamexRawInput(std::uint16_t procid, const TString& fine_time_histograms = "");
         // Learn from leading edges in the first N events, then reconstruct
         // subsequent events. Output uses legacy ROOT histogram names.
         void CalibrateTamexFineTimeOnline(const TString& output_file, std::uint64_t events_to_collect);
@@ -64,7 +64,7 @@ class FatimaRaw2Cal : public FairTask
         TClonesArray* ftime_machine_array;
 
         bool fUseTamexRaw = false;
-        std::uint16_t fTamexSource = 0;
+        std::uint16_t fTamexProcId = 0;
         TString fTamexFineTimeFile;
         TString fTamexFineTimeOutput;
         bool fTamexCalibrateOnline = false;
