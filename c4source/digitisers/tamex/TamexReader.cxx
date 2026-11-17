@@ -75,8 +75,7 @@ TamexReader::TamexReader(void* input, std::size_t offset,
       fInput(input),
       fOffset(offset),
       fSource(source),
-      fKind(kind),
-      fArray(new TClonesArray("TamexRawData"))
+      fKind(kind)
 {
 }
 
@@ -98,7 +97,7 @@ TamexReader::TamexReader(EXT_STR_h101_mcp_onion_t* input, std::size_t offset,
 
 TamexReader::~TamexReader()
 {
-    delete fArray;
+    if (fOwnsArray) delete fArray;
 }
 
 Bool_t TamexReader::Init(ext_data_struct_info* info)
@@ -135,19 +134,34 @@ Bool_t TamexReader::Init(ext_data_struct_info* info)
         return kFALSE;
     }
 
-    // Distinct sources can coexist, provided their identifiers are unique.
-    // Branch persistence follows the same online/offline convention as readers.
-    const TString branch = TString::Format("TamexRawData_%u", static_cast<unsigned>(fSource));
-    FairRootManager::Instance()->Register(
-        branch.Data(), "TamexRawDataFolder", fArray, !fOnline);
-    fArray->Clear("C");
+    // All TAMEX readers append board records to the same event-level collection.
+    // Source/procid is stored in each TamexRawData record, not the branch name.
+    // UcesbSource calls each reader's Reset() after the event, so no Read()
+    // may clear this shared array.
+    auto* mgr = FairRootManager::Instance();
+    if (auto* existing = mgr->GetObject("TamexRawData"))
+    {
+        fArray = dynamic_cast<TClonesArray*>(existing);
+        if (!fArray || TString(fArray->GetClass()->GetName()) != "TamexRawData")
+        {
+            c4LOG(error, "Existing TamexRawData branch has an incompatible type");
+            return kFALSE;
+        }
+        fOwnsArray = false;
+    }
+    else
+    {
+        fArray = new TClonesArray("TamexRawData");
+        fOwnsArray = true;
+        mgr->Register("TamexRawData", "TamexRawDataFolder", fArray, !fOnline);
+        fArray->Clear("C");
+    }
     return kTRUE;
 }
 
 Bool_t TamexReader::Read()
 {
-    if (!fInput) return kFALSE;
-    fArray->Clear("C");
+    if (!fInput || !fArray) return kFALSE;
     switch (fKind)
     {
     case InputKind::BGO:
