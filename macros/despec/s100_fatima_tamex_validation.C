@@ -37,13 +37,13 @@ bool LoadTamexProcId(const TString& path, const std::string& wanted,
     std::ifstream file(path.Data());
     if (!file)
     {
-        std::cerr << "Cannot open experiment configuration: " << path << '\\n';
+        std::cerr << "Cannot open experiment configuration: " << path << '\n';
         return false;
     }
 
-    const std::regex detector_pattern(R"(^([A-Za-z][A-Za-z0-9_-]*):\\s*(?:#.*)?$)");
-    const std::regex procid_pattern(R"(^[ \\t]+procid:\\s*([0-9]+)\\s*(?:#.*)?$)");
-    const std::regex tamex_pattern(R"(^[ \\t]+tamex:\\s*([0-9]+)\\s*(?:#.*)?$)");
+    const std::regex detector_pattern(R"(^([A-Za-z][A-Za-z0-9_-]*):\s*(?:#.*)?$)");
+    const std::regex procid_pattern(R"(^[ \t]+procid:\s*([0-9]+)\s*(?:#.*)?$)");
+    const std::regex tamex_pattern(R"(^[ \t]+tamex:\s*([0-9]+)\s*(?:#.*)?$)");
     std::string line, current_detector;
     bool found_procid = false;
     bool found_tamex = false;
@@ -85,7 +85,7 @@ bool LoadTamexProcId(const TString& path, const std::string& wanted,
             // This reader currently handles TAMEX4 only.
             if (match[1].str() != "4")
             {
-                std::cerr << "Unsupported TAMEX version for " << wanted << '\\n';
+                std::cerr << "Unsupported TAMEX version for " << wanted << '\n';
                 return false;
             }
             found_tamex = true;
@@ -95,7 +95,7 @@ bool LoadTamexProcId(const TString& path, const std::string& wanted,
     if (duplicate_detector || !found_procid || !found_tamex)
     {
         std::cerr << "Missing or duplicate TAMEX/procid configuration for "
-                  << wanted << " in " << path << '\\n';
+                  << wanted << " in " << path << '\n';
         return false;
     }
     return true;
