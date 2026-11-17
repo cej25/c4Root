@@ -4,6 +4,7 @@
 #include "TObject.h"
 
 #include <cstdint>
+#include <string>
 #include <vector>
 
 // One ordered TAMEX electronics word. Epoch words are retained explicitly.
@@ -30,16 +31,20 @@ struct TamexRawWord
     ClassDefNV(TamexRawWord, 1);
 };
 
-// One board's digitiser data for an event. No detector identity or calibration.
+// One board's digitiser data for an event. No detector mapping or calibration.
+// The detector_name is an optional provenance label supplied by the experiment.
 class TamexRawData : public TObject
 {
 public:
     TamexRawData() = default;
-    TamexRawData(std::uint16_t sourceValue, std::uint16_t boardValue, std::uint16_t triggerValue,
+    TamexRawData(std::uint16_t procidValue, std::uint16_t boardValue, std::uint16_t triggerValue,
                  std::uint16_t wr_subsystemValue, std::uint64_t wr_timestampValue,
-                 std::uint16_t format_versionValue);
+                 std::uint16_t format_versionValue, const std::string& detectorNameValue = "");
 
-    std::uint16_t Source() const { return source; }
+    std::uint16_t ProcId() const { return procid; }
+    // Compatibility with callers using the previous source terminology.
+    std::uint16_t Source() const { return ProcId(); }
+    const std::string& DetectorName() const { return detector_name; }
     std::uint16_t Board() const { return board; }
     std::uint16_t Trigger() const { return trigger; }
     std::uint16_t WrSubsystem() const { return wr_subsystem; }
@@ -50,16 +55,18 @@ public:
     void AddWord(const TamexRawWord& word) { words.push_back(word); }
     void ReserveWords(std::size_t count) { words.reserve(count); }
 
-    void SetMetadata(std::uint16_t sourceValue, std::uint16_t boardValue,
+    void SetMetadata(std::uint16_t procidValue, std::uint16_t boardValue,
                      std::uint16_t triggerValue, std::uint16_t wr_subsystemValue,
-                     std::uint64_t wr_timestampValue, std::uint16_t format_versionValue);
+                     std::uint64_t wr_timestampValue, std::uint16_t format_versionValue,
+                     const std::string& detectorNameValue = "");
     void Reset();
     void Clear(Option_t* option = "") override;
 
-    ClassDef(TamexRawData, 2);
+    ClassDef(TamexRawData, 3);
 
 private:
-    std::uint16_t source = 0;
+    std::uint16_t procid = 0;
+    std::string detector_name;
     std::uint16_t board = 0;
     std::uint16_t trigger = 0;
     std::uint16_t wr_subsystem = 0;
