@@ -129,6 +129,10 @@ void s100_fatima_tamex_validation(
         : "s100_fatima_legacy_validation.root";
     const TString fine_time_output = "s100_fatima_tamex_fine_time.root";
 
+    std::uint16_t fatima_source = 0;
+    if (use_tamex && !LoadTamexProcId(config_path + "/tamex_sources.yaml",
+                                      "FATIMA", fatima_source)) return;
+
     TFatimaTwinpeaksConfiguration::SetDetectorConfigurationFile(
         (config_path + "/fatima/fatima_alloc_apr18.txt").Data());
     TFatimaTwinpeaksConfiguration::SetDetectorCoefficientFile(
@@ -153,9 +157,6 @@ void s100_fatima_tamex_validation(
         (EXT_STR_h101_unpack*)&ucesb_struct.eventheaders,
         offsetof(EXT_STR_h101, eventheaders)));
 
-    std::uint16_t fatima_source = 0;
-    if (use_tamex && !LoadTamexProcId(config_path + "/tamex_sources.yaml",
-                                      "FATIMA", fatima_source)) return;
     if (use_tamex)
     {
         auto* reader = new TamexReader(
