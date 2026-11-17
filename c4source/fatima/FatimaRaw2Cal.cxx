@@ -120,8 +120,7 @@ InitStatus FatimaRaw2Cal::Init()
 
     if (fUseTamexRaw)
     {
-        const TString branch = TString::Format("TamexRawData_%u",
-                                                static_cast<unsigned>(fTamexSource));
+        const TString branch = "TamexRawData";
         fTamexInput = dynamic_cast<TClonesArray*>(mgr->GetObject(branch.Data()));
         if (!fTamexInput)
         {
