@@ -3,6 +3,10 @@
 #include <cstddef>
 #include <cstdint>
 #include <iostream>
+#include <fstream>
+#include <regex>
+#include <string>
+#include <limits>
 
 #include "FairRunOnline.h"
 #include "FairRootFileSink.h"
@@ -20,6 +24,63 @@ extern "C"
 #include "ext_h101_unpack.h"
 #include "ext_h101_fatima.h"
 }
+
+
+namespace
+{
+// Minimal reader for the name/procid entries in the s100 TAMEX source configuration.
+// This is a configured label, not a procid extracted independently from UCESB.
+bool LoadTamexProcId(const TString& path, const std::string& wanted,
+                     std::uint16_t& result)
+{
+    std::ifstream file(path.Data());
+    if (!file)
+    {
+        std::cerr << "Cannot open TAMEX source configuration: " << path << '\\n';
+        return false;
+    }
+
+    const std::regex name_pattern(R"(^\\s*-\\s*name:\\s*([A-Za-z0-9_-]+)\\s*$)");
+    const std::regex procid_pattern(R"(^\\s*procid:\\s*([0-9]+)\\s*$)");
+    std::string line, current_name;
+    bool found = false;
+    while (std::getline(file, line))
+    {
+        std::smatch match;
+        if (std::regex_match(line, match, name_pattern))
+        {
+            current_name = match[1].str();
+        }
+        else if (std::regex_match(line, match, procid_pattern) &&
+                 current_name == wanted)
+        {
+            if (found)
+            {
+                std::cerr << "Duplicate TAMEX procid entry for " << wanted << '\\n';
+                return false;
+            }
+            try
+            {
+                const auto value = std::stoul(match[1].str());
+                if (value > std::numeric_limits<std::uint16_t>::max())
+                {
+                    std::cerr << "TAMEX procid out of range for " << wanted << '\\n';
+                    return false;
+                }
+                result = static_cast<std::uint16_t>(value);
+                found = true;
+            }
+            catch (const std::exception&)
+            {
+                std::cerr << "Invalid TAMEX procid for " << wanted << '\\n';
+                return false;
+            }
+        }
+    }
+    if (!found) std::cerr << "No TAMEX procid configured for " << wanted << '\\n';
+    return found;
+}
+} // namespace
 
 // Based on macros/despec/old/s100_online_new.C, limited to FATIMA.
 // Run twice on the same input for physics comparison (legacy and TAMEX).
@@ -92,7 +153,9 @@ void s100_fatima_tamex_validation(
         (EXT_STR_h101_unpack*)&ucesb_struct.eventheaders,
         offsetof(EXT_STR_h101, eventheaders)));
 
-    constexpr std::uint16_t fatima_source = 10;
+    std::uint16_t fatima_source = 0;
+    if (use_tamex && !LoadTamexProcId(config_path + "/tamex_sources.yaml",
+                                      "FATIMA", fatima_source)) return;
     if (use_tamex)
     {
         auto* reader = new TamexReader(
