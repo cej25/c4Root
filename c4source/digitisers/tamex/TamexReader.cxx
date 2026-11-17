@@ -10,6 +10,7 @@
 
 extern "C"
 {
+#include "ext_data_client.h"
 #include "ext_h101_bgo.h"
 #include "ext_h101_fatima.h"
 #include "ext_h101_bplast.h"
