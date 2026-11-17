@@ -1,27 +1,27 @@
 #include "TamexRawData.h"
 
-TamexRawData::TamexRawData(std::uint16_t source, std::uint16_t board, std::uint16_t trigger,
-                           std::uint16_t wr_subsystem, std::uint64_t wr_timestamp,
-                           std::uint16_t format_version)
-    : source(source),
-      board(board),
-      trigger(trigger),
-      wr_subsystem(wr_subsystem),
-      wr_timestamp(wr_timestamp),
-      format_version(format_version)
+TamexRawData::TamexRawData(std::uint16_t sourceValue, std::uint16_t boardValue, std::uint16_t triggerValue,
+                           std::uint16_t wr_subsystemValue, std::uint64_t wr_timestampValue,
+                           std::uint16_t format_versionValue)
+    : source(sourceValue),
+      board(boardValue),
+      trigger(triggerValue),
+      wr_subsystem(wr_subsystemValue),
+      wr_timestamp(wr_timestampValue),
+      format_version(format_versionValue)
 {
 }
 
-void TamexRawData::SetMetadata(std::uint16_t source, std::uint16_t board,
-                               std::uint16_t trigger, std::uint16_t wr_subsystem,
-                               std::uint64_t wr_timestamp, std::uint16_t format_version)
+void TamexRawData::SetMetadata(std::uint16_t sourceValue, std::uint16_t boardValue,
+                               std::uint16_t triggerValue, std::uint16_t wr_subsystemValue,
+                               std::uint64_t wr_timestampValue, std::uint16_t format_versionValue)
 {
-    this->source = source;
-    this->board = board;
-    this->trigger = trigger;
-    this->wr_subsystem = wr_subsystem;
-    this->wr_timestamp = wr_timestamp;
-    this->format_version = format_version;
+    this->source = sourceValue;
+    this->board = boardValue;
+    this->trigger = triggerValue;
+    this->wr_subsystem = wr_subsystemValue;
+    this->wr_timestamp = wr_timestampValue;
+    this->format_version = format_versionValue;
 }
 
 void TamexRawData::Clear(Option_t*)
