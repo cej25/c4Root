@@ -35,9 +35,9 @@ class TamexRawData : public TObject
 {
 public:
     TamexRawData() = default;
-    TamexRawData(std::uint16_t source, std::uint16_t board, std::uint16_t trigger,
-                 std::uint16_t wr_subsystem, std::uint64_t wr_timestamp,
-                 std::uint16_t format_version);
+    TamexRawData(std::uint16_t sourceValue, std::uint16_t boardValue, std::uint16_t triggerValue,
+                 std::uint16_t wr_subsystemValue, std::uint64_t wr_timestampValue,
+                 std::uint16_t format_versionValue);
 
     std::uint16_t Source() const { return source; }
     std::uint16_t Board() const { return board; }
@@ -50,9 +50,9 @@ public:
     void AddWord(const TamexRawWord& word) { words.push_back(word); }
     void ReserveWords(std::size_t count) { words.reserve(count); }
 
-    void SetMetadata(std::uint16_t source, std::uint16_t board,
-                     std::uint16_t trigger, std::uint16_t wr_subsystem,
-                     std::uint64_t wr_timestamp, std::uint16_t format_version);
+    void SetMetadata(std::uint16_t sourceValue, std::uint16_t boardValue,
+                     std::uint16_t triggerValue, std::uint16_t wr_subsystemValue,
+                     std::uint64_t wr_timestampValue, std::uint16_t format_versionValue);
     void Reset();
     void Clear(Option_t* option = "") override;
 
