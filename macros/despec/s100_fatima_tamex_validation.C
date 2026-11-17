@@ -129,9 +129,9 @@ void s100_fatima_tamex_validation(
         : "s100_fatima_legacy_validation.root";
     const TString fine_time_output = "s100_fatima_tamex_fine_time.root";
 
-    std::uint16_t fatima_source = 0;
+    std::uint16_t fatima_procid = 0;
     if (use_tamex && !LoadTamexProcId(config_path + "/tamex_sources.yaml",
-                                      "FATIMA", fatima_source)) return;
+                                      "FATIMA", fatima_procid)) return;
 
     TFatimaTwinpeaksConfiguration::SetDetectorConfigurationFile(
         (config_path + "/fatima/fatima_alloc_apr18.txt").Data());
@@ -161,7 +161,7 @@ void s100_fatima_tamex_validation(
     {
         auto* reader = new TamexReader(
             (EXT_STR_h101_fatima_onion*)&ucesb_struct.fatima,
-            offsetof(EXT_STR_h101, fatima), fatima_source);
+            offsetof(EXT_STR_h101, fatima), fatima_procid, "FATIMA");
         reader->SetOnline(false);
         source->AddReader(reader);
     }
@@ -181,13 +181,13 @@ void s100_fatima_tamex_validation(
     {
         if (automatic_calibration)
         {
-            calfatima->UseTamexRawInput(fatima_source);
+            calfatima->UseTamexRawInput(fatima_procid);
             calfatima->CalibrateTamexFineTimeOnline(
                 fine_time_output, calibration_events);
         }
         else
         {
-            calfatima->UseTamexRawInput(fatima_source, calibration_file);
+            calfatima->UseTamexRawInput(fatima_procid, calibration_file);
         }
     }
     run->AddTask(calfatima);
