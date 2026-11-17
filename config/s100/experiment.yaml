@@ -1,0 +1,14 @@
+# Experiment-level electronics routing for s100.
+# procid identifies the UCESB/MBS subevent; tamex is the digitiser generation.
+# Board indices remain local to each procid.
+FATIMA:
+  tamex: 4
+  procid: 75
+
+bPlast:
+  tamex: 4
+  procid: 80
+
+BGO:
+  tamex: 4
+  procid: 100
