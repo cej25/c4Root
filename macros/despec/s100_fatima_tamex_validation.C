@@ -28,11 +28,10 @@ extern "C"
 
 namespace
 {
-// Read the small experiment.yaml mapping without introducing a YAML dependency
-// into the validation macro. This handles the flat, detector-keyed schema below,
-// not arbitrary YAML. Procid is configured metadata, not read from the MBS header.
-bool LoadTamexProcId(const TString& path, const std::string& wanted,
-                     std::uint16_t& result)
+// Minimal parser for the deliberately flat detector-keyed experiment.yaml.
+// This is configuration metadata, not an independent read of MBS procid or WR ID.
+bool LoadTamexConfig(const TString& path, const std::string& wanted,
+                     std::uint16_t& procid, std::uint16_t& whiterabbit)
 {
     std::ifstream file(path.Data());
     if (!file)
@@ -42,59 +41,78 @@ bool LoadTamexProcId(const TString& path, const std::string& wanted,
     }
 
     const std::regex detector_pattern(R"(^([A-Za-z][A-Za-z0-9_-]*):\s*(?:#.*)?$)");
-    const std::regex procid_pattern(R"(^[ \t]+procid:\s*([0-9]+)\s*(?:#.*)?$)");
-    const std::regex tamex_pattern(R"(^[ \t]+tamex:\s*([0-9]+)\s*(?:#.*)?$)");
-    std::string line, current_detector;
-    bool found_procid = false;
-    bool found_tamex = false;
-    bool duplicate_detector = false;
-    unsigned long value = 0;
+    const std::regex field_pattern(R"(^[ \t]+(digitiser|version|procid|whiterabbit):\s*([^ \t#]+)\s*(?:#.*)?$)");
+    std::string line, current_detector, digitiser;
+    bool seen_detector = false;
+    bool have_digitiser = false, have_version = false;
+    bool have_procid = false, have_wr = false;
+    unsigned long version = 0;
+
+    auto parse_number = [](const std::string& value, unsigned long& output) {
+        try
+        {
+            std::size_t end = 0;
+            output = std::stoul(value, &end, 0);
+            return end == value.size();
+        }
+        catch (const std::exception&) { return false; }
+    };
 
     while (std::getline(file, line))
     {
         std::smatch match;
         if (std::regex_match(line, match, detector_pattern))
         {
-            if (current_detector == wanted)
+            const auto detector = match[1].str();
+            if (detector == wanted)
             {
-                // A complete section must not be silently overwritten.
-                if (!found_procid || !found_tamex) break;
+                if (seen_detector)
+                {
+                    std::cerr << "Duplicate detector entry: " << wanted << '\n';
+                    return false;
+                }
+                seen_detector = true;
             }
-            current_detector = match[1].str();
-            if (current_detector == wanted && (found_procid || found_tamex))
-            {
-                duplicate_detector = true;
-                break;
-            }
+            current_detector = detector;
             continue;
         }
         if (current_detector != wanted) continue;
+        if (!std::regex_match(line, match, field_pattern)) continue;
 
-        if (std::regex_match(line, match, procid_pattern))
+        const auto key = match[1].str();
+        const auto value = match[2].str();
+        unsigned long number = 0;
+        if (key == "digitiser")
         {
-            if (found_procid) { duplicate_detector = true; break; }
-            try { value = std::stoul(match[1].str()); }
-            catch (const std::exception&) { return false; }
-            if (value > std::numeric_limits<std::uint16_t>::max()) return false;
-            result = static_cast<std::uint16_t>(value);
-            found_procid = true;
+            if (have_digitiser) return false;
+            digitiser = value;
+            have_digitiser = true;
         }
-        else if (std::regex_match(line, match, tamex_pattern))
+        else if (key == "version")
         {
-            if (found_tamex) { duplicate_detector = true; break; }
-            // This reader currently handles TAMEX4 only.
-            if (match[1].str() != "4")
-            {
-                std::cerr << "Unsupported TAMEX version for " << wanted << '\n';
-                return false;
-            }
-            found_tamex = true;
+            if (have_version || !parse_number(value, version)) return false;
+            have_version = true;
+        }
+        else if (key == "procid")
+        {
+            if (have_procid || !parse_number(value, number) ||
+                number > std::numeric_limits<std::uint16_t>::max()) return false;
+            procid = static_cast<std::uint16_t>(number);
+            have_procid = true;
+        }
+        else if (key == "whiterabbit")
+        {
+            if (have_wr || !parse_number(value, number) ||
+                number > std::numeric_limits<std::uint16_t>::max()) return false;
+            whiterabbit = static_cast<std::uint16_t>(number);
+            have_wr = true;
         }
     }
 
-    if (duplicate_detector || !found_procid || !found_tamex)
+    if (!seen_detector || !have_digitiser || !have_version ||
+        !have_procid || !have_wr || digitiser != "tamex" || version != 4)
     {
-        std::cerr << "Missing or duplicate TAMEX/procid configuration for "
+        std::cerr << "Missing or unsupported TAMEX4 configuration for "
                   << wanted << " in " << path << '\n';
         return false;
     }
@@ -150,8 +168,19 @@ void s100_fatima_tamex_validation(
     const TString fine_time_output = "s100_fatima_tamex_fine_time.root";
 
     std::uint16_t fatima_procid = 0;
-    if (use_tamex && !LoadTamexProcId(config_path + "/experiment.yaml",
-                                      "FATIMA", fatima_procid)) return;
+    std::uint16_t fatima_whiterabbit = 0;
+    if (use_tamex)
+    {
+        if (!LoadTamexConfig(config_path + "/experiment.yaml", "FATIMA",
+                             fatima_procid, fatima_whiterabbit)) return;
+        // UCESB's s100.spec currently fixes the FATIMA WR subsystem to 0x1600.
+        // The YAML entry documents/checks it; it does not reconfigure UCESB.
+        if (fatima_whiterabbit != 0x1600)
+        {
+            std::cerr << "FATIMA White Rabbit ID differs from s100.spec (0x1600)\n";
+            return;
+        }
+    }
 
     TFatimaTwinpeaksConfiguration::SetDetectorConfigurationFile(
         (config_path + "/fatima/fatima_alloc_apr18.txt").Data());
