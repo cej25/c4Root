@@ -43,6 +43,9 @@ class FatimaVmeReader : public c4Reader
         virtual void Reset() override;
 
         void SetOnline(Bool_t option) { fOnline = option; }
+        // Opt-in for validation with other readers of the same UCESB bank.
+        // The registering reader owns the structure definition and input buffer.
+        void SetSharedInput(Bool_t shared) { fSharedInput = shared; }
         //void Set_Allocation(TString& filepath);
 
         std::vector<int> Get_Channels(Int_t channel_mask);
@@ -58,6 +61,7 @@ class FatimaVmeReader : public c4Reader
 
         Int_t fNEvent = 0;
         Bool_t fOnline;
+        Bool_t fSharedInput = kFALSE;
 
         EXT_STR_h101_fatimavme_onion* fData;
         size_t fOffset;
