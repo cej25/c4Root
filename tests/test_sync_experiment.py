@@ -63,6 +63,17 @@ class SyncExperimentTests(unittest.TestCase):
         })
         self.assertIn("qdc6 = VME_CAEN_V1751(board=11)", enlarged)
         self.assertIn("tdc6 = VME_CAEN_V1290_N()", enlarged)
+        # The insertion must not swallow the following error-marker grammar.
+        self.assertNotIn("}select", enlarged)
+        self.assertEqual(enlarged.count("SUBEVENT(fatima_vme_subev)"), 1)
+        self.assertEqual(enlarged.count("SUBEVENT(bplast_subev)"), 1)
+        self.assertIn("error2 = ERR_WORD_SIX();", enlarged)
+        self.assertIn("error3 = ERR_WORD_SIX();", enlarged)
+        self.assertIn("select optional { qdc6 = VME_CAEN_V1751(board=11); }", enlarged)
+        self.assertIn("select optional { tdc6 = VME_CAEN_V1290_N(); }", enlarged)
+        for name in ("fatima_tamex_subev", "bplast_subev", "bgo_tamex_subevent"):
+            self.assertEqual(sync.subevent(enlarged, name)[2],
+                             sync.subevent(self.source, name)[2])
         self.assertEqual(sync.expand_vme_capacity(enlarged, {
             "FATIMA_VME": {
                 "v1751": {"boards": [6, 7, 8, 9, 10]},
