@@ -79,7 +79,7 @@ def unique_match(pattern, text, label, flags=0):
 
 
 def event_span(spec):
-    start = unique_match(r"(?m)^EVENT[ \t]*\\{", spec, "EVENT block")
+    start = unique_match(r"(?m)^EVENT[ \t]*\{", spec, "EVENT block")
     begin = start.end()
     depth = 1
     for i in range(begin, len(spec)):
@@ -94,7 +94,7 @@ def event_span(spec):
 
 def subevent_span(spec, name):
     match = unique_match(
-        r"(?m)^SUBEVENT[ \t]*\\([ \t]*" + re.escape(name) + r"[ \t]*\\)[ \t]*\\{",
+        r"(?m)^SUBEVENT[ \t]*\([ \t]*" + re.escape(name) + r"[ \t]*\)[ \t]*\{",
         spec, f"SUBEVENT({name})")
     depth = 1
     for i in range(match.end(), len(spec)):
@@ -116,10 +116,10 @@ def plan(spec, config):
         routing = unique_match(
             r"(?m)^[ \t]*" + re.escape(member)
             + r"[ \t]*=[ \t]*" + re.escape(subevent)
-            + r"[ \t]*\\([^;]*\\)[ \t]*;",
+            + r"[ \t]*\([^;]*\)[ \t]*;",
             event, f"EVENT routing for {detector}")
         call = routing.group(0)
-        procid = unique_match(r"\\bprocid[ \t]*=[ \t]*(0[xX][0-9a-fA-F]+|[0-9]+)",
+        procid = unique_match(r"\bprocid[ \t]*=[ \t]*(0[xX][0-9a-fA-F]+|[0-9]+)",
                               call, f"{detector} procid")
         before = procid.group(1)
         if number(before) != desired_procid:
@@ -131,7 +131,7 @@ def plan(spec, config):
         body = spec[sb:se]
         # Both normal and EXTENDED timestamp encodings are supported.
         stamp = unique_match(
-            r"TIMESTAMP_WHITERABBIT(?:_EXTENDED)?[ \t]*\\([ \t]*id[ \t]*=[ \t]*(0[xX][0-9a-fA-F]+|[0-9]+)[ \t]*\\)",
+            r"TIMESTAMP_WHITERABBIT(?:_EXTENDED)?[ \t]*\([ \t]*id[ \t]*=[ \t]*(0[xX][0-9a-fA-F]+|[0-9]+)[ \t]*\)",
             body, f"{detector} WR timestamp")
         before_wr = stamp.group(1)
         if number(before_wr) != desired_wr:
@@ -142,13 +142,13 @@ def plan(spec, config):
     # Never silently create duplicate procids with unrelated EVENT members.
     event_procids = [
         (number(m.group(1)), m.group(0)) for m in
-        re.finditer(r"\\bprocid[ \t]*=[ \t]*(0[xX][0-9a-fA-F]+|[0-9]+)", event)
+        re.finditer(r"\bprocid[ \t]*=[ \t]*(0[xX][0-9a-fA-F]+|[0-9]+)", event)
     ]
     for detector, _, _ in ROUTES:
         expected = config[detector][0]
         # A desired procid may not collide with an unchanged, unrelated route.
         original = next((number(re.search(
-            r"\\bprocid[ \t]*=[ \t]*(0[xX][0-9a-fA-F]+|[0-9]+)",
+            r"\bprocid[ \t]*=[ \t]*(0[xX][0-9a-fA-F]+|[0-9]+)",
             unique_match(r"(?m)^[ \t]*" + re.escape(member) + r"[ \t]*=[^;]*;",
                          event, member).group(0)).group(1))
             for name, member, _ in ROUTES if name == detector), None)
@@ -177,7 +177,7 @@ def main():
         if not changes:
             print("OK: experiment.yaml and s100.spec agree for all three TAMEX detectors.")
             return 0
-        print("\\nDifferences: " + "; ".join(changes))
+        print("\nDifferences: " + "; ".join(changes))
         print("".join(difflib.unified_diff(original.splitlines(keepends=True),
                     updated.splitlines(keepends=True),
                     fromfile=str(SPEC), tofile=str(SPEC) + " (proposed)")))
