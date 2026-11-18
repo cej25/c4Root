@@ -23,6 +23,7 @@ ${C4ROOT_SOURCE_DIR}/c4source/fimp
 ${C4ROOT_SOURCE_DIR}/c4source/mcp
 ${C4ROOT_SOURCE_DIR}/c4source/stefan
 ${C4ROOT_SOURCE_DIR}/c4source/digitisers/tamex
+${C4ROOT_SOURCE_DIR}/c4source/digitisers/vme
 ${C4ROOT_SOURCE_DIR}/c4data
 ${C4ROOT_SOURCE_DIR}/c4data/frsData
 ${C4ROOT_SOURCE_DIR}/c4data/lisaData
@@ -59,6 +60,8 @@ set(SRCS
 ./base/CorrelationsMap.cxx
 ./base/GainShift.cxx
 ./digitisers/tamex/TamexReader.cxx
+./digitisers/vme/V1751Reader.cxx
+./digitisers/vme/V1290Reader.cxx
 ./aida/AidaReader.cxx
 ./aida/AidaCal2Hit.cxx
 ./aida/AidaUnpack2Cal.cxx
