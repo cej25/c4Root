@@ -33,7 +33,7 @@
 #include <chrono>
 
 #include "FatimaRaw2Cal.h"
-#include "FatimaVmeElectronicsRaw2Cal.h"
+#include "FatimaVmeCalibrator.h"
 #include "FatimaLegacyPulseBuilder.h"
 #include "TamexFineTimeCalibration.h"
 #include "TamexRawData.h"
@@ -145,9 +145,8 @@ InitStatus FatimaRaw2Cal::Init()
 
     if (fUseVmeRaw)
     {
-        fVmeProcessor = new FatimaVmeElectronicsRaw2Cal();
-        fVmeProcessor->SetOnline(fOnline);
-        if (fVmeProcessor->Init() != kSUCCESS) return kFATAL;
+        fVmeProcessor = new FatimaVmeCalibrator();
+        if (!fVmeProcessor->Init(mgr, !fOnline)) return kFATAL;
     }
     // VME-only mode never requires the TAMEX calibration configuration
     // or its event branches.
@@ -420,7 +419,7 @@ void FatimaRaw2Cal::BuildTamexLegacyHits()
 
 void FatimaRaw2Cal::Exec(Option_t* option)
 {
-    if (fVmeProcessor) fVmeProcessor->Exec(option);
+    if (fVmeProcessor) fVmeProcessor->Process();
     if (fUseVmeRaw && !fUseTamexRaw) return;
     if (fUseTamexRaw)
     {
@@ -652,7 +651,7 @@ Clears the TClonesArray used in the function. If they are not cleared after each
 void FatimaRaw2Cal::FinishEvent()
 {
     // Reset only arrays produced by this task; the reader resets raw input.
-    if (fVmeProcessor) fVmeProcessor->FinishEvent();
+    if (fVmeProcessor) fVmeProcessor->Clear();
     if (fUseVmeRaw && !fUseTamexRaw) return;
     fcal_data->Clear();
     ftime_machine_array->Clear();
