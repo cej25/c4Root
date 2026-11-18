@@ -58,6 +58,7 @@ bgoData/TBGOTwinpeaksConfiguration.cxx
 fatimaData/TFatimaVmeConfiguration.cxx
 fatimaData/FatimaVmeData.cxx
 fatimaData/FatimaVmeCalData.cxx
+fatimaData/VmeDigitiserRawData.cxx
 timemachineData/TimeMachineData.cxx
 bb7Data/BB7VmeData.cxx
 bb7Data/BB7VmeCalData.cxx
