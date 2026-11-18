@@ -84,5 +84,6 @@ void s100_vme_raw_validation(TString input_file = "",
     run->Init();
     run->Run(max_events < 0 ? max_events : 0,
              max_events < 0 ? 0 : max_events);
+    qdc->PrintDiagnostics(std::cout);
     std::cout << "New VME electronics output: s100_vme_raw_validation.root\n";
 }
