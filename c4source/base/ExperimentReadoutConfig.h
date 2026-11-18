@@ -121,36 +121,41 @@ public:
         for (const auto& subsystem_item : root.children) {
             const auto& cfg = subsystem_item.second;
             const auto ctx = subsystem_item.first;
-            Keys(cfg, ctx, {"readouts"});
+            if (cfg.scalar)
+                throw std::invalid_argument("Expected readout paths at " + ctx);
             Subsystem subsystem;
             subsystem.name = ctx;
-            const auto& paths = *Child(cfg, "readouts", ctx);
-            if (paths.scalar)
-                throw std::invalid_argument("Expected readouts map at " + ctx);
-            for (const auto& path_item : paths.children) {
+            for (const auto& path_item : cfg.children) {
                 ReadoutPath path;
                 path.name = path_item.first;
-                const auto path_ctx = ctx + ".readouts." + path.name;
-                Keys(path_item.second, path_ctx, {"sources"});
-                const auto& sources = *Child(path_item.second, "sources", path_ctx);
-                if (sources.scalar)
-                    throw std::invalid_argument("Expected sources map at " + path_ctx);
-                for (const auto& source_item : sources.children) {
-                    const auto src_ctx = path_ctx + ".sources." + source_item.first;
-                    const auto& source_cfg = source_item.second;
-                    Keys(source_cfg, src_ctx, {"procid", "whiterabbit", "modules"});
-                    ElectronicsSource source;
-                    source.event_member = source_item.first;
-                    source.procid = static_cast<std::uint16_t>(Number(
-                        GetScalar(source_cfg, "procid", src_ctx), src_ctx + ".procid", 65535));
-                    if (source_cfg.children.count("whiterabbit"))
-                        source.whiterabbit = static_cast<std::uint16_t>(Number(
-                            GetScalar(source_cfg, "whiterabbit", src_ctx), src_ctx + ".whiterabbit", 65535));
-                    const auto& modules = *Child(source_cfg, "modules", src_ctx);
+                const auto path_ctx = ctx + "." + path.name;
+                const auto& source_cfg = path_item.second;
+                Keys(source_cfg, path_ctx,
+                     {"source", "procid", "whiterabbit", "digitiser", "version", "role", "modules"});
+                if (source_cfg.scalar)
+                    throw std::invalid_argument("Expected readout map at " + path_ctx);
+                ElectronicsSource source;
+                source.event_member = GetScalar(source_cfg, "source", path_ctx);
+                source.procid = static_cast<std::uint16_t>(Number(
+                    GetScalar(source_cfg, "procid", path_ctx), path_ctx + ".procid", 65535));
+                if (source_cfg.children.count("whiterabbit"))
+                    source.whiterabbit = static_cast<std::uint16_t>(Number(
+                        GetScalar(source_cfg, "whiterabbit", path_ctx),
+                        path_ctx + ".whiterabbit", 65535));
+                const bool has_modules = source_cfg.children.count("modules") != 0;
+                const bool has_digitiser = source_cfg.children.count("digitiser") != 0;
+                if (has_modules == has_digitiser)
+                    throw std::invalid_argument(
+                        "Specify exactly one of digitiser or modules at " + path_ctx);
+                if (has_modules) {
+                    if (source_cfg.children.count("version") || source_cfg.children.count("role"))
+                        throw std::invalid_argument(
+                            "Module-specific version/role must be within modules at " + path_ctx);
+                    const auto& modules = *Child(source_cfg, "modules", path_ctx);
                     if (modules.scalar)
-                        throw std::invalid_argument("Expected modules map at " + src_ctx);
+                        throw std::invalid_argument("Expected modules map at " + path_ctx);
                     for (const auto& module_item : modules.children) {
-                        const auto mod_ctx = src_ctx + ".modules." + module_item.first;
+                        const auto mod_ctx = path_ctx + ".modules." + module_item.first;
                         const auto& module_cfg = module_item.second;
                         Keys(module_cfg, mod_ctx, {"digitiser", "version", "role"});
                         DigitiserModule module;
@@ -158,12 +163,22 @@ public:
                         module.type = GetScalar(module_cfg, "digitiser", mod_ctx);
                         module.role = GetScalar(module_cfg, "role", mod_ctx);
                         if (module_cfg.children.count("version"))
-                            module.version = Number(GetScalar(module_cfg, "version", mod_ctx),
-                                                    mod_ctx + ".version", std::numeric_limits<unsigned>::max());
+                            module.version = Number(
+                                GetScalar(module_cfg, "version", mod_ctx),
+                                mod_ctx + ".version", std::numeric_limits<unsigned>::max());
                         source.modules.push_back(std::move(module));
                     }
-                    path.sources.push_back(std::move(source));
+                } else {
+                    DigitiserModule module;
+                    module.type = GetScalar(source_cfg, "digitiser", path_ctx);
+                    module.role = GetScalar(source_cfg, "role", path_ctx);
+                    if (source_cfg.children.count("version"))
+                        module.version = Number(
+                            GetScalar(source_cfg, "version", path_ctx),
+                            path_ctx + ".version", std::numeric_limits<unsigned>::max());
+                    source.modules.push_back(std::move(module));
                 }
+                path.sources.push_back(std::move(source));
                 subsystem.readouts.push_back(std::move(path));
             }
             model.AddSubsystem(std::move(subsystem));
