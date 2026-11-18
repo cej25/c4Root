@@ -5,6 +5,7 @@
 #include "TClonesArray.h"
 #include "c4Logger.h"
 #include "ext_data_struct_info.hh"
+#include <ostream>
 
 extern "C" {
 #include "ext_data_client.h"
@@ -37,11 +38,21 @@ Bool_t V1751Reader::Read() {
     if (!fInput || !fOutput) return kFALSE;
     const auto wr = c4::vme::Timestamp(fInput->fatimavme_ts_t);
     const auto subsystem = fInput->fatimavme_ts_subsystem_id;
+    ++fEventsRead;
     for (std::size_t slot = 0; slot < 5; ++slot) {
-        c4::vme::DecodeV1751(fInput->fatimavme_qdc[slot], slot,
+        const auto& qdc_bank = fInput->fatimavme_qdc[slot];
+        const auto mask = static_cast<std::uint32_t>(qdc_bank._channels);
+        if (mask != 0) ++fBanksWithMask;
+        if (qdc_bank._channel_time || qdc_bank._chan_ext_time ||
+            qdc_bank._chan_fine_time || qdc_bank._qlong || qdc_bank._qshort)
+            ++fBanksWithPackedCounts;
+        for (std::uint32_t channel = 0; channel < 8; ++channel)
+            if (mask & (1u << channel)) ++fCandidateChannels;
+        c4::vme::DecodeV1751(qdc_bank, slot,
             [this, wr, subsystem](std::size_t slot, int board,
                                   std::uint32_t channel, std::uint32_t packed,
                                   const auto& bank) {
+                ++fAcceptedChannels;
                 auto* hit = static_cast<V1751RawData*>(
                     fOutput->ConstructedAt(fOutput->GetEntriesFast()));
                 hit->procid = fProcId;
@@ -68,4 +79,13 @@ Bool_t V1751Reader::Read() {
 void V1751Reader::Reset() {
     if (fOutput) fOutput->Clear("C");
 }
+void V1751Reader::PrintDiagnostics(std::ostream& out) const {
+    out << "V1751 reader diagnostics (counts accumulated over run):\n"
+        << "  Events read: " << fEventsRead << '\n'
+        << "  QDC banks with nonzero channel mask: " << fBanksWithMask << '\n'
+        << "  QDC banks with nonzero packed-field counters: " << fBanksWithPackedCounts << '\n'
+        << "  Candidate channel entries from masks: " << fCandidateChannels << '\n'
+        << "  Accepted complete QDC entries: " << fAcceptedChannels << '\n';
+}
+
 ClassImp(V1751Reader)
