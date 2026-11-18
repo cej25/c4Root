@@ -178,6 +178,8 @@ void s100_vme_cal_inspect(
               << "\nRaw QDC/TDC: " << rawQ << " / " << rawT
               << "\nMapped calibrated QDC/TDC: " << mappedQ << " / " << mappedT
               << "\nUnmapped QDC/TDC: " << unmappedQ << " / " << unmappedT
+              << "\nMissing hardware mappings QDC/TDC: " << missingQ << " / " << missingT
+              << "\nExplicit negative mappings QDC/TDC: " << disabledQ << " / " << disabledT
               << "\nEvents with multiplicity mismatches: " << countErrors
               << "\nEvents with legacy mapping-count mismatches: " << mappingErrors
               << "\nCalibrated hit value mismatches: " << valueErrors << '\n';
@@ -185,4 +187,6 @@ void s100_vme_cal_inspect(
         std::cout << "PASS: new calibrated hits match mapping and coefficients.\n";
     else
         std::cout << "FAIL: calibrated validation mismatches detected.\n";
+    if (missingQ || missingT)
+        std::cout << "NOTE: legacy reader maps unknown hardware channels to detector 0; new calibration skips them.\n";
 }
