@@ -238,6 +238,25 @@ def regenerate_headers(config):
                     f"UCESB generated header lacks EXT_STR_h101_{member}_onion"
                 )
             staged[target] = generated
+        # UCESB also owns the FATIMA VME structure-generation step.
+        target = ROOT / "c4source/fatima/ext_h101_fatimavme.h"
+        output = directory / target.name
+        command = [
+            str(unpacker), "/dev/null",
+            f"--ntuple=UNPACK:fatimavme,STRUCT_HH,id=h101_fatimavme,{output}",
+        ]
+        print("UCESB:", " ".join(command), flush=True)
+        result = subprocess.run(command, cwd=str(UNPACK_DIR), check=False)
+        if result.returncode or not output.is_file():
+            raise ValueError("UCESB failed generating FATIMA VME header")
+        generated = output.read_text()
+        for name in ("fatimavme_qdc", "fatimavme_tdc"):
+            match = re.search(r"\b" + name + r"\[(\d+)\]", generated)
+            if not match or int(match.group(1)) != 6:
+                raise ValueError(f"UCESB generated unexpected {name} dimensions")
+        if "EXT_STR_h101_fatimavme_onion" not in generated:
+            raise ValueError("UCESB-generated FATIMA VME onion structure not found")
+        staged[target] = generated
         # Install only once every UCESB invocation and structural check succeeds.
         # Use same-directory temporary files and atomic replacement.
         updated = []
