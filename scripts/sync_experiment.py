@@ -27,8 +27,8 @@ SUBEVENTS = {
     "BGO": "bgo_tamex_subevent",
 }
 BOARD = re.compile(
-    r"^([ \\t]*)tamex\\[(\\d+)\\]\\s*=\\s*TAMEX4_SFP\\(\\s*sfp\\s*=\\s*(\\d+)\\s*,"
-    r"\\s*card\\s*=\\s*(\\d+)\\s*\\)\\s*;[ \\t]*$", re.M
+    r"^([ \t]*)tamex\[(\d+)\]\s*=\s*TAMEX4_SFP\(\s*sfp\s*=\s*(\d+)\s*,"
+    r"\s*card\s*=\s*(\d+)\s*\)\s*;[ \t]*$", re.M
 )
 
 
@@ -69,7 +69,7 @@ def load_config():
 def subevent(text, name):
     # Locate a whole UCESB SUBEVENT using balanced braces, not a global regex
     # that might inadvertently touch another detector's declarations.
-    match = re.search(r"\\bSUBEVENT\\(\\s*" + re.escape(name) + r"\\s*\\)\\s*\\{", text)
+    match = re.search(r"\bSUBEVENT\(\s*" + re.escape(name) + r"\s*\)\s*\{", text)
     if not match:
         raise ValueError(f"Cannot find SUBEVENT({name}) in s100.spec")
     depth = 1
@@ -96,7 +96,7 @@ def regenerate_declarations(source, cfg):
         if BOARD.sub("", block[entries[0].start():entries[-1].end()]).strip():
             raise ValueError(f"{name}: TAMEX declarations contain non-board text; edit manually")
         indent = entries[0].group(1)
-        replacement = "\\n".join(
+        replacement = "\n".join(
             f"{indent}tamex[{index}] = TAMEX4_SFP(sfp = {item['sfp']}, card = {card});"
             for index, card in enumerate(item["boards"])
         )
@@ -105,15 +105,15 @@ def regenerate_declarations(source, cfg):
         # validate these separately rather than silently rewriting all grammar.
         old = updated[start:end]
         if "TIMESTAMP_WHITERABBIT_EXTENDED" in old:
-            wr = re.search(r"TIMESTAMP_WHITERABBIT_EXTENDED\\(id\\s*=\\s*(0x[0-9a-fA-F]+|\\d+)\\)", old)
+            wr = re.search(r"TIMESTAMP_WHITERABBIT_EXTENDED\(id\s*=\s*(0x[0-9a-fA-F]+|\d+)\)", old)
         else:
-            wr = re.search(r"TIMESTAMP_WHITERABBIT\\(id\\s*=\\s*(0x[0-9a-fA-F]+|\\d+)\\)", old)
+            wr = re.search(r"TIMESTAMP_WHITERABBIT\(id\s*=\s*(0x[0-9a-fA-F]+|\d+)\)", old)
         if not wr or int(wr.group(1), 0) != item["whiterabbit"]:
             raise ValueError(f"{detector}: White Rabbit ID in spec does not match experiment.yaml")
         updated = updated[:start] + block + updated[end:]
         event = re.search(
-            r"\\b" + ("fatima" if detector == "FATIMA" else "bplast" if detector == "bPlast" else "bgo") +
-            r"\\s*=\\s*" + re.escape(name) + r"\\([^;]*?procid\\s*=\\s*(\\d+)",
+            r"\b" + ("fatima" if detector == "FATIMA" else "bplast" if detector == "bPlast" else "bgo") +
+            r"\s*=\s*" + re.escape(name) + r"\([^;]*?procid\s*=\s*(\d+)",
             updated,
         )
         if not event or int(event.group(1)) != item["procid"]:
@@ -130,7 +130,7 @@ def stale_headers(config):
             problems.append(f"{path}: {exc}")
             continue
         match = re.search(
-            r"\\b" + HEADER_MEMBERS[detector] + r"\\[(\\d+)\\]",
+            r"\b" + HEADER_MEMBERS[detector] + r"\[(\d+)\]",
             source,
         )
         if not match:
