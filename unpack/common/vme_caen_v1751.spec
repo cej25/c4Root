@@ -1,6 +1,8 @@
 // chrome-extension://efaidnbmnnnibpcajpcglclefindmkaj/http://npg.dl.ac.uk/MIDAS/MIDASWebServices/VME/docs/UM3356_V1751_UserManual_rev16.pdf
 
-// DPP-PSD channel aggregate lengths depend on enabled waveform/time/extras/charge.\n// TRACE_LENGTH is the per-channel storage cap in the generated onion layout.\n#define TRACE_LENGTH 120
+// DPP-PSD channel aggregate lengths depend on enabled waveform/time/extras/charge.
+// TRACE_LENGTH is the per-channel storage cap in the generated onion layout.
+#define TRACE_LENGTH 120
 
 
 VME_CAEN_V1751(board)
