@@ -104,5 +104,5 @@ void s100_vme_parallel_validation(TString input_file = "",
     run->Run(max_events < 0 ? max_events : 0,
              max_events < 0 ? 0 : max_events);
     qdc->PrintDiagnostics(std::cout);
-    std::cout << "Parallel FATIMA VME validation output: s100_vme_raw_validation.root\n";
+    std::cout << "Parallel FATIMA VME validation output: s100_vme_parallel_validation.root\n";
 }
