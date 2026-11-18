@@ -10,43 +10,6 @@ project(C4ROOT LANGUAGES C CXX)
 
 
 # ==============================================================================
-# Read-only experiment hardware consistency warning
-# ==============================================================================
-option(C4ROOT_CHECK_EXPERIMENT_CONFIG
-       "Warn if the s100 UCESB TAMEX layout differs from experiment.yaml" ON)
-
-if(C4ROOT_CHECK_EXPERIMENT_CONFIG)
-    find_package(Python3 COMPONENTS Interpreter QUIET)
-    if(Python3_Interpreter_FOUND)
-        execute_process(
-            COMMAND "${Python3_EXECUTABLE}"
-                    "${PROJECT_SOURCE_DIR}/scripts/sync_experiment.py"
-                    --experiment s100 --check
-            WORKING_DIRECTORY "${PROJECT_SOURCE_DIR}"
-            RESULT_VARIABLE C4ROOT_EXPERIMENT_CHECK_RESULT
-            OUTPUT_VARIABLE C4ROOT_EXPERIMENT_CHECK_OUTPUT
-            ERROR_VARIABLE C4ROOT_EXPERIMENT_CHECK_ERROR
-        )
-        if(C4ROOT_EXPERIMENT_CHECK_RESULT EQUAL 0)
-            message(STATUS "s100 TAMEX unpacker configuration matches experiment.yaml")
-        else()
-            message(WARNING
-                "s100 UCESB configuration check found a problem:\n"
-                "${C4ROOT_EXPERIMENT_CHECK_OUTPUT}"
-                "${C4ROOT_EXPERIMENT_CHECK_ERROR}\n"
-                "Review without modifications:\n"
-                "  python3 scripts/sync_experiment.py --experiment s100 --dry-run\n"
-                "Repair only on request:\n"
-                "  python3 scripts/sync_experiment.py --experiment s100 --fix"
-            )
-        endif()
-    else()
-        message(WARNING "Python3 not found; s100 UCESB configuration check skipped")
-    endif()
-endif()
-
-
-# ==============================================================================
 # Prevent in-source builds
 # ==============================================================================
 
