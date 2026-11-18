@@ -44,6 +44,7 @@
 #include <cstdint>
 #include <cmath>
 #include <limits>
+#include <stdexcept>
 
 /*
 empty constructor required for FairRoot.
@@ -86,6 +87,31 @@ FatimaRaw2Cal::~FatimaRaw2Cal(){
 }
 
 
+
+void FatimaRaw2Cal::Electronics(
+    const std::string& first, const std::string& second)
+{
+    if (second.empty()) Electronics(std::vector<std::string>{first});
+    else Electronics(std::vector<std::string>{first, second});
+}
+
+void FatimaRaw2Cal::Electronics(const std::vector<std::string>& readouts)
+{
+    if (readouts.empty())
+        throw std::invalid_argument("FatimaRaw2Cal::Electronics needs at least one readout");
+
+    bool tamex = false;
+    bool vme = false;
+    for (const auto& readout : readouts)
+    {
+        if (readout == "tamex") tamex = true;
+        else if (readout == "vme") vme = true;
+        else throw std::invalid_argument(
+            "Unsupported FATIMA electronics: " + readout + " (expected tamex or vme)");
+    }
+    fUseTamexRaw = tamex;
+    fUseVmeRaw = vme;
+}
 
 void FatimaRaw2Cal::UseTamexRawInput(std::uint16_t procid, const TString& fine_time_histograms)
 {
