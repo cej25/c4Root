@@ -5,6 +5,7 @@
 #include "TClonesArray.h"
 #include "c4Logger.h"
 #include "ext_data_struct_info.hh"
+#include <iterator>
 
 extern "C" {
 #include "ext_data_client.h"
@@ -37,7 +38,7 @@ Bool_t V1290Reader::Read() {
     if (!fInput || !fOutput) return kFALSE;
     const auto wr = c4::vme::Timestamp(fInput->fatimavme_ts_t);
     const auto subsystem = fInput->fatimavme_ts_subsystem_id;
-    for (std::size_t slot = 0; slot < 2; ++slot) {
+    for (std::size_t slot = 0; slot < std::size(fInput->fatimavme_tdc); ++slot) {
         c4::vme::DecodeV1290(fInput->fatimavme_tdc[slot], slot,
             [this, wr, subsystem](std::size_t slot, int geo,
                                   std::uint32_t channel, std::uint32_t index,
