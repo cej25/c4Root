@@ -63,7 +63,9 @@ Bool_t FatimaVmeReader::Init(ext_data_struct_info* a_struct_info)
 {
     Int_t ok;
 
-    EXT_STR_h101_fatimavme_ITEMS_INFO(ok, *a_struct_info, fOffset, EXT_STR_h101_fatimavme, 0);
+    ok = 1;
+    if (!fSharedInput)
+        EXT_STR_h101_fatimavme_ITEMS_INFO(ok, *a_struct_info, fOffset, EXT_STR_h101_fatimavme, 0);
 
     if (!ok)
     {
@@ -80,7 +82,8 @@ Bool_t FatimaVmeReader::Init(ext_data_struct_info* a_struct_info)
 
     fArray->Clear();
 
-    memset(fData, 0, sizeof *fData);
+    if (!fSharedInput)
+        memset(fData, 0, sizeof *fData);
 
     TFatimaVmeConfiguration const* fatvme_conf = TFatimaVmeConfiguration::GetInstance();
     num_qdc_boards = fatvme_conf->NQDCBoards();
