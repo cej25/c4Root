@@ -92,6 +92,11 @@ def regenerate_declarations(source, cfg):
             raise ValueError(f"{name}: cannot locate existing TAMEX4_SFP declarations")
         if [int(m.group(2)) for m in entries] != list(range(len(entries))):
             raise ValueError(f"{name}: existing logical TAMEX board indices are not consecutive")
+        existing = [(int(m.group(2)), int(m.group(3)), int(m.group(4))) for m in entries]
+        expected = [(index, item["sfp"], card) for index, card in enumerate(item["boards"])]
+        # No rewrite if the hardware layout already agrees, even when its formatting differs.
+        if existing == expected:
+            continue
         # Refuse to rewrite unrelated C++ / parsing grammar in the subevent.
         if BOARD.sub("", block[entries[0].start():entries[-1].end()]).strip():
             raise ValueError(f"{name}: TAMEX declarations contain non-board text; edit manually")
