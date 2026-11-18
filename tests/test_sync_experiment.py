@@ -54,6 +54,30 @@ class SyncExperimentTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "White Rabbit"):
             sync.regenerate_declarations(self.source, config)
 
+    def test_vme_capacity_expansion_is_idempotent(self):
+        enlarged = sync.expand_vme_capacity(self.source, {
+            "FATIMA_VME": {
+                "v1751": {"boards": [6, 7, 8, 9, 10]},
+                "v1290": {"boards": [12, 13]},
+            }
+        })
+        self.assertIn("qdc6 = VME_CAEN_V1751(board=11)", enlarged)
+        self.assertIn("tdc6 = VME_CAEN_V1290_N()", enlarged)
+        self.assertEqual(sync.expand_vme_capacity(enlarged, {
+            "FATIMA_VME": {
+                "v1751": {"boards": [6, 7, 8, 9, 10]},
+                "v1290": {"boards": [12, 13]},
+            }
+        }), enlarged)
+
+    def test_tamex_standard_capacity_target_is_twelve(self):
+        proposed = sync.target_capacity_config(CONFIG)
+        self.assertEqual(len(proposed["FATIMA"]["boards"]), 12)
+        self.assertEqual(len(proposed["bPlast"]["boards"]), 12)
+        self.assertEqual(len(proposed["BGO"]["boards"]), 12)
+        expanded = sync.regenerate_declarations(self.source, proposed)
+        self.assertIn("tamex[11] = TAMEX4_SFP(sfp = 0, card = 11);", expanded)
+
     def test_committed_header_board_dimensions(self):
         self.assertEqual(sync.stale_headers(CONFIG), [])
 
