@@ -47,6 +47,8 @@
 
 #pragma link C++ class V1751RawData+;
 #pragma link C++ class V1290RawData+;
+#pragma link C++ class FatimaVmeQdcCalHit+;
+#pragma link C++ class FatimaVmeTdcCalHit+;
 #pragma link C++ class FatimaVmeQDCItem+;
 #pragma link C++ class FatimaVmeTDCItem+;
 #pragma link C++ class std::vector<FatimaVmeQDCItem>+;
