@@ -180,10 +180,12 @@ void s100_fatima_readout_validation(
     // One detector-facing calibration task for any supported readout.
     auto* calibrator = new FatimaRaw2Cal();
     calibrator->SetOnline(false);
+    if (use_tamex && use_vme) calibrator->Electronics("tamex", "vme");
+    else if (use_tamex) calibrator->Electronics("tamex");
+    else calibrator->Electronics("vme");
     if (use_tamex)
         calibrator->UseTamexRawInput(
             tamex_procid, config_path + "/fatima/fine_time_4apr_test.root");
-    if (use_vme) calibrator->UseVmeRawInput();
     run->AddTask(calibrator);
 
     std::cout << "FATIMA readouts selected: " << readout_selection << '\n';
