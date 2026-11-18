@@ -421,6 +421,11 @@ void FatimaRaw2Cal::Exec(Option_t* option)
 {
     if (fVmeProcessor) fVmeProcessor->Process();
     if (fUseVmeRaw && !fUseTamexRaw) return;
+    ProcessTamex();
+}
+
+void FatimaRaw2Cal::ProcessTamex()
+{
     if (fUseTamexRaw)
     {
         if (!fTamexCalibrationReady)
