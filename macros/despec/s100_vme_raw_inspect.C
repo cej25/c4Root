@@ -3,7 +3,7 @@
 #include <TClonesArray.h>
 #include <iostream>
 #include <cstdint>
-#include "VmeDigitiserRawData.h"
+#include "../../c4data/fatimaData/VmeDigitiserRawData.h"
 
 // Count new electronics records and check hardware metadata.
 // This does NOT establish equality to the legacy FATIMA VME output yet.
