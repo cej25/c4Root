@@ -53,5 +53,7 @@ assert words[-1] == 0x8000008D
 spec = pathlib.Path(__file__).resolve().parents[1] / "unpack/common/vme_caen_v1751.spec"
 text = spec.read_text()
 assert "(6+TRACE_LENGTH)" not in text
+assert re.search(r"(?m)^#define TRACE_LENGTH 120$", text)
+assert r"\\n#define TRACE_LENGTH" not in text
 assert "format_one.no_wave_samples * 12" in text
 print("PASS: FATIMA VME payload aligns V1751 boards and both V1290 events")
