@@ -1,14 +1,13 @@
 #!/usr/bin/env python3
-"""Check s100 TAMEX UCESB declarations against experiment.yaml.
+"""Validate a named experiment; optionally expand s100 TAMEX capacity using UCESB.
 
---check never writes; --fix explicitly updates s100.spec then invokes its native
+--check validates the installed layout; --fix explicitly expands TAMEX to 12 cards,\nupdates s100.spec then invokes its native
 UCESB Makefile. Header generation is delegated entirely to UCESB.
 """
 import argparse
 import difflib
 import re
 import os
-import shutil
 import subprocess
 import tempfile
 import sys
@@ -208,6 +207,21 @@ def regenerate_headers(config):
     return updated
 
 
+def target_capacity_config(config):
+    """Explicit repair builds a reusable 12-slot TAMEX layout, not the installed count."""
+    target = {name: dict(item) for name, item in config.items()}
+    for detector in SUBEVENTS:
+        actual = set(target[detector]["boards"])
+        supported = set(range(12))
+        if not actual.issubset(supported):
+            raise ValueError(
+                f"{detector}: physical cards {sorted(actual - supported)} are outside "
+                "the standard 0-11 capacity; a custom UCESB layout is required"
+            )
+        target[detector]["boards"] = list(range(12))
+    return target
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--experiment", default="s100", choices=["s100"])
@@ -216,8 +230,27 @@ def main():
     action.add_argument("--fix", action="store_true", help="explicitly update spec and invoke UCESB make")
     action.add_argument("--dry-run", action="store_true", help="show diff, make no changes")
     args = parser.parse_args()
+    # The default check validates installed addresses against current capacity.
+    # A smaller-but-sufficient compiled layout is not a mismatch.
+    if args.check or (not args.fix and not args.dry_run):
+        from validate_experiment import validate
+        try:
+            warnings, notes = validate(args.experiment)
+        except (ValueError, OSError, ImportError) as exc:
+            print(f"ERROR: {exc}", file=sys.stderr)
+            return 2
+        for note in notes:
+            print(note)
+        for warning in warnings:
+            print(f"WARNING: {warning}")
+        if warnings:
+            print("To expand the supported TAMEX card range to 12, run --fix explicitly.")
+            return 1
+        print(f"OK: {args.experiment} installed boards fit the current UCESB layout")
+        return 0
+
     try:
-        config = load_config()
+        config = target_capacity_config(load_config())
         current = SPEC.read_text()
         desired = regenerate_declarations(current, config)
         header_issues = stale_headers(config)
@@ -226,21 +259,20 @@ def main():
         return 2
 
     if current == desired and not header_issues:
-        print("OK: s100 TAMEX declarations and committed structure headers match experiment.yaml")
+        print("OK: s100 TAMEX unpacker already supports the standard 12-slot layout")
         return 0
 
     if current != desired:
-        print("WARNING: s100 TAMEX unpacker declarations disagree with experiment.yaml")
+        print("The UCESB specification needs expansion to 12 TAMEX cards per subevent.")
     for issue in header_issues:
-        print(f"WARNING: stale structure header: {issue}")
+        print(f"Structure header: {issue}")
     diff = difflib.unified_diff(current.splitlines(keepends=True),
                                 desired.splitlines(keepends=True),
                                 fromfile=str(SPEC), tofile="expected s100.spec")
-    if args.dry_run or args.fix:
-        sys.stdout.writelines(diff)
-    if not args.fix:
-        print("To regenerate with UCESB: python3 scripts/sync_experiment.py --experiment s100 --fix")
-        return 1
+    sys.stdout.writelines(diff)
+    if args.dry_run:
+        print("Dry run only. No files were changed.")
+        return 0
 
     # Only touch the known source declaration file after all checks have passed.
     if current != desired:
