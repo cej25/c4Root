@@ -1,0 +1,50 @@
+# Preview of named readout paths; existing experiment.yaml remains active.
+# Routing identifiers follow the s100 UCESB specification.
+FATIMA:
+  readouts:
+    tamex:
+      sources:
+        fatima:
+          procid: 75
+          whiterabbit: 0x1600
+          modules:
+            sfp0:
+              digitiser: tamex
+              version: 4
+              role: time_and_tot
+    vme:
+      sources:
+        fatimavme:
+          procid: 70
+          whiterabbit: 0x1500
+          modules:
+            qdc:
+              digitiser: caen_v1751
+              role: energy
+            tdc:
+              digitiser: caen_v1290
+              role: timing
+bPlast:
+  readouts:
+    tamex:
+      sources:
+        bplast:
+          procid: 80
+          whiterabbit: 0x500
+          modules:
+            sfp0:
+              digitiser: tamex
+              version: 4
+              role: time_and_tot
+BGO:
+  readouts:
+    tamex:
+      sources:
+        bgo:
+          procid: 100
+          whiterabbit: 0x1900
+          modules:
+            sfp1:
+              digitiser: tamex
+              version: 4
+              role: time_and_tot
