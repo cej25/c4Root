@@ -48,8 +48,9 @@ class LabSpecTests(unittest.TestCase):
 
     def test_tdc_bank_selection_and_error_words(self):
         block = sync.subevent(self.lab, "fatima_vme_subev")[2]
-        self.assertEqual([int(i) for i in re.findall(
-            r"\btdc\[(\d+)\]\s*=\s*VME_CAEN_V1290_N", block)], [0, 1])
+        self.assertEqual(re.findall(
+            r"\b(tdc\d+)\s*=\s*VME_CAEN_V1290_N", block), ["tdc1", "tdc2"])
+        self.assertNotRegex(block, r"\btdc\[\d+\]\s*=")
         for name in ("error1", "error2", "error3"):
             self.assertIn(f"{name} = ERR_WORD_SIX()", block)
         self.assertEqual(block.count("ERR_WORD_SIX()"), 3)
