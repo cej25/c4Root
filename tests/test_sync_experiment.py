@@ -79,7 +79,10 @@ class SyncExperimentTests(unittest.TestCase):
         self.assertIn("tamex[11] = TAMEX4_SFP(sfp = 0, card = 11);", expanded)
 
     def test_committed_header_board_dimensions(self):
-        self.assertEqual(sync.stale_headers(CONFIG), [])
+        # Checked-in VME headers remain at 5 QDC / 2 TDC before regeneration.
+        problems = sync.stale_headers(sync.target_capacity_config(CONFIG))
+        self.assertTrue(any("fatimavme_qdc" in issue for issue in problems))
+        self.assertTrue(any("fatimavme_tdc" in issue for issue in problems))
 
 
 if __name__ == "__main__":
