@@ -24,3 +24,4 @@ jobs:
           python -m unittest discover -s tests -p 'test_validate_experiment.py' -v
           python -m unittest discover -s tests -p 'test_audit_caen_words.py' -v
           python -m unittest discover -s tests -p 'test_s100_vme_real_block.py' -v
+          python -m unittest discover -s tests -p 'test_s100_vme_lab_spec.py' -v
