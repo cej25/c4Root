@@ -24,14 +24,14 @@ bool FatimaVmeCalibrator::Init(FairRootManager* manager, Bool_t persist) {
     fTdcInput = dynamic_cast<TClonesArray*>(manager->GetObject("V1290RawData"));
     if (!fQdcInput || !fTdcInput) {
         c4LOG(error, "FATIMA VME calibration needs V1751RawData and V1290RawData");
-        return kFATAL;
+        return false;
     }
-    fConfig = TFatimaVmeConfiguration::GetInstance();
-    fQdcMapping = fConfig->QDCMapping();
-    fTdcMapping = fConfig->TDCMapping();
-    fEnergyCoefficients = fConfig->QDC_E_Calib();
-    fQdcTimeOffsets = fConfig->QDC_T_Calib();
-    fTdcTimeOffsets = fConfig->TDC_T_Calib();
+    const auto* config = TFatimaVmeConfiguration::GetInstance();
+    fQdcMapping = config->QDCMapping();
+    fTdcMapping = config->TDCMapping();
+    fEnergyCoefficients = config->QDC_E_Calib();
+    fQdcTimeOffsets = config->QDC_T_Calib();
+    fTdcTimeOffsets = config->TDC_T_Calib();
     manager->Register("FatimaVmeQdcCalHit", "FatimaVmeCal", fQdcOutput, persist);
     manager->Register("FatimaVmeTdcCalHit", "FatimaVmeCal", fTdcOutput, persist);
     return true;
