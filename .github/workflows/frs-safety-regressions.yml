@@ -36,3 +36,7 @@ jobs:
             fi
             echo "::endgroup::"
           done
+
+          echo '::group::s100_fatima_vme_subevent_test'
+          python3 tests/s100_fatima_vme_subevent_test.py
+          echo '::endgroup::'
