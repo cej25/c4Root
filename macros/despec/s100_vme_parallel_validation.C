@@ -102,7 +102,7 @@ void s100_vme_parallel_validation(TString input_file = "",
     source->AddReader(legacy);
 
     auto* calibrated = new FatimaRaw2Cal();
-    calibrated->UseVmeRawInput();
+    calibrated->Electronics("vme");
     calibrated->SetOnline(false);
     run->AddTask(calibrated);
 
