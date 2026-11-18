@@ -28,7 +28,11 @@ jobs:
             echo "::group::${test_name}"
             g++ -std=c++17 -O1 -g -Wall -Wextra -Werror -pedantic \
               -fsanitize=undefined -fno-sanitize-recover=all \
-              "$source" -o "$binary"
-            "$binary"
+              -Ic4source/base "$source" -o "$binary"
+            if [[ "$test_name" == "experiment_readout_config_test" ]]; then
+              "$binary" config/s100/readouts.yaml
+            else
+              "$binary"
+            fi
             echo "::endgroup::"
           done
