@@ -76,6 +76,29 @@ def audit_v1751(words):
     return boards, findings
 
 
+
+def audit_v1751_slots(records, board_ids):
+    """Map decoded aggregates to stable hardware-ID slots.
+
+    This is a reference check, not a replacement for UCESB's parser. An absent
+    board leaves a vacant slot; a reordered aggregate retains its physical slot.
+    """
+    slots = {board_id: index for index, board_id in enumerate(board_ids)}
+    occupied = {}
+    findings = []
+    for record in records:
+        board_id = record[0]
+        if board_id not in slots:
+            findings.append(f"unexpected V1751 board ID {board_id}")
+            continue
+        slot = slots[board_id]
+        if slot in occupied:
+            findings.append(f"duplicate V1751 board ID {board_id}")
+        else:
+            occupied[slot] = record
+    return occupied, findings
+
+
 def audit_v1290(words):
     findings, events = [], []
     cursor = 0
