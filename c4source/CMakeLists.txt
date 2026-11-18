@@ -84,6 +84,7 @@ set(SRCS
 ./bgo/BGORaw2Cal.cxx
 ./fatima/FatimaVmeReader.cxx
 ./fatima/FatimaVmeRaw2Cal.cxx
+./fatima/FatimaVmeElectronicsRaw2Cal.cxx
 ./bb7/BB7Reader.cxx
 ./bb7/BB7FebexReader.cxx
 ./bb7/BB7Raw2Cal.cxx
