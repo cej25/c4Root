@@ -101,12 +101,11 @@ SUBEVENT(fatima_tamex_subev)
     };
 }
 
-// Experimental FATIMA VME subevent. The production s100.spec remains unchanged.
-// Unlike chained select optional declarations, select several allows missing
-// or reordered V1751 boards to be selected by their matched physical ID.
-// Do not install generated headers into c4Root until experimental validation.
 SUBEVENT(fatima_vme_subev)
 {
+    // Experimental VME grouping: the production s100.spec remains unchanged.
+    // V1751 boards are matched by their hardware ID, not arrival position.
+    // Do not install experimental generated headers into c4Root.
     select optional
     {
         ts = TIMESTAMP_WHITERABBIT_EXTENDED(id = 0x1500);
