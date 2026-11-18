@@ -167,8 +167,7 @@ InitStatus FatimaRaw2Cal::Init()
         }
 
         constexpr std::size_t channels_per_board = 33;
-        constexpr std::size_t boards = 4; // Current FATIMA UCESB bank layout
-        fTamexFineTimes.resize(boards * channels_per_board);
+        constexpr std::size_t max_boards = 12; // Standard TAMEX unpacker capacity
 
         if (fTamexCalibrateOnline)
         {
@@ -177,7 +176,8 @@ InitStatus FatimaRaw2Cal::Init()
                 c4LOG(error, "TAMEX fine-time learning requires at least one event");
                 return kFATAL;
             }
-            fTamexFineCounts.resize(boards * channels_per_board);
+            fTamexFineTimes.resize(max_boards * channels_per_board);
+            fTamexFineCounts.resize(max_boards * channels_per_board);
             fTamexCalibrationReady = false;
         }
         else
@@ -193,6 +193,24 @@ InitStatus FatimaRaw2Cal::Init()
                 c4LOG(error, "Cannot open FATIMA fine-time histograms: " << fTamexFineTimeFile);
                 return kFATAL;
             }
+            // Old experimental fine-time files can contain fewer than 12
+            // boards. Size the lookup only to complete calibrated boards;
+            // never silently use zero calibration for an unseen board.
+            std::size_t boards = 0;
+            for (; boards < max_boards; ++boards)
+            {
+                TH1* probe = nullptr;
+                const TString name = TString::Format("fine_time_hits_%u_0",
+                    static_cast<unsigned>(boards));
+                calibration_file.GetObject(name.Data(), probe);
+                if (!probe) break;
+            }
+            if (boards == 0)
+            {
+                c4LOG(error, "FATIMA fine-time file contains no calibrated TAMEX boards");
+                return kFATAL;
+            }
+            fTamexFineTimes.resize(boards * channels_per_board);
             for (std::size_t board = 0; board < boards; ++board)
             {
                 for (std::size_t channel = 0; channel < channels_per_board; ++channel)
@@ -305,7 +323,8 @@ void FatimaRaw2Cal::AccumulateTamexFineTime()
     {
         const auto* board = static_cast<const TamexRawData*>(fTamexInput->At(i));
         if (!board || board->ProcId() != fTamexProcId ||
-            board->FormatVersion() != 4 || board->Board() >= 4) continue;
+            board->FormatVersion() != 4 ||
+            board->Board() >= fTamexFineCounts.size() / channels_per_board) continue;
 
         for (const auto& word : board->Words())
         {
@@ -330,7 +349,7 @@ void FatimaRaw2Cal::WriteTamexFineTimeHistograms()
         return;
     }
     constexpr std::size_t channels_per_board = 33;
-    for (std::size_t board = 0; board < 4; ++board)
+    for (std::size_t board = 0; board < fTamexFineCounts.size() / channels_per_board; ++board)
     {
         for (std::size_t channel = 0; channel < channels_per_board; ++channel)
         {
@@ -387,7 +406,7 @@ void FatimaRaw2Cal::BuildTamexLegacyHits()
     {
         const auto* board = static_cast<const TamexRawData*>(fTamexInput->At(i));
         if (!board || board->ProcId() != fTamexProcId || board->FormatVersion() != 4 ||
-            board->Board() >= 4)
+            board->Board() >= fTamexFineTimes.size() / channels_per_board)
         {
             c4LOG(error, "Unsupported procid, format or FATIMA board in TAMEX Raw input");
             continue;
