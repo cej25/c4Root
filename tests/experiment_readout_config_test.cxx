@@ -22,10 +22,10 @@ int main(int argc, char** argv) {
         model.Select("BGO", "tamex").sources.at(0).procid != 100)
         throw std::runtime_error("Unexpected s100 readout model");
 
-    rejected("FATIMA:\\n  tamex:\\n    source: fatima\\n    source: fatima\\n    digitiser: tamex\\n    role: timing\\n    procid: 75\\n");
-    rejected("FATIMA:\\n  tamex:\\n    source: fatima\\n    digitiser: tamex\\n    role: timing\\n    procid: -1\\n");
-    rejected("FATIMA:\\n  tamex:\\n    source: fatima\\n    digitiser: tamex\\n    role: timing\\n    procid: 75\\n  vme:\\n    source: fatimavme\\n    digitiser: caen_v1751\\n    role: energy\\n    procid: 75\\n");
-    rejected("FATIMA:\\n  vme:\\n    source: fatimavme\\n    digitiser: caen_v1751\\n    role: energy\\n    procid: 70\\n    modules:\\n      tdc:\\n        digitiser: caen_v1290\\n        role: timing\\n");
-    rejected("FATIMA:\\n  vme:\\n    source: fatimavme\\n    procid: 70\\n    modules:\\n      tdc:\\n        digitiser: caen_v1290\\n");
+    rejected("FATIMA:\n  tamex:\n    source: fatima\n    source: fatima\n    digitiser: tamex\n    role: timing\n    procid: 75\n");
+    rejected("FATIMA:\n  tamex:\n    source: fatima\n    digitiser: tamex\n    role: timing\n    procid: -1\n");
+    rejected("FATIMA:\n  tamex:\n    source: fatima\n    digitiser: tamex\n    role: timing\n    procid: 75\n  vme:\n    source: fatimavme\n    digitiser: caen_v1751\n    role: energy\n    procid: 75\n");
+    rejected("FATIMA:\n  vme:\n    source: fatimavme\n    digitiser: caen_v1751\n    role: energy\n    procid: 70\n    modules:\n      tdc:\n        digitiser: caen_v1290\n        role: timing\n");
+    rejected("FATIMA:\n  vme:\n    source: fatimavme\n    procid: 70\n    modules:\n      tdc:\n        digitiser: caen_v1290\n");
     std::cout << "PASS: readout YAML loaded and invalid configurations rejected\n";
 }
