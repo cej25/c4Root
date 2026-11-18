@@ -126,6 +126,48 @@ def regenerate_declarations(source, cfg):
     return updated
 
 
+
+def expand_vme_capacity(source, config):
+    """Expand the s100 VME optional bank declarations to six slots per model."""
+    item = config.get("FATIMA_VME", {})
+    installed = set(item.get("v1751", {}).get("boards", []))
+    if not installed.issubset(set(range(6, 12))):
+        raise ValueError("FATIMA_VME: unsupported nonstandard V1751 board IDs")
+    if len(item.get("v1290", {}).get("boards", [])) > 6:
+        raise ValueError("FATIMA_VME: too many V1290 boards")
+    start, end, block = subevent(source, "fatima_vme_subev")
+    qdc = list(re.finditer(
+        r"select\s+optional\s*\{\s*qdc(\d+)\s*=\s*VME_CAEN_V1751\(\s*board\s*=\s*(\d+)\s*\)\s*;\s*\}\s*;?",
+        block))
+    tdc = list(re.finditer(
+        r"select\s+optional\s*\{\s*tdc(\d+)\s*=\s*VME_CAEN_V1290_N\(\s*\)\s*;\s*\}\s*;?",
+        block))
+    if not qdc or not tdc:
+        raise ValueError("Missing existing s100 VME declarations")
+    if [int(m.group(1)) for m in qdc] != list(range(1, len(qdc) + 1)):
+        raise ValueError("Nonconsecutive V1751 slot indices")
+    if [int(m.group(2)) for m in qdc] != list(range(6, 6 + len(qdc))):
+        raise ValueError("Unexpected existing V1751 board IDs")
+    if [int(m.group(1)) for m in tdc] != list(range(1, len(tdc) + 1)):
+        raise ValueError("Nonconsecutive V1290 slot indices")
+    if len(qdc) > 6 or len(tdc) > 6:
+        raise ValueError("VME capacity already exceeds six slots")
+    additions = []
+    if len(qdc) < 6:
+        new = "".join(
+            f"\n    select optional {{ qdc{n} = VME_CAEN_V1751(board={n + 5}); }}"
+            for n in range(len(qdc) + 1, 7))
+        additions.append((qdc[-1].end(), new))
+    if len(tdc) < 6:
+        new = "".join(
+            f"\n    select optional {{ tdc{n} = VME_CAEN_V1290_N(); }}"
+            for n in range(len(tdc) + 1, 7))
+        additions.append((tdc[-1].end(), new))
+    for pos, addition in sorted(additions, reverse=True):
+        block = block[:pos] + addition + block[pos:]
+    return source[:start] + block + source[end:]
+
+
 def stale_headers(config):
     problems = []
     for detector, path in HEADERS.items():
@@ -252,7 +294,7 @@ def main():
     try:
         config = target_capacity_config(load_config())
         current = SPEC.read_text()
-        desired = regenerate_declarations(current, config)
+        desired = expand_vme_capacity(regenerate_declarations(current, config), config)
         header_issues = stale_headers(config)
     except (ValueError, OSError) as exc:
         print(f"ERROR: {exc}", file=sys.stderr)
