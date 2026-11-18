@@ -69,6 +69,8 @@ void s100_vme_cal_inspect(
 
     std::uint64_t rawQ = 0, rawT = 0, mappedQ = 0, mappedT = 0;
     std::uint64_t unmappedQ = 0, unmappedT = 0;
+    std::uint64_t missingQ = 0, missingT = 0;
+    std::uint64_t disabledQ = 0, disabledT = 0;
     std::uint64_t countErrors = 0, valueErrors = 0, mappingErrors = 0;
     unsigned examples = 0;
     auto report = [&](Long64_t event, const char* issue) {
@@ -86,19 +88,35 @@ void s100_vme_cal_inspect(
         mappedQ += qdcCal->GetEntriesFast();
         mappedT += tdcCal->GetEntriesFast();
 
+        std::size_t missingEventQ = 0, missingEventT = 0;
         std::vector<const V1751RawData*> expectedQ;
         std::vector<const V1290RawData*> expectedT;
         for (int i = 0; i < qdc->GetEntriesFast(); ++i) {
             auto* raw = static_cast<const V1751RawData*>(qdc->At(i));
             auto it = qdcMapping.find({raw->board_id, raw->channel});
-            if (it == qdcMapping.end() || it->second < 0) ++unmappedQ;
-            else expectedQ.push_back(raw);
+            if (it == qdcMapping.end()) {
+                ++unmappedQ; ++missingQ; ++missingEventQ;
+                if (examples++ < max_examples)
+                    std::cout << "Unmapped QDC event=" << event
+                              << " board=" << raw->board_id
+                              << " channel=" << raw->channel << '\n';
+            } else if (it->second < 0) {
+                ++unmappedQ; ++disabledQ;
+            } else expectedQ.push_back(raw);
         }
         for (int i = 0; i < tdc->GetEntriesFast(); ++i) {
             auto* raw = static_cast<const V1290RawData*>(tdc->At(i));
             auto it = tdcMapping.find({raw->geo, raw->channel});
-            if (it == tdcMapping.end() || it->second < 0) ++unmappedT;
-            else expectedT.push_back(raw);
+            if (it == tdcMapping.end()) {
+                ++unmappedT; ++missingT; ++missingEventT;
+                if (examples++ < max_examples)
+                    std::cout << "Unmapped TDC event=" << event
+                              << " geo=" << raw->geo
+                              << " channel=" << raw->channel
+                              << " measurement=" << raw->measurement << '\n';
+            } else if (it->second < 0) {
+                ++unmappedT; ++disabledT;
+            } else expectedT.push_back(raw);
         }
         if (expectedQ.size() != static_cast<std::size_t>(qdcCal->GetEntriesFast()) ||
             expectedT.size() != static_cast<std::size_t>(tdcCal->GetEntriesFast())) {
@@ -108,7 +126,12 @@ void s100_vme_cal_inspect(
         std::size_t legacyQ = 0, legacyT = 0;
         for (const auto& hit : *oldQdc) if (hit.Get_detector() >= 0) ++legacyQ;
         for (const auto& hit : *oldTdc) if (hit.Get_detector() >= 0) ++legacyT;
-        if (legacyQ != expectedQ.size() || legacyT != expectedT.size()) {
+        // The legacy reader used std::map::operator[] on an unknown
+        // hardware key: this silently creates detector 0. Preserve this
+        // behaviour only as an expected discrepancy in the comparator,
+        // not in the modern calibration task.
+        if (legacyQ != expectedQ.size() + missingEventQ ||
+            legacyT != expectedT.size() + missingEventT) {
             ++mappingErrors;
             report(event, "legacy mapped multiplicity differs from new mapping");
         }
