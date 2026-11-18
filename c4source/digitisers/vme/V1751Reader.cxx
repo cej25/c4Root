@@ -6,6 +6,7 @@
 #include "c4Logger.h"
 #include "ext_data_struct_info.hh"
 #include <ostream>
+#include <iterator>
 
 extern "C" {
 #include "ext_data_client.h"
@@ -39,7 +40,7 @@ Bool_t V1751Reader::Read() {
     const auto wr = c4::vme::Timestamp(fInput->fatimavme_ts_t);
     const auto subsystem = fInput->fatimavme_ts_subsystem_id;
     ++fEventsRead;
-    for (std::size_t slot = 0; slot < 5; ++slot) {
+    for (std::size_t slot = 0; slot < std::size(fInput->fatimavme_qdc); ++slot) {
         const auto& qdc_bank = fInput->fatimavme_qdc[slot];
         const auto mask = static_cast<std::uint32_t>(qdc_bank._channels);
         if (mask != 0) ++fBanksWithMask;
