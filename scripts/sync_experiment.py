@@ -137,10 +137,10 @@ def expand_vme_capacity(source, config):
         raise ValueError("FATIMA_VME: too many V1290 boards")
     start, end, block = subevent(source, "fatima_vme_subev")
     qdc = list(re.finditer(
-        r"select\s+optional\s*\{\s*qdc(\d+)\s*=\s*VME_CAEN_V1751\(\s*board\s*=\s*(\d+)\s*\)\s*;\s*\}\s*;?",
+        r"select\s+optional\s*\{\s*qdc(\d+)\s*=\s*VME_CAEN_V1751\(\s*board\s*=\s*(\d+)\s*\)\s*;\s*\}[ \t]*;?",
         block))
     tdc = list(re.finditer(
-        r"select\s+optional\s*\{\s*tdc(\d+)\s*=\s*VME_CAEN_V1290_N\(\s*\)\s*;\s*\}\s*;?",
+        r"select\s+optional\s*\{\s*tdc(\d+)\s*=\s*VME_CAEN_V1290_N\(\s*\)\s*;\s*\}[ \t]*;?",
         block))
     if not qdc or not tdc:
         raise ValueError("Missing existing s100 VME declarations")
@@ -155,12 +155,12 @@ def expand_vme_capacity(source, config):
     additions = []
     if len(qdc) < 6:
         new = "".join(
-            f"\n    select optional {{ qdc{n} = VME_CAEN_V1751(board={n + 5}); }}"
+            f"\n    select optional {{ qdc{n} = VME_CAEN_V1751(board={n + 5}); }}\n"
             for n in range(len(qdc) + 1, 7))
         additions.append((qdc[-1].end(), new))
     if len(tdc) < 6:
         new = "".join(
-            f"\n    select optional {{ tdc{n} = VME_CAEN_V1290_N(); }}"
+            f"\n    select optional {{ tdc{n} = VME_CAEN_V1290_N(); }}\n"
             for n in range(len(tdc) + 1, 7))
         additions.append((tdc[-1].end(), new))
     for pos, addition in sorted(additions, reverse=True):
