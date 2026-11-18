@@ -19,8 +19,10 @@ V1751Reader::~V1751Reader() { delete fOutput; }
 
 Bool_t V1751Reader::Init(ext_data_struct_info* info) {
     if (!info || !fInput || !FairRootManager::Instance()) return kFALSE;
-    Int_t ok = 0;
-    EXT_STR_h101_fatimavme_ITEMS_INFO(ok, *info, fOffset, EXT_STR_h101_fatimavme, 0);
+    Int_t ok = 1;
+    if (fRegisterStructure) {
+        EXT_STR_h101_fatimavme_ITEMS_INFO(ok, *info, fOffset, EXT_STR_h101_fatimavme, 0);
+    }
     if (!ok) {
         c4LOG(error, "V1751Reader: cannot register UCESB FATIMA VME bank");
         return kFALSE;
