@@ -1,19 +1,26 @@
-# s100 detector electronics. Board indices are local to each procid.
-# whiterabbit is the subsystem ID matched by the UCESB timestamp parser.
+# s100 electronics layout. Board indices are local to each UCESB subevent.
+# Edit this file, then use scripts/sync_experiment.py --experiment s100 --check.
+# Updating the UCESB spec and regenerating its headers requires explicit --fix.
 FATIMA:
   digitiser: tamex
   version: 4
   procid: 75
   whiterabbit: 0x1600
+  sfp: 0
+  boards: [0, 1, 2, 3]
 
 bPlast:
   digitiser: tamex
   version: 4
   procid: 80
   whiterabbit: 0x500
+  sfp: 0
+  boards: [0, 1, 2, 3, 4, 5, 6, 7, 8]
 
 BGO:
   digitiser: tamex
   version: 4
   procid: 100
   whiterabbit: 0x1900
+  sfp: 1
+  boards: [0, 1, 2]
