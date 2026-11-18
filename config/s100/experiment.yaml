@@ -1,6 +1,7 @@
 # s100 electronics layout. Board indices are local to each UCESB subevent.
 # Edit this file, then use scripts/sync_experiment.py --experiment s100 --check.
-# Updating the UCESB spec and regenerating its headers requires explicit --fix.
+# The unpacker may support more boards than this configuration uses.
+# A native UCESB regeneration is only necessary when required addresses are unsupported.
 FATIMA:
   digitiser: tamex
   version: 4
@@ -24,3 +25,13 @@ BGO:
   whiterabbit: 0x1900
   sfp: 1
   boards: [0, 1, 2]
+
+# FATIMA VME is a separate UCESB subevent and may run alongside TAMEX.
+FATIMA_VME:
+  digitiser: vme
+  procid: 70
+  whiterabbit: 0x1500
+  v1751:
+    boards: [6, 7, 8, 9, 10]
+  v1290:
+    boards: [12, 13]
