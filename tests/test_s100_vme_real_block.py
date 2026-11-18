@@ -57,6 +57,36 @@ class S100RealVmeBlockTests(unittest.TestCase):
         # The empty slot is intentional: board 7 must never become board 6.
         self.assertNotIn(0, logical_slots)
 
+    def test_reordered_boards_retain_physical_slots(self):
+        # Synthetic reordered variation, not an observed event.
+        blocks = [WORDS[23:27], WORDS[27:31], WORDS[31:35],
+                  WORDS[35:45], WORDS[45:49]]
+        order = [3, 1, 4, 0, 2]
+        rearranged = [word for index in order for word in blocks[index]]
+        records, errors = audit.audit_v1751(rearranged)
+        self.assertEqual(errors, [])
+        slots, problems = audit.audit_v1751_slots(records, [6, 7, 8, 9, 10, 11])
+        self.assertEqual(problems, [])
+        self.assertEqual({slot: record[0] for slot, record in slots.items()},
+                         {0: 6, 1: 7, 2: 8, 3: 9, 4: 10})
+        self.assertNotIn(5, slots)
+
+    def test_duplicate_qdc_board_is_reported(self):
+        # Synthetic duplicate aggregate to protect against silent overwrite.
+        records, errors = audit.audit_v1751(WORDS[23:27] + WORDS[23:27])
+        self.assertEqual(errors, [])
+        slots, problems = audit.audit_v1751_slots(records, [6, 7, 8, 9, 10, 11])
+        self.assertEqual(list(slots), [0])
+        self.assertTrue(any("duplicate" in finding for finding in problems))
+
+    def test_unconfigured_qdc_board_is_reported(self):
+        # Board 10 is valid in the s100 data but absent from this test mapping.
+        records, errors = audit.audit_v1751(WORDS[45:49])
+        self.assertEqual(errors, [])
+        slots, problems = audit.audit_v1751_slots(records, [6, 7, 8, 9])
+        self.assertEqual(slots, {})
+        self.assertTrue(any("unexpected" in finding for finding in problems))
+
     def test_error_marker_and_v1290(self):
         self.assertEqual(WORDS[49], 0x06000000)
         records, problems = audit.audit_v1290(WORDS[50:55])
