@@ -3,6 +3,8 @@
 # The unpacker may support more boards than this configuration uses.
 # A native UCESB regeneration is only necessary when required addresses are unsupported.
 FATIMA:
+  subevent: fatima_tamex_subev
+  member: fatima
   digitiser: tamex
   version: 4
   procid: 75
@@ -11,6 +13,8 @@ FATIMA:
   boards: [0, 1, 2, 3]
 
 bPlast:
+  subevent: bplast_subev
+  member: bplast
   digitiser: tamex
   version: 4
   procid: 80
@@ -19,6 +23,8 @@ bPlast:
   boards: [0, 1, 2, 3, 4, 5, 6, 7, 8]
 
 BGO:
+  subevent: bgo_tamex_subevent
+  member: bgo
   digitiser: tamex
   version: 4
   procid: 100
@@ -28,6 +34,8 @@ BGO:
 
 # FATIMA VME is a separate UCESB subevent and may run alongside TAMEX.
 FATIMA_VME:
+  subevent: fatima_vme_subev
+  member: fatimavme
   digitiser: vme
   procid: 70
   whiterabbit: 0x1500
