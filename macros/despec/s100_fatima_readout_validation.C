@@ -13,8 +13,8 @@
 #include "UnpackReader.h"
 #include "TamexReader.h"
 #include "FatimaRaw2Cal.h"
-#include "FatimaVmeReader.h"
-#include "FatimaVmeRaw2Cal.h"
+#include "V1751Reader.h"
+#include "V1290Reader.h"
 #include "TFatimaTwinpeaksConfiguration.h"
 #include "TFatimaVmeConfiguration.h"
 #include "ExperimentReadoutConfig.h"
@@ -39,7 +39,7 @@ typedef struct EXT_STR_h101_t
 // First experiment-level readout-selection demonstration.
 // Existing processing algorithms and ROOT output classes are preserved.
 // "tamex" -> generic TamexReader + existing FATIMA TAMEX calibration
-// "vme"   -> legacy VME reader + existing QDC/TDC calibration
+// "vme"   -> generic V1751/V1290 readers + FATIMA VME calibration
 // "all"   -> both independent calibrated outputs (no implicit merging)
 void s100_fatima_readout_validation(
     TString input_file = "",
@@ -161,23 +161,30 @@ void s100_fatima_readout_validation(
         reader->SetOnline(false);
         source->AddReader(reader);
 
-        auto* calibrator = new FatimaRaw2Cal();
-        calibrator->SetOnline(false);
-        calibrator->UseTamexRawInput(
-            tamex_procid, config_path + "/fatima/fine_time_4apr_test.root");
-        run->AddTask(calibrator);
+
     }
     if (use_vme)
     {
-        auto* reader = new FatimaVmeReader(
-            &unpacked->fatimavme, offsetof(EXT_STR_h101, fatimavme));
-        reader->SetOnline(false);
-        source->AddReader(reader);
+        auto* v1751 = new V1751Reader(
+            &unpacked->fatimavme, offsetof(EXT_STR_h101, fatimavme), 70);
+        v1751->SetOnline(false);
+        source->AddReader(v1751);
 
-        auto* calibrator = new FatimaVmeRaw2Cal();
-        calibrator->SetOnline(false);
-        run->AddTask(calibrator);
+        auto* v1290 = new V1290Reader(
+            &unpacked->fatimavme, offsetof(EXT_STR_h101, fatimavme), 70);
+        v1290->SetRegisterStructure(false);
+        v1290->SetOnline(false);
+        source->AddReader(v1290);
     }
+
+    // One detector-facing calibration task for any supported readout.
+    auto* calibrator = new FatimaRaw2Cal();
+    calibrator->SetOnline(false);
+    if (use_tamex)
+        calibrator->UseTamexRawInput(
+            tamex_procid, config_path + "/fatima/fine_time_4apr_test.root");
+    if (use_vme) calibrator->UseVmeRawInput();
+    run->AddTask(calibrator);
 
     std::cout << "FATIMA readouts selected: " << readout_selection << '\n';
     run->Init();
