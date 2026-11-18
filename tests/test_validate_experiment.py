@@ -15,8 +15,8 @@ class ExperimentValidationTests(unittest.TestCase):
     def test_s100_installed_hardware_is_supported(self):
         warnings, notes = module.validate("s100", ROOT)
         self.assertEqual(warnings, [])
-        self.assertTrue(any("FATIMA/v1751" in note for note in notes))
-        self.assertTrue(any("FATIMA/v1290" in note for note in notes))
+        self.assertTrue(any("FATIMA_VME/v1751" in note for note in notes))
+        self.assertTrue(any("FATIMA_VME/v1290" in note for note in notes))
 
     def test_limits(self):
         self.assertEqual(module.MAX_BOARDS, {"tamex": 12, "v1751": 6, "v1290": 6})
