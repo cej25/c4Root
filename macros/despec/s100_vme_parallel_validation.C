@@ -12,7 +12,7 @@
 #include "V1751Reader.h"
 #include "V1290Reader.h"
 #include "FatimaVmeReader.h"
-#include "FatimaVmeElectronicsRaw2Cal.h"
+#include "FatimaRaw2Cal.h"
 #include "TFatimaVmeConfiguration.h"
 #include "ExperimentReadoutConfig.h"
 
@@ -101,7 +101,8 @@ void s100_vme_parallel_validation(TString input_file = "",
     legacy->SetOnline(false);
     source->AddReader(legacy);
 
-    auto* calibrated = new FatimaVmeElectronicsRaw2Cal();
+    auto* calibrated = new FatimaRaw2Cal();
+    calibrated->UseVmeRawInput();
     calibrated->SetOnline(false);
     run->AddTask(calibrated);
 
