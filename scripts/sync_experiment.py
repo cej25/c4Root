@@ -149,6 +149,65 @@ def stale_headers(config):
     return problems
 
 
+def regenerate_headers(config):
+    """Use UCESB itself for each subevent header; never write header definitions."""
+    unpacker = UNPACK_DIR / "s100"
+    if not unpacker.is_file():
+        raise ValueError(f"UCESB unpacker executable not found: {unpacker}")
+    staged = {}
+    with tempfile.TemporaryDirectory(prefix="c4root-ucesb-") as directory:
+        directory = Path(directory)
+        for detector, target in HEADERS.items():
+            member = {"FATIMA": "fatima", "bPlast": "bplast", "BGO": "bgo"}[detector]
+            output = directory / target.name
+            # UCESB's native STRUCT_HH generator selects the named UNPACK
+            # subevent and uses id= for its exported C structure names.
+            command = [
+                str(unpacker),
+                "/dev/null",
+                f"--ntuple=UNPACK:{member},STRUCT_HH,id=h101_{member},{output}",
+            ]
+            print("UCESB:", " ".join(command), flush=True)
+            result = subprocess.run(command, cwd=str(UNPACK_DIR), check=False)
+            if result.returncode:
+                raise ValueError(
+                    f"UCESB failed generating {target.name} (exit {result.returncode})"
+                )
+            if not output.is_file():
+                raise ValueError(f"UCESB did not produce {output}")
+            generated = output.read_text()
+            expected_name = HEADER_MEMBERS[detector]
+            match = re.search(r"\\b" + expected_name + r"\\[(\\d+)\\]", generated)
+            if not match or int(match.group(1)) != len(config[detector]["boards"]):
+                raise ValueError(
+                    f"UCESB generated an unexpected {expected_name} board layout "
+                    f"for {detector}; refusing to install headers"
+                )
+            if f"EXT_STR_h101_{member}_onion" not in generated:
+                raise ValueError(
+                    f"UCESB generated header lacks EXT_STR_h101_{member}_onion"
+                )
+            staged[target] = generated
+        # Install only once every UCESB invocation and structural check succeeds.
+        # Use same-directory temporary files and atomic replacement.
+        updated = []
+        for target, generated in staged.items():
+            if target.is_file() and target.read_text() == generated:
+                continue
+            temporary = target.with_name(target.name + ".sync-tmp")
+            try:
+                temporary.write_text(generated)
+                os.replace(temporary, target)
+            finally:
+                temporary.unlink(missing_ok=True)
+            updated.append(str(target.relative_to(ROOT)))
+        for item in updated:
+            print("Updated UCESB-generated:", item)
+        if not updated:
+            print("UCESB-generated headers already match")
+    return updated
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--experiment", default="s100", choices=["s100"])
@@ -192,17 +251,17 @@ def main():
     if result.returncode:
         print("ERROR: UCESB generation/build failed; inspect output. Spec changes remain visible.", file=sys.stderr)
         return result.returncode
-    # UCESB generates headers; checked-in c4source copies are a separate
-    # integration step. Never synthesize or patch them.
+    try:
+        regenerate_headers(config)
+    except (ValueError, OSError) as exc:
+        print(f"ERROR: {exc}", file=sys.stderr)
+        return 2
     remaining = stale_headers(config)
     if remaining:
-        print("WARNING: checked-in c4source structure headers still need synchronisation")
         for issue in remaining:
-            print(f"  {issue}")
-        print("Copy the corresponding UCESB-generated headers into c4source before rebuilding.")
-        return 1
-    print("UCESB regeneration finished and checked-in structure header sizes match.")
-    print("Rebuild c4Root against the updated headers.")
+            print(f"ERROR: generated header verification failed: {issue}", file=sys.stderr)
+        return 2
+    print("UCESB regeneration complete; rebuild c4Root against the regenerated headers.")
     return 0
 
 
