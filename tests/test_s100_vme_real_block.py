@@ -44,6 +44,19 @@ class S100RealVmeBlockTests(unittest.TestCase):
         self.assertEqual(records[3][3], [(6, 4, 6, 4)])
         self.assertEqual(WORDS[39], 0x40000006)
 
+    def test_missing_first_qdc_keeps_remaining_hardware_ids(self):
+        # Synthetic variation of the supplied real event: omit the four
+        # words belonging to board 6 (not a second observed event).
+        qdc_words = WORDS[27:49]
+        records, problems = audit.audit_v1751(qdc_words)
+        self.assertEqual(problems, [])
+        self.assertEqual([record[0] for record in records], [7, 8, 9, 10])
+        self.assertEqual([record[2] for record in records], [4, 4, 10, 4])
+        logical_slots = {board_id - 6: board_id for board_id, _, _, _ in records}
+        self.assertEqual(logical_slots, {1: 7, 2: 8, 3: 9, 4: 10})
+        # The empty slot is intentional: board 7 must never become board 6.
+        self.assertNotIn(0, logical_slots)
+
     def test_error_marker_and_v1290(self):
         self.assertEqual(WORDS[49], 0x06000000)
         records, problems = audit.audit_v1290(WORDS[50:55])
