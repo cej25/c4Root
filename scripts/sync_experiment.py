@@ -7,7 +7,10 @@ UCESB Makefile. Header generation is delegated entirely to UCESB.
 import argparse
 import difflib
 import re
+import os
+import shutil
 import subprocess
+import tempfile
 import sys
 from pathlib import Path
 
@@ -94,18 +97,16 @@ def regenerate_declarations(source, cfg):
             raise ValueError(f"{name}: existing logical TAMEX board indices are not consecutive")
         existing = [(int(m.group(2)), int(m.group(3)), int(m.group(4))) for m in entries]
         expected = [(index, item["sfp"], card) for index, card in enumerate(item["boards"])]
-        # No rewrite if the hardware layout already agrees, even when its formatting differs.
-        if existing == expected:
-            continue
-        # Refuse to rewrite unrelated C++ / parsing grammar in the subevent.
-        if BOARD.sub("", block[entries[0].start():entries[-1].end()]).strip():
-            raise ValueError(f"{name}: TAMEX declarations contain non-board text; edit manually")
-        indent = entries[0].group(1)
-        replacement = "\n".join(
-            f"{indent}tamex[{index}] = TAMEX4_SFP(sfp = {item['sfp']}, card = {card});"
-            for index, card in enumerate(item["boards"])
-        )
-        block = block[:entries[0].start()] + replacement + block[entries[-1].end():]
+        if existing != expected:
+            # Refuse to rewrite unrelated C++ / parsing grammar in the subevent.
+            if BOARD.sub("", block[entries[0].start():entries[-1].end()]).strip():
+                raise ValueError(f"{name}: TAMEX declarations contain non-board text; edit manually")
+            indent = entries[0].group(1)
+            replacement = "\n".join(
+                f"{indent}tamex[{index}] = TAMEX4_SFP(sfp = {item['sfp']}, card = {card});"
+                for index, card in enumerate(item["boards"])
+            )
+            block = block[:entries[0].start()] + replacement + block[entries[-1].end():]
         # Procids and WR IDs can change the decoding interpretation:
         # validate these separately rather than silently rewriting all grammar.
         old = updated[start:end]
