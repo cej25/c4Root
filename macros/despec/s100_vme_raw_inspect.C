@@ -13,7 +13,7 @@ void s100_vme_raw_inspect(TString filename = "s100_vme_raw_validation.root") {
         std::cerr << "Cannot open " << filename << '\n';
         return;
     }
-    auto* tree = nullptr;
+    TTree* tree = nullptr;
     file.GetObject("evt", tree);
     if (!tree) {
         std::cerr << "Expected FairRoot evt tree missing.\n";
