@@ -14,7 +14,7 @@ class EventHeader;
 class FatimaTwinpeaksData;
 class FatimaTwinpeaksCalData;
 class TimeMachineData;
-class FatimaVmeElectronicsRaw2Cal;
+class FatimaVmeCalibrator;
 
 class FatimaRaw2Cal : public FairTask
 {
@@ -75,7 +75,7 @@ class FatimaRaw2Cal : public FairTask
         TClonesArray* ftime_machine_array;
 
         bool fUseVmeRaw = false;
-        FatimaVmeElectronicsRaw2Cal* fVmeProcessor = nullptr; //! Owned transient calibration helper
+        FatimaVmeCalibrator* fVmeProcessor = nullptr; //! Owned transient calibration helper
         bool fUseTamexRaw = false;
         std::uint16_t fTamexProcId = 0;
         TString fTamexFineTimeFile;
