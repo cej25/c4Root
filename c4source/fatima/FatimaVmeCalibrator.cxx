@@ -1,0 +1,93 @@
+#include "FatimaVmeCalibrator.h"
+#include "FatimaVmeElectronicsCalData.h"
+#include "VmeDigitiserRawData.h"
+#include "TFatimaVmeConfiguration.h"
+#include "FairRootManager.h"
+#include "c4Logger.h"
+#include <cstdint>
+
+FatimaVmeCalibrator::FatimaVmeCalibrator()
+    : fQdcOutput(new TClonesArray("FatimaVmeQdcCalHit")),
+      fTdcOutput(new TClonesArray("FatimaVmeTdcCalHit")) {}
+
+FatimaVmeCalibrator::~FatimaVmeCalibrator() {
+    delete fQdcOutput;
+    delete fTdcOutput;
+}
+
+bool FatimaVmeCalibrator::Init(FairRootManager* manager, Bool_t persist) {
+    if (!manager) {
+        c4LOG(error, "FATIMA VME calibration: missing FairRootManager");
+        return false;
+    }
+    fQdcInput = dynamic_cast<TClonesArray*>(manager->GetObject("V1751RawData"));
+    fTdcInput = dynamic_cast<TClonesArray*>(manager->GetObject("V1290RawData"));
+    if (!fQdcInput || !fTdcInput) {
+        c4LOG(error, "FATIMA VME calibration needs V1751RawData and V1290RawData");
+        return kFATAL;
+    }
+    fConfig = TFatimaVmeConfiguration::GetInstance();
+    fQdcMapping = fConfig->QDCMapping();
+    fTdcMapping = fConfig->TDCMapping();
+    fEnergyCoefficients = fConfig->QDC_E_Calib();
+    fQdcTimeOffsets = fConfig->QDC_T_Calib();
+    fTdcTimeOffsets = fConfig->TDC_T_Calib();
+    manager->Register("FatimaVmeQdcCalHit", "FatimaVmeCal", fQdcOutput, persist);
+    manager->Register("FatimaVmeTdcCalHit", "FatimaVmeCal", fTdcOutput, persist);
+    return true;
+}
+
+void FatimaVmeCalibrator::Process() {
+    fQdcOutput->Clear("C");
+    fTdcOutput->Clear("C");
+    for (int i = 0; i < fQdcInput->GetEntriesFast(); ++i) {
+        const auto* raw = static_cast<const V1751RawData*>(fQdcInput->At(i));
+        const auto mapping = fQdcMapping.find({raw->board_id, raw->channel});
+        if (mapping == fQdcMapping.end() || mapping->second < 0) continue;
+        const int detector = mapping->second;
+        auto* hit = static_cast<FatimaVmeQdcCalHit*>(
+            fQdcOutput->ConstructedAt(fQdcOutput->GetEntriesFast()));
+        hit->wr_timestamp = raw->wr_timestamp;
+        hit->detector_id = detector;
+        hit->board_id = raw->board_id;
+        hit->channel = raw->channel;
+        hit->coarse_raw = raw->coarse;
+        hit->fine_raw = raw->fine;
+        hit->qlong_raw = raw->qlong;
+        hit->qshort_raw = raw->qshort;
+        const double fullTime = static_cast<double>(raw->coarse) +
+            static_cast<double>(std::uint64_t(raw->extended) << 32) +
+            static_cast<double>(raw->fine) / 1024.;
+        hit->coarse_time = raw->coarse + fQdcTimeOffsets[detector];
+        hit->fine_time = fullTime + fQdcTimeOffsets[detector];
+        double energy = fEnergyCoefficients[detector][0];
+        for (int j = 1; j < 5; ++j)
+            energy = energy * raw->qlong + fEnergyCoefficients[detector][j];
+        // Preserve the deterministic part of legacy calibration. Legacy
+        // FatimaVmeRaw2Cal adds a random [0,1) dither per hit; a direct
+        // energy comparison must account for that deliberately.
+        hit->energy = energy;
+    }
+    for (int i = 0; i < fTdcInput->GetEntriesFast(); ++i) {
+        const auto* raw = static_cast<const V1290RawData*>(fTdcInput->At(i));
+        const auto mapping = fTdcMapping.find({raw->geo, raw->channel});
+        if (mapping == fTdcMapping.end() || mapping->second < 0) continue;
+        const int detector = mapping->second;
+        auto* hit = static_cast<FatimaVmeTdcCalHit*>(
+            fTdcOutput->ConstructedAt(fTdcOutput->GetEntriesFast()));
+        hit->wr_timestamp = raw->wr_timestamp;
+        hit->wr_subsystem = raw->wr_subsystem;
+        hit->detector_id = detector;
+        hit->geo = raw->geo;
+        hit->channel = raw->channel;
+        hit->measurement_raw = raw->measurement;
+        hit->leading_or_trailing = raw->leading_or_trailing;
+        hit->time = static_cast<double>(raw->measurement) + fTdcTimeOffsets[detector];
+    }
+}
+
+void FatimaVmeCalibrator::Clear() {
+    fQdcOutput->Clear("C");
+    fTdcOutput->Clear("C");
+}
+
