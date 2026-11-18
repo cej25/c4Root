@@ -187,6 +187,15 @@ def stale_headers(config):
                 f"{path}: generated array has {match.group(1)} boards, "
                 f"experiment.yaml requires {len(config[detector]['boards'])}"
             )
+    vme_header = ROOT / "c4source/fatima/ext_h101_fatimavme.h"
+    try:
+        generated = vme_header.read_text()
+        for name in ("fatimavme_qdc", "fatimavme_tdc"):
+            match = re.search(r"\b" + name + r"\[(\d+)\]", generated)
+            if not match or int(match.group(1)) != 6:
+                problems.append(f"{vme_header}: {name} is not six slots")
+    except OSError as exc:
+        problems.append(f"{vme_header}: {exc}")
     return problems
 
 
