@@ -6,6 +6,7 @@
 #include "TClonesArray.h"
 #include <array>
 #include <cstdint>
+#include <string>
 #include <vector>
 
 class TClonesArray;
@@ -34,6 +35,11 @@ class FatimaRaw2Cal : public FairTask
 
         void SetOnline(Bool_t set_online){fOnline = set_online;}
 
+        // Select FATIMA processing modes; independent of generic reader setup.
+        void Electronics(const std::string& first, const std::string& second = "");
+        void Electronics(const std::vector<std::string>& readouts);
+
+        // Compatibility with existing validation macros.
         // Use generic V1751/V1290 inputs for FATIMA VME calibration.
         // Can be enabled alongside UseTamexRawInput().
         void UseVmeRawInput() { fUseVmeRaw = true; }
