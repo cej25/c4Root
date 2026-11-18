@@ -61,6 +61,7 @@ class FatimaRaw2Cal : public FairTask
 
 
     private:
+        void ProcessTamex();
         void BuildTamexLegacyHits();
         void AccumulateTamexFineTime();
         void FinaliseTamexFineTime();
