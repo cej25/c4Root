@@ -177,7 +177,7 @@ def regenerate_headers(config):
                 raise ValueError(f"UCESB did not produce {output}")
             generated = output.read_text()
             expected_name = HEADER_MEMBERS[detector]
-            match = re.search(r"\\b" + expected_name + r"\\[(\\d+)\\]", generated)
+            match = re.search(r"\b" + expected_name + r"\[(\d+)\]", generated)
             if not match or int(match.group(1)) != len(config[detector]["boards"]):
                 raise ValueError(
                     f"UCESB generated an unexpected {expected_name} board layout "
