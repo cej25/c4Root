@@ -134,14 +134,23 @@ SUBEVENT(fatima_vme_subev)
         error2 = ERR_WORD_SIX();
     };
 
-    // V1290 GEO is encoded in each global header. Array indices below
-    // represent selected occurrences, not an assumed physical GEO.
-    // Preserve raw GEO in the generated bank for downstream checks.
-    select several
+    // V1290 GEO is encoded in the event header, but both structures
+    // currently use the same grammar. Retain the working optional/marker
+    // order in this first candidate, changing only the exported array names.
+    // A later variant can test GEO-driven selection separately.
+    select optional
     {
         tdc[0] = VME_CAEN_V1290_N();
-        tdc[1] = VME_CAEN_V1290_N();
+    };
+
+    select several
+    {
         error3 = ERR_WORD_SIX();
+    };
+
+    select optional
+    {
+        tdc[1] = VME_CAEN_V1290_N();
     };
 }
 
