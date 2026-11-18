@@ -13,6 +13,7 @@ class EventHeader;
 class FatimaTwinpeaksData;
 class FatimaTwinpeaksCalData;
 class TimeMachineData;
+class FatimaVmeElectronicsRaw2Cal;
 
 class FatimaRaw2Cal : public FairTask
 {
@@ -32,6 +33,10 @@ class FatimaRaw2Cal : public FairTask
         void FinishTask();
 
         void SetOnline(Bool_t set_online){fOnline = set_online;}
+
+        // Use generic V1751/V1290 inputs for FATIMA VME calibration.
+        // Can be enabled alongside UseTamexRawInput().
+        void UseVmeRawInput() { fUseVmeRaw = true; }
 
         virtual void SetParContainers();
 
@@ -63,6 +68,8 @@ class FatimaRaw2Cal : public FairTask
         TClonesArray* funcal_data;
         TClonesArray* ftime_machine_array;
 
+        bool fUseVmeRaw = false;
+        FatimaVmeElectronicsRaw2Cal* fVmeProcessor = nullptr; //! Owned transient calibration helper
         bool fUseTamexRaw = false;
         std::uint16_t fTamexProcId = 0;
         TString fTamexFineTimeFile;
@@ -114,7 +121,7 @@ class FatimaRaw2Cal : public FairTask
         double a0,a1,a2,a3;
 
     public:
-        ClassDef(FatimaRaw2Cal, 1);
+        ClassDef(FatimaRaw2Cal, 2);
 };
 
 #endif
