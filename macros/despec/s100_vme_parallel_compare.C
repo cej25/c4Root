@@ -1,6 +1,8 @@
 #include <TClonesArray.h>
 #include <TFile.h>
 #include <TTree.h>
+#include <TString.h>
+#include <algorithm>
 #include <cmath>
 #include <cstdint>
 #include <iostream>
