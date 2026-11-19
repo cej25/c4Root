@@ -11,10 +11,6 @@ ROOT = Path(__file__).resolve().parents[1]
 BASE = ROOT / "unpack/exps/s100/s100.spec"
 LAB = ROOT / "unpack/exps/s100/s100_vme_lab.spec"
 
-spec = importlib.util.spec_from_file_location("sync_experiment", ROOT / "scripts/sync_experiment.py")
-sync = importlib.util.module_from_spec(spec)
-spec.loader.exec_module(sync)
-
 audit_spec = importlib.util.spec_from_file_location(
     "audit_caen_words", ROOT / "scripts/audit_caen_words.py")
 audit = importlib.util.module_from_spec(audit_spec)
@@ -26,6 +22,12 @@ fixture = importlib.util.module_from_spec(fixture_spec)
 fixture_spec.loader.exec_module(fixture)
 
 
+def vme_subevent(spec):
+    start = spec.index("SUBEVENT(fatima_vme_subev)")
+    end = spec.index("SUBEVENT(bplast_subev)", start)
+    return start, end, spec[start:end]
+
+
 class LabSpecTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
@@ -33,8 +35,8 @@ class LabSpecTests(unittest.TestCase):
         cls.lab = LAB.read_text()
 
     def test_everything_outside_vme_subevent_is_identical(self):
-        a, b, _ = sync.subevent(self.base, "fatima_vme_subev")
-        c, d, _ = sync.subevent(self.lab, "fatima_vme_subev")
+        a, b, _ = vme_subevent(self.base)
+        c, d, _ = vme_subevent(self.lab)
         expected_prefix = self.base[:a].replace(
             '#include "../../common/vme_caen_v1751.spec"',
             '#include "vme_caen_v1751_lab.spec"')
@@ -42,7 +44,7 @@ class LabSpecTests(unittest.TestCase):
         self.assertEqual(self.base[b:], self.lab[d:])
 
     def test_qdc_array_keeps_physical_board_id_mapping(self):
-        block = sync.subevent(self.lab, "fatima_vme_subev")[2]
+        block = vme_subevent(self.lab)[2]
         pairs = re.findall(
             r"\bqdc\[(\d+)\]\s*=\s*VME_CAEN_V1751\(\s*board\s*=\s*(\d+)\s*\)",
             block)
@@ -62,7 +64,7 @@ class LabSpecTests(unittest.TestCase):
         self.assertLess(lab.index('MATCH_END;'), lab.index('UINT32 board_agg_counter'))
 
     def test_tdc_bank_selection_and_error_words(self):
-        block = sync.subevent(self.lab, "fatima_vme_subev")[2]
+        block = vme_subevent(self.lab)[2]
         self.assertEqual(re.findall(
             r"\b(tdc\d+)\s*=\s*VME_CAEN_V1290_N", block), ["tdc1", "tdc2"])
         self.assertNotRegex(block, r"\btdc\[\d+\]\s*=")

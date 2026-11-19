@@ -19,6 +19,7 @@ MEMBER = {"fatima": "fatima", "bplast": "bplast", "bgo": "bgo", "fatimavme": "fa
 S100_WR_INCLUDE = "s100_whiterabbit.generated.spec"
 S100_WR_MEMBERS = {"aida", "beammonitor", "bgo", "bplast", "fatima", "fatimavme", "frstpat", "germanium"}
 S100_EVENT_MEMBERS = S100_WR_MEMBERS | {"frsmain", "frstpc", "frsuser"}
+S100_TAMEX_MEMBERS = {"fatima", "bplast", "bgo"}
 WR_ARGUMENT = re.compile(
     r"\b(?:TIMESTAMP_WHITERABBIT\(\s*id\s*=\s*|S100_TAMEX_PAYLOAD\(\s*)(\w+)(?=\s*[,)])"
 )
@@ -44,6 +45,28 @@ def wr_symbol(member):
 
 def procid_symbol(member):
     return f"S100_PROCID_{member.upper()}"
+
+
+def tamex_cards_symbol(member):
+    return f"S100_TAMEX_CARDS_{member.upper()}"
+
+
+def compiled_tamex_slots(detector, item):
+    if item.get("digitiser") != "tamex" or item.get("version") != 4:
+        raise ValueError(f"{detector}: compiled slots require TAMEX4")
+    slots = item.get("compiled_slots")
+    if not isinstance(slots, list) or not 1 <= len(slots) <= MAX_BOARDS["tamex"]:
+        raise ValueError(f"{detector}: compiled_slots must contain 1–{MAX_BOARDS['tamex']} pairs")
+    addresses = []
+    for index, pair in enumerate(slots):
+        if (not isinstance(pair, list) or len(pair) != 2
+                or any(type(value) is not int for value in pair)
+                or not 0 <= pair[0] <= 15 or not 0 <= pair[1] <= 255):
+            raise ValueError(f"{detector}: compiled_slots[{index}] must be [SFP 0–15, card 0–255]")
+        addresses.append(tuple(pair))
+    if len(set(addresses)) != len(addresses):
+        raise ValueError(f"{detector}: duplicate compiled TAMEX address")
+    return addresses
 
 
 def s100_routes(configuration):
@@ -148,6 +171,10 @@ def check_s100_routing(spec, configuration):
             body = read_subevent(spec, subevent)
             if WR_ARGUMENT.findall(body) != [wr_symbol(member)]:
                 warnings.append(f"{detector}: UCESB must use White Rabbit ID {wr_symbol(member)}")
+            if member in S100_TAMEX_MEMBERS:
+                slots = re.findall(r"\bS100_TAMEX_CARDS_\w+\b", body)
+                if slots != [tamex_cards_symbol(member)] or TAMEX.search(body):
+                    warnings.append(f"{detector}: UCESB must use {tamex_cards_symbol(member)}")
     return warnings
 
 
@@ -206,17 +233,21 @@ def validate(experiment, root=ROOT):
             sfp = item.get("sfp")
             if type(sfp) is not int:
                 raise ValueError(f"{detector}: missing SFP ID")
-            declared = [(int(idx), int(fiber), int(card)) for idx, fiber, card in TAMEX.findall(body)]
-            if not declared:
-                warnings.append(f"{detector}: no TAMEX4 board declarations found")
-                continue
-            if [x[0] for x in declared] != list(range(len(declared))):
-                warnings.append(f"{detector}: UCESB TAMEX array indices are not consecutive")
+            if s100 and member in S100_TAMEX_MEMBERS:
+                addresses = compiled_tamex_slots(detector, item)
+            else:
+                declared = [(int(idx), int(fiber), int(card)) for idx, fiber, card in TAMEX.findall(body)]
+                if not declared:
+                    warnings.append(f"{detector}: no TAMEX4 board declarations found")
+                    continue
+                if [x[0] for x in declared] != list(range(len(declared))):
+                    warnings.append(f"{detector}: UCESB TAMEX array indices are not consecutive")
+                addresses = [(fiber, card) for _, fiber, card in declared]
             capacity = read_array_size(header, f"{member}_tamex")
-            if capacity != len(declared):
+            if capacity != len(addresses):
                 warnings.append(f"{detector}: structure header contains {capacity} TAMEX slots, "
-                                f"but spec declares {len(declared)}")
-            missing = sorted(set((sfp, b) for b in installed) - set((f, c) for _, f, c in declared))
+                                f"but unpacker declares {len(addresses)}")
+            missing = sorted({(sfp, card) for card in installed} - set(addresses))
             if missing:
                 warnings.append(f"{detector}: TAMEX hardware addresses unsupported: {missing}")
             notes.append(f"{detector}: {len(installed)} installed, {capacity} TAMEX slots "
@@ -249,11 +280,21 @@ def emit_whiterabbit(config, include_procids=False):
     configuration = read_yaml(config)
     ids = wr_ids(configuration)
     routes = s100_routes(configuration) if include_procids else {}
+    layouts = {
+        member: compiled_tamex_slots(detector, item)
+        for member, (detector, item) in routes.items() if member in S100_TAMEX_MEMBERS
+    }
     print("// Generated from config/s100/experiment.yaml.")
     for member, wr in sorted(ids.items()):
         print(f"#define {wr_symbol(member)} 0x{wr:x}")
     for member, (_, item) in sorted(routes.items()):
         print(f"#define {procid_symbol(member)} {item['procid']}")
+    for member, slots in sorted(layouts.items()):
+        cards = " ".join(
+            f"tamex[{index}] = TAMEX4_SFP(sfp = {sfp}, card = {card});"
+            for index, (sfp, card) in enumerate(slots)
+        )
+        print(f"#define {tamex_cards_symbol(member)} {cards}")
 
 
 def main():
@@ -263,7 +304,7 @@ def main():
     action.add_argument("--emit-whiterabbit", type=Path, metavar="S100_YAML",
                         help="print the S100 White Rabbit spec include")
     action.add_argument("--emit-s100-routing", type=Path, metavar="S100_YAML",
-                        help="print the S100 procid and White Rabbit constants")
+                        help="print the S100 procids, White Rabbit IDs, and TAMEX layouts")
     args = parser.parse_args()
     config = args.emit_s100_routing or args.emit_whiterabbit
     if config:

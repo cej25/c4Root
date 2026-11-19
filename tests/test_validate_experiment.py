@@ -81,13 +81,12 @@ class ExperimentValidationTests(unittest.TestCase):
             module.board_list([0, 1, 1], "V1751", 6)
 
     def test_missing_physical_tamex_address_detected(self):
-        original = module.read_subevent
-        def missing_card(spec, name):
-            body = original(spec, name)
-            if name == "fatima_tamex_subev":
-                return body.replace("card = 3", "card = 8")
-            return body
-        with patch.object(module, "read_subevent", missing_card):
+        original = module.read_yaml
+        def missing_card(path):
+            config = original(path)
+            config["FATIMA"]["compiled_slots"][3] = [0, 8]
+            return config
+        with patch.object(module, "read_yaml", missing_card):
             warnings, _ = module.validate("s100", ROOT)
         self.assertTrue(any("TAMEX hardware addresses unsupported" in warning
                             for warning in warnings))

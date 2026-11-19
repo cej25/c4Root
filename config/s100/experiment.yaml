@@ -1,7 +1,8 @@
 # s100 electronics layout. Board indices are local to each UCESB subevent.
 # Edit this file, then use scripts/sync_experiment.py --experiment s100 --check.
-# The unpacker may support more boards than this configuration uses.
-# Rebuild the unpacker after editing a procid or White Rabbit ID.
+# boards and sfp describe installed cards. compiled_slots lists [SFP, card]
+# pairs in tamex[] order and can include spare slots.
+# Rebuild the unpacker after editing routing or compiled slots.
 FATIMA:
   subevent: fatima_tamex_subev
   member: fatima
@@ -11,6 +12,7 @@ FATIMA:
   whiterabbit: 0x1600
   sfp: 0
   boards: [0, 1, 2, 3]
+  compiled_slots: [[0, 0], [0, 1], [0, 2], [0, 3]]
 
 bPlast:
   subevent: bplast_subev
@@ -21,6 +23,7 @@ bPlast:
   whiterabbit: 0x500
   sfp: 0
   boards: [0, 1, 2, 3, 4, 5, 6, 7, 8]
+  compiled_slots: [[0, 0], [0, 1], [0, 2], [0, 3], [0, 4], [0, 5], [0, 6], [0, 7], [0, 8]]
 
 BGO:
   subevent: bgo_tamex_subevent
@@ -31,6 +34,7 @@ BGO:
   whiterabbit: 0x1900
   sfp: 1
   boards: [0, 1, 2]
+  compiled_slots: [[1, 0], [1, 1], [1, 2]]
 
 # FATIMA VME is a separate UCESB subevent and may run alongside TAMEX.
 FATIMA_VME:

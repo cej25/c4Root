@@ -43,9 +43,7 @@ SUBEVENT(bgo_tamex_subevent)
 
     select several
     {
-        tamex[0] = TAMEX4_SFP(sfp=1,card=0);
-        tamex[1] = TAMEX4_SFP(sfp=1,card=1);
-        tamex[2] = TAMEX4_SFP(sfp=1,card=2);
+        S100_TAMEX_CARDS_BGO
     }  
 }
 
@@ -81,12 +79,7 @@ SUBEVENT(febex_subev)
 
 SUBEVENT(fatima_tamex_subev)
 {
-    S100_TAMEX_PAYLOAD(S100_WR_FATIMA,
-        tamex[0] = TAMEX4_SFP(sfp = 0, card = 0);
-        tamex[1] = TAMEX4_SFP(sfp = 0, card = 1);
-        tamex[2] = TAMEX4_SFP(sfp = 0, card = 2);
-        tamex[3] = TAMEX4_SFP(sfp = 0, card = 3);
-    )
+    S100_TAMEX_PAYLOAD(S100_WR_FATIMA, S100_TAMEX_CARDS_FATIMA)
 }
 
 SUBEVENT(fatima_vme_subev)
@@ -140,17 +133,7 @@ SUBEVENT(fatima_vme_subev)
 
 SUBEVENT(bplast_subev)
 {
-    S100_TAMEX_PAYLOAD(S100_WR_BPLAST,
-        tamex[0] = TAMEX4_SFP(sfp = 0, card = 0);
-        tamex[1] = TAMEX4_SFP(sfp = 0, card = 1);
-        tamex[2] = TAMEX4_SFP(sfp = 0, card = 2);
-        tamex[3] = TAMEX4_SFP(sfp = 0, card = 3);
-        tamex[4] = TAMEX4_SFP(sfp = 0, card = 4);
-        tamex[5] = TAMEX4_SFP(sfp = 0, card = 5);
-        tamex[6] = TAMEX4_SFP(sfp = 0, card = 6);
-        tamex[7] = TAMEX4_SFP(sfp = 0, card = 7);
-        tamex[8] = TAMEX4_SFP(sfp = 0, card = 8);
-    )
+    S100_TAMEX_PAYLOAD(S100_WR_BPLAST, S100_TAMEX_CARDS_BPLAST)
 }
 
 SUBEVENT(frs_main_subev)
