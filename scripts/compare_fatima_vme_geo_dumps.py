@@ -3,8 +3,9 @@
 
 Use filtered --dump=UNPACK stdout (event headers + .UNPACK.fatimavme fields).
 QDC1..QDC5 become qdc[0]..qdc[4]. V1290 fields are grouped by the
-decoded physical GEO, not an assumed bank index. Blank banks with only
-geo=0 are omitted. Extra data on an unassigned bank is an error.
+decoded physical GEO, not an assumed bank index. Blank TDC banks with only geo=0 are omitted. Additional QDC reserve slots
+(qdc[5] onwards) are omitted only if all their exported values are zero.
+Extra data on an unassigned bank is an error.
 """
 import argparse
 import re
@@ -16,10 +17,12 @@ from compare_fatima_vme_dumps import iter_events
 
 BANK = re.compile(r"^(tdc(?:\d+|\[\d+\]))\.(.+)$")
 GEO = re.compile(r"^(?:0x[0-9a-fA-F]+|[+-]?\d+)=([+-]?\d+)$")
+SPARE_QDC = re.compile(r"^qdc\[(\d+)\]\.([^ ]+)$")
 
 
 def canonical(fields):
     other = []
+    qdc_spares = {}
     banks = {}
     for name, value in fields:
         match = BANK.match(name)
@@ -27,7 +30,21 @@ def canonical(fields):
             bank, field = match.groups()
             banks.setdefault(bank, []).append((field, value))
         else:
-            other.append((name, value))
+            spare = SPARE_QDC.match(name)
+            if spare and int(spare.group(1)) >= 5:
+                qdc_spares.setdefault(int(spare.group(1)), []).append((spare.group(2), value))
+            else:
+                other.append((name, value))
+    for slot, entries in qdc_spares.items():
+        if not {name for name, _ in entries}.issuperset(
+            {"board_id", "board_time", "channels", "dm", "extras"}
+        ):
+            raise ValueError(f"qdc[{slot}]: reserve bank is missing expected fields")
+        for name, value in entries:
+            match = GEO.match(value.strip())
+            if match is None or int(match.group(1)) != 0:
+                raise ValueError(
+                    f"qdc[{slot}].{name}: reserve bank is not empty ({value!r})")
     by_geo = {}
     for bank, entries in banks.items():
         geo_fields = [value for field, value in entries if field == "geo"]
