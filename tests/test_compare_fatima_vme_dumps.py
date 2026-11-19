@@ -29,6 +29,26 @@ class DumpComparisonTests(unittest.TestCase):
         self.assertEqual(errors, [])
         self.assertEqual((n, vme), (3, 1))
 
+    def test_streaming_comparison_matches_and_reports_changes(self):
+        with tempfile.TemporaryDirectory() as directory:
+            a, b = Path(directory) / "original.txt", Path(directory) / "lab.txt"
+            a.write_text("Event 1 Trigger 1\n.UNPACK.fatimavme.qdc1.board_id: 0x06=6\n"
+                         "Event 2 Trigger 1\n.UNPACK.fatimavme.tdc1.geo: 0x0d=13\n")
+            b.write_text("Event 1 Trigger 1\n.UNPACK.fatimavme.qdc[0].board_id: 0x06=6\n"
+                         "Event 2 Trigger 1\n.UNPACK.fatimavme.tdc1.geo: 0x0d=13\n")
+            diffs, fields, with_data, original_count, lab_count = compare.compare_streams(a, b)
+            self.assertEqual(diffs, [])
+            self.assertEqual((fields, with_data, original_count, lab_count), (2, 2, 2, 2))
+            b.write_text(b.read_text().replace("0x0d=13", "0x0e=14"))
+            self.assertTrue(compare.compare_streams(a, b)[0])
+
+    def test_streaming_detects_different_event_lengths(self):
+        with tempfile.TemporaryDirectory() as directory:
+            a, b = Path(directory) / "a.txt", Path(directory) / "b.txt"
+            a.write_text("Event 1 Trigger 1\n.UNPACK.fatimavme.tdc1.geo: 13\nEvent 2 Trigger 1\n")
+            b.write_text("Event 1 Trigger 1\n.UNPACK.fatimavme.tdc1.geo: 13\n")
+            self.assertTrue(compare.compare_streams(a, b)[0])
+
     def test_changed_charge_fails(self):
         a = self.parse("Event 1 Trigger 1\n.UNPACK.fatimavme.qdc1.qshort[0]: 5\n", True)
         b = self.parse("Event 1 Trigger 1\n.UNPACK.fatimavme.qdc[0].qshort[0]: 6\n")
