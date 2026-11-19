@@ -26,6 +26,34 @@ class GeoComparisons(unittest.TestCase):
              ("tdc[2].geo", "0x00=0")]
         self.assertEqual(geo.canonical(a), geo.canonical(b))
 
+    def test_zero_qdc_reserve_is_ignored(self):
+        base = [("qdc[0].board_id", "0x06=6"), ("scalers.data[0]", "0x10=16")]
+        padded = base + [
+            ("qdc[5].board_id", "0x00=0"),
+            ("qdc[5].board_time", "0x00000000=0"),
+            ("qdc[5].channels", "0x00=0"),
+            ("qdc[5].dm", "0x0000=0"),
+            ("qdc[5].extras", "0x0000=0"),
+        ]
+        self.assertEqual(geo.canonical(base), geo.canonical(padded))
+
+    def test_nonempty_spare_qdc_is_not_ignored(self):
+        spare = [
+            ("qdc[5].board_id", "0x00=0"),
+            ("qdc[5].board_time", "0x00000000=0"),
+            ("qdc[5].channels", "0x00=0"),
+            ("qdc[5].dm", "0x0000=0"),
+            ("qdc[5].extras", "0x0000=0"),
+        ]
+        with self.assertRaisesRegex(ValueError, "not empty"):
+            geo.canonical(spare + [("qdc[5].qshort[0]", "0x0001=1")])
+        with self.assertRaisesRegex(ValueError, "not empty"):
+            geo.canonical([("qdc[5].board_id", "0x0b=11")] + spare[1:])
+
+    def test_incomplete_spare_qdc_is_not_ignored(self):
+        with self.assertRaisesRegex(ValueError, "missing expected fields"):
+            geo.canonical([("qdc[5].board_id", "0x00=0")])
+
     def test_changed_measurement_detected(self):
         with tempfile.TemporaryDirectory() as tmp:
             a, b = Path(tmp) / "a", Path(tmp) / "b"
