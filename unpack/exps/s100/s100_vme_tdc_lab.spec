@@ -132,6 +132,7 @@ SUBEVENT(fatima_vme_subev)
         qdc[2] = VME_CAEN_V1751(board=8);
         qdc[3] = VME_CAEN_V1751(board=9);
         qdc[4] = VME_CAEN_V1751(board=10);
+        qdc[5] = VME_CAEN_V1751(board=31);
         error2 = ERR_WORD_SIX();
     };
 
@@ -142,6 +143,10 @@ SUBEVENT(fatima_vme_subev)
     {
         tdc[0] = VME_CAEN_V1290_GEO(geom_expected=12);
         tdc[1] = VME_CAEN_V1290_GEO(geom_expected=13);
+        tdc[2] = VME_CAEN_V1290_GEO(geom_expected=31);
+        tdc[3] = VME_CAEN_V1290_GEO(geom_expected=30);
+        tdc[4] = VME_CAEN_V1290_GEO(geom_expected=29);
+        tdc[5] = VME_CAEN_V1290_GEO(geom_expected=28);
         error3 = ERR_WORD_SIX();
     };
 }
