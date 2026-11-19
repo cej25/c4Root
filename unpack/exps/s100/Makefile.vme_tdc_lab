@@ -1,0 +1,3 @@
+# Independent V1290 GEO-array experiment; production s100 and QDC-only lab stay intact.
+TARGETS:=s100_vme_tdc_lab
+include ../makefile_common.mk
