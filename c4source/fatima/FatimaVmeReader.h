@@ -21,6 +21,7 @@ class TClonesArray;
 class FatimaVmeData;
 // class vector;
 
+struct EXT_STR_h101_fatimavme_s100_onion_t;
 struct EXT_STR_h101_fatimavme_t;
 typedef struct EXT_STR_h101_fatimavme_t EXT_STR_h101_fatimavme;
 typedef struct EXT_STR_h101_fatimavme_onion_t EXT_STR_h101_fatimavme_onion;
@@ -33,6 +34,7 @@ class FatimaVmeReader : public c4Reader
 {
     public:
         FatimaVmeReader(EXT_STR_h101_fatimavme_onion*, size_t);
+        FatimaVmeReader(EXT_STR_h101_fatimavme_s100_onion_t*, size_t);
 
         virtual ~FatimaVmeReader();
 
@@ -63,7 +65,9 @@ class FatimaVmeReader : public c4Reader
         Bool_t fOnline;
         Bool_t fSharedInput = kFALSE;
 
+        template <typename Bank> Bool_t ReadBanks(const Bank* data);
         EXT_STR_h101_fatimavme_onion* fData;
+        EXT_STR_h101_fatimavme_s100_onion_t* fS100Data = nullptr; //! Borrowed UCESB memory
         size_t fOffset;
 
         TClonesArray* fArray;

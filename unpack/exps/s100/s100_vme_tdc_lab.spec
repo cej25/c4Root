@@ -11,7 +11,7 @@
 #include "vme_caen_v1751_lab.spec"
 //#include "../../common/vme_caen_v1x90.spec"
 #include "../frs/frs_s100.spec" //r3b frs
-#include "vme_caen_v1290_geo_lab.spec"
+#include "vme_caen_v1290_geo.spec"
 #include "fatima_vme.spec"
 #include "../../common/general.spec"
 

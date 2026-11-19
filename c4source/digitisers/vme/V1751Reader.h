@@ -5,12 +5,15 @@
 #include <cstdint>
 #include <ostream>
 struct EXT_STR_h101_fatimavme_onion_t;
+struct EXT_STR_h101_fatimavme_s100_onion_t;
 class ext_data_struct_info;
 class TClonesArray;
 
 class V1751Reader : public c4Reader {
 public:
     V1751Reader(EXT_STR_h101_fatimavme_onion_t* input, std::size_t offset,
+                std::uint16_t procid);
+    V1751Reader(EXT_STR_h101_fatimavme_s100_onion_t* input, std::size_t offset,
                 std::uint16_t procid);
     ~V1751Reader() override;
     Bool_t Init(ext_data_struct_info*) override;
@@ -21,6 +24,8 @@ public:
     // Only one reader for a shared UCESB subevent registers the structure.
     void SetRegisterStructure(bool value) { fRegisterStructure = value; }
 private:
+    template <typename Bank> Bool_t ReadBanks(const Bank* input);
+    EXT_STR_h101_fatimavme_s100_onion_t* fS100Input = nullptr; //! Borrowed UCESB memory
     EXT_STR_h101_fatimavme_onion_t* fInput = nullptr; //! Borrowed UCESB memory
     std::size_t fOffset = 0;
     std::uint16_t fProcId = 0;

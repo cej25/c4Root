@@ -24,7 +24,7 @@ extern "C"
 #include "ext_data_client.h"
 #include "ext_h101_unpack.h"
 #include "ext_h101_fatima.h"
-#include "ext_h101_fatimavme.h"
+#include "ext_h101_fatimavme_s100.h"
 }
 
 // The event layout stays compatible with UcesbSource's global EXT_STR_h101_t.
@@ -33,7 +33,7 @@ typedef struct EXT_STR_h101_t
 {
     EXT_STR_h101_unpack_t eventheaders;
     EXT_STR_h101_fatima_onion_t fatima;
-    EXT_STR_h101_fatimavme_onion_t fatimavme;
+    EXT_STR_h101_fatimavme_s100_onion_t fatimavme;
 } EXT_STR_h101;
 
 // First experiment-level readout-selection demonstration.

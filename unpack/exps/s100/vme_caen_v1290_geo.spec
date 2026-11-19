@@ -1,4 +1,4 @@
-// Experimental GEO-discriminated V1290. Keep the shared FRS V1290 unchanged.
+// GEO-discriminated V1290 for FATIMA VME.
 // Requires common vme_caen_v1x90.spec to have been included by frs_s100.spec.
 VME_CAEN_V1290_GEO(geom_expected)
 {

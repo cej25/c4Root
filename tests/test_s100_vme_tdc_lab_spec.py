@@ -10,7 +10,8 @@ import unittest
 ROOT = Path(__file__).resolve().parents[1]
 BASE = (ROOT / "unpack/exps/s100/s100_vme_lab.spec").read_text()
 TRIAL = (ROOT / "unpack/exps/s100/s100_vme_tdc_lab.spec").read_text()
-MODULE = (ROOT / "unpack/exps/s100/vme_caen_v1290_geo_lab.spec").read_text()
+PRODUCTION = (ROOT / "unpack/exps/s100/s100.spec").read_text()
+MODULE = (ROOT / "unpack/exps/s100/vme_caen_v1290_geo.spec").read_text()
 COMMON = (ROOT / "unpack/common/vme_caen_v1x90.spec").read_text()
 
 
@@ -28,7 +29,7 @@ class V1290LabTests(unittest.TestCase):
             BASE[:a].replace(
                 '#include "../frs/frs_s100.spec" //r3b frs',
                 '#include "../frs/frs_s100.spec" //r3b frs\n'
-                '#include "vme_caen_v1290_geo_lab.spec"'),
+                '#include "vme_caen_v1290_geo.spec"'),
             TRIAL[:c])
         self.assertEqual(BASE[b:], TRIAL[d:])
 
@@ -53,6 +54,15 @@ class V1290LabTests(unittest.TestCase):
         self.assertIn("VME_CAEN_V1290_N()", COMMON)
         self.assertNotIn("VME_CAEN_V1290_GEO", COMMON)
 
+    def test_production_promotes_the_lab_addresses_with_legacy_numbered_names(self):
+        trial = subevent(TRIAL)[2]
+        production = subevent(PRODUCTION)[2]
+        for bank, module in (("qdc", "VME_CAEN_V1751"), ("tdc", "VME_CAEN_V1290_GEO")):
+            lab_addresses = re.findall(rf"{bank}\[(\d+)\]\s*=\s*({module}\([^)]*\))", trial)
+            production_addresses = re.findall(rf"{bank}(\d+)\s*=\s*({module}\([^)]*\))", production)
+            self.assertEqual(len(production_addresses), 6)
+            self.assertEqual(production_addresses, [(str(int(i) + 1), spec) for i, spec in lab_addresses])
+
     def test_module_fields_match_production(self):
         # Changes limited to match conditions, discriminator and function name.
         original = COMMON[COMMON.index("VME_CAEN_V1290_N()"):
@@ -68,7 +78,7 @@ class V1290LabTests(unittest.TestCase):
             "    MATCH_END;"
         )
         self.assertEqual(
-            "// Experimental GEO-discriminated V1290. Keep the shared FRS V1290 unchanged.\n"
+            "// GEO-discriminated V1290 for FATIMA VME.\n"
             "// Requires common vme_caen_v1x90.spec to have been included by frs_s100.spec.\n"
             + derived, MODULE)
 

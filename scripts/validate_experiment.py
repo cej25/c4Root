@@ -14,6 +14,7 @@ MAX_BOARDS = {"tamex": 12, "v1751": 6, "v1290": 6}
 TAMEX = re.compile(r"\btamex\[(\d+)\]\s*=\s*TAMEX4_SFP\(\s*sfp\s*=\s*(\d+)\s*,\s*card\s*=\s*(\d+)\s*\)")
 V1751 = re.compile(r"\bqdc(\d+)\s*=\s*VME_CAEN_V1751\(\s*board\s*=\s*(\d+)\s*\)")
 V1290 = re.compile(r"\btdc(\d+)\s*=\s*VME_CAEN_V1290_N\(\s*\)")
+V1290_GEO = re.compile(r"\btdc(\d+)\s*=\s*VME_CAEN_V1290_GEO\(\s*geom_expected\s*=\s*(\d+)\s*\)")
 MEMBER = {"fatima": "fatima", "bplast": "bplast", "bgo": "bgo", "fatimavme": "fatimavme"}
 
 S100_WR_INCLUDE = "s100_whiterabbit.generated.spec"
@@ -219,9 +220,10 @@ def validate(experiment, root=ROOT):
             if type(wr) is not int or not ts or int(ts.group(1), 0) != wr:
                 warnings.append(f"{detector}: White Rabbit subsystem ID differs from UCESB")
 
+        header_name = "fatimavme_s100" if s100 and member == "fatimavme" else member
         header_path = root / "c4source" / (
             "fatima" if member in ("fatima", "fatimavme") else member
-        ) / f"ext_h101_{member}.h"
+        ) / f"ext_h101_{header_name}.h"
         if not header_path.is_file():
             warnings.append(f"{detector}: missing generated structure header {header_path}")
             continue
@@ -255,7 +257,7 @@ def validate(experiment, root=ROOT):
         else:
             for model, regex, member_name in (
                 ("v1751", V1751, f"{member}_qdc"),
-                ("v1290", V1290, f"{member}_tdc"),
+                ("v1290", V1290_GEO if s100 else V1290, f"{member}_tdc"),
             ):
                 installed = board_list(item.get(model, {}).get("boards"), f"{detector}/{model}", MAX_BOARDS[model])
                 declared = regex.findall(body)
@@ -263,11 +265,11 @@ def validate(experiment, root=ROOT):
                 if capacity != len(declared):
                     warnings.append(f"{detector}/{model}: header has {capacity} slots, "
                                     f"but UCESB declares {len(declared)}")
-                if model == "v1751":
+                if model == "v1751" or s100:
                     addresses = {int(addr) for _, addr in declared}
                     missing = sorted(set(installed) - addresses)
                     if missing:
-                        warnings.append(f"{detector}/V1751: unsupported board addresses: {missing}")
+                        warnings.append(f"{detector}/{model.upper()}: unsupported board addresses: {missing}")
                 elif len(installed) > capacity:
                     # The V1290 geo is decoded from event data, rather than fixed in its declaration.
                     warnings.append(f"{detector}/V1290: {len(installed)} boards exceed {capacity} TDC slots")

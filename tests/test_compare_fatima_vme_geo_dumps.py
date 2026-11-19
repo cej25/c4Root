@@ -68,6 +68,12 @@ class GeoComparisons(unittest.TestCase):
             geo.canonical([("tdc[2].geo", "0x00=0"),
                            ("tdc[2].measurement.data[1]", "0x22=34")])
 
+    def test_repeated_measurements_retain_their_order(self):
+        fields = [("tdc1.geo", "0x0d=13"),
+                  ("tdc1.measurement.data", "0x64=100"),
+                  ("tdc1.measurement.data", "0x65=101")]
+        self.assertNotEqual(geo.canonical(fields), geo.canonical([fields[0], fields[2], fields[1]]))
+
     def test_fail_on_duplicate_geo(self):
         with self.assertRaisesRegex(ValueError, "Duplicate active GEO"):
             geo.canonical([("tdc[0].geo", "0x0d=13"),

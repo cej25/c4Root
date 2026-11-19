@@ -16,12 +16,12 @@
 extern "C" {
 #include "ext_data_client.h"
 #include "ext_h101_unpack.h"
-#include "ext_h101_fatimavme.h"
+#include "ext_h101_fatimavme_s100.h"
 }
 
 typedef struct EXT_STR_h101_t {
     EXT_STR_h101_unpack_t eventheaders;
-    EXT_STR_h101_fatimavme_onion_t fatimavme;
+    EXT_STR_h101_fatimavme_s100_onion_t fatimavme;
 } EXT_STR_h101;
 
 // Electronics-only validation: does not run FATIMA mapping or calibration.

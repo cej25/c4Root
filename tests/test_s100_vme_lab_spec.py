@@ -38,8 +38,10 @@ class LabSpecTests(unittest.TestCase):
         a, b, _ = vme_subevent(self.base)
         c, d, _ = vme_subevent(self.lab)
         expected_prefix = self.base[:a].replace(
-            '#include "../../common/vme_caen_v1751.spec"',
-            '#include "vme_caen_v1751_lab.spec"')
+            '#define C4_V1751_MATCH_BOARD\n#include "../../common/vme_caen_v1751.spec"\n'
+            '#undef C4_V1751_MATCH_BOARD',
+            '#include "vme_caen_v1751_lab.spec"').replace(
+                '#include "vme_caen_v1290_geo.spec"\n', '')
         self.assertEqual(expected_prefix, self.lab[:c])
         self.assertEqual(self.base[b:], self.lab[d:])
 
@@ -59,7 +61,7 @@ class LabSpecTests(unittest.TestCase):
         common = (ROOT / "unpack/common/vme_caen_v1751.spec").read_text()
         self.assertIn('#include "vme_caen_v1751_lab.spec"', self.lab)
         self.assertIn('MATCH_END;', lab)
-        self.assertNotIn('MATCH_END;', common)
+        self.assertIn("#ifdef C4_V1751_MATCH_BOARD", common)
         self.assertLess(lab.index('id = MATCH(board)'), lab.index('MATCH_END;'))
         self.assertLess(lab.index('MATCH_END;'), lab.index('UINT32 board_agg_counter'))
 

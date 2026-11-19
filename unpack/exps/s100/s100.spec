@@ -8,9 +8,12 @@
 #include "../../common/gsi_febex4.spec"
 #include "../../common/gsi_tamex4.spec"
 #include "tamex_payload.spec"
+#define C4_V1751_MATCH_BOARD
 #include "../../common/vme_caen_v1751.spec"
+#undef C4_V1751_MATCH_BOARD
 //#include "../../common/vme_caen_v1x90.spec"
 #include "../frs/frs_s100.spec" //r3b frs
+#include "vme_caen_v1290_geo.spec"
 #include "fatima_vme.spec"
 #include "../../common/general.spec"
 
@@ -98,32 +101,32 @@ SUBEVENT(fatima_vme_subev)
         scalers = FATIMA_VME_SCALERS();
     };
 
-    select optional { qdc1 = VME_CAEN_V1751(board=6); }
-    select optional { qdc2 = VME_CAEN_V1751(board=7); }
-    select optional { qdc3 = VME_CAEN_V1751(board=8); }
-    select optional { qdc4 = VME_CAEN_V1751(board=9); }
-    select optional { qdc5 = VME_CAEN_V1751(board=10); }
-
-   
+    // V1751 aggregate header identifies the physical board. Keep the
+    // output slot tied to the board ID, even if earlier boards are absent.
+    // The error marker can occur among module payloads.
     select several
     {
+        qdc1 = VME_CAEN_V1751(board=6);
+        qdc2 = VME_CAEN_V1751(board=7);
+        qdc3 = VME_CAEN_V1751(board=8);
+        qdc4 = VME_CAEN_V1751(board=9);
+        qdc5 = VME_CAEN_V1751(board=10);
+        qdc6 = VME_CAEN_V1751(board=31);
         error2 = ERR_WORD_SIX();
     };
 
-    // we don't always get information from both TDC boards
-    select optional
-    {
-        tdc1 = VME_CAEN_V1290_N();
-    };
-
+    // The installed V1290s use GEOs 12 and 13. The remaining slots are reserved.
+    // Both modules can be absent, and error words can appear between them.
+    // Their selection indices are fixed by GEO, not arrival order.
     select several
     {
+        tdc1 = VME_CAEN_V1290_GEO(geom_expected=12);
+        tdc2 = VME_CAEN_V1290_GEO(geom_expected=13);
+        tdc3 = VME_CAEN_V1290_GEO(geom_expected=31);
+        tdc4 = VME_CAEN_V1290_GEO(geom_expected=30);
+        tdc5 = VME_CAEN_V1290_GEO(geom_expected=29);
+        tdc6 = VME_CAEN_V1290_GEO(geom_expected=28);
         error3 = ERR_WORD_SIX();
-    };
-
-    select optional
-    {
-        tdc2 = VME_CAEN_V1290_N();
     };
 }
 
