@@ -22,6 +22,7 @@
 #include "TFile.h"
 
 #include <iomanip>
+#include <type_traits>
 
 // c4
 #include "FatimaVmeData.h"
@@ -110,10 +111,17 @@ Bool_t FatimaVmeReader::Read()
 
     int qdcs_fired = 0;
     
-    for (int qdc = 0; qdc < 5; qdc++)
+    // Capacity is defined by the UCESB-generated onion, not by the number of
+    // installed modules. This supports both the legacy 5-slot and fixed 6-slot
+    // V1751 layouts without indexing beyond the compiled structure header.
+    constexpr auto qdc_capacity = std::extent<decltype(fData->fatimavme_qdc)>::value;
+    for (size_t qdc = 0; qdc < qdc_capacity; ++qdc)
     {
         Int_t board_id = fData->fatimavme_qdc[qdc]._board_id;
-        
+        // A spare/unmatched bank remains zero-initialised. Do not interpret
+        // a placeholder GEO/board slot as a physical detector.
+        if (board_id == 0) continue;
+
         Int_t channel_mask = fData->fatimavme_qdc[qdc]._channels;
         std::vector<int> channels_fired = Get_Channels(channel_mask);
 
@@ -127,7 +135,9 @@ Bool_t FatimaVmeReader::Read()
 
             auto & entry = qdcArray->emplace_back();
 
-            int current_detector = dets_qdc[std::make_pair(board_id, channels_fired[channel])];
+            const auto mapping = dets_qdc.find(std::make_pair(board_id, channels_fired[channel]));
+            if (mapping == dets_qdc.end()) continue;
+            int current_detector = mapping->second;
             //qdc_detectors.emplace_back(current_detector);
             
             uint32_t ct = fData->fatimavme_qdc[qdc]._channel_timev[channel];
@@ -188,10 +198,12 @@ Bool_t FatimaVmeReader::Read()
     
     int tdcs_fired = 0;
     
-    for (int tdc = 0; tdc < 2; tdc++)
+    constexpr auto tdc_capacity = std::extent<decltype(fData->fatimavme_tdc)>::value;
+    for (size_t tdc = 0; tdc < tdc_capacity; ++tdc)
     {
         int geo = fData->fatimavme_tdc[tdc]._geo;
-        
+        if (geo == 0) continue; // Empty V1290 spare slot.
+
         int hit_index = 0;
         const auto& tdc_data = fData->fatimavme_tdc[tdc];
         const auto block_count = fatima_vme_packed_safety::BoundedBlockCount(
@@ -210,7 +222,12 @@ Bool_t FatimaVmeReader::Read()
                 continue;
             }
 
-            int current_detector = dets_tdc[std::make_pair(geo, current_channel)];
+            const auto mapping = dets_tdc.find(std::make_pair(geo, current_channel));
+            if (mapping == dets_tdc.end()) {
+                hit_index = next_channel_start;
+                continue;
+            }
+            int current_detector = mapping->second;
 
             for (uint32_t j = hit_index; j < next_channel_start; j++)
             {
