@@ -35,7 +35,10 @@ class LabSpecTests(unittest.TestCase):
     def test_everything_outside_vme_subevent_is_identical(self):
         a, b, _ = sync.subevent(self.base, "fatima_vme_subev")
         c, d, _ = sync.subevent(self.lab, "fatima_vme_subev")
-        self.assertEqual(self.base[:a], self.lab[:c])
+        expected_prefix = self.base[:a].replace(
+            '#include "../../common/vme_caen_v1751.spec"',
+            '#include "vme_caen_v1751_lab.spec"')
+        self.assertEqual(expected_prefix, self.lab[:c])
         self.assertEqual(self.base[b:], self.lab[d:])
 
     def test_qdc_array_keeps_physical_board_id_mapping(self):
