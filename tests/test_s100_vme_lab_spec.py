@@ -46,6 +46,18 @@ class LabSpecTests(unittest.TestCase):
         self.assertEqual([(int(slot), int(board)) for slot, board in pairs],
                          [(0, 6), (1, 7), (2, 8), (3, 9), (4, 10)])
 
+    def test_v1751_selection_discriminator_after_board_id(self):
+        # The first V1751 aggregate word is the same across boards.
+        # UCESB must see the MATCH(board) from the second word before
+        # declaring multiple select branches ambiguous.
+        lab = (ROOT / "unpack/exps/s100/vme_caen_v1751_lab.spec").read_text()
+        common = (ROOT / "unpack/common/vme_caen_v1751.spec").read_text()
+        self.assertIn('#include "vme_caen_v1751_lab.spec"', self.lab)
+        self.assertIn('MATCH_END;', lab)
+        self.assertNotIn('MATCH_END;', common)
+        self.assertLess(lab.index('id = MATCH(board)'), lab.index('MATCH_END;'))
+        self.assertLess(lab.index('MATCH_END;'), lab.index('UINT32 board_agg_counter'))
+
     def test_tdc_bank_selection_and_error_words(self):
         block = sync.subevent(self.lab, "fatima_vme_subev")[2]
         self.assertEqual(re.findall(
