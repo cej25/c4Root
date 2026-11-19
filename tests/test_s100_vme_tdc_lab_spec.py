@@ -59,7 +59,7 @@ class V1290LabTests(unittest.TestCase):
         derived = original.replace(
             "VME_CAEN_V1290_N()", "VME_CAEN_V1290_GEO(geom_expected)"
         ).replace(
-            "0_4: geom;", "0_4: geom = MATCH(geom_expected);"
+            "0_4: geom;", "0_4: geom = MATCH(geom_expected);", 1
         ).replace(
             "        ENCODE(geo, (value=geom));\n    };",
             "        ENCODE(geo, (value=geom));\n    };\n\n"
