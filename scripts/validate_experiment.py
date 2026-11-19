@@ -18,7 +18,9 @@ MEMBER = {"fatima": "fatima", "bplast": "bplast", "bgo": "bgo", "fatimavme": "fa
 
 S100_WR_INCLUDE = "s100_whiterabbit.generated.spec"
 S100_WR_MEMBERS = {"aida", "beammonitor", "bgo", "bplast", "fatima", "fatimavme", "frstpat", "germanium"}
-WR_ARGUMENT = re.compile(r"\bTIMESTAMP_WHITERABBIT\(\s*id\s*=\s*(\w+)\s*\)")
+WR_ARGUMENT = re.compile(
+    r"\b(?:TIMESTAMP_WHITERABBIT\(\s*id\s*=\s*|S100_TAMEX_PAYLOAD\(\s*)(\w+)(?=\s*[,)])"
+)
 
 
 def read_yaml(path):

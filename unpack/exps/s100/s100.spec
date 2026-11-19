@@ -7,6 +7,7 @@
 #undef C4_WR_UNIFIED
 #include "../../common/gsi_febex4.spec"
 #include "../../common/gsi_tamex4.spec"
+#include "tamex_payload.spec"
 #include "../../common/vme_caen_v1751.spec"
 //#include "../../common/vme_caen_v1x90.spec"
 #include "../frs/frs_s100.spec" //r3b frs
@@ -79,29 +80,12 @@ SUBEVENT(febex_subev)
 
 SUBEVENT(fatima_tamex_subev)
 {
-
-    select optional
-    {
-        ts = TIMESTAMP_WHITERABBIT(id = S100_WR_FATIMA);
-    };
-
-    select optional
-    {
-        trigger_window = TAMEX4_HEADER();
-    };
-    
-    select several
-    {
-        padding = TAMEX4_PADDING();
-    };
-
-    select several
-    {
+    S100_TAMEX_PAYLOAD(S100_WR_FATIMA,
         tamex[0] = TAMEX4_SFP(sfp = 0, card = 0);
         tamex[1] = TAMEX4_SFP(sfp = 0, card = 1);
         tamex[2] = TAMEX4_SFP(sfp = 0, card = 2);
         tamex[3] = TAMEX4_SFP(sfp = 0, card = 3);
-    };
+    )
 }
 
 SUBEVENT(fatima_vme_subev)
@@ -152,23 +136,7 @@ SUBEVENT(fatima_vme_subev)
 
 SUBEVENT(bplast_subev)
 {
-    select optional
-    {
-        ts = TIMESTAMP_WHITERABBIT(id = S100_WR_BPLAST);
-    };
-
-    select optional
-    {
-        trigger_window = TAMEX4_HEADER();
-    };
-
-    select several
-    {
-        padding = TAMEX4_PADDING();
-    };
-
-    select several
-    {
+    S100_TAMEX_PAYLOAD(S100_WR_BPLAST,
         tamex[0] = TAMEX4_SFP(sfp = 0, card = 0);
         tamex[1] = TAMEX4_SFP(sfp = 0, card = 1);
         tamex[2] = TAMEX4_SFP(sfp = 0, card = 2);
@@ -178,7 +146,7 @@ SUBEVENT(bplast_subev)
         tamex[6] = TAMEX4_SFP(sfp = 0, card = 6);
         tamex[7] = TAMEX4_SFP(sfp = 0, card = 7);
         tamex[8] = TAMEX4_SFP(sfp = 0, card = 8);
-    };
+    )
 }
 
 SUBEVENT(frs_main_subev)
