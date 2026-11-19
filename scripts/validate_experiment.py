@@ -18,6 +18,7 @@ MEMBER = {"fatima": "fatima", "bplast": "bplast", "bgo": "bgo", "fatimavme": "fa
 
 S100_WR_INCLUDE = "s100_whiterabbit.generated.spec"
 S100_WR_MEMBERS = {"aida", "beammonitor", "bgo", "bplast", "fatima", "fatimavme", "frstpat", "germanium"}
+S100_EVENT_MEMBERS = S100_WR_MEMBERS | {"frsmain", "frstpc", "frsuser"}
 WR_ARGUMENT = re.compile(
     r"\b(?:TIMESTAMP_WHITERABBIT\(\s*id\s*=\s*|S100_TAMEX_PAYLOAD\(\s*)(\w+)(?=\s*[,)])"
 )
@@ -39,6 +40,35 @@ def read_yaml(path):
 
 def wr_symbol(member):
     return f"S100_WR_{member.upper()}"
+
+
+def procid_symbol(member):
+    return f"S100_PROCID_{member.upper()}"
+
+
+def s100_routes(configuration):
+    routes, seen_procids = {}, {}
+    for detector, item in configuration.items():
+        if not isinstance(item, dict) or ("member" not in item and "procid" not in item):
+            continue
+        member, subevent = item.get("member"), item.get("subevent")
+        if not isinstance(member, str) or not re.fullmatch(r"[a-z][a-z0-9_]*", member):
+            raise ValueError(f"{detector}: invalid EVENT member")
+        if not isinstance(subevent, str) or not re.fullmatch(r"[A-Za-z_][A-Za-z0-9_]*", subevent):
+            raise ValueError(f"{detector}: invalid subevent")
+        if member in routes:
+            raise ValueError(f"{detector}: duplicate EVENT member {member}")
+        procid = item.get("procid")
+        if type(procid) is not int or not 0 <= procid <= 0xffff:
+            raise ValueError(f"{detector}: procid must be an integer in 0–65535")
+        if procid in seen_procids:
+            raise ValueError(f"{detector}: procid {procid} duplicates {seen_procids[procid]}")
+        seen_procids[procid] = detector
+        routes[member] = (detector, item)
+    missing = S100_EVENT_MEMBERS - routes.keys()
+    if missing:
+        raise ValueError(f"Missing EVENT routing for {', '.join(sorted(missing))}")
+    return routes
 
 
 def wr_ids(configuration):
@@ -96,6 +126,31 @@ def board_list(value, name, maximum):
     return value
 
 
+def check_s100_routing(spec, configuration):
+    routes = s100_routes(configuration)
+    ids = wr_ids(configuration)
+    if f'#include "{S100_WR_INCLUDE}"' not in spec:
+        raise ValueError(f"Spec must include {S100_WR_INCLUDE}")
+    event = re.search(r"(?m)^EVENT\s*\{([^{}]*)\}", spec)
+    if event is None:
+        raise ValueError("UCESB EVENT block not found")
+    warnings = []
+    for member, (detector, item) in routes.items():
+        subevent = item["subevent"]
+        procid = re.findall(
+            rf"(?m)^[ \t]*(?:revisit[ \t]+)?{member}\s*=\s*{subevent}\s*\("
+            r"[^;]*?\bprocid\s*=\s*(\w+)(?=\s*[,\)])",
+            event.group(1),
+        )
+        if procid != [procid_symbol(member)]:
+            warnings.append(f"{detector}: UCESB EVENT must use {procid_symbol(member)}")
+        if member in ids:
+            body = read_subevent(spec, subevent)
+            if WR_ARGUMENT.findall(body) != [wr_symbol(member)]:
+                warnings.append(f"{detector}: UCESB must use White Rabbit ID {wr_symbol(member)}")
+    return warnings
+
+
 def validate(experiment, root=ROOT):
     config_file = root / "config" / experiment / "experiment.yaml"
     spec_file = root / "unpack" / "exps" / experiment / f"{experiment}.spec"
@@ -103,47 +158,39 @@ def validate(experiment, root=ROOT):
         raise ValueError(f"Cannot find experiment.yaml and unpacker spec for {experiment}")
     configuration = read_yaml(config_file)
     spec = spec_file.read_text()
-    yaml_wr = experiment == "s100"
-    if yaml_wr:
-        wr_ids(configuration)
-        if f'#include "{S100_WR_INCLUDE}"' not in spec:
-            raise ValueError(f"Spec must include {S100_WR_INCLUDE}")
-    warnings, notes = [], []
+    s100 = experiment == "s100"
+    warnings = check_s100_routing(spec, configuration) if s100 else []
+    notes = []
     seen_procs = {}
     for detector, item in configuration.items():
         if not isinstance(item, dict):
             continue
         digitiser = item.get("digitiser")
-        if digitiser not in ("tamex", "vme") and not (yaml_wr and "whiterabbit" in item):
+        if digitiser not in ("tamex", "vme"):
             continue
         subevent = item.get("subevent")
         member = item.get("member")
         if not isinstance(subevent, str) or not isinstance(member, str):
             raise ValueError(f"{detector}: specify subevent and member in experiment.yaml")
         body = read_subevent(spec, subevent)
-        procid = item.get("procid")
-        if type(procid) is not int:
-            raise ValueError(f"{detector}: invalid procid")
-        if procid in seen_procs:
-            raise ValueError(f"{detector}: procid {procid} duplicates {seen_procs[procid]}")
-        seen_procs[procid] = detector
-        event_match = re.search(
-            r"\b" + re.escape(member) + r"\s*=\s*" + re.escape(subevent) +
-            r"\([^;]*?\bprocid\s*=\s*(\d+)",
-            spec,
-        )
-        if not event_match or int(event_match.group(1)) != procid:
-            warnings.append(f"{detector}: procid does not match UCESB EVENT declaration")
-        if yaml_wr:
-            if WR_ARGUMENT.findall(body) != [wr_symbol(member)]:
-                warnings.append(f"{detector}: UCESB must use White Rabbit ID {wr_symbol(member)}")
-        else:
+        if not s100:
+            procid = item.get("procid")
+            if type(procid) is not int:
+                raise ValueError(f"{detector}: invalid procid")
+            if procid in seen_procs:
+                raise ValueError(f"{detector}: procid {procid} duplicates {seen_procs[procid]}")
+            seen_procs[procid] = detector
+            event_match = re.search(
+                r"\b" + re.escape(member) + r"\s*=\s*" + re.escape(subevent) +
+                r"\([^;]*?\bprocid\s*=\s*(\d+)",
+                spec,
+            )
+            if not event_match or int(event_match.group(1)) != procid:
+                warnings.append(f"{detector}: procid does not match UCESB EVENT declaration")
             ts = re.search(r"TIMESTAMP_WHITERABBIT(?:_EXTENDED)?\(\s*id\s*=\s*(0x[0-9a-fA-F]+|\d+)", body)
             wr = item.get("whiterabbit")
             if type(wr) is not int or not ts or int(ts.group(1), 0) != wr:
                 warnings.append(f"{detector}: White Rabbit subsystem ID differs from UCESB")
-        if digitiser not in ("tamex", "vme"):
-            continue
 
         header_path = root / "c4source" / (
             "fatima" if member in ("fatima", "fatimavme") else member
@@ -198,11 +245,15 @@ def validate(experiment, root=ROOT):
     return warnings, notes
 
 
-def emit_whiterabbit(config):
-    ids = wr_ids(read_yaml(config))
+def emit_whiterabbit(config, include_procids=False):
+    configuration = read_yaml(config)
+    ids = wr_ids(configuration)
+    routes = s100_routes(configuration) if include_procids else {}
     print("// Generated from config/s100/experiment.yaml.")
     for member, wr in sorted(ids.items()):
         print(f"#define {wr_symbol(member)} 0x{wr:x}")
+    for member, (_, item) in sorted(routes.items()):
+        print(f"#define {procid_symbol(member)} {item['procid']}")
 
 
 def main():
@@ -211,12 +262,15 @@ def main():
     action.add_argument("--experiment", help="experiment name under config/ and unpack/exps/")
     action.add_argument("--emit-whiterabbit", type=Path, metavar="S100_YAML",
                         help="print the S100 White Rabbit spec include")
+    action.add_argument("--emit-s100-routing", type=Path, metavar="S100_YAML",
+                        help="print the S100 procid and White Rabbit constants")
     args = parser.parse_args()
-    if args.emit_whiterabbit:
+    config = args.emit_s100_routing or args.emit_whiterabbit
+    if config:
         try:
-            emit_whiterabbit(args.emit_whiterabbit)
+            emit_whiterabbit(config, include_procids=args.emit_s100_routing is not None)
         except (ValueError, OSError) as exc:
-            parser.exit(2, f"ERROR generating S100 White Rabbit constants: {exc}\n")
+            parser.exit(2, f"ERROR generating S100 routing constants: {exc}\n")
         return 0
     if not re.fullmatch(r"[A-Za-z0-9_-]+", args.experiment):
         parser.error("invalid experiment name")

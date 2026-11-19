@@ -297,19 +297,19 @@ SUBEVENT(bm_subev)
 
 EVENT
 {
-    revisit aida = aida_subev(type = 10, subtype = 1, procid = 90, control = 37);
-    germanium = febex_subev(type = 10, subtype = 1, procid = 60, control = 20);
-    fatima = fatima_tamex_subev(type = 10, subtype = 1, procid = 75, control = 20);
-    fatimavme = fatima_vme_subev(procid = 70); // control 20, type 10, subtype 1
-    bplast = bplast_subev(type = 10, subtype = 1, procid = 80, control = 20);
-    bgo = bgo_tamex_subevent(procid = 100);
+    revisit aida = aida_subev(type = 10, subtype = 1, procid = S100_PROCID_AIDA, control = 37);
+    germanium = febex_subev(type = 10, subtype = 1, procid = S100_PROCID_GERMANIUM, control = 20);
+    fatima = fatima_tamex_subev(type = 10, subtype = 1, procid = S100_PROCID_FATIMA, control = 20);
+    fatimavme = fatima_vme_subev(procid = S100_PROCID_FATIMAVME); // control 20, type 10, subtype 1
+    bplast = bplast_subev(type = 10, subtype = 1, procid = S100_PROCID_BPLAST, control = 20);
+    bgo = bgo_tamex_subevent(procid = S100_PROCID_BGO);
 
-    frsmain = frs_main_subev(procid = 10);
-    frstpc = frs_tpc_subev(procid = 20);
-    frsuser = frs_user_subev(procid = 30);
-    frstpat = frs_tpat_subev(procid = 15);
+    frsmain = frs_main_subev(procid = S100_PROCID_FRSMAIN);
+    frstpc = frs_tpc_subev(procid = S100_PROCID_FRSTPC);
+    frsuser = frs_user_subev(procid = S100_PROCID_FRSUSER);
+    frstpat = frs_tpat_subev(procid = S100_PROCID_FRSTPAT);
     
-    beammonitor = bm_subev(procid = 1);
+    beammonitor = bm_subev(procid = S100_PROCID_BEAMMONITOR);
 
     ignore_unknown_subevent;
 };

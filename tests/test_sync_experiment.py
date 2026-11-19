@@ -42,11 +42,10 @@ class SyncExperimentTests(unittest.TestCase):
         self.assertIn("TAMEX4_SFP(sfp = 2, card = 0)", changed)
         self.assertEqual(sync.regenerate_declarations(changed, config), changed)
 
-    def test_refuse_proc_id_mismatch(self):
+    def test_procid_changes_do_not_rewrite_the_spec(self):
         config = {key: dict(value) for key, value in CONFIG.items()}
         config["FATIMA"]["procid"] = 999
-        with self.assertRaisesRegex(ValueError, "procid"):
-            sync.regenerate_declarations(self.source, config)
+        self.assertEqual(sync.regenerate_declarations(self.source, config), self.source)
 
     def test_white_rabbit_changes_do_not_rewrite_the_spec(self):
         config = {key: dict(value) for key, value in CONFIG.items()}

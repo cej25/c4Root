@@ -39,6 +39,39 @@ class ExperimentValidationTests(unittest.TestCase):
             with self.assertRaisesRegex(ValueError, "Missing White Rabbit IDs for bplast"):
                 module.emit_whiterabbit(path)
 
+    def test_s100_procid_constants_include_all_event_members(self):
+        config = (ROOT / "config/s100/experiment.yaml").read_text()
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "experiment.yaml"
+            path.write_text(config.replace("procid: 75", "procid: 175"))
+            output = io.StringIO()
+            with redirect_stdout(output):
+                module.emit_whiterabbit(path, include_procids=True)
+            self.assertIn("#define S100_PROCID_FATIMA 175\n", output.getvalue())
+            self.assertIn("#define S100_PROCID_FRSTPC 20\n", output.getvalue())
+            self.assertIn("#define S100_WR_FATIMA 0x1600\n", output.getvalue())
+            self.assertEqual(output.getvalue().count("#define S100_PROCID_"), 11)
+
+    def test_s100_rejects_invalid_and_duplicate_procids(self):
+        config = module.read_yaml(ROOT / "config/s100/experiment.yaml")
+        for invalid in (-1, 65536, True):
+            with self.subTest(invalid=invalid):
+                config["FATIMA"]["procid"] = invalid
+                with self.assertRaisesRegex(ValueError, "FATIMA: procid must be"):
+                    module.s100_routes(config)
+        config["FATIMA"]["procid"] = 20
+        with self.assertRaisesRegex(ValueError, "FRS_TPC: procid 20 duplicates FATIMA"):
+            module.s100_routes(config)
+        del config["FATIMA"]["procid"]
+        with self.assertRaisesRegex(ValueError, "FATIMA: procid must be"):
+            module.s100_routes(config)
+
+    def test_s100_detects_hardcoded_procid(self):
+        config = module.read_yaml(ROOT / "config/s100/experiment.yaml")
+        spec = (ROOT / "unpack/exps/s100/s100.spec").read_text()
+        warnings = module.check_s100_routing(spec.replace("S100_PROCID_FATIMA,", "75,"), config)
+        self.assertEqual(warnings, ["FATIMA: UCESB EVENT must use S100_PROCID_FATIMA"])
+
     def test_limits(self):
         self.assertEqual(module.MAX_BOARDS, {"tamex": 12, "v1751": 6, "v1290": 6})
         self.assertEqual(len(module.board_list(list(range(12)), "TAMEX", 12)), 12)

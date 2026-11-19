@@ -35,10 +35,9 @@ BOARD = re.compile(
 
 
 def load_config():
-    from validate_experiment import read_yaml, wr_ids
+    from validate_experiment import read_yaml
 
     data = read_yaml(CONFIG)
-    wr_ids(data)
     for detector in SUBEVENTS:
         item = data.get(detector)
         if not isinstance(item, dict):
@@ -55,11 +54,6 @@ def load_config():
             raise ValueError(f"{detector}: unreasonable number of boards")
         if type(item.get("sfp")) is not int or not 0 <= item["sfp"] <= 255:
             raise ValueError(f"{detector}: invalid sfp")
-        if type(item.get("procid")) is not int or not 0 <= item["procid"] <= 65535:
-            raise ValueError(f"{detector}: invalid procid")
-    procs = [data[d]["procid"] for d in SUBEVENTS]
-    if len(set(procs)) != len(procs):
-        raise ValueError("Duplicate TAMEX procids")
     return data
 
 
@@ -101,15 +95,7 @@ def regenerate_declarations(source, cfg):
                 for index, card in enumerate(item["boards"])
             )
             block = block[:entries[0].start()] + replacement + block[entries[-1].end():]
-        # White Rabbit IDs are generated from YAML by the unpacker build.
         updated = updated[:start] + block + updated[end:]
-        event = re.search(
-            r"\b" + ("fatima" if detector == "FATIMA" else "bplast" if detector == "bPlast" else "bgo") +
-            r"\s*=\s*" + re.escape(name) + r"\([^;]*?procid\s*=\s*(\d+)",
-            updated,
-        )
-        if not event or int(event.group(1)) != item["procid"]:
-            raise ValueError(f"{detector}: procid in EVENT does not match experiment.yaml")
     return updated
 
 
@@ -306,9 +292,14 @@ def main():
         print(f"OK: {args.experiment} installed boards fit the current UCESB layout")
         return 0
 
+    from validate_experiment import check_s100_routing
+
     try:
         config = target_capacity_config(load_config())
         current = SPEC.read_text()
+        routing_issues = check_s100_routing(current, config)
+        if routing_issues:
+            raise ValueError("; ".join(routing_issues))
         desired = expand_vme_capacity(regenerate_declarations(current, config), config)
         header_issues = stale_headers(config)
     except (ValueError, OSError) as exc:

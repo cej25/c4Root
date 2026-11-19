@@ -1,7 +1,7 @@
 # s100 electronics layout. Board indices are local to each UCESB subevent.
 # Edit this file, then use scripts/sync_experiment.py --experiment s100 --check.
 # The unpacker may support more boards than this configuration uses.
-# Rebuild the unpacker after editing a White Rabbit ID.
+# Rebuild the unpacker after editing a procid or White Rabbit ID.
 FATIMA:
   subevent: fatima_tamex_subev
   member: fatima
@@ -55,6 +55,21 @@ Germanium:
   member: germanium
   procid: 60
   whiterabbit: 0x400
+
+FRS_Main:
+  subevent: frs_main_subev
+  member: frsmain
+  procid: 10
+
+FRS_TPC:
+  subevent: frs_tpc_subev
+  member: frstpc
+  procid: 20
+
+FRS_User:
+  subevent: frs_user_subev
+  member: frsuser
+  procid: 30
 
 FRS_TPAT:
   subevent: frs_tpat_subev

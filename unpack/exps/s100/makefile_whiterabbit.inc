@@ -1,11 +1,11 @@
 PYTHON ?= python3
-WR_CONFIG := ../../../config/s100/experiment.yaml
-WR_GENERATOR := ../../../scripts/validate_experiment.py
-WR_INCLUDE := s100_whiterabbit.generated.spec
+ROUTING_CONFIG := ../../../config/s100/experiment.yaml
+ROUTING_GENERATOR := ../../../scripts/validate_experiment.py
+ROUTING_INCLUDE := s100_whiterabbit.generated.spec
 
-$(addprefix build_,$(TARGETS)) $(addprefix test_,$(TARGETS)): $(WR_INCLUDE)
+$(addprefix build_,$(TARGETS)) $(addprefix test_,$(TARGETS)): $(ROUTING_INCLUDE)
 
-$(WR_INCLUDE): $(WR_CONFIG) $(WR_GENERATOR)
+$(ROUTING_INCLUDE): $(ROUTING_CONFIG) $(ROUTING_GENERATOR)
 	@tmp=$$(mktemp "$@.XXXXXX") || exit 1; \
 	  trap 'rm -f "$$tmp"' EXIT; \
-	  $(PYTHON) $(WR_GENERATOR) --emit-whiterabbit $(WR_CONFIG) > "$$tmp" && mv -f "$$tmp" "$@"
+	  $(PYTHON) $(ROUTING_GENERATOR) --emit-s100-routing $(ROUTING_CONFIG) > "$$tmp" && mv -f "$$tmp" "$@"

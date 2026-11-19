@@ -53,12 +53,6 @@ void s100_tamex_combined_validation(
         !s100_config::LoadTamexConfig(config, "BGO", bgo_procid, bgo_wr))
         return;
 
-    if (fatima_procid != 75 || bplast_procid != 80 || bgo_procid != 100)
-    {
-        std::cerr << "TAMEX procids in experiment.yaml differ from the s100 EVENT declaration.\n";
-        return;
-    }
-
     auto* unpacked = new EXT_STR_h101{};
     auto* run = new FairRunOnline();
     run->SetEventHeader(new EventHeader());
