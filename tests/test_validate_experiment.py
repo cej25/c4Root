@@ -92,13 +92,15 @@ class ExperimentValidationTests(unittest.TestCase):
                             for warning in warnings))
 
     def test_missing_v1751_address_detected(self):
-        original = module.read_subevent
-        def missing_board(spec, name):
-            body = original(spec, name)
-            if name == "fatima_vme_subev":
-                return body.replace("board=10", "board=11")
-            return body
-        with patch.object(module, "read_subevent", missing_board):
+        original = module.read_yaml
+        def missing_board(path):
+            config = original(path)
+            v1751 = config["FATIMA_VME"]["v1751"]
+            slots = v1751["compiled_slots"]
+            missing = v1751["boards"][0]
+            slots[slots.index(missing)] = next(address for address in range(1, 32) if address not in slots)
+            return config
+        with patch.object(module, "read_yaml", missing_board):
             warnings, _ = module.validate("s100", ROOT)
         self.assertTrue(any("V1751: unsupported board addresses" in warning
                             for warning in warnings))

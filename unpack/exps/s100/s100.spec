@@ -106,12 +106,7 @@ SUBEVENT(fatima_vme_subev)
     // The error marker can occur among module payloads.
     select several
     {
-        qdc1 = VME_CAEN_V1751(board=6);
-        qdc2 = VME_CAEN_V1751(board=7);
-        qdc3 = VME_CAEN_V1751(board=8);
-        qdc4 = VME_CAEN_V1751(board=9);
-        qdc5 = VME_CAEN_V1751(board=10);
-        qdc6 = VME_CAEN_V1751(board=31);
+        S100_V1751_BANKS
         error2 = ERR_WORD_SIX();
     };
 
@@ -120,12 +115,7 @@ SUBEVENT(fatima_vme_subev)
     // Their selection indices are fixed by GEO, not arrival order.
     select several
     {
-        tdc1 = VME_CAEN_V1290_GEO(geom_expected=12);
-        tdc2 = VME_CAEN_V1290_GEO(geom_expected=13);
-        tdc3 = VME_CAEN_V1290_GEO(geom_expected=31);
-        tdc4 = VME_CAEN_V1290_GEO(geom_expected=30);
-        tdc5 = VME_CAEN_V1290_GEO(geom_expected=29);
-        tdc6 = VME_CAEN_V1290_GEO(geom_expected=28);
+        S100_V1290_BANKS
         error3 = ERR_WORD_SIX();
     };
 }

@@ -21,6 +21,10 @@ S100_WR_INCLUDE = "s100_whiterabbit.generated.spec"
 S100_WR_MEMBERS = {"aida", "beammonitor", "bgo", "bplast", "fatima", "fatimavme", "frstpat", "germanium"}
 S100_EVENT_MEMBERS = S100_WR_MEMBERS | {"frsmain", "frstpc", "frsuser"}
 S100_TAMEX_MEMBERS = {"fatima", "bplast", "bgo"}
+S100_VME_MODELS = {
+    "v1751": ("S100_V1751_BANKS", "qdc", "VME_CAEN_V1751", "board"),
+    "v1290": ("S100_V1290_BANKS", "tdc", "VME_CAEN_V1290_GEO", "geom_expected"),
+}
 WR_ARGUMENT = re.compile(
     r"\b(?:TIMESTAMP_WHITERABBIT\(\s*id\s*=\s*|S100_TAMEX_PAYLOAD\(\s*)(\w+)(?=\s*[,)])"
 )
@@ -68,6 +72,19 @@ def compiled_tamex_slots(detector, item):
     if len(set(addresses)) != len(addresses):
         raise ValueError(f"{detector}: duplicate compiled TAMEX address")
     return addresses
+
+
+def compiled_vme_slots(item, model):
+    config = item.get(model)
+    slots = config.get("compiled_slots") if isinstance(config, dict) else None
+    capacity = MAX_BOARDS[model]
+    if not isinstance(slots, list) or len(slots) != capacity:
+        raise ValueError(f"FATIMA_VME/{model}: compiled_slots must contain exactly {capacity} addresses")
+    if any(type(address) is not int or not 1 <= address <= 31 for address in slots):
+        raise ValueError(f"FATIMA_VME/{model}: compiled addresses must be integers in 1–31")
+    if len(set(slots)) != len(slots):
+        raise ValueError(f"FATIMA_VME/{model}: duplicate compiled address")
+    return slots
 
 
 def s100_routes(configuration):
@@ -176,6 +193,13 @@ def check_s100_routing(spec, configuration):
                 slots = re.findall(r"\bS100_TAMEX_CARDS_\w+\b", body)
                 if slots != [tamex_cards_symbol(member)] or TAMEX.search(body):
                     warnings.append(f"{detector}: UCESB must use {tamex_cards_symbol(member)}")
+            if member == "fatimavme":
+                for model, (symbol, _, _, _) in S100_VME_MODELS.items():
+                    compiled_vme_slots(item, model)
+                    if len(re.findall(rf"(?m)^\s*{symbol}\s*$", body)) != 1:
+                        warnings.append(f"{detector}/{model}: UCESB must use {symbol}")
+                if V1751.search(body) or V1290_GEO.search(body) or V1290.search(body):
+                    warnings.append(f"{detector}: use the generated VME bank declarations")
     return warnings
 
 
@@ -255,17 +279,21 @@ def validate(experiment, root=ROOT):
             notes.append(f"{detector}: {len(installed)} installed, {capacity} TAMEX slots "
                          f"(policy maximum {MAX_BOARDS['tamex']})")
         else:
+            fixed_vme = s100 and member == "fatimavme"
             for model, regex, member_name in (
                 ("v1751", V1751, f"{member}_qdc"),
-                ("v1290", V1290_GEO if s100 else V1290, f"{member}_tdc"),
+                ("v1290", V1290, f"{member}_tdc"),
             ):
                 installed = board_list(item.get(model, {}).get("boards"), f"{detector}/{model}", MAX_BOARDS[model])
-                declared = regex.findall(body)
+                if fixed_vme:
+                    declared = list(enumerate(compiled_vme_slots(item, model), 1))
+                else:
+                    declared = regex.findall(body)
                 capacity = read_array_size(header, member_name)
                 if capacity != len(declared):
                     warnings.append(f"{detector}/{model}: header has {capacity} slots, "
                                     f"but UCESB declares {len(declared)}")
-                if model == "v1751" or s100:
+                if model == "v1751" or fixed_vme:
                     addresses = {int(addr) for _, addr in declared}
                     missing = sorted(set(installed) - addresses)
                     if missing:
@@ -286,6 +314,10 @@ def emit_whiterabbit(config, include_procids=False):
         member: compiled_tamex_slots(detector, item)
         for member, (detector, item) in routes.items() if member in S100_TAMEX_MEMBERS
     }
+    vme = {
+        model: compiled_vme_slots(routes["fatimavme"][1], model)
+        for model in S100_VME_MODELS
+    } if routes else {}
     print("// Generated from config/s100/experiment.yaml.")
     for member, wr in sorted(ids.items()):
         print(f"#define {wr_symbol(member)} 0x{wr:x}")
@@ -297,6 +329,13 @@ def emit_whiterabbit(config, include_procids=False):
             for index, (sfp, card) in enumerate(slots)
         )
         print(f"#define {tamex_cards_symbol(member)} {cards}")
+    for model, slots in vme.items():
+        symbol, bank, decoder, parameter = S100_VME_MODELS[model]
+        banks = " ".join(
+            f"{bank}{slot} = {decoder}({parameter} = {address});"
+            for slot, address in enumerate(slots, 1)
+        )
+        print(f"#define {symbol} {banks}")
 
 
 def main():
@@ -306,7 +345,7 @@ def main():
     action.add_argument("--emit-whiterabbit", type=Path, metavar="S100_YAML",
                         help="print the S100 White Rabbit spec include")
     action.add_argument("--emit-s100-routing", type=Path, metavar="S100_YAML",
-                        help="print the S100 procids, White Rabbit IDs, and TAMEX layouts")
+                        help="print the S100 procids, White Rabbit IDs, and compiled layouts")
     args = parser.parse_args()
     config = args.emit_s100_routing or args.emit_whiterabbit
     if config:
