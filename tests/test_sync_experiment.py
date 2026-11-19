@@ -48,11 +48,10 @@ class SyncExperimentTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "procid"):
             sync.regenerate_declarations(self.source, config)
 
-    def test_refuse_white_rabbit_mismatch(self):
+    def test_white_rabbit_changes_do_not_rewrite_the_spec(self):
         config = {key: dict(value) for key, value in CONFIG.items()}
         config["FATIMA"]["whiterabbit"] = 0x999
-        with self.assertRaisesRegex(ValueError, "White Rabbit"):
-            sync.regenerate_declarations(self.source, config)
+        self.assertEqual(sync.regenerate_declarations(self.source, config), self.source)
 
     def test_vme_capacity_expansion_is_idempotent(self):
         enlarged = sync.expand_vme_capacity(self.source, {

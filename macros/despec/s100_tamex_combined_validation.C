@@ -53,11 +53,9 @@ void s100_tamex_combined_validation(
         !s100_config::LoadTamexConfig(config, "BGO", bgo_procid, bgo_wr))
         return;
 
-    // These WR subsystem IDs are currently compiled into s100.spec.
-    if (fatima_procid != 75 || bplast_procid != 80 || bgo_procid != 100 ||
-        fatima_wr != 0x1600 || bplast_wr != 0x500 || bgo_wr != 0x1900)
+    if (fatima_procid != 75 || bplast_procid != 80 || bgo_procid != 100)
     {
-        std::cerr << "experiment.yaml differs from the current compiled s100 UCESB routing.\n";
+        std::cerr << "TAMEX procids in experiment.yaml differ from the s100 EVENT declaration.\n";
         return;
     }
 

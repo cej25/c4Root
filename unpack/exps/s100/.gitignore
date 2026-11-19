@@ -5,3 +5,5 @@
 !Makefile
 !makefile_additional.inc
 !.gitignore
+!makefile_whiterabbit.inc
+s100_whiterabbit.generated.spec

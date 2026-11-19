@@ -2,3 +2,4 @@
 # Run from unpack/exps/s100: make -f Makefile.vme_lab s100_vme_lab
 TARGETS:=s100_vme_lab
 include ../makefile_common.mk
+include makefile_whiterabbit.inc

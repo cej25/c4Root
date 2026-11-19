@@ -7,3 +7,4 @@ TARGETS:=s100
 # Include common Makefile
 
 include ../makefile_common.mk
+include makefile_whiterabbit.inc

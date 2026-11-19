@@ -83,13 +83,6 @@ void s100_fatima_tamex_validation(
     {
         if (!s100_config::LoadTamexConfig(config_path + "/experiment.yaml", "FATIMA",
                              fatima_procid, fatima_whiterabbit)) return;
-        // UCESB's s100.spec currently fixes the FATIMA WR subsystem to 0x1600.
-        // The YAML entry documents/checks it; it does not reconfigure UCESB.
-        if (fatima_whiterabbit != 0x1600)
-        {
-            std::cerr << "FATIMA White Rabbit ID differs from s100.spec (0x1600)\n";
-            return;
-        }
     }
 
     TFatimaTwinpeaksConfiguration::SetDetectorConfigurationFile(

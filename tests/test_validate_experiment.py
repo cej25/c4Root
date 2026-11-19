@@ -1,7 +1,9 @@
 """Tests of capacity-based experiment validation (no UCESB runtime required)."""
 import importlib.util
+import io
 import tempfile
 import unittest
+from contextlib import redirect_stdout
 from pathlib import Path
 from unittest.mock import patch
 
@@ -17,6 +19,25 @@ class ExperimentValidationTests(unittest.TestCase):
         self.assertEqual(warnings, [])
         self.assertTrue(any("FATIMA_VME/v1751" in note for note in notes))
         self.assertTrue(any("FATIMA_VME/v1290" in note for note in notes))
+
+    def test_yaml_generates_current_and_edited_white_rabbit_ids(self):
+        config = (ROOT / "config/s100/experiment.yaml").read_text()
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "experiment.yaml"
+            path.write_text(config.replace("whiterabbit: 0x500", "whiterabbit: 0x1abc"))
+            output = io.StringIO()
+            with redirect_stdout(output):
+                module.emit_whiterabbit(path)
+            self.assertIn("#define S100_WR_BPLAST 0x1abc\n", output.getvalue())
+            self.assertIn("#define S100_WR_FATIMA 0x1600\n", output.getvalue())
+            self.assertEqual(output.getvalue().count("#define S100_WR_"), 8)
+
+            path.write_text(config.replace("whiterabbit: 0x500", "whiterabbit: 0x2000"))
+            with self.assertRaisesRegex(ValueError, "bPlast: whiterabbit"):
+                module.emit_whiterabbit(path)
+            path.write_text(config.replace("  whiterabbit: 0x500\n", ""))
+            with self.assertRaisesRegex(ValueError, "Missing White Rabbit IDs for bplast"):
+                module.emit_whiterabbit(path)
 
     def test_limits(self):
         self.assertEqual(module.MAX_BOARDS, {"tamex": 12, "v1751": 6, "v1290": 6})

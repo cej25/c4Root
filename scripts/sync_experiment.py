@@ -35,13 +35,10 @@ BOARD = re.compile(
 
 
 def load_config():
-    try:
-        import yaml
-    except ImportError as exc:
-        raise ValueError("PyYAML is required: python3 -m pip install pyyaml") from exc
-    data = yaml.safe_load(CONFIG.read_text())
-    if not isinstance(data, dict):
-        raise ValueError("experiment.yaml must contain a detector mapping")
+    from validate_experiment import read_yaml, wr_ids
+
+    data = read_yaml(CONFIG)
+    wr_ids(data)
     for detector in SUBEVENTS:
         item = data.get(detector)
         if not isinstance(item, dict):
@@ -60,8 +57,6 @@ def load_config():
             raise ValueError(f"{detector}: invalid sfp")
         if type(item.get("procid")) is not int or not 0 <= item["procid"] <= 65535:
             raise ValueError(f"{detector}: invalid procid")
-        if type(item.get("whiterabbit")) is not int:
-            raise ValueError(f"{detector}: invalid whiterabbit id")
     procs = [data[d]["procid"] for d in SUBEVENTS]
     if len(set(procs)) != len(procs):
         raise ValueError("Duplicate TAMEX procids")
@@ -106,15 +101,7 @@ def regenerate_declarations(source, cfg):
                 for index, card in enumerate(item["boards"])
             )
             block = block[:entries[0].start()] + replacement + block[entries[-1].end():]
-        # Procids and WR IDs can change the decoding interpretation:
-        # validate these separately rather than silently rewriting all grammar.
-        old = updated[start:end]
-        if "TIMESTAMP_WHITERABBIT_EXTENDED" in old:
-            wr = re.search(r"TIMESTAMP_WHITERABBIT_EXTENDED\(id\s*=\s*(0x[0-9a-fA-F]+|\d+)\)", old)
-        else:
-            wr = re.search(r"TIMESTAMP_WHITERABBIT\(id\s*=\s*(0x[0-9a-fA-F]+|\d+)\)", old)
-        if not wr or int(wr.group(1), 0) != item["whiterabbit"]:
-            raise ValueError(f"{detector}: White Rabbit ID in spec does not match experiment.yaml")
+        # White Rabbit IDs are generated from YAML by the unpacker build.
         updated = updated[:start] + block + updated[end:]
         event = re.search(
             r"\b" + ("fatima" if detector == "FATIMA" else "bplast" if detector == "bPlast" else "bgo") +

@@ -16,6 +16,48 @@ V1751 = re.compile(r"\bqdc(\d+)\s*=\s*VME_CAEN_V1751\(\s*board\s*=\s*(\d+)\s*\)"
 V1290 = re.compile(r"\btdc(\d+)\s*=\s*VME_CAEN_V1290_N\(\s*\)")
 MEMBER = {"fatima": "fatima", "bplast": "bplast", "bgo": "bgo", "fatimavme": "fatimavme"}
 
+S100_WR_INCLUDE = "s100_whiterabbit.generated.spec"
+S100_WR_MEMBERS = {"aida", "beammonitor", "bgo", "bplast", "fatima", "fatimavme", "frstpat", "germanium"}
+WR_ARGUMENT = re.compile(r"\bTIMESTAMP_WHITERABBIT\(\s*id\s*=\s*(\w+)\s*\)")
+
+
+def read_yaml(path):
+    try:
+        import yaml
+    except ImportError as exc:
+        raise ValueError("PyYAML is required. Install it with python3 -m pip install PyYAML.") from exc
+    try:
+        data = yaml.safe_load(path.read_text())
+    except yaml.YAMLError as exc:
+        raise ValueError(f"{path}: {exc}") from exc
+    if not isinstance(data, dict):
+        raise ValueError(f"{path}: expected a detector mapping")
+    return data
+
+
+def wr_symbol(member):
+    return f"S100_WR_{member.upper()}"
+
+
+def wr_ids(configuration):
+    ids = {}
+    for detector, item in configuration.items():
+        if not isinstance(item, dict) or "whiterabbit" not in item:
+            continue
+        member = item.get("member")
+        if not isinstance(member, str) or not re.fullmatch(r"[a-z][a-z0-9_]*", member):
+            raise ValueError(f"{detector}: invalid White Rabbit EVENT member")
+        if member in ids:
+            raise ValueError(f"{detector}: duplicate White Rabbit member {member}")
+        wr = item["whiterabbit"]
+        if type(wr) is not int or not 0 <= wr <= 0x1fff:
+            raise ValueError(f"{detector}: whiterabbit must be an integer in 0x0–0x1fff")
+        ids[member] = wr
+    missing = S100_WR_MEMBERS - ids.keys()
+    if missing:
+        raise ValueError(f"Missing White Rabbit IDs for {', '.join(sorted(missing))}")
+    return ids
+
 
 def read_subevent(spec, name):
     match = re.search(r"\bSUBEVENT\(\s*" + re.escape(name) + r"\s*\)\s*\{", spec)
@@ -53,24 +95,25 @@ def board_list(value, name, maximum):
 
 
 def validate(experiment, root=ROOT):
-    import yaml
-
     config_file = root / "config" / experiment / "experiment.yaml"
     spec_file = root / "unpack" / "exps" / experiment / f"{experiment}.spec"
     if not config_file.is_file() or not spec_file.is_file():
         raise ValueError(f"Cannot find experiment.yaml and unpacker spec for {experiment}")
-    configuration = yaml.safe_load(config_file.read_text())
-    if not isinstance(configuration, dict):
-        raise ValueError("experiment.yaml must be a mapping")
+    configuration = read_yaml(config_file)
     spec = spec_file.read_text()
+    yaml_wr = experiment == "s100"
+    if yaml_wr:
+        wr_ids(configuration)
+        if f'#include "{S100_WR_INCLUDE}"' not in spec:
+            raise ValueError(f"Spec must include {S100_WR_INCLUDE}")
     warnings, notes = [], []
     seen_procs = {}
     for detector, item in configuration.items():
-        if not isinstance(item, dict) or "digitiser" not in item:
+        if not isinstance(item, dict):
             continue
-        digitiser = item["digitiser"]
-        if digitiser not in ("tamex", "vme"):
-            continue  # Other electronics are outside this check's current scope.
+        digitiser = item.get("digitiser")
+        if digitiser not in ("tamex", "vme") and not (yaml_wr and "whiterabbit" in item):
+            continue
         subevent = item.get("subevent")
         member = item.get("member")
         if not isinstance(subevent, str) or not isinstance(member, str):
@@ -89,10 +132,17 @@ def validate(experiment, root=ROOT):
         )
         if not event_match or int(event_match.group(1)) != procid:
             warnings.append(f"{detector}: procid does not match UCESB EVENT declaration")
-        ts = re.search(r"TIMESTAMP_WHITERABBIT(?:_EXTENDED)?\(\s*id\s*=\s*(0x[0-9a-fA-F]+|\d+)", body)
-        wr = item.get("whiterabbit")
-        if type(wr) is not int or not ts or int(ts.group(1), 0) != wr:
-            warnings.append(f"{detector}: White Rabbit subsystem ID differs from UCESB")
+        if yaml_wr:
+            if WR_ARGUMENT.findall(body) != [wr_symbol(member)]:
+                warnings.append(f"{detector}: UCESB must use White Rabbit ID {wr_symbol(member)}")
+        else:
+            ts = re.search(r"TIMESTAMP_WHITERABBIT(?:_EXTENDED)?\(\s*id\s*=\s*(0x[0-9a-fA-F]+|\d+)", body)
+            wr = item.get("whiterabbit")
+            if type(wr) is not int or not ts or int(ts.group(1), 0) != wr:
+                warnings.append(f"{detector}: White Rabbit subsystem ID differs from UCESB")
+        if digitiser not in ("tamex", "vme"):
+            continue
+
         header_path = root / "c4source" / (
             "fatima" if member in ("fatima", "fatimavme") else member
         ) / f"ext_h101_{member}.h"
@@ -146,10 +196,26 @@ def validate(experiment, root=ROOT):
     return warnings, notes
 
 
+def emit_whiterabbit(config):
+    ids = wr_ids(read_yaml(config))
+    print("// Generated from config/s100/experiment.yaml.")
+    for member, wr in sorted(ids.items()):
+        print(f"#define {wr_symbol(member)} 0x{wr:x}")
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--experiment", required=True, help="experiment name under config/ and unpack/exps/")
+    action = parser.add_mutually_exclusive_group(required=True)
+    action.add_argument("--experiment", help="experiment name under config/ and unpack/exps/")
+    action.add_argument("--emit-whiterabbit", type=Path, metavar="S100_YAML",
+                        help="print the S100 White Rabbit spec include")
     args = parser.parse_args()
+    if args.emit_whiterabbit:
+        try:
+            emit_whiterabbit(args.emit_whiterabbit)
+        except (ValueError, OSError) as exc:
+            parser.exit(2, f"ERROR generating S100 White Rabbit constants: {exc}\n")
+        return 0
     if not re.fullmatch(r"[A-Za-z0-9_-]+", args.experiment):
         parser.error("invalid experiment name")
     try:

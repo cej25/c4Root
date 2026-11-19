@@ -1,7 +1,10 @@
 // -*- C++ -*-
 
 // #include "../../../config/setup.h"
+#include "s100_whiterabbit.generated.spec"
+#define C4_WR_UNIFIED
 #include "../../common/whiterabbit.spec"
+#undef C4_WR_UNIFIED
 #include "../../common/gsi_febex4.spec"
 #include "../../common/gsi_tamex4.spec"
 #include "vme_caen_v1751_lab.spec"
@@ -22,7 +25,7 @@ SUBEVENT(bgo_tamex_subevent)
 {
     select optional
     {
-        ts = TIMESTAMP_WHITERABBIT_EXTENDED(id=0x1900);
+        ts = TIMESTAMP_WHITERABBIT(id = S100_WR_BGO);
     };
 
     optional UINT32 be { 0_31: b = MATCH(0xbad00bad);}
@@ -47,7 +50,7 @@ SUBEVENT(bgo_tamex_subevent)
 
 SUBEVENT(aida_subev)
 {
-    ts =TIMESTAMP_WHITERABBIT(id = 0x700);
+    ts = TIMESTAMP_WHITERABBIT(id = S100_WR_AIDA);
     external data = EXT_AIDA();
 }
 
@@ -56,7 +59,7 @@ SUBEVENT(febex_subev)
 {
     select optional
     {
-        ts = TIMESTAMP_WHITERABBIT(id = 0x400);
+        ts = TIMESTAMP_WHITERABBIT(id = S100_WR_GERMANIUM);
     };
 
     select several
@@ -80,7 +83,7 @@ SUBEVENT(fatima_tamex_subev)
 
     select optional
     {
-        ts = TIMESTAMP_WHITERABBIT_EXTENDED(id = 0x1600);
+        ts = TIMESTAMP_WHITERABBIT(id = S100_WR_FATIMA);
     };
 
     select optional
@@ -109,7 +112,7 @@ SUBEVENT(fatima_vme_subev)
     // Do not install experimental generated headers into c4Root.
     select optional
     {
-        ts = TIMESTAMP_WHITERABBIT_EXTENDED(id = 0x1500);
+        ts = TIMESTAMP_WHITERABBIT(id = S100_WR_FATIMAVME);
     };
 
     select several
@@ -155,7 +158,7 @@ SUBEVENT(bplast_subev)
 {
     select optional
     {
-        ts = TIMESTAMP_WHITERABBIT(id = 0x500);
+        ts = TIMESTAMP_WHITERABBIT(id = S100_WR_BPLAST);
     };
 
     select optional
@@ -258,7 +261,7 @@ SUBEVENT(frs_tpat_subev)
 {
     select optional
     {
-        wr = TIMESTAMP_WHITERABBIT(id = 0x100);
+        wr = TIMESTAMP_WHITERABBIT(id = S100_WR_FRSTPAT);
     };
 
     select several
@@ -280,7 +283,7 @@ SUBEVENT(bm_subev)
 
     select optional
     {
-        ts = TIMESTAMP_WHITERABBIT_EXTENDED(id=0x1700);
+        ts = TIMESTAMP_WHITERABBIT(id = S100_WR_BEAMMONITOR);
     }
 
     // CEJ: wrap in select several later to catch bad events
