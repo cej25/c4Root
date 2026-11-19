@@ -37,7 +37,8 @@ class V1290LabTests(unittest.TestCase):
         actual = re.findall(
             r"tdc\[(\d+)\]\s*=\s*VME_CAEN_V1290_GEO\(\s*geom_expected\s*=\s*(\d+)\s*\)",
             block)
-        self.assertEqual(actual, [("0", "12"), ("1", "13")])
+        self.assertEqual(actual, [("0", "12"), ("1", "13"), ("2", "31"),
+                                  ("3", "30"), ("4", "29"), ("5", "28")])
         self.assertEqual(block.count("error3 = ERR_WORD_SIX()"), 1)
         self.assertNotIn("tdc1 = VME_CAEN_V1290_N", block)
         self.assertNotIn("tdc2 = VME_CAEN_V1290_N", block)
