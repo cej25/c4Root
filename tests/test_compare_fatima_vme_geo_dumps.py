@@ -63,6 +63,14 @@ class GeoComparisons(unittest.TestCase):
                          ".UNPACK.fatimavme.tdc[1].measurement.data[1]: 0x65=101\n")
             self.assertTrue(geo.compare(a, b)[0])
 
+    def test_historical_qdc_bank_names_compare_with_array_dumps(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            a, b = Path(tmp) / "a", Path(tmp) / "b"
+            fields = "Event 1 Trigger 1\n.UNPACK.fatimavme.qdc1.board_id: 0x06=6\n"
+            a.write_text(fields)
+            b.write_text(fields.replace("qdc1.", "qdc[0]."))
+            self.assertEqual(geo.compare(a, b)[0], [])
+
     def test_fail_on_active_zero_geo(self):
         with self.assertRaisesRegex(ValueError, "GEO=0"):
             geo.canonical([("tdc[2].geo", "0x00=0"),

@@ -9,12 +9,12 @@ spec = importlib.util.spec_from_file_location(
 module = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(module)
 
-PREFIX = """#define EXT_STR_h101_fatimavme_ITEMS_INFO(ok,si,offset,struct_t,printerr)
-typedef struct EXT_STR_h101_fatimavme_onion_t
+PREFIX = """#define EXT_STR_h101_fatimavme_s100_ITEMS_INFO(ok,si,offset,struct_t,printerr)
+typedef struct EXT_STR_h101_fatimavme_s100_onion_t
 {
   struct { unsigned _board_id; } fatimavme_qdc[6];
   struct { unsigned _geo; } fatimavme_tdc[6];
-} EXT_STR_h101_fatimavme_onion;
+} EXT_STR_h101_fatimavme_s100_onion;
 """
 
 
@@ -29,7 +29,7 @@ class StageVmeHeaderTests(unittest.TestCase):
     def test_missing_layout_rejected(self):
         with self.assertRaisesRegex(ValueError, "layout"):
             module.validate_generated_header(
-                PREFIX.replace("EXT_STR_h101_fatimavme_ITEMS_INFO", "MISSING_LAYOUT"))
+                PREFIX.replace("EXT_STR_h101_fatimavme_s100_ITEMS_INFO", "MISSING_LAYOUT"))
 
     def test_installed_header_is_not_rewritten_by_this_module(self):
         self.assertFalse("write_text" in module.validate_generated_header.__code__.co_names)

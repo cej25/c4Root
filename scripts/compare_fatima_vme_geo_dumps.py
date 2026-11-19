@@ -14,13 +14,41 @@ from itertools import chain, zip_longest
 from pathlib import Path
 from tempfile import TemporaryDirectory, TemporaryFile
 
-from compare_fatima_vme_dumps import iter_events
 from compare_s100_whiterabbit import capture
 
+EVENT = re.compile(r"^Event\s+(\d+)\b")
+FIELD = re.compile(r"^\s*\.UNPACK\.fatimavme\.(\S+?):\s*(.*?)\s*$")
+QDC = re.compile(r"^qdc([1-9]\d*)(?=\.|\[|$)")
 BANK = re.compile(r"^(tdc(?:\d+|\[\d+\]))\.(.+)$")
 GEO = re.compile(r"^(?:0x[0-9a-fA-F]+|[+-]?\d+)=([+-]?\d+)$")
 SPARE_QDC = re.compile(r"^qdc\[(\d+)\]\.([^ ]+)$")
 
+
+def iter_events(path):
+    """Yield one event at a time to avoid retaining a full-run dump in RAM."""
+    current = None
+    fields = []
+    with path.open(encoding="utf-8", errors="replace") as stream:
+        for lineno, line in enumerate(stream, 1):
+            line = line.rstrip("\r\n")
+            event = EVENT.match(line)
+            if event:
+                if current is not None:
+                    yield current, fields
+                current, fields = int(event.group(1)), []
+                continue
+            if ".UNPACK.fatimavme." not in line:
+                continue
+            match = FIELD.match(line)
+            if match is None:
+                raise ValueError(f"{path}:{lineno}: unrecognised FATIMA VME field: {line}")
+            if current is None:
+                raise ValueError(f"{path}:{lineno}: FATIMA VME data before first event")
+            name, value = match.groups()
+            name = QDC.sub(lambda bank: f"qdc[{int(bank.group(1)) - 1}]", name, count=1)
+            fields.append((name, value))
+    if current is not None:
+        yield current, fields
 
 def canonical(fields):
     other = []
@@ -70,8 +98,8 @@ def compare(original_path, new_path, max_differences=20):
     missing = object()
     original_count = new_count = compared = active_events = 0
     differences = []
-    for old, new in zip_longest(iter_events(original_path, True),
-                                iter_events(new_path, True), fillvalue=missing):
+    for old, new in zip_longest(iter_events(original_path),
+                                iter_events(new_path), fillvalue=missing):
         if old is not missing:
             original_count += 1
         if new is not missing:
