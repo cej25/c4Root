@@ -29,4 +29,5 @@ jobs:
           python -m unittest discover -s tests -p 'test_vme_lab_capacity.py' -v
           python -m unittest discover -s tests -p 'test_compare_fatima_vme_geo_dumps.py' -v
           python -m unittest discover -s tests -p 'test_fatima_vme_reader_capacity.py' -v
+          python -m unittest discover -s tests -p 'test_stage_fatima_vme_header.py' -v
           python -m unittest discover -s tests -p 'test_compare_fatima_vme_dumps.py' -v
