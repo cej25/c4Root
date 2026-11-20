@@ -10,6 +10,25 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 MAX_BOARDS = {"tamex": 12, "v1751": 6, "v1290": 6}
+FEBEX_MAX_BOARDS = 12
+FEBEX_CHANNELS = 16
+FEBEX_BOARD_FIELDS = (
+    ("PRESENT", "present", "DATA8"),
+    ("SFP", "sfp", "DATA8"),
+    ("CARD", "board_id", "DATA8"),
+    ("TRIGGER", "trig", "DATA8"),
+    ("EVENTHI", "event_trigger_time_hi", "DATA32"),
+    ("EVENTLO", "event_trigger_time_lo", "DATA32"),
+    ("PATTERN", "hit_pattern", "DATA16"),
+)
+FEBEX_CHANNEL_FIELDS = (
+    ("HITHI", "channel_trigger_time_hi", "DATA16"),
+    ("HITLO", "channel_trigger_time_lo", "DATA32"),
+    ("CFD", "channel_cfd", "DATA8"),
+    ("ENERGY", "channel_energy", "DATA32"),
+    ("PILEUP", "pileup", "DATA8"),
+    ("OVERFLOW", "overflow", "DATA8"),
+)
 TAMEX = re.compile(r"\btamex\[(\d+)\]\s*=\s*TAMEX4_SFP\(\s*sfp\s*=\s*(\d+)\s*,\s*card\s*=\s*(\d+)\s*\)")
 V1751 = re.compile(r"\bqdc(\d+)\s*=\s*VME_CAEN_V1751\(\s*board\s*=\s*(\d+)\s*\)")
 V1290_GEO = re.compile(r"\btdc(\d+)\s*=\s*VME_CAEN_V1290_GEO\(\s*geom_expected\s*=\s*(\d+)\s*\)")
@@ -73,6 +92,41 @@ def compiled_tamex_slots(detector, item):
     if len(set(addresses)) != len(addresses):
         raise ValueError(f"{detector}: duplicate compiled TAMEX address")
     return addresses
+
+
+def compiled_febex_slots(detector, item):
+    if item.get("digitiser") != "febex" or item.get("version") != 4:
+        raise ValueError(f"{detector}: the summary RAW mapping requires FEBEX4")
+    slots = board_list(item.get("compiled_slots"), f"{detector} compiled_slots", FEBEX_MAX_BOARDS)
+    if any(card > 255 for card in slots):
+        raise ValueError(f"{detector}: compiled card IDs must be in 0–255")
+    return slots
+
+
+def febex_raw_signals(member, board_count):
+    """Map the source slots, reserving the same RAW dimensions in every run."""
+    source = f"{member}.data"
+    signals = [f"SIGNAL(FEBEX_WR_ID, {member}.ts.subsystem_id, DATA16);"]
+    signals.extend(f"SIGNAL(FEBEX_WR_T{i}, {member}.ts.t{i}, DATA16);" for i in range(1, 5))
+    # A signal with no source fixes the upper array bound without mapping a spare card.
+    for raw, field, data_type in FEBEX_BOARD_FIELDS:
+        end = f"FEBEX_{raw}{board_count}"
+        signals.append(f"SIGNAL(FEBEX_{raw}1, {source}[0].{field}, "
+                       f"{end}, {source}[{board_count - 1}].{field}, {data_type});"
+                       if board_count > 1 else f"SIGNAL({end}, {source}[0].{field}, {data_type});")
+        if board_count < FEBEX_MAX_BOARDS:
+            signals.append(f"SIGNAL(FEBEX_{raw}{FEBEX_MAX_BOARDS}, , {data_type});")
+    capacity = FEBEX_MAX_BOARDS * FEBEX_CHANNELS
+    for raw, field, data_type in FEBEX_CHANNEL_FIELDS:
+        signals.append(f"SIGNAL(ZERO_SUPPRESS: FEBEX_{raw}{capacity});")
+        for slot in range(board_count):
+            first = slot * FEBEX_CHANNELS + 1
+            last = first + FEBEX_CHANNELS - 1
+            signals.append(f"SIGNAL(FEBEX_{raw}{first}, {source}[{slot}].{field}[0], "
+                           f"FEBEX_{raw}{last}, {source}[{slot}].{field}[{FEBEX_CHANNELS - 1}], {data_type});")
+        if board_count < FEBEX_MAX_BOARDS:
+            signals.append(f"SIGNAL(FEBEX_{raw}{capacity}, , {data_type});")
+    return signals
 
 
 def compiled_vme_slots(item, model):
@@ -194,6 +248,10 @@ def check_s100_routing(spec, configuration):
                 slots = re.findall(r"\bS100_TAMEX_CARDS_\w+\b", body)
                 if slots != [tamex_cards_symbol(member)] or TAMEX.search(body):
                     warnings.append(f"{detector}: UCESB must use {tamex_cards_symbol(member)}")
+            if member == "germanium":
+                compiled_febex_slots(detector, item)
+                if body.count("S100_FEBEX_CARDS") != 1 or FEBEX.search(body):
+                    warnings.append(f"{detector}: UCESB must use S100_FEBEX_CARDS")
             if member == "fatimavme":
                 for model, (symbol, _, _, _) in S100_VME_MODELS.items():
                     compiled_vme_slots(item, model)
@@ -294,7 +352,7 @@ def validate(experiment, root=ROOT):
         if not isinstance(item, dict):
             continue
         digitiser = item.get("digitiser")
-        if digitiser not in ("tamex", "vme"):
+        if digitiser not in ("tamex", "vme", "febex"):
             continue
         subevent = item.get("subevent")
         member = item.get("member")
@@ -308,7 +366,14 @@ def validate(experiment, root=ROOT):
             warnings.append(f"{detector}: missing generated structure header {header_path}")
             continue
         header = header_path.read_text()
-        if digitiser == "tamex":
+        if digitiser == "febex":
+            slots = compiled_febex_slots(detector, item)
+            capacity = read_array_size(header, f"{member}_data")
+            if capacity != len(slots):
+                warnings.append(f"{detector}: legacy header has {capacity} FEBEX slots, "
+                                f"but unpacker declares {len(slots)}")
+            notes.append(f"{detector}: {len(slots)} FEBEX cards, {FEBEX_MAX_BOARDS} RAW board slots")
+        elif digitiser == "tamex":
             if item.get("version") != 4:
                 raise ValueError(f"{detector}: only TAMEX4 is supported by this validator")
             installed = board_list(item.get("boards"), detector, MAX_BOARDS["tamex"])
@@ -388,6 +453,16 @@ def emit_whiterabbit(config, include_procids=False):
             for slot, address in enumerate(slots, 1)
         )
         print(f"#define {symbol} {banks}")
+
+    if routes:
+        detector, item = routes["germanium"]
+        cards = compiled_febex_slots(detector, item)
+        print("#define S100_FEBEX_CARDS " + " ".join(
+            f"data[{slot}] = FEBEX_EVENT(card = {card});" for slot, card in enumerate(cards)
+        ))
+        continuation = " \\\n    "
+        print("#define S100_FEBEX_RAW_SIGNALS " + continuation.join(
+            febex_raw_signals("germanium", len(cards))))
 
 
 def main():

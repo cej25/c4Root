@@ -1,7 +1,7 @@
 # s100 electronics layout. Board indices are local to each UCESB subevent.
 # Edit this file, then use scripts/sync_experiment.py --experiment s100 --check.
 # boards and sfp describe installed cards. compiled_slots lists TAMEX [SFP, card]
-# pairs, V1751 board IDs, or V1290 GEOs in output order, including spare slots.
+# pairs, FEBEX card IDs, V1751 board IDs, or V1290 GEOs in output order.
 # Rebuild the unpacker after editing routing or compiled slots.
 FATIMA:
   subevent: fatima_tamex_subev
@@ -56,11 +56,14 @@ AIDA:
   procid: 90
   whiterabbit: 0x700
 
-Germanium:
+DEGAS:
   subevent: febex_subev
   member: germanium
+  digitiser: febex
+  version: 4
   procid: 60
   whiterabbit: 0x400
+  compiled_slots: [0, 1, 2, 3, 4, 5]
 
 FRS_Main:
   subevent: frs_main_subev

@@ -51,7 +51,6 @@ SUBEVENT(aida_subev)
     external data = EXT_AIDA();
 }
 
-// this must change to be more general, or name should change from febex_subev
 SUBEVENT(febex_subev)
 {
     select optional
@@ -66,12 +65,7 @@ SUBEVENT(febex_subev)
 
     select several
     {
-        data[0] = FEBEX_EVENT(card = 0);
-        data[1] = FEBEX_EVENT(card = 1);
-        data[2] = FEBEX_EVENT(card = 2);
-        data[3] = FEBEX_EVENT(card = 3);
-        data[4] = FEBEX_EVENT(card = 4);
-        data[5] = FEBEX_EVENT(card = 5);
+        S100_FEBEX_CARDS
     };
 }
 

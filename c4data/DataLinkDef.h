@@ -95,6 +95,9 @@
 #pragma link C++ class TamexRawWord+;
 #pragma link C++ class std::vector<TamexRawWord>+;
 #pragma link C++ class TamexRawData+;
+#pragma link C++ class FebexRawHit+;
+#pragma link C++ class std::vector<FebexRawHit>+;
+#pragma link C++ class FebexRawData+;
 
 // HISPEC10 MCP
 #pragma link C++ class H10MCPTwinpeaksData+;

@@ -133,8 +133,8 @@ def compare_streams(reference, candidate, include_tamex=False):
     return counts, differences, shown
 
 
-def capture(executable, lmd, limit, dump, label):
-    command = [str(executable.resolve()), str(lmd.resolve()), "--dump=UNPACK",
+def capture(executable, lmd, limit, dump, label, *, levels="UNPACK"):
+    command = [str(executable.resolve()), str(lmd.resolve()), f"--dump={levels}",
                "--allow-errors", f"--max-events={limit}"]
     with TemporaryFile(mode="w+t", encoding="utf-8", errors="replace") as diagnostics:
         # Older UCESB releases can lose stdout when their progress timer

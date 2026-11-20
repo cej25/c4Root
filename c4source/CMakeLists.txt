@@ -40,6 +40,7 @@ ${C4ROOT_SOURCE_DIR}/c4data/fimpData
 ${C4ROOT_SOURCE_DIR}/c4data/mcpData
 ${C4ROOT_SOURCE_DIR}/c4data/stefanData
 ${C4ROOT_SOURCE_DIR}/c4data/tamexData
+${C4ROOT_SOURCE_DIR}/c4data/febexData
 ${C4ROOT_SOURCE_DIR}/c4data/baseData
 )
 
@@ -60,6 +61,7 @@ set(SRCS
 ./base/CorrelationsMap.cxx
 ./base/GainShift.cxx
 ./digitisers/tamex/TamexReader.cxx
+./digitisers/febex/FebexReader.cxx
 ./digitisers/vme/V1751Reader.cxx
 ./digitisers/vme/V1290Reader.cxx
 ./aida/AidaReader.cxx
@@ -103,6 +105,7 @@ set(SRCS
 )
 
 Set(STRUCT_HEADERS
+./digitisers/febex/ext_h101_febex.h
 ./base/ext_h101_unpack.h
 ./aida/ext_h101_aida.h
 ./frs/ext_h101_frs.h
