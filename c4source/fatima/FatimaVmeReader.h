@@ -19,6 +19,7 @@ extern "C"
 
 class TClonesArray;
 class FatimaVmeData;
+class FatimaRawData;
 // class vector;
 
 struct EXT_STR_h101_fatimavme_t;
@@ -32,6 +33,8 @@ class ext_data_struct_info;
 class FatimaVmeReader : public c4Reader
 {
     public:
+        // Adapt the VME chain from a preceding FatimaEventReader for existing tasks.
+        FatimaVmeReader();
         FatimaVmeReader(EXT_STR_h101_fatimavme_onion*, size_t);
 
         virtual ~FatimaVmeReader();
@@ -62,6 +65,8 @@ class FatimaVmeReader : public c4Reader
         Int_t fNEvent = 0;
         Bool_t fOnline;
         Bool_t fSharedInput = kFALSE;
+        bool fUseFatimaRaw = false; //!
+        const FatimaRawData* fFatimaRaw = nullptr; //!
 
         EXT_STR_h101_fatimavme_onion* fData;
         size_t fOffset;

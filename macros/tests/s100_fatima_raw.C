@@ -6,6 +6,8 @@
 #include "FatimaRaw2Cal.h"
 #include "FatimaTwinpeaksCalData.h"
 #include "FatimaVmeElectronicsCalData.h"
+#include "FatimaVmeData.h"
+#include "bPlastTwinpeaksCalData.h"
 #include "TFatimaVmeConfiguration.h"
 #include "TimeMachineData.h"
 #include "TamexReader.h"
@@ -140,6 +142,16 @@ std::size_t CompareCal(const TClonesArray& reference, const TClonesArray& actual
     return actual.GetEntriesFast();
 }
 
+auto FatimaCalFields(const FatimaTwinpeaksCalData& hit)
+{
+    return std::make_tuple(hit.Get_trigger(), hit.Get_board_id(), hit.Get_ch_ID(),
+        hit.Get_detector_id(), hit.Get_slow_lead_epoch(), hit.Get_slow_lead_time(),
+        hit.Get_slow_trail_epoch(), hit.Get_slow_trail_time(), hit.Get_fast_lead_epoch(),
+        hit.Get_fast_lead_time(), hit.Get_fast_trail_epoch(), hit.Get_fast_trail_time(),
+        hit.Get_fast_ToT(), hit.Get_slow_ToT(), hit.Get_energy(), hit.Get_wr_subsystem_id(),
+        hit.Get_wr_t(), hit.Get_absolute_event_time());
+}
+
 void CheckFatimaCal(const char* reference, const char* output, int events)
 {
     constexpr std::array<const char*, 4> branches{
@@ -175,14 +187,7 @@ void CheckFatimaCal(const char* reference, const char* output, int events)
                 throw std::runtime_error(std::string("Could not read branch ") + branches[branch]);
 
         totals[0] += CompareCal<FatimaTwinpeaksCalData>(*hits[0][0], *hits[1][0], branches[0], entry,
-            [](const auto& hit) {
-                return std::make_tuple(hit.Get_trigger(), hit.Get_board_id(), hit.Get_ch_ID(),
-                    hit.Get_detector_id(), hit.Get_slow_lead_epoch(), hit.Get_slow_lead_time(),
-                    hit.Get_slow_trail_epoch(), hit.Get_slow_trail_time(), hit.Get_fast_lead_epoch(),
-                    hit.Get_fast_lead_time(), hit.Get_fast_trail_epoch(), hit.Get_fast_trail_time(),
-                    hit.Get_fast_ToT(), hit.Get_slow_ToT(), hit.Get_energy(), hit.Get_wr_subsystem_id(),
-                    hit.Get_wr_t(), hit.Get_absolute_event_time());
-            });
+            FatimaCalFields);
         totals[1] += CompareCal<FatimaVmeQdcCalHit>(*hits[0][1], *hits[1][1], branches[1], entry,
             [](const auto& hit) {
                 return std::tie(hit.wr_timestamp, hit.detector_id, hit.board_id, hit.channel,
@@ -206,6 +211,90 @@ void CheckFatimaCal(const char* reference, const char* output, int events)
         std::cout << branches[branch] << ": " << totals[branch] << " entries\n";
     std::cout << "PASS: FATIMA calibrated output agrees across " << events << " events.\n";
 }
+template <typename Record, typename Fields>
+std::size_t CompareVector(const std::vector<Record>& reference, const std::vector<Record>& actual,
+                          const char* branch, Long64_t entry, Fields fields)
+{
+    if (!std::equal(reference.begin(), reference.end(), actual.begin(), actual.end(),
+                    [&](const auto& x, const auto& y) { return fields(x) == fields(y); }))
+        throw std::runtime_error(std::string(branch) + " mismatch at entry " + std::to_string(entry));
+    return actual.size();
+}
+
+struct S100AnalysisBranches
+{
+    S100AnalysisBranches(const char* path, int events) : file(path, "READ")
+    {
+        tree = file.Get<TTree>("evt");
+        if (!tree) tree = file.Get<TTree>("cbmsim");
+        if (!tree || tree->GetEntries() != events ||
+            tree->SetBranchAddress("EventHeader.", &header) < 0 ||
+            tree->SetBranchAddress("FatimaTwinpeaksCalData", &fatima) < 0 ||
+            tree->SetBranchAddress("FatimaVmeQDCData", &qdc) < 0 ||
+            tree->SetBranchAddress("FatimaVmeTDCData", &tdc) < 0 ||
+            tree->SetBranchAddress("bPlastTwinpeaksCalData", &bplast) < 0 ||
+            tree->SetBranchAddress("bPlastTimeMachineData", &bplastTimeMachine) < 0)
+            throw std::runtime_error(std::string("Missing S100 analysis branch or incorrect event count in ") + path);
+    }
+
+    TFile file;
+    TTree* tree = nullptr;
+    EventHeader* header = nullptr;
+    TClonesArray* fatima = nullptr;
+    std::vector<FatimaVmeQDCItem>* qdc = nullptr;
+    std::vector<FatimaVmeTDCItem>* tdc = nullptr;
+    TClonesArray* bplast = nullptr;
+    TClonesArray* bplastTimeMachine = nullptr;
+};
+
+void CheckS100Analysis(const char* reference, const char* output, int events)
+{
+    S100AnalysisBranches before(reference, events);
+    S100AnalysisBranches after(output, events);
+    std::size_t fatima = 0, qdc = 0, tdc = 0, bplast = 0, timeMachine = 0;
+    for (Long64_t entry = 0; entry < events; ++entry)
+    {
+        for (auto* data : {&before, &after})
+            if (data->tree->GetEntry(entry) <= 0 || !data->header || !data->fatima || !data->qdc ||
+                !data->tdc || !data->bplast || !data->bplastTimeMachine)
+                throw std::runtime_error("Could not read S100 event " + std::to_string(entry));
+
+        if (before.header->GetEventno() != after.header->GetEventno() ||
+            before.header->GetTrigger() != after.header->GetTrigger())
+            throw std::runtime_error("S100 event header mismatch at entry " + std::to_string(entry));
+        fatima += CompareCal<FatimaTwinpeaksCalData>(*before.fatima, *after.fatima,
+            "FatimaTwinpeaksCalData", entry, FatimaCalFields);
+        qdc += CompareVector(*before.qdc, *after.qdc, "FatimaVmeQDCData", entry, [](const auto& hit) {
+            return std::make_tuple(hit.Get_wr_t(), hit.Get_detector(), hit.Get_coarse_time(),
+                hit.Get_fine_time(), hit.Get_fine_bin(), hit.Get_qlong_raw(), hit.Get_qshort_raw(),
+                hit.Get_waveform_one());
+        });
+        tdc += CompareVector(*before.tdc, *after.tdc, "FatimaVmeTDCData", entry, [](const auto& hit) {
+            return std::make_tuple(hit.Get_wr_t(), hit.Get_wr_subsystem_id(), hit.Get_detector(),
+                                   hit.Get_v1290_tdc_data(), hit.Get_leadOrTrail());
+        });
+        bplast += CompareCal<bPlastTwinpeaksCalData>(*before.bplast, *after.bplast,
+            "bPlastTwinpeaksCalData", entry, [](const auto& hit) {
+                return std::make_tuple(hit.Get_trigger(), hit.Get_board_id(), hit.Get_ch_ID(),
+                    hit.Get_detector_id(), hit.Get_slow_lead_epoch(), hit.Get_slow_lead_time(),
+                    hit.Get_slow_trail_epoch(), hit.Get_slow_trail_time(), hit.Get_fast_lead_epoch(),
+                    hit.Get_fast_lead_time(), hit.Get_fast_trail_epoch(), hit.Get_fast_trail_time(),
+                    hit.Get_fast_ToT(), hit.Get_slow_ToT(), hit.Get_wr_subsystem_id(),
+                    hit.Get_wr_t(), hit.Get_absolute_event_time());
+            });
+        timeMachine += CompareCal<TimeMachineData>(*before.bplastTimeMachine, *after.bplastTimeMachine,
+            "bPlastTimeMachineData", entry, [](const auto& hit) {
+                return std::make_tuple(hit.Get_undelayed_time(), hit.Get_delayed_time(),
+                                       hit.Get_wr_subsystem_id(), hit.Get_wr_t());
+            });
+    }
+    if (!fatima || !qdc || !tdc || !bplast)
+        throw std::runtime_error("The replay did not exercise FATIMA TAMEX, QDC, TDC and calibrated bPlast");
+    std::cout << "PASS: " << events << " S100 events, " << fatima << " calibrated FATIMA TAMEX hits, "
+              << qdc << " FATIMA QDC hits, " << tdc
+              << " FATIMA TDC hits, " << bplast << " calibrated bPlast hits and "
+              << timeMachine << " bPlast Time Machine entries match.\n";
+}
 }
 
 void s100_fatima_raw(const char* input = "../calum.lmd",
@@ -214,6 +303,11 @@ void s100_fatima_raw(const char* input = "../calum.lmd",
                      const char* fineTimeFile = "config/s100/fatima/fine_time_23apr_beamON.root")
 {
     if (events < 1) throw std::invalid_argument("The replay needs a positive event limit");
+    if (checkOnly && mode == "analysis")
+    {
+        CheckS100Analysis(input, output, events);
+        return;
+    }
     if (mode != "raw" && mode != "split" && mode != "combined")
         throw std::invalid_argument("Expected FATIMA replay mode raw, split or combined");
     if (checkOnly)

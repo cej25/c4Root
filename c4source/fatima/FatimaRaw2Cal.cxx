@@ -35,8 +35,9 @@
 #include "FatimaRaw2Cal.h"
 #include "FatimaRawData.h"
 #include "FatimaVmeCalibrator.h"
-#include "FatimaLegacyPulseBuilder.h"
+#include "TamexPulseBuilder.h"
 #include "TamexFineTimeCalibration.h"
+#include "TamexFineTimeHistograms.h"
 #include "TamexRawData.h"
 #include "TFile.h"
 #include "TH1.h"
@@ -207,65 +208,14 @@ InitStatus FatimaRaw2Cal::Init()
                 c4LOG(error, "TAMEX input requires a calibration file or online calibration");
                 return kFATAL;
             }
-            TFile calibration_file(fTamexFineTimeFile, "READ");
-            if (calibration_file.IsZombie())
+            try
             {
-                c4LOG(error, "Cannot open FATIMA fine-time histograms: " << fTamexFineTimeFile);
+                fTamexFineTimes = tamex::ReadFineTimeHistograms(fTamexFineTimeFile, max_boards);
+            }
+            catch (const std::runtime_error& error)
+            {
+                c4LOG(error, "FATIMA TAMEX fine-time calibration: " << error.what());
                 return kFATAL;
-            }
-            // Old experimental fine-time files can contain fewer than 12
-            // boards. Size the lookup only to complete calibrated boards;
-            // never silently use zero calibration for an unseen board.
-            std::size_t boards = 0;
-            for (; boards < max_boards; ++boards)
-            {
-                TH1* probe = nullptr;
-                const TString name = TString::Format("fine_time_hits_%u_0",
-                    static_cast<unsigned>(boards));
-                calibration_file.GetObject(name.Data(), probe);
-                if (!probe) break;
-            }
-            if (boards == 0)
-            {
-                c4LOG(error, "FATIMA fine-time file contains no calibrated TAMEX boards");
-                return kFATAL;
-            }
-            fTamexFineTimes.resize(boards * channels_per_board);
-            for (std::size_t board = 0; board < boards; ++board)
-            {
-                for (std::size_t channel = 0; channel < channels_per_board; ++channel)
-                {
-                    const TString name = TString::Format("fine_time_hits_%u_%u",
-                        static_cast<unsigned>(board), static_cast<unsigned>(channel));
-                    TH1* histogram = nullptr;
-                    calibration_file.GetObject(name.Data(), histogram);
-                    if (!histogram || histogram->GetNbinsX() != 1024)
-                    {
-                        c4LOG(error, "Missing or incompatible FATIMA histogram: " << name);
-                        return kFATAL;
-                    }
-
-                    std::array<std::uint64_t, 1024> counts{};
-                    for (std::size_t bin = 0; bin < counts.size(); ++bin)
-                    {
-                        const double count = histogram->GetBinContent(static_cast<int>(bin + 1));
-                        if (!std::isfinite(count) || count < 0 ||
-                            static_cast<long double>(count) >=
-                                static_cast<long double>(std::numeric_limits<std::uint64_t>::max()) ||
-                            std::trunc(count) != count)
-                        {
-                            c4LOG(error, "Invalid fine-time histogram occupancy: " << name);
-                            return kFATAL;
-                        }
-                        counts[bin] = static_cast<std::uint64_t>(count);
-                    }
-                    tamex::FineTimeCalibration<> calibration;
-                    calibration.SetCounts(counts);
-                    calibration.Calculate();
-                    auto& times = fTamexFineTimes[board * channels_per_board + channel];
-                    for (std::size_t bin = 0; bin < times.size(); ++bin)
-                        times[bin] = calibration.Time(bin);
-                }
             }
             fTamexCalibrationReady = true;
         }
@@ -442,7 +392,7 @@ void FatimaRaw2Cal::BuildTamexLegacyHits()
             c4LOG(error, "Unsupported procid, format or FATIMA board in TAMEX Raw input");
             continue;
         }
-        fatima::LegacyPulseBuilder builder;
+        tamex::LegacyPulseBuilder builder;
         builder.Reset();
         const std::size_t board_index = board->Board();
         const auto fine_time = [this, board_index](std::uint16_t channel, std::uint32_t fine) {
@@ -453,7 +403,7 @@ void FatimaRaw2Cal::BuildTamexLegacyHits()
             if (word.kind != TamexRawWord::Epoch && word.kind != TamexRawWord::Edge) continue;
             if (word.kind == TamexRawWord::Edge &&
                 (word.channel >= channels_per_board || word.fine >= 1024)) continue;
-            builder.Process(word, true, fine_time, [this, board](const fatima::PairedPulse& pulse) {
+            builder.Process(word, true, fine_time, [this, board](const tamex::PairedPulse& pulse) {
                 new ((*fTamexLegacyHits)[fTamexLegacyHits->GetEntriesFast()]) FatimaTwinpeaksData(
                     board->Trigger(), board->Board(), pulse.channel,
                     static_cast<std::int64_t>(pulse.accepted_trigger_ns),

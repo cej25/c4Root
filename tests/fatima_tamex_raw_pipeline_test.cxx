@@ -1,6 +1,6 @@
 #include "../c4source/digitisers/tamex/TamexDecoder.h"
 #include "../c4source/digitisers/tamex/TamexFineTimeCalibration.h"
-#include "../c4source/fatima/FatimaLegacyPulseBuilder.h"
+#include "../c4source/digitisers/tamex/TamexPulseBuilder.h"
 
 #include <cassert>
 #include <cmath>
@@ -57,14 +57,14 @@ int main()
     assert(stats.epoch_words == 1 && stats.edge_words == 6);
     assert(stats.invalid_fine_words == 1 && raw.size() == 7);
 
-    fatima::LegacyPulseBuilder builder;
-    std::vector<fatima::PairedPulse> pairs;
+    tamex::LegacyPulseBuilder builder;
+    std::vector<tamex::PairedPulse> pairs;
     for (const auto& word : raw)
         builder.Process(word, true,
             [&lut](std::uint16_t, std::uint32_t fine_bin) {
                 return lut.Time(fine_bin);
             },
-            [&pairs](const fatima::PairedPulse& pair) { pairs.push_back(pair); });
+            [&pairs](const tamex::PairedPulse& pair) { pairs.push_back(pair); });
 
     assert(pairs.size() == 2);
     assert(pairs[0].channel == 1 && pairs[1].channel == 2);

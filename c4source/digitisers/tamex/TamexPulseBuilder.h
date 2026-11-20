@@ -1,13 +1,12 @@
-#ifndef FATIMA_LEGACY_PULSE_BUILDER_H
-#define FATIMA_LEGACY_PULSE_BUILDER_H
+#ifndef TAMEX_PULSE_BUILDER_H
+#define TAMEX_PULSE_BUILDER_H
 
 #include <cstdint>
 
-namespace fatima
+namespace tamex
 {
-// Compatibility model for FatimaReader's existing pulse-building behaviour.
-// This is deliberately kept in FATIMA processing, not the electronics decoder.
-// It will be used by the new FATIMA Raw2Cal once parity is established.
+// Pulse pairing used by the legacy FATIMA and bPlast Twinpeaks paths.
+// Callers supply fine-time calibration and handle detector trigger records.
 struct TimedEdge
 {
     std::uint32_t epoch = 0;
@@ -79,6 +78,6 @@ private:
     TimedEdge accepted_trigger_{};
     double accepted_trigger_ns_ = 0.0;
 };
-} // namespace fatima
+} // namespace tamex
 
 #endif

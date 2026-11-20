@@ -25,6 +25,7 @@
 #include <type_traits>
 
 // c4
+#include "FatimaRawData.h"
 #include "FatimaVmeData.h"
 #include "FatimaVmeReader.h"
 #include "FatimaVmeQdcSafety.h"
@@ -54,6 +55,12 @@ FatimaVmeReader::FatimaVmeReader(EXT_STR_h101_fatimavme_onion* data, size_t offs
 {
 }
 
+FatimaVmeReader::FatimaVmeReader()
+    : FatimaVmeReader(nullptr, 0)
+{
+    fUseFatimaRaw = true;
+}
+
 FatimaVmeReader::~FatimaVmeReader()
 {   
     c4LOG(info, "");
@@ -77,8 +84,15 @@ Bool_t FatimaVmeReader::Init(ext_data_struct_info* a_struct_info)
         return kFALSE;
     }
 
-    // bunch of stuff
-
+    if (fUseFatimaRaw)
+    {
+        fFatimaRaw = FairRootManager::Instance()->InitObjectAs<const FatimaRawData*>("FatimaRawData");
+        if (!fFatimaRaw)
+        {
+            c4LOG(error, "FATIMA VME requires an earlier reader providing FatimaRawData");
+            return kFALSE;
+        }
+    }
 
     FairRootManager::Instance()->Register("FatimaVmeData", "FatimaVmeDataFolder", fArray, !fOnline);
     FairRootManager::Instance()->RegisterAny("FatimaVmeQDCData", qdcArray, !fOnline);
@@ -98,10 +112,33 @@ Bool_t FatimaVmeReader::Init(ext_data_struct_info* a_struct_info)
 
 Bool_t FatimaVmeReader::Read()
 {
-    const auto* data = fData;
-    if (!data) return kTRUE;
     qdcArray->clear();
     tdcArray->clear();
+    if (fFatimaRaw)
+    {
+        for (const auto& raw : fFatimaRaw->VMEChain.QDC)
+        {
+            if (raw.board_id == 0) continue;
+            const auto mapping = dets_qdc.find({raw.board_id, raw.channel});
+            if (mapping == dets_qdc.end()) continue;
+            const double fine_time = (std::uint64_t(raw.coarse) + (std::uint64_t(raw.extended) << 32))
+                                     + raw.fine / 1024.;
+            qdcArray->emplace_back().SetAll(raw.wr_timestamp, mapping->second, raw.coarse,
+                                           fine_time, raw.fine, raw.qlong, raw.qshort, raw.waveform);
+        }
+        for (const auto& raw : fFatimaRaw->VMEChain.TDC)
+        {
+            if (raw.geo == 0) continue;
+            const auto mapping = dets_tdc.find({raw.geo, raw.channel});
+            if (mapping == dets_tdc.end()) continue;
+            tdcArray->emplace_back().SetAll(raw.wr_timestamp, raw.wr_subsystem, mapping->second,
+                                           raw.measurement, raw.leading_or_trailing);
+        }
+        ++fNEvent;
+        return kTRUE;
+    }
+    const auto* data = fData;
+    if (!data) return kTRUE;
     
     
     //whiterabbit timestamp:

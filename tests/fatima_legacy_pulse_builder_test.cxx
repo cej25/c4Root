@@ -1,4 +1,4 @@
-#include "../c4source/fatima/FatimaLegacyPulseBuilder.h"
+#include "../c4source/digitisers/tamex/TamexPulseBuilder.h"
 
 #include <cassert>
 #include <cmath>
@@ -21,13 +21,13 @@ struct RawWord
 
 int main()
 {
-    fatima::LegacyPulseBuilder builder;
-    std::vector<fatima::PairedPulse> pulses;
+    tamex::LegacyPulseBuilder builder;
+    std::vector<tamex::PairedPulse> pulses;
     auto calibrated = [](std::uint16_t channel, std::uint32_t fine) {
         return static_cast<double>(fine) / 1024.0 * 5.0 +
                static_cast<double>(channel) / 100.0;
     };
-    const auto collect = [&](const fatima::PairedPulse& pulse) { pulses.push_back(pulse); };
+    const auto collect = [&](const tamex::PairedPulse& pulse) { pulses.push_back(pulse); };
     const auto process = [&](RawWord word, bool ready = true) {
         builder.Process(word, ready, calibrated, collect);
     };
