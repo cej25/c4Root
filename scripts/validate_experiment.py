@@ -244,7 +244,7 @@ def validate(experiment, root=ROOT):
             if type(wr) is not int or not ts or int(ts.group(1), 0) != wr:
                 warnings.append(f"{detector}: White Rabbit subsystem ID differs from UCESB")
 
-        header_name = "fatimavme_s100" if s100 and member == "fatimavme" else member
+        header_name = "fatimavme_fixed" if s100 and member == "fatimavme" else member
         header_path = root / "c4source" / (
             "fatima" if member in ("fatima", "fatimavme") else member
         ) / f"ext_h101_{header_name}.h"

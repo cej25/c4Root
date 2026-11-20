@@ -10,25 +10,25 @@
 extern "C" {
 #include "ext_data_client.h"
 #include "ext_h101_fatimavme.h"
-#include "ext_h101_fatimavme_s100.h"
+#include "ext_h101_fatimavme_fixed.h"
 }
 
 V1290Reader::V1290Reader(EXT_STR_h101_fatimavme_onion_t* input,
                          std::size_t offset, std::uint16_t procid)
     : c4Reader("V1290Reader"), fInput(input), fOffset(offset), fProcId(procid) {}
 
-V1290Reader::V1290Reader(EXT_STR_h101_fatimavme_s100_onion_t* input,
+V1290Reader::V1290Reader(EXT_STR_h101_fatimavme_fixed_onion_t* input,
                          std::size_t offset, std::uint16_t procid)
-    : c4Reader("V1290Reader"), fS100Input(input), fOffset(offset), fProcId(procid) {}
+    : c4Reader("V1290Reader"), fFixedInput(input), fOffset(offset), fProcId(procid) {}
 
 V1290Reader::~V1290Reader() { delete fOutput; }
 
 Bool_t V1290Reader::Init(ext_data_struct_info* info) {
-    if (!info || (!fInput && !fS100Input) || !FairRootManager::Instance()) return kFALSE;
+    if (!info || (!fInput && !fFixedInput) || !FairRootManager::Instance()) return kFALSE;
     Int_t ok = 1;
     if (fRegisterStructure) {
-        if (fS100Input) {
-            EXT_STR_h101_fatimavme_s100_ITEMS_INFO(ok, *info, fOffset, EXT_STR_h101_fatimavme_s100, 0);
+        if (fFixedInput) {
+            EXT_STR_h101_fatimavme_fixed_ITEMS_INFO(ok, *info, fOffset, EXT_STR_h101_fatimavme_fixed, 0);
         } else {
             EXT_STR_h101_fatimavme_ITEMS_INFO(ok, *info, fOffset, EXT_STR_h101_fatimavme, 0);
         }
@@ -44,7 +44,7 @@ Bool_t V1290Reader::Init(ext_data_struct_info* info) {
 }
 
 Bool_t V1290Reader::Read() {
-    return fS100Input ? ReadBanks(fS100Input) : ReadBanks(fInput);
+    return fFixedInput ? ReadBanks(fFixedInput) : ReadBanks(fInput);
 }
 
 template <typename Bank>

@@ -113,7 +113,7 @@ Set(STRUCT_HEADERS
 ./beammonitor/ext_h101_beammonitor.h
 ./fatima/ext_h101_fatima.h
 ./fatima/ext_h101_fatimavme.h
-./fatima/ext_h101_fatimavme_s100.h
+./fatima/ext_h101_fatimavme_fixed.h
 ./bgo/ext_h101_bgo.h
 # ./bb7/ext_h101_bb7vme.h
 ./bb7/ext_h101_bbfebex.h

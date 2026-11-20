@@ -1,7 +1,7 @@
 // The timestamp words are identical in both WR formats. The configured ID
 // matches bits 0-12 exactly in the unified decoder. Standard IDs have
 // bit 12 clear, so a standard packet still requires that bit to be zero.
-#define C4_WR_TIMESTAMP(decoder, id_type, id_bits, reserved_bits) \
+#define DECLARE_WR_TIMESTAMP(decoder, id_type, id_bits, reserved_bits) \
 decoder(id) \
 { \
 	MEMBER(id_type subsystem_id); \
@@ -39,14 +39,14 @@ decoder(id) \
 	}; \
 }
 
-#ifdef C4_WR_UNIFIED
-C4_WR_TIMESTAMP(TIMESTAMP_WHITERABBIT, DATA16, 0_12, 13_15)
+#ifdef WR_USE_13BIT_ID
+DECLARE_WR_TIMESTAMP(TIMESTAMP_WHITERABBIT, DATA16, 0_12, 13_15)
 #else
 // Compatibility for experiments with existing DATA12 SIGNAL mappings.
-C4_WR_TIMESTAMP(TIMESTAMP_WHITERABBIT, DATA12, 0_11, 12_15)
-C4_WR_TIMESTAMP(TIMESTAMP_WHITERABBIT_EXTENDED, DATA16, 0_12, 13_15)
+DECLARE_WR_TIMESTAMP(TIMESTAMP_WHITERABBIT, DATA12, 0_11, 12_15)
+DECLARE_WR_TIMESTAMP(TIMESTAMP_WHITERABBIT_EXTENDED, DATA16, 0_12, 13_15)
 #endif
-#undef C4_WR_TIMESTAMP
+#undef DECLARE_WR_TIMESTAMP
 
 WR_MULTI()
 {

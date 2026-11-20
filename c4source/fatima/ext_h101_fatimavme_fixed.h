@@ -5,8 +5,8 @@
  * Do not edit - automatically generated.
  */
 
-#ifndef __GUARD_H101_FATIMAVME_S100_EXT_H101_FATIMAVME_S100_H__
-#define __GUARD_H101_FATIMAVME_S100_EXT_H101_FATIMAVME_S100_H__
+#ifndef __GUARD_H101_FATIMAVME_FIXED_EXT_H101_FATIMAVME_FIXED_H__
+#define __GUARD_H101_FATIMAVME_FIXED_EXT_H101_FATIMAVME_FIXED_H__
 
 #ifndef __CINT__
 # include <stdint.h>
@@ -26,7 +26,7 @@ typedef          int  int32_t;
  * Plain structure (layout as ntuple/root file):
  */
 
-typedef struct EXT_STR_h101_fatimavme_s100_t
+typedef struct EXT_STR_h101_fatimavme_fixed_t
 {
   /* UNPACK */
   uint32_t fatimavme_ts_subsystem_id /* [0,65535] */;
@@ -674,7 +674,7 @@ typedef struct EXT_STR_h101_fatimavme_s100_t
   uint32_t fatimavme_tdc6_measurement_leadOrTrail /* [0,16384] */;
   uint32_t fatimavme_tdc6_measurement_leadOrTrailv[16384 EXT_STRUCT_CTRL(fatimavme_tdc6_measurement_leadOrTrail)] /* [0,255] */;
 
-} EXT_STR_h101_fatimavme_s100;
+} EXT_STR_h101_fatimavme_fixed;
 
 /********************************************************
  *
@@ -682,7 +682,7 @@ typedef struct EXT_STR_h101_fatimavme_s100_t
  * recovered (recommended):
  */
 
-typedef struct EXT_STR_h101_fatimavme_s100_onion_t
+typedef struct EXT_STR_h101_fatimavme_fixed_onion_t
 {
   /* UNPACK */
   uint32_t fatimavme_ts_subsystem_id;
@@ -744,11 +744,11 @@ typedef struct EXT_STR_h101_fatimavme_s100_onion_t
     uint32_t _measurement_leadOrTrailv[16384 /* _measurement_leadOrTrail */];
   } fatimavme_tdc[6];
 
-} EXT_STR_h101_fatimavme_s100_onion;
+} EXT_STR_h101_fatimavme_fixed_onion;
 
 /*******************************************************/
 
-#define EXT_STR_h101_fatimavme_s100_ITEMS_INFO(ok,si,offset,struct_t,printerr) do { \
+#define EXT_STR_h101_fatimavme_fixed_ITEMS_INFO(ok,si,offset,struct_t,printerr) do { \
   ok = 1; \
   /* UNPACK */ \
   EXT_STR_ITEM_INFO_LIM(ok,si,offset,struct_t,printerr,\
@@ -2686,4 +2686,4 @@ typedef struct EXT_STR_h101_fatimavme_s100_onion_t
   \
 } while (0);
 
-#endif/*__GUARD_H101_FATIMAVME_S100_EXT_H101_FATIMAVME_S100_H__*/
+#endif/*__GUARD_H101_FATIMAVME_FIXED_EXT_H101_FATIMAVME_FIXED_H__*/

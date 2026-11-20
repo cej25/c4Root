@@ -40,7 +40,7 @@ extern "C"
 {
     #include "ext_data_client.h"
     #include "ext_h101_fatimavme.h"
-    #include "ext_h101_fatimavme_s100.h"
+    #include "ext_h101_fatimavme_fixed.h"
 }
 
 FatimaVmeReader::FatimaVmeReader(EXT_STR_h101_fatimavme_onion* data, size_t offset)
@@ -55,10 +55,10 @@ FatimaVmeReader::FatimaVmeReader(EXT_STR_h101_fatimavme_onion* data, size_t offs
 {
 }
 
-FatimaVmeReader::FatimaVmeReader(EXT_STR_h101_fatimavme_s100_onion_t* data, size_t offset)
+FatimaVmeReader::FatimaVmeReader(EXT_STR_h101_fatimavme_fixed_onion_t* data, size_t offset)
     : FatimaVmeReader(static_cast<EXT_STR_h101_fatimavme_onion*>(nullptr), offset)
 {
-    fS100Data = data;
+    fFixedData = data;
 }
 
 FatimaVmeReader::~FatimaVmeReader()
@@ -74,10 +74,10 @@ Bool_t FatimaVmeReader::Init(ext_data_struct_info* a_struct_info)
     ok = 1;
     if (!fSharedInput)
     {
-        if (fS100Data)
+        if (fFixedData)
         {
-            EXT_STR_h101_fatimavme_s100_ITEMS_INFO(ok, *a_struct_info, fOffset, EXT_STR_h101_fatimavme_s100, 0);
-            memset(fS100Data, 0, sizeof *fS100Data);
+            EXT_STR_h101_fatimavme_fixed_ITEMS_INFO(ok, *a_struct_info, fOffset, EXT_STR_h101_fatimavme_fixed, 0);
+            memset(fFixedData, 0, sizeof *fFixedData);
         }
         else if (fData)
         {
@@ -113,7 +113,7 @@ Bool_t FatimaVmeReader::Init(ext_data_struct_info* a_struct_info)
 
 Bool_t FatimaVmeReader::Read()
 {
-    return fS100Data ? ReadBanks(fS100Data) : ReadBanks(fData);
+    return fFixedData ? ReadBanks(fFixedData) : ReadBanks(fData);
 }
 
 template <typename Bank>

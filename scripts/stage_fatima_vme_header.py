@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """Stage the UCESB-generated six-slot FATIMA VME header without installing it.
 
-Build the production S100 unpacker first. The staged header contains the
-client structures and item registration used by the S100 readers.
+The default input is the production S100 unpacker. Any unpacker that exports
+the same numbered six-slot FATIMA VME layout can supply the header.
 """
 import argparse
 from pathlib import Path
@@ -14,9 +14,9 @@ import tempfile
 ROOT = Path(__file__).resolve().parents[1]
 EXPERIMENT = ROOT / "unpack/exps/s100"
 EXECUTABLE = EXPERIMENT / "s100"
-STRUCTURE = "h101_fatimavme_s100"
-CURRENT = ROOT / "c4source/fatima/ext_h101_fatimavme.h"
-PRODUCTION = ROOT / "c4source/fatima/ext_h101_fatimavme_s100.h"
+STRUCTURE = "h101_fatimavme_fixed"
+LEGACY_HEADER = ROOT / "c4source/fatima/ext_h101_fatimavme.h"
+FIXED_HEADER = ROOT / "c4source/fatima/ext_h101_fatimavme_fixed.h"
 
 
 def validate_generated_header(text):
@@ -60,22 +60,25 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--output", type=Path, required=True,
                         help="destination for staged UCESB-generated header")
+    parser.add_argument("--unpacker", type=Path, default=EXECUTABLE,
+                        help="UCESB executable exporting six FATIMA VME slots per module type (default: S100)")
     parser.add_argument("--production", action="store_true", help=argparse.SUPPRESS)
     args = parser.parse_args()
     output = args.output.resolve()
-    if output in (CURRENT.resolve(), PRODUCTION.resolve()):
+    unpacker = args.unpacker.resolve()
+    if output in (LEGACY_HEADER.resolve(), FIXED_HEADER.resolve()):
         parser.error("refusing to overwrite the installed generated header")
-    if not EXECUTABLE.is_file():
-        parser.error(f"build {EXECUTABLE} first")
+    if not unpacker.is_file():
+        parser.error(f"unpacker does not exist: {unpacker}")
     if output.exists():
         parser.error(f"output already exists: {output}; choose a new filename")
     if not output.parent.is_dir():
         parser.error(f"output directory does not exist: {output.parent}")
     try:
-        with tempfile.TemporaryDirectory(prefix="c4root-vme-header-") as staging:
+        with tempfile.TemporaryDirectory(prefix="fatima-vme-header-") as staging:
             generated_path = Path(staging) / f"ext_{STRUCTURE}.h"
             command = [
-                str(EXECUTABLE), "/dev/null",
+                str(unpacker), "/dev/null",
                 f"--ntuple=NOTRIGEVENTNO,UNPACK:fatimavme,STRUCT_HH,id={STRUCTURE},{generated_path.name}",
             ]
             print("UCESB:", " ".join(command), flush=True)

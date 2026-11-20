@@ -44,7 +44,7 @@ VME_CAEN_V1751(board)
         ENCODE(board_id, (value = id));
     };
 
-#ifdef C4_V1751_MATCH_BOARD
+#ifdef V1751_MATCH_BOARD_ID
     // The second aggregate word identifies the board in grouped selections.
     MATCH_END;
 #endif

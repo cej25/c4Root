@@ -2,15 +2,15 @@
 
 // #include "../../../config/setup.h"
 #include "s100_whiterabbit.generated.spec"
-#define C4_WR_UNIFIED
+#define WR_USE_13BIT_ID
 #include "../../common/whiterabbit.spec"
-#undef C4_WR_UNIFIED
+#undef WR_USE_13BIT_ID
 #include "../../common/gsi_febex4.spec"
 #include "../../common/gsi_tamex4.spec"
 #include "tamex_payload.spec"
-#define C4_V1751_MATCH_BOARD
+#define V1751_MATCH_BOARD_ID
 #include "../../common/vme_caen_v1751.spec"
-#undef C4_V1751_MATCH_BOARD
+#undef V1751_MATCH_BOARD_ID
 //#include "../../common/vme_caen_v1x90.spec"
 #include "../frs/frs_s100.spec" //r3b frs
 #include "vme_caen_v1290_geo.spec"

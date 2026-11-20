@@ -52,8 +52,8 @@ class S100VmeSpecTests(unittest.TestCase):
 
     def test_v1751_matches_the_physical_id_before_selecting_the_bank(self):
         v1751 = (COMMON / "vme_caen_v1751.spec").read_text()
-        self.assertIn('#define C4_V1751_MATCH_BOARD\n#include "../../common/vme_caen_v1751.spec"\n'
-                      '#undef C4_V1751_MATCH_BOARD', PRODUCTION)
+        self.assertIn('#define V1751_MATCH_BOARD_ID\n#include "../../common/vme_caen_v1751.spec"\n'
+                      '#undef V1751_MATCH_BOARD_ID', PRODUCTION)
         self.assertLess(v1751.index("id = MATCH(board)"), v1751.index("MATCH_END;"))
         self.assertLess(v1751.index("MATCH_END;"), v1751.index("UINT32 board_agg_counter"))
 
