@@ -218,6 +218,7 @@ void c_fat_test_2025()
     if (FRS_ON)
     {
         FrsReader* unpackfrs = new FrsReader((EXT_STR_h101_frs_onion*)&ucesb_struct.frs, offsetof(EXT_STR_h101, frs));
+        if (fExpName == "s100") unpackfrs->UseS100Layout();
         
         unpackfrs->SetOnline(true);
         

@@ -322,7 +322,8 @@ void s100_tests(const char* input = "/u/cjones/data/lustre/despec/fatima_test_20
     {
         FrsReader* unpackfrs = new FrsReader((EXT_STR_h101_frs_onion*)&ucesb_struct.frs, offsetof(EXT_STR_h101, frs));
         
-        unpackfrs->SetOnline(true);
+        unpackfrs->UseS100Layout();
+        unpackfrs->SetOnline(!persist);
         
         source->AddReader(unpackfrs);
     }

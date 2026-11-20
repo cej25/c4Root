@@ -38,6 +38,7 @@ class FrsReader : public c4Reader
         virtual void Reset() override;
 
         void SetOnline(Bool_t option) { fOnline = option; }
+        void UseS100Layout() { fUseS100Layout = true; }
 
     private:
 
@@ -48,6 +49,7 @@ class FrsReader : public c4Reader
         size_t fOffset;
 
         Bool_t fOnline;
+        bool fUseS100Layout = false; //! Select the 16-channel S100 RAW layout
 
         EventHeader* header;
 
