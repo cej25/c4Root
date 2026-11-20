@@ -1,0 +1,9 @@
+# Active routes in unpack/exps/beammonitor/beammonitor.spec.
+# compiled_slots lists addresses in output slot order. Installed boards are
+# recorded only where the run setup is known.
+
+BeamMonitor:
+  subevent: bm_subev
+  member: beammonitor
+  procid: 1
+  whiterabbit: 0x1700

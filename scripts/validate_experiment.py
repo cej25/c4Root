@@ -1,8 +1,7 @@
 #!/usr/bin/env python3
-"""Validate one experiment's hardware against its UCESB spec and generated headers.
+"""Check an experiment's UCESB routing and declared board layouts.
 
-This tool is read-only and independent of the c4Root CMake build.
-Configured installed boards may be a strict subset of unpacker capacity.
+S100 also checks the installed hardware and generated reader headers.
 """
 import argparse
 import re
@@ -14,6 +13,9 @@ MAX_BOARDS = {"tamex": 12, "v1751": 6, "v1290": 6}
 TAMEX = re.compile(r"\btamex\[(\d+)\]\s*=\s*TAMEX4_SFP\(\s*sfp\s*=\s*(\d+)\s*,\s*card\s*=\s*(\d+)\s*\)")
 V1751 = re.compile(r"\bqdc(\d+)\s*=\s*VME_CAEN_V1751\(\s*board\s*=\s*(\d+)\s*\)")
 V1290_GEO = re.compile(r"\btdc(\d+)\s*=\s*VME_CAEN_V1290_GEO\(\s*geom_expected\s*=\s*(\d+)\s*\)")
+FEBEX = re.compile(r"\bdata\[(\d+)\]\s*=\s*FEBEX_EVENT(_TRACES)?\(\s*card\s*=\s*(\d+)\s*\)")
+V775 = re.compile(r"\bv7x5_module\[(\d+)\]\s*=\s*VME_CAEN_V775\(\s*geom\s*=\s*(\d+)\s*\)")
+CLOCK_TDC = re.compile(r"\bCLOCK_TDC_EVENT_16PH\(\s*sfp_id\s*=\s*(\d+)\s*,\s*tdc_id\s*=\s*(\d+)\s*\)")
 MEMBER = {"fatima": "fatima", "bplast": "bplast", "bgo": "bgo", "fatimavme": "fatimavme"}
 
 S100_CONFIG_INCLUDE = "s100_config.gen.spec"
@@ -202,6 +204,81 @@ def check_s100_routing(spec, configuration):
     return warnings
 
 
+def spec_inventory(spec):
+    """Read the active, literal declarations used by the older experiment specs."""
+    spec = re.sub(r"/\*.*?\*/|//[^\n]*", "", spec, flags=re.S)
+    event = re.search(r"(?m)^EVENT\s*\{([^{}]*)\}", spec)
+    if event is None:
+        raise ValueError("UCESB EVENT block not found")
+    inventory = {}
+    for binding in event[1].split(";"):
+        binding = binding.strip()
+        if binding in ("", "ignore_unknown_subevent"):
+            continue
+        match = re.fullmatch(r"(?:(revisit)\s+)?(\w+)\s*=\s*(\w+)\(([^()]*)\)", binding)
+        if match is None:
+            raise ValueError(f"Unsupported UCESB EVENT binding: {binding}")
+        revisit, member, subevent, selectors = match.groups()
+        route = {"subevent": subevent, "member": member}
+        for selector in selectors.split(","):
+            name, value = selector.split("=", 1)
+            route[name.strip()] = int(value, 0)
+        if revisit:
+            route["revisit"] = True
+        body = read_subevent(spec, subevent)
+        wr = WR_ARGUMENT.search(body)
+        if wr:
+            route["whiterabbit"] = int(wr[1], 0)
+        tamex, febex, v775, clock = (pattern.findall(body) for pattern in (TAMEX, FEBEX, V775, CLOCK_TDC))
+        if tamex:
+            route.update(digitiser="tamex", version=4, compiled_slots=[
+                [int(sfp), int(card)] for _, sfp, card in sorted(tamex, key=lambda slot: int(slot[0]))
+            ])
+        elif febex:
+            route.update(digitiser="febex", version=4, traces=any(mode for _, mode, _ in febex),
+                         compiled_slots=[int(card) for _, _, card in sorted(febex, key=lambda slot: int(slot[0]))])
+        elif v775:
+            route.update(digitiser="v775",
+                         compiled_slots=[int(geo) for _, geo in sorted(v775, key=lambda slot: int(slot[0]))])
+        elif clock:
+            route.update(digitiser="clock_tdc", compiled_slots=[[int(sfp), int(tdc)] for sfp, tdc in clock])
+        elif member == "fatimavme":
+            route["digitiser"] = "vme"
+            for model, regex in (("v1751", V1751), ("v1290", V1290_GEO)):
+                slots = sorted((int(slot), int(address)) for slot, address in regex.findall(body))
+                route[model] = {"compiled_slots": [address for _, address in slots]}
+        inventory[member] = route
+    return inventory
+
+
+def check_spec_inventory(spec, configuration):
+    remaining = spec_inventory(spec)
+    warnings = []
+    for detector, item in configuration.items():
+        if not isinstance(item, dict):
+            raise ValueError(f"{detector}: expected a detector mapping")
+        member = item.get("member")
+        route = remaining.pop(member, None)
+        if route is None:
+            warnings.append(f"{detector}: no unmatched active UCESB EVENT binding for {member}")
+            continue
+        selectors = {"procid", "whiterabbit", "type", "subtype", "control", "subcrate", "revisit"}
+        for key in sorted(route.keys() | (item.keys() & selectors)):
+            if key in ("v1751", "v1290"):
+                slots = compiled_vme_slots(item, key)
+                bank = item[key]
+                if slots != route[key]["compiled_slots"]:
+                    warnings.append(f"{detector}/{key}: compiled_slots differs from UCESB")
+                if "boards" in bank:
+                    installed = board_list(bank["boards"], f"{detector}/{key}", MAX_BOARDS[key])
+                    if not set(installed) <= set(route[key]["compiled_slots"]):
+                        warnings.append(f"{detector}/{key}: installed board addresses are missing from UCESB")
+            elif item.get(key) != route.get(key):
+                warnings.append(f"{detector}: {key} differs from UCESB")
+    warnings.extend(f"Missing YAML entry for UCESB EVENT member {member}" for member in remaining)
+    return warnings
+
+
 def validate(experiment, root=ROOT):
     config_file = root / "config" / experiment / "experiment.yaml"
     spec_file = root / "unpack" / "exps" / experiment / f"{experiment}.spec"
@@ -209,10 +286,10 @@ def validate(experiment, root=ROOT):
         raise ValueError(f"Cannot find experiment.yaml and unpacker spec for {experiment}")
     configuration = read_yaml(config_file)
     spec = spec_file.read_text()
-    s100 = experiment == "s100"
-    warnings = check_s100_routing(spec, configuration) if s100 else []
+    if experiment != "s100":
+        return check_spec_inventory(spec, configuration), []
+    warnings = check_s100_routing(spec, configuration)
     notes = []
-    seen_procs = {}
     for detector, item in configuration.items():
         if not isinstance(item, dict):
             continue
@@ -224,25 +301,6 @@ def validate(experiment, root=ROOT):
         if not isinstance(subevent, str) or not isinstance(member, str):
             raise ValueError(f"{detector}: specify subevent and member in experiment.yaml")
         body = read_subevent(spec, subevent)
-        if not s100:
-            procid = item.get("procid")
-            if type(procid) is not int:
-                raise ValueError(f"{detector}: invalid procid")
-            if procid in seen_procs:
-                raise ValueError(f"{detector}: procid {procid} duplicates {seen_procs[procid]}")
-            seen_procs[procid] = detector
-            event_match = re.search(
-                r"\b" + re.escape(member) + r"\s*=\s*" + re.escape(subevent) +
-                r"\([^;]*?\bprocid\s*=\s*(\d+)",
-                spec,
-            )
-            if not event_match or int(event_match.group(1)) != procid:
-                warnings.append(f"{detector}: procid does not match UCESB EVENT declaration")
-            ts = re.search(r"TIMESTAMP_WHITERABBIT\(\s*id\s*=\s*(0x[0-9a-fA-F]+|\d+)", body)
-            wr = item.get("whiterabbit")
-            if type(wr) is not int or not ts or int(ts.group(1), 0) != wr:
-                warnings.append(f"{detector}: White Rabbit subsystem ID differs from UCESB")
-
         header_path = root / "c4source" / (
             "fatima" if member in ("fatima", "fatimavme") else member
         ) / f"ext_h101_{member}.h"
@@ -257,7 +315,7 @@ def validate(experiment, root=ROOT):
             sfp = item.get("sfp")
             if type(sfp) is not int:
                 raise ValueError(f"{detector}: missing SFP ID")
-            if s100 and member in S100_TAMEX_MEMBERS:
+            if member in S100_TAMEX_MEMBERS:
                 addresses = compiled_tamex_slots(detector, item)
             else:
                 declared = [(int(idx), int(fiber), int(card)) for idx, fiber, card in TAMEX.findall(body)]
@@ -277,7 +335,7 @@ def validate(experiment, root=ROOT):
             notes.append(f"{detector}: {len(installed)} installed, {capacity} TAMEX slots "
                          f"(policy maximum {MAX_BOARDS['tamex']})")
         else:
-            fixed_vme = s100 and member == "fatimavme"
+            fixed_vme = member == "fatimavme"
             for model, regex, member_name in (
                 ("v1751", V1751, f"{member}_qdc"),
                 ("v1290", V1290_GEO, f"{member}_tdc"),
@@ -360,9 +418,11 @@ def main():
     if warnings:
         for warning in warnings:
             print(f"WARNING: {warning}")
-        print("This experiment needs unpacker configuration review; do not assume the current header can decode its hardware.")
         return 1
-    print(f"OK: {args.experiment} hardware is supported by its unpacker and structure headers")
+    if args.experiment == "s100":
+        print("OK: s100 installed boards fit the current unpacker and structure headers")
+    else:
+        print(f"OK: {args.experiment} inventory matches the UCESB spec")
     return 0
 
 
