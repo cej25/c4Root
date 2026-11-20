@@ -29,8 +29,6 @@
 #include "FrsRaw2Cal.h"
 #include "FrsReader.h"
 #include "GermaniumOnlineSpectra.h"
-#include "GermaniumRaw2Cal.h"
-#include "GermaniumReader.h"
 #include "TAidaConfiguration.h"
 #include "TBGOTwinpeaksConfiguration.h"
 #include "TCorrelationsConfiguration.h"
@@ -99,7 +97,6 @@ typedef struct EXT_STR_h101_t
     EXT_STR_h101_fatimavme_onion_t fatimavme;
     EXT_STR_h101_aida_onion_t aida;
     EXT_STR_h101_bplast_onion_t bplast;
-    EXT_STR_h101_germanium_onion_t germanium;
     std::array<EXT_STR_h101_febex_onion, s100FebexBanks.size()> febex;
     EXT_STR_h101_frs_onion_t frs;
     EXT_STR_h101_beammonitor_onion_t beammonitor;
@@ -110,7 +107,7 @@ typedef struct EXT_STR_h101_t
 
 void s100_tests(const char* input = "/u/cjones/data/lustre/despec/fatima_test_2025/run_0009_0001.lmd",
                 Int_t nev = -1, const char* repository = "/u/cjones/c4Root",
-                const char* output = "", bool useLegacyGermanium = false)
+                const char* output = "")
 {
     const Int_t fRunId = 1; const Int_t fExpId = 1;
 
@@ -163,7 +160,7 @@ void s100_tests(const char* input = "/u/cjones/data/lustre/despec/fatima_test_20
     TString filename = input;
     TString outputFileName = output;
     const bool persist = !outputFileName.IsNull();
-    const TString germaniumBranch = useLegacyGermanium ? "GermaniumCalData" : "DegasCalData";
+    const TString germaniumBranch = "DegasCalData";
 
     // Create Online run
     Int_t refresh = 1; // Refresh rate for online histograms
@@ -288,24 +285,15 @@ void s100_tests(const char* input = "/u/cjones/data/lustre/despec/fatima_test_20
 
     if (DEGAS_ON)
     {
-        if (useLegacyGermanium)
-        {
-            auto* reader = new GermaniumReader(&ucesb_struct.germanium, offsetof(EXT_STR_h101, germanium));
-            reader->SetOnline(!persist);
-            source->AddReader(reader);
-        }
-        else
-        {
-            const auto bank = std::find_if(s100FebexBanks.begin(), s100FebexBanks.end(), [](const auto& spec) {
-                return std::string_view(spec.detector) == "DEGAS";
-            });
-            if (bank == s100FebexBanks.end()) throw std::runtime_error("Missing DEGAS bank in the S100 configuration");
-            const auto index = static_cast<std::size_t>(bank - s100FebexBanks.begin());
-            const auto offset = offsetof(EXT_STR_h101, febex) + index * sizeof(EXT_STR_h101_febex_onion);
-            auto* reader = new DegasReader(&ucesb_struct.febex[index], offset, bank->procid, bank->name);
-            reader->SetOnline(!persist);
-            source->AddReader(reader);
-        }
+        const auto bank = std::find_if(s100FebexBanks.begin(), s100FebexBanks.end(), [](const auto& spec) {
+            return std::string_view(spec.detector) == "DEGAS";
+        });
+        if (bank == s100FebexBanks.end()) throw std::runtime_error("Missing DEGAS bank in the S100 configuration");
+        const auto index = static_cast<std::size_t>(bank - s100FebexBanks.begin());
+        const auto offset = offsetof(EXT_STR_h101, febex) + index * sizeof(EXT_STR_h101_febex_onion);
+        auto* reader = new DegasReader(&ucesb_struct.febex[index], offset, bank->procid, bank->name);
+        reader->SetOnline(!persist);
+        source->AddReader(reader);
     }
 
     if (BGO_ON)
@@ -379,18 +367,9 @@ void s100_tests(const char* input = "/u/cjones/data/lustre/despec/fatima_test_20
     
     if (DEGAS_ON)
     {
-        if (useLegacyGermanium)
-        {
-            auto* calibrator = new GermaniumRaw2Cal();
-            calibrator->SetOnline(!persist);
-            run->AddTask(calibrator);
-        }
-        else
-        {
-            auto* calibrator = new DegasRaw2Cal();
-            calibrator->SetOnline(!persist);
-            run->AddTask(calibrator);
-        }
+        auto* calibrator = new DegasRaw2Cal();
+        calibrator->SetOnline(!persist);
+        run->AddTask(calibrator);
     }
 
     if (BGO_ON)
@@ -491,10 +470,9 @@ void s100_tests(const char* input = "/u/cjones/data/lustre/despec/fatima_test_20
     
     TBGOTwinpeaksConfiguration::SetCoincidenceWindow(5000); 
     TBGOTwinpeaksConfiguration::SetCoincidenceOffset(0);
-    BGOOnlineSpectra* onlinebgo = nullptr;
     if (BGO_ON && DEGAS_ON)
     {
-        onlinebgo = new BGOOnlineSpectra();
+        auto* onlinebgo = new BGOOnlineSpectra();
         onlinebgo->SetGermaniumCalBranch(germaniumBranch);
         onlinebgo->SetBinningEnergy(1500,0.1,1500.1);
         //onlinebgo->SetCoincidenceWindow(5000);
@@ -533,7 +511,7 @@ void s100_tests(const char* input = "/u/cjones/data/lustre/despec/fatima_test_20
     TString c = "Fatima";
     TString d = "FatimaVme";
     TString e = "bPlast";
-    TString f = useLegacyGermanium ? "Germanium" : "Degas";
+    TString f = "Degas";
     TString g = "Frs";
 
     if (TIME_MACHINE_ON) // a little complicated because it falls apart if the right subsystem is switched off
@@ -589,7 +567,6 @@ void s100_tests(const char* input = "/u/cjones/data/lustre/despec/fatima_test_20
 
     // Run
     run->Run((nev < 0) ? nev : 0, (nev < 0) ? 0 : nev);
-    if (persist && onlinebgo) onlinebgo->PrintVetoCounts();
 
     // write online histograms if desired.
     //TFile* tf = new TFile(sf->GetFileName(), "UPDATE");

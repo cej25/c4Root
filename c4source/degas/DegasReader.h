@@ -14,11 +14,8 @@ struct EXT_STR_h101_febex_onion_t;
 class DegasReader : public c4Reader
 {
 public:
-    enum class BankAccess { Register, AlreadyRegistered };
-
     DegasReader(EXT_STR_h101_febex_onion_t* input, std::size_t offset,
-                std::uint16_t procid, const std::string& bankName = "FEBEX",
-                BankAccess access = BankAccess::Register);
+                std::uint16_t procid, const std::string& bankName = "FEBEX");
     ~DegasReader() override;
 
     Bool_t Init(ext_data_struct_info*) override;
@@ -33,7 +30,6 @@ private:
     std::size_t fOffset;
     std::uint16_t fProcId;
     std::string fBankName;
-    BankAccess fAccess;
     Bool_t fOnline = kFALSE;
     DegasRawData* fOutput; //! Owns detector data
 };

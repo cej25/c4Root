@@ -102,4 +102,3 @@ void FatimaVmeCalibrator::Clear() {
     fQdcOutput->Clear("C");
     fTdcOutput->Clear("C");
 }
-

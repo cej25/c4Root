@@ -61,7 +61,6 @@ class BGOOnlineSpectra : public FairTask
         };
         
     
-        void PrintVetoCounts() const;
         void SetGermaniumCalBranch(const TString& branch) { fGermaniumCalBranch = branch; }
 
     private:

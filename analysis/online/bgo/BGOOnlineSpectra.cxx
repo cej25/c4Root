@@ -307,19 +307,6 @@ void BGOOnlineSpectra::Exec(Option_t* option)
     fNEvents += 1;
 }
 
-void BGOOnlineSpectra::PrintVetoCounts() const
-{
-    const auto entries = [](const auto& spectra) {
-        double total = 0;
-        for (const auto* histogram : spectra) total += histogram->GetEntries();
-        return total;
-    };
-    c4LOG(info, "BGO veto using " << fGermaniumCalBranch
-                << " | coincidence pairs " << entries(h1_germanium_bgo_veto_timedifferences)
-                << " | vetoed " << entries(h1_germanium_bgo_vetotrue_energy)
-                << " | accepted " << entries(h1_germanium_bgo_veto_energy));
-}
-
 void BGOOnlineSpectra::FinishEvent()
 {
     // Shared input arrays are cleared by their producing tasks.

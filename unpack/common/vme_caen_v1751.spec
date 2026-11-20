@@ -78,7 +78,7 @@ VME_CAEN_V1751(board)
              ((board_details.channels / 16) % 2) +
              ((board_details.channels / 32) % 2) +
              ((board_details.channels / 64) % 2) +
-             ((board_details.channels / 128) % 2))) 
+             ((board_details.channels / 128) % 2)))
         {
 
             // loop over channel aggregates
@@ -258,4 +258,3 @@ VME_CAEN_V1751(board)
     } // size > 4
     
 }
-
