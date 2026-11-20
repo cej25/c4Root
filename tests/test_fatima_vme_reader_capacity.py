@@ -8,8 +8,7 @@ import unittest
 
 ROOT = Path(__file__).resolve().parents[1]
 READER = (ROOT / "c4source/fatima/FatimaVmeReader.cxx").read_text()
-LEGACY_HEADER = (ROOT / "c4source/fatima/ext_h101_fatimavme.h").read_text()
-FIXED_HEADER = (ROOT / "c4source/fatima/ext_h101_fatimavme_fixed.h").read_text()
+HEADER = (ROOT / "c4source/fatima/ext_h101_fatimavme.h").read_text()
 
 
 class FatimaVmeReaderCapacityTests(unittest.TestCase):
@@ -26,12 +25,11 @@ class FatimaVmeReaderCapacityTests(unittest.TestCase):
         self.assertNotIn("dets_qdc[std::make_pair(", READER)
         self.assertNotIn("dets_tdc[std::make_pair(", READER)
 
-    def test_production_and_legacy_layouts_have_separate_native_headers(self):
-        for header, qdc, tdc in ((LEGACY_HEADER, 5, 2), (FIXED_HEADER, 6, 6)):
-            self.assertIn("Do not edit - automatically generated", header)
-            self.assertRegex(header, rf"\}}\s*fatimavme_qdc\[{qdc}\];")
-            self.assertRegex(header, rf"\}}\s*fatimavme_tdc\[{tdc}\];")
-        self.assertIn("EXT_STR_h101_fatimavme_fixed_ITEMS_INFO", READER)
+    def test_shared_native_header_has_six_slots_per_module_type(self):
+        self.assertIn("Do not edit - automatically generated", HEADER)
+        for bank in ("qdc", "tdc"):
+            self.assertRegex(HEADER, rf"\}}\s*fatimavme_{bank}\[6\];")
+        self.assertIn("EXT_STR_h101_fatimavme_ITEMS_INFO", READER)
 
 
 if __name__ == "__main__":

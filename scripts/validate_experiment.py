@@ -13,21 +13,19 @@ ROOT = Path(__file__).resolve().parents[1]
 MAX_BOARDS = {"tamex": 12, "v1751": 6, "v1290": 6}
 TAMEX = re.compile(r"\btamex\[(\d+)\]\s*=\s*TAMEX4_SFP\(\s*sfp\s*=\s*(\d+)\s*,\s*card\s*=\s*(\d+)\s*\)")
 V1751 = re.compile(r"\bqdc(\d+)\s*=\s*VME_CAEN_V1751\(\s*board\s*=\s*(\d+)\s*\)")
-V1290 = re.compile(r"\btdc(\d+)\s*=\s*VME_CAEN_V1290_N\(\s*\)")
 V1290_GEO = re.compile(r"\btdc(\d+)\s*=\s*VME_CAEN_V1290_GEO\(\s*geom_expected\s*=\s*(\d+)\s*\)")
 MEMBER = {"fatima": "fatima", "bplast": "bplast", "bgo": "bgo", "fatimavme": "fatimavme"}
 
-S100_WR_INCLUDE = "s100_whiterabbit.generated.spec"
+S100_CONFIG_INCLUDE = "s100_config.gen.spec"
 S100_WR_MEMBERS = {"aida", "beammonitor", "bgo", "bplast", "fatima", "fatimavme", "frstpat", "germanium"}
 S100_EVENT_MEMBERS = S100_WR_MEMBERS | {"frsmain", "frstpc", "frsuser"}
 S100_TAMEX_MEMBERS = {"fatima", "bplast", "bgo"}
+S100_TAMEX_TEMPLATE_MEMBERS = {"fatima", "bplast"}
 S100_VME_MODELS = {
     "v1751": ("S100_V1751_BANKS", "qdc", "VME_CAEN_V1751", "board"),
     "v1290": ("S100_V1290_BANKS", "tdc", "VME_CAEN_V1290_GEO", "geom_expected"),
 }
-WR_ARGUMENT = re.compile(
-    r"\b(?:TIMESTAMP_WHITERABBIT\(\s*id\s*=\s*|S100_TAMEX_PAYLOAD\(\s*)(\w+)(?=\s*[,)])"
-)
+WR_ARGUMENT = re.compile(r"\bTIMESTAMP_WHITERABBIT\(\s*id\s*=\s*(\w+)\s*\)")
 
 
 def read_yaml(path):
@@ -170,8 +168,8 @@ def board_list(value, name, maximum):
 def check_s100_routing(spec, configuration):
     routes = s100_routes(configuration)
     ids = wr_ids(configuration)
-    if f'#include "{S100_WR_INCLUDE}"' not in spec:
-        raise ValueError(f"Spec must include {S100_WR_INCLUDE}")
+    if f'#include "{S100_CONFIG_INCLUDE}"' not in spec:
+        raise ValueError(f"Spec must include {S100_CONFIG_INCLUDE}")
     event = re.search(r"(?m)^EVENT\s*\{([^{}]*)\}", spec)
     if event is None:
         raise ValueError("UCESB EVENT block not found")
@@ -185,6 +183,15 @@ def check_s100_routing(spec, configuration):
         )
         if procid != [procid_symbol(member)]:
             warnings.append(f"{detector}: UCESB EVENT must use {procid_symbol(member)}")
+        if member in S100_TAMEX_TEMPLATE_MEMBERS:
+            declarations = re.findall(
+                rf"(?m)^\s*DECLARE_TAMEX_SUBEVENT\(\s*{subevent}\s*,\s*(\w+)\s*,\s*(\w+)\s*\)",
+                spec,
+            )
+            if declarations != [(wr_symbol(member), tamex_cards_symbol(member))]:
+                warnings.append(f"{detector}: UCESB must declare {subevent} with "
+                                f"{wr_symbol(member)} and {tamex_cards_symbol(member)}")
+            continue
         if member in ids:
             body = read_subevent(spec, subevent)
             if WR_ARGUMENT.findall(body) != [wr_symbol(member)]:
@@ -198,7 +205,7 @@ def check_s100_routing(spec, configuration):
                     compiled_vme_slots(item, model)
                     if len(re.findall(rf"(?m)^\s*{symbol}\s*$", body)) != 1:
                         warnings.append(f"{detector}/{model}: UCESB must use {symbol}")
-                if V1751.search(body) or V1290_GEO.search(body) or V1290.search(body):
+                if V1751.search(body) or V1290_GEO.search(body):
                     warnings.append(f"{detector}: use the generated VME bank declarations")
     return warnings
 
@@ -224,7 +231,7 @@ def validate(experiment, root=ROOT):
         member = item.get("member")
         if not isinstance(subevent, str) or not isinstance(member, str):
             raise ValueError(f"{detector}: specify subevent and member in experiment.yaml")
-        body = read_subevent(spec, subevent)
+        body = read_subevent(spec, subevent) if not s100 else None
         if not s100:
             procid = item.get("procid")
             if type(procid) is not int:
@@ -239,15 +246,14 @@ def validate(experiment, root=ROOT):
             )
             if not event_match or int(event_match.group(1)) != procid:
                 warnings.append(f"{detector}: procid does not match UCESB EVENT declaration")
-            ts = re.search(r"TIMESTAMP_WHITERABBIT(?:_EXTENDED)?\(\s*id\s*=\s*(0x[0-9a-fA-F]+|\d+)", body)
+            ts = WR_ARGUMENT.search(body)
             wr = item.get("whiterabbit")
             if type(wr) is not int or not ts or int(ts.group(1), 0) != wr:
                 warnings.append(f"{detector}: White Rabbit subsystem ID differs from UCESB")
 
-        header_name = "fatimavme_fixed" if s100 and member == "fatimavme" else member
         header_path = root / "c4source" / (
             "fatima" if member in ("fatima", "fatimavme") else member
-        ) / f"ext_h101_{header_name}.h"
+        ) / f"ext_h101_{member}.h"
         if not header_path.is_file():
             warnings.append(f"{detector}: missing generated structure header {header_path}")
             continue
@@ -282,7 +288,7 @@ def validate(experiment, root=ROOT):
             fixed_vme = s100 and member == "fatimavme"
             for model, regex, member_name in (
                 ("v1751", V1751, f"{member}_qdc"),
-                ("v1290", V1290, f"{member}_tdc"),
+                ("v1290", V1290_GEO, f"{member}_tdc"),
             ):
                 installed = board_list(item.get(model, {}).get("boards"), f"{detector}/{model}", MAX_BOARDS[model])
                 if fixed_vme:
@@ -293,14 +299,10 @@ def validate(experiment, root=ROOT):
                 if capacity != len(declared):
                     warnings.append(f"{detector}/{model}: header has {capacity} slots, "
                                     f"but UCESB declares {len(declared)}")
-                if model == "v1751" or fixed_vme:
-                    addresses = {int(addr) for _, addr in declared}
-                    missing = sorted(set(installed) - addresses)
-                    if missing:
-                        warnings.append(f"{detector}/{model.upper()}: unsupported board addresses: {missing}")
-                elif len(installed) > capacity:
-                    # The V1290 geo is decoded from event data, rather than fixed in its declaration.
-                    warnings.append(f"{detector}/V1290: {len(installed)} boards exceed {capacity} TDC slots")
+                addresses = {int(addr) for _, addr in declared}
+                missing = sorted(set(installed) - addresses)
+                if missing:
+                    warnings.append(f"{detector}/{model.upper()}: unsupported board addresses: {missing}")
                 notes.append(f"{detector}/{model}: {len(installed)} installed, {capacity} slots "
                              f"(policy maximum {MAX_BOARDS[model]})")
     return warnings, notes

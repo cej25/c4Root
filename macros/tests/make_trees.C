@@ -1,4 +1,4 @@
-#include "ext_h101_fatimavme_fixed.h"
+#include "ext_h101_fatimavme.h"
 #include <TROOT.h>
 
 // Switch all tasks related to {subsystem} on (1)/off (0)
@@ -24,7 +24,7 @@ typedef struct EXT_STR_h101_t
 {   
     EXT_STR_h101_unpack_t eventheaders;
     EXT_STR_h101_fatima_onion_t fatima;
-    EXT_STR_h101_fatimavme_fixed_onion_t fatimavme;
+    EXT_STR_h101_fatimavme_onion_t fatimavme;
     EXT_STR_h101_aida_onion_t aida;
     EXT_STR_h101_bplast_onion_t bplast;
     EXT_STR_h101_germanium_onion_t germanium;
@@ -134,7 +134,7 @@ void make_trees()
 
     if (FATIMA_VME_ON)
     {
-        FatimaVmeReader* unpackfatimavme = new FatimaVmeReader((EXT_STR_h101_fatimavme_fixed_onion*)&ucesb_struct.fatimavme, offsetof(EXT_STR_h101, fatimavme));
+        FatimaVmeReader* unpackfatimavme = new FatimaVmeReader((EXT_STR_h101_fatimavme_onion*)&ucesb_struct.fatimavme, offsetof(EXT_STR_h101, fatimavme));
         
         unpackfatimavme->SetOnline(true);
         source->AddReader(unpackfatimavme);

@@ -5,6 +5,7 @@
 #include "../../common/gsi_tamex4.spec"
 #include "../../common/vme_caen_v1751.spec"
 #include "../frs/frs_s181.spec"
+#include "../../common/vme_caen_v1290_geo.spec"
 #include "fatima_vme.spec"
 #include "../../common/general.spec"
 
@@ -28,7 +29,7 @@ SUBEVENT(bb7_subev)
 {
     select optional 
     {
-        ts = TIMESTAMP_WHITERABBIT_EXTENDED(id = 0x1800);
+        ts = TIMESTAMP_WHITERABBIT(id = 0x1800);
     }
 
     select several
@@ -52,7 +53,7 @@ SUBEVENT(bgo_tamex_subevent)
 {
     select optional
     {
-        ts = TIMESTAMP_WHITERABBIT_EXTENDED(id=0x1900);
+        ts = TIMESTAMP_WHITERABBIT(id=0x1900);
     };
 
     optional UINT32 be { 0_31: b = MATCH(0xbad00bad);}
@@ -108,7 +109,7 @@ SUBEVENT(fatima_tamex_subev)
 
     select optional
     {
-        ts = TIMESTAMP_WHITERABBIT_EXTENDED(id = 0x1600);
+        ts = TIMESTAMP_WHITERABBIT(id = 0x1600);
     };
 
     select optional
@@ -134,7 +135,7 @@ SUBEVENT(fatima_vme_subev)
 {
     select optional
     {
-        ts = TIMESTAMP_WHITERABBIT_EXTENDED(id = 0x1500);
+        ts = TIMESTAMP_WHITERABBIT(id = 0x1500);
     };
 
     select several
@@ -147,50 +148,28 @@ SUBEVENT(fatima_vme_subev)
         scalers = FATIMA_VME_SCALERS();
     };
 
-    select optional
-    {
-        qdc1 = VME_CAEN_V1751(board=6);
-    }
-
-    select optional
-    {
-        qdc2 = VME_CAEN_V1751(board=7);
-    }
-
-    select optional
-    {
-        qdc3 = VME_CAEN_V1751(board=8);
-    }
-
-    select optional
-    {
-        qdc4 = VME_CAEN_V1751(board=9);
-    }
-
-    select optional
-    {
-        qdc5 = VME_CAEN_V1751(board=10);
-    }
-    
+    // The allocation uses QDC IDs 6–10 and TDC GEOs 12–13.
+    // The other addresses reserve space in the shared six-slot layout.
     select several
     {
+        qdc1 = VME_CAEN_V1751(board = 6);
+        qdc2 = VME_CAEN_V1751(board = 7);
+        qdc3 = VME_CAEN_V1751(board = 8);
+        qdc4 = VME_CAEN_V1751(board = 9);
+        qdc5 = VME_CAEN_V1751(board = 10);
+        qdc6 = VME_CAEN_V1751(board = 31);
         error2 = ERR_WORD_SIX();
     };
 
-    // we don't always get information from both TDC boards
-    select optional
-    {
-        tdc1 = VME_CAEN_V1290_N();
-    };
-
     select several
     {
+        tdc1 = VME_CAEN_V1290_GEO(geom_expected = 12);
+        tdc2 = VME_CAEN_V1290_GEO(geom_expected = 13);
+        tdc3 = VME_CAEN_V1290_GEO(geom_expected = 31);
+        tdc4 = VME_CAEN_V1290_GEO(geom_expected = 30);
+        tdc5 = VME_CAEN_V1290_GEO(geom_expected = 29);
+        tdc6 = VME_CAEN_V1290_GEO(geom_expected = 28);
         error3 = ERR_WORD_SIX();
-    };
-
-    select optional
-    {
-        tdc2 = VME_CAEN_V1290_N();
     };
 }
 
@@ -323,7 +302,7 @@ SUBEVENT(bm_subev)
 
     select optional
     {
-        ts = TIMESTAMP_WHITERABBIT_EXTENDED(id=0x1700);
+        ts = TIMESTAMP_WHITERABBIT(id=0x1700);
     }
 
     // CEJ: wrap in select several later to catch bad events

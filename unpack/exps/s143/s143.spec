@@ -122,7 +122,7 @@ SUBEVENT(fimp_subev)
 
     select optional
     {
-        ts = TIMESTAMP_WHITERABBIT_EXTENDED(id=0x1300);
+        ts = TIMESTAMP_WHITERABBIT(id=0x1300);
     };
 
     select optional

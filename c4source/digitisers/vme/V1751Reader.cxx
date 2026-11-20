@@ -11,28 +11,19 @@
 extern "C" {
 #include "ext_data_client.h"
 #include "ext_h101_fatimavme.h"
-#include "ext_h101_fatimavme_fixed.h"
 }
 
 V1751Reader::V1751Reader(EXT_STR_h101_fatimavme_onion_t* input,
                          std::size_t offset, std::uint16_t procid)
     : c4Reader("V1751Reader"), fInput(input), fOffset(offset), fProcId(procid) {}
 
-V1751Reader::V1751Reader(EXT_STR_h101_fatimavme_fixed_onion_t* input,
-                         std::size_t offset, std::uint16_t procid)
-    : c4Reader("V1751Reader"), fFixedInput(input), fOffset(offset), fProcId(procid) {}
-
 V1751Reader::~V1751Reader() { delete fOutput; }
 
 Bool_t V1751Reader::Init(ext_data_struct_info* info) {
-    if (!info || (!fInput && !fFixedInput) || !FairRootManager::Instance()) return kFALSE;
+    if (!info || !fInput || !FairRootManager::Instance()) return kFALSE;
     Int_t ok = 1;
     if (fRegisterStructure) {
-        if (fFixedInput) {
-            EXT_STR_h101_fatimavme_fixed_ITEMS_INFO(ok, *info, fOffset, EXT_STR_h101_fatimavme_fixed, 0);
-        } else {
-            EXT_STR_h101_fatimavme_ITEMS_INFO(ok, *info, fOffset, EXT_STR_h101_fatimavme, 0);
-        }
+        EXT_STR_h101_fatimavme_ITEMS_INFO(ok, *info, fOffset, EXT_STR_h101_fatimavme, 0);
     }
     if (!ok) {
         c4LOG(error, "V1751Reader: cannot register UCESB FATIMA VME bank");
@@ -45,11 +36,7 @@ Bool_t V1751Reader::Init(ext_data_struct_info* info) {
 }
 
 Bool_t V1751Reader::Read() {
-    return fFixedInput ? ReadBanks(fFixedInput) : ReadBanks(fInput);
-}
-
-template <typename Bank>
-Bool_t V1751Reader::ReadBanks(const Bank* input) {
+    const auto* input = fInput;
     if (!input || !fOutput) return kFALSE;
     const auto wr = c4::vme::Timestamp(input->fatimavme_ts_t);
     const auto subsystem = input->fatimavme_ts_subsystem_id;

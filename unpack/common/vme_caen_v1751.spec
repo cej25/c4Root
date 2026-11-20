@@ -44,10 +44,8 @@ VME_CAEN_V1751(board)
         ENCODE(board_id, (value = id));
     };
 
-#ifdef V1751_MATCH_BOARD_ID
     // The second aggregate word identifies the board in grouped selections.
     MATCH_END;
-#endif
 
     UINT32 board_agg_counter NOENCODE
     {

@@ -14,9 +14,8 @@ import tempfile
 ROOT = Path(__file__).resolve().parents[1]
 EXPERIMENT = ROOT / "unpack/exps/s100"
 EXECUTABLE = EXPERIMENT / "s100"
-STRUCTURE = "h101_fatimavme_fixed"
-LEGACY_HEADER = ROOT / "c4source/fatima/ext_h101_fatimavme.h"
-FIXED_HEADER = ROOT / "c4source/fatima/ext_h101_fatimavme_fixed.h"
+STRUCTURE = "h101_fatimavme"
+CLIENT_HEADER = ROOT / "c4source/fatima/ext_h101_fatimavme.h"
 
 
 def validate_generated_header(text):
@@ -66,7 +65,7 @@ def main():
     args = parser.parse_args()
     output = args.output.resolve()
     unpacker = args.unpacker.resolve()
-    if output in (LEGACY_HEADER.resolve(), FIXED_HEADER.resolve()):
+    if output == CLIENT_HEADER.resolve():
         parser.error("refusing to overwrite the installed generated header")
     if not unpacker.is_file():
         parser.error(f"unpacker does not exist: {unpacker}")

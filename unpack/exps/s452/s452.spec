@@ -108,7 +108,7 @@ SUBEVENT(fatima_vme_subev)
     // tdc x1 or x2? x0?
     // possible eob/0x060 word?
 
-    ts = TIMESTAMP_WHITERABBIT_EXTENDED(id=0x1500);
+    ts = TIMESTAMP_WHITERABBIT(id=0x1500);
 
     select several
     {

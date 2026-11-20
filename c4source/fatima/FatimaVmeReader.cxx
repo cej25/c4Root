@@ -40,7 +40,6 @@ extern "C"
 {
     #include "ext_data_client.h"
     #include "ext_h101_fatimavme.h"
-    #include "ext_h101_fatimavme_fixed.h"
 }
 
 FatimaVmeReader::FatimaVmeReader(EXT_STR_h101_fatimavme_onion* data, size_t offset)
@@ -55,12 +54,6 @@ FatimaVmeReader::FatimaVmeReader(EXT_STR_h101_fatimavme_onion* data, size_t offs
 {
 }
 
-FatimaVmeReader::FatimaVmeReader(EXT_STR_h101_fatimavme_fixed_onion_t* data, size_t offset)
-    : FatimaVmeReader(static_cast<EXT_STR_h101_fatimavme_onion*>(nullptr), offset)
-{
-    fFixedData = data;
-}
-
 FatimaVmeReader::~FatimaVmeReader()
 {   
     c4LOG(info, "");
@@ -72,18 +65,10 @@ Bool_t FatimaVmeReader::Init(ext_data_struct_info* a_struct_info)
     Int_t ok;
 
     ok = 1;
-    if (!fSharedInput)
+    if (!fSharedInput && fData)
     {
-        if (fFixedData)
-        {
-            EXT_STR_h101_fatimavme_fixed_ITEMS_INFO(ok, *a_struct_info, fOffset, EXT_STR_h101_fatimavme_fixed, 0);
-            memset(fFixedData, 0, sizeof *fFixedData);
-        }
-        else if (fData)
-        {
-            EXT_STR_h101_fatimavme_ITEMS_INFO(ok, *a_struct_info, fOffset, EXT_STR_h101_fatimavme, 0);
-            memset(fData, 0, sizeof *fData);
-        }
+        EXT_STR_h101_fatimavme_ITEMS_INFO(ok, *a_struct_info, fOffset, EXT_STR_h101_fatimavme, 0);
+        memset(fData, 0, sizeof *fData);
     }
 
     if (!ok)
@@ -113,12 +98,7 @@ Bool_t FatimaVmeReader::Init(ext_data_struct_info* a_struct_info)
 
 Bool_t FatimaVmeReader::Read()
 {
-    return fFixedData ? ReadBanks(fFixedData) : ReadBanks(fData);
-}
-
-template <typename Bank>
-Bool_t FatimaVmeReader::ReadBanks(const Bank* data)
-{
+    const auto* data = fData;
     if (!data) return kTRUE;
     qdcArray->clear();
     tdcArray->clear();
@@ -132,9 +112,7 @@ Bool_t FatimaVmeReader::ReadBanks(const Bank* data)
 
     int qdcs_fired = 0;
     
-    // Capacity is defined by the UCESB-generated onion, not by the number of
-    // installed modules. This supports both the legacy 5-slot and fixed 6-slot
-    // V1751 layouts without indexing beyond the compiled structure header.
+    // Use the slot count from the UCESB-generated structure.
     constexpr auto qdc_capacity = std::extent<decltype(data->fatimavme_qdc)>::value;
     for (size_t qdc = 0; qdc < qdc_capacity; ++qdc)
     {

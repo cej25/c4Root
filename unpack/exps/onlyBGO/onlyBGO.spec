@@ -5,7 +5,7 @@
 
 SUBEVENT(bgo_tamex_subevent)
 {
-    ts = TIMESTAMP_WHITERABBIT_EXTENDED(id=0x1600); //change id
+    ts = TIMESTAMP_WHITERABBIT(id=0x1600); //change id
     trigger_window = TAMEX4_HEADER();
     select several 
     {

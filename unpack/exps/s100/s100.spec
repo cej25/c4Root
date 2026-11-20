@@ -1,19 +1,15 @@
 // -*- C++ -*-
 
 // #include "../../../config/setup.h"
-#include "s100_whiterabbit.generated.spec"
-#define WR_USE_13BIT_ID
+#include "s100_config.gen.spec"
 #include "../../common/whiterabbit.spec"
-#undef WR_USE_13BIT_ID
 #include "../../common/gsi_febex4.spec"
 #include "../../common/gsi_tamex4.spec"
 #include "tamex_payload.spec"
-#define V1751_MATCH_BOARD_ID
 #include "../../common/vme_caen_v1751.spec"
-#undef V1751_MATCH_BOARD_ID
 //#include "../../common/vme_caen_v1x90.spec"
 #include "../frs/frs_s100.spec" //r3b frs
-#include "vme_caen_v1290_geo.spec"
+#include "../../common/vme_caen_v1290_geo.spec"
 #include "fatima_vme.spec"
 #include "../../common/general.spec"
 
@@ -79,10 +75,7 @@ SUBEVENT(febex_subev)
     };
 }
 
-SUBEVENT(fatima_tamex_subev)
-{
-    S100_TAMEX_PAYLOAD(S100_WR_FATIMA, S100_TAMEX_CARDS_FATIMA)
-}
+DECLARE_TAMEX_SUBEVENT(fatima_tamex_subev, S100_WR_FATIMA, S100_TAMEX_CARDS_FATIMA)
 
 SUBEVENT(fatima_vme_subev)
 {
@@ -120,10 +113,7 @@ SUBEVENT(fatima_vme_subev)
     };
 }
 
-SUBEVENT(bplast_subev)
-{
-    S100_TAMEX_PAYLOAD(S100_WR_BPLAST, S100_TAMEX_CARDS_BPLAST)
-}
+DECLARE_TAMEX_SUBEVENT(bplast_subev, S100_WR_BPLAST, S100_TAMEX_CARDS_BPLAST)
 
 SUBEVENT(frs_main_subev)
 {   

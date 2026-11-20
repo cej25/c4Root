@@ -13,8 +13,8 @@ from validate_experiment import compiled_vme_slots, emit_whiterabbit, read_yaml
 
 EXPERIMENT = ROOT / "unpack/exps/s100"
 PRODUCTION = (EXPERIMENT / "s100.spec").read_text()
-V1290 = (EXPERIMENT / "vme_caen_v1290_geo.spec").read_text()
 COMMON = ROOT / "unpack/common"
+V1290 = (COMMON / "vme_caen_v1290_geo.spec").read_text()
 CONFIG = ROOT / "config/s100/experiment.yaml"
 
 
@@ -52,8 +52,8 @@ class S100VmeSpecTests(unittest.TestCase):
 
     def test_v1751_matches_the_physical_id_before_selecting_the_bank(self):
         v1751 = (COMMON / "vme_caen_v1751.spec").read_text()
-        self.assertIn('#define V1751_MATCH_BOARD_ID\n#include "../../common/vme_caen_v1751.spec"\n'
-                      '#undef V1751_MATCH_BOARD_ID', PRODUCTION)
+        self.assertIn('#include "../../common/vme_caen_v1751.spec"', PRODUCTION)
+        self.assertNotIn("#if", v1751[:v1751.index("MATCH_END;")])
         self.assertLess(v1751.index("id = MATCH(board)"), v1751.index("MATCH_END;"))
         self.assertLess(v1751.index("MATCH_END;"), v1751.index("UINT32 board_agg_counter"))
 
