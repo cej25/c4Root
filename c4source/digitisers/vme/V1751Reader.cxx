@@ -1,6 +1,5 @@
 #include "V1751Reader.h"
-#include "VmeDigitiserDecode.h"
-#include "VmeDigitiserRawData.h"
+#include "VmeRawDecode.h"
 #include "FairRootManager.h"
 #include "TClonesArray.h"
 #include "c4Logger.h"
@@ -57,22 +56,7 @@ Bool_t V1751Reader::Read() {
                 ++fAcceptedChannels;
                 auto* hit = static_cast<V1751RawData*>(
                     fOutput->ConstructedAt(fOutput->GetEntriesFast()));
-                hit->procid = fProcId;
-                hit->board_slot = static_cast<std::uint16_t>(slot);
-                hit->board_id = board;
-                hit->channel = static_cast<std::uint16_t>(channel);
-                hit->wr_timestamp = wr;
-                hit->wr_subsystem = subsystem;
-                hit->coarse = bank._channel_timev[packed];
-                hit->extended = bank._chan_ext_timev[packed];
-                hit->fine = bank._chan_fine_timev[packed];
-                hit->qlong = bank._qlongv[packed];
-                hit->qshort = bank._qshortv[packed];
-                hit->sazc = packed < bank._chan_sazc ? bank._chan_sazcv[packed] : 0;
-                hit->sbzc = packed < bank._chan_sbzc ? bank._chan_sbzcv[packed] : 0;
-                hit->midscale = packed < bank._chan_midscale ?
-                    bank._chan_midscalev[packed] : 0;
-                hit->waveform = c4::vme::Waveform(bank, packed);
+                c4::vme::FillV1751(*hit, fProcId, subsystem, wr, slot, board, channel, packed, bank);
             });
     }
     return kTRUE;

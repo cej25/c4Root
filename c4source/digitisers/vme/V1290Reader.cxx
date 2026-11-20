@@ -1,6 +1,5 @@
 #include "V1290Reader.h"
-#include "VmeDigitiserDecode.h"
-#include "VmeDigitiserRawData.h"
+#include "VmeRawDecode.h"
 #include "FairRootManager.h"
 #include "TClonesArray.h"
 #include "c4Logger.h"
@@ -46,14 +45,7 @@ Bool_t V1290Reader::Read() {
                                   const auto& bank) {
                 auto* hit = static_cast<V1290RawData*>(
                     fOutput->ConstructedAt(fOutput->GetEntriesFast()));
-                hit->procid = fProcId;
-                hit->board_slot = static_cast<std::uint16_t>(slot);
-                hit->geo = geo;
-                hit->channel = static_cast<std::uint16_t>(channel);
-                hit->wr_timestamp = wr;
-                hit->wr_subsystem = subsystem;
-                hit->measurement = bank._measurement_data[index];
-                hit->leading_or_trailing = bank._measurement_leadOrTrailv[index];
+                c4::vme::FillV1290(*hit, fProcId, subsystem, wr, slot, geo, channel, index, bank);
             });
     }
     return kTRUE;

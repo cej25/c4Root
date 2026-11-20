@@ -85,6 +85,7 @@ set(SRCS
 ./germanium/GermaniumRaw2Cal.cxx
 ./germanium/GermaniumCal2Anl.cxx
 ./fatima/FatimaReader.cxx
+./fatima/FatimaEventReader.cxx
 ./fatima/FatimaRaw2Cal.cxx
 ./bgo/BGOReader.cxx
 ./bgo/BGORaw2Cal.cxx

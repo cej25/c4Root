@@ -95,6 +95,12 @@
 #pragma link C++ class TamexRawWord+;
 #pragma link C++ class std::vector<TamexRawWord>+;
 #pragma link C++ class TamexRawData+;
+#pragma link C++ class std::vector<TamexRawData>+;
+#pragma link C++ class std::vector<V1751RawData>+;
+#pragma link C++ class std::vector<V1290RawData>+;
+#pragma link C++ class FatimaTamexRaw+;
+#pragma link C++ class FatimaVmeChainRaw+;
+#pragma link C++ class FatimaRawData+;
 #pragma link C++ class FebexRawHit+;
 #pragma link C++ class std::vector<FebexRawHit>+;
 #pragma link C++ class FebexRawData+;
