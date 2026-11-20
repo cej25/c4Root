@@ -331,7 +331,7 @@ void s100_tests(const char* input = "/u/cjones/data/lustre/despec/fatima_test_20
     {
         BeamMonitorReader* unpackbeammonitor = new BeamMonitorReader((EXT_STR_h101_beammonitor_onion*)&ucesb_struct.beammonitor, offsetof(EXT_STR_h101, beammonitor));
         
-        unpackbeammonitor->SetOnline(true);
+        unpackbeammonitor->SetOnline(!persist);
         source->AddReader(unpackbeammonitor);
     }
 

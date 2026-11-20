@@ -64,6 +64,7 @@ fatimaData/VmeDigitiserRawData.cxx
 fatimaData/FatimaRawData.cxx
 fatimaData/FatimaVmeElectronicsCalData.cxx
 timemachineData/TimeMachineData.cxx
+bb7Data/BB7RawData.cxx
 bb7Data/BB7VmeData.cxx
 bb7Data/BB7VmeCalData.cxx
 bb7Data/BB7FebexData.cxx

@@ -39,22 +39,32 @@ void DecodeV1751(const Bank& bank, std::size_t slot, Emit emit) {
     }
 }
 
-template<typename Bank, typename Emit>
-void DecodeV1290(const Bank& bank, std::size_t slot, Emit emit) {
+template <std::size_t Blocks, typename Emit>
+void DecodeV1290Blocks(std::uint32_t count, const std::uint32_t (&channels)[Blocks],
+                       const std::uint32_t (&ends)[Blocks], std::uint32_t dataCount,
+                       std::uint32_t edgeCount, Emit emit)
+{
     std::uint32_t start = 0;
-    const auto count = fatima_vme_packed_safety::BoundedBlockCount(bank._measurement_nM);
-    for (std::uint32_t block = 0; block < count; ++block) {
-        const auto end = static_cast<std::uint32_t>(bank._measurement_nME[block]);
-        if (!fatima_vme_packed_safety::ValidTdcBlock(
-                start, end, bank._measurement_n, bank._measurement_leadOrTrail)) {
+    const auto bounded = std::min<std::size_t>(Blocks, fatima_vme_packed_safety::BoundedBlockCount(count));
+    for (std::size_t block = 0; block < bounded; ++block) {
+        const auto end = ends[block];
+        if (!fatima_vme_packed_safety::ValidTdcBlock(start, end, dataCount, edgeCount)) {
             if (end > start) start = end;
             continue;
         }
-        const auto channel = static_cast<std::uint32_t>(bank._measurement_nMI[block]);
         for (auto index = start; index < end; ++index)
-            emit(slot, static_cast<int>(bank._geo), channel, index, bank);
+            emit(channels[block], index);
         start = end;
     }
+}
+
+template<typename Bank, typename Emit>
+void DecodeV1290(const Bank& bank, std::size_t slot, Emit emit) {
+    DecodeV1290Blocks(bank._measurement_nM, bank._measurement_nMI, bank._measurement_nME,
+                       bank._measurement_n, bank._measurement_leadOrTrail,
+                       [&](auto channel, auto index) {
+                           emit(slot, static_cast<int>(bank._geo), channel, index, bank);
+                       });
 }
 
 template<typename Bank>

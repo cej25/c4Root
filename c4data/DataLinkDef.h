@@ -19,6 +19,13 @@
 #pragma link C++ class std::vector<AidaHit>+;
 
 // BB7
+#pragma link C++ class BB7FebexRawBoard+;
+#pragma link C++ class std::vector<BB7FebexRawBoard>+;
+#pragma link C++ class BB7FebexRawCrate+;
+#pragma link C++ class BB7FebexRawData+;
+#pragma link C++ class BB7V7x5RawHit+;
+#pragma link C++ class std::vector<BB7V7x5RawHit>+;
+#pragma link C++ class BB7VmeRawData+;
 #pragma link C++ class BB7FebexItem+;
 #pragma link C++ class BB7EmptyItem+;
 #pragma link C++ class BB7FebexCalItem+;
@@ -32,6 +39,7 @@
 
 // BeamMonitor
 #pragma link C++ class BeamMonitorItem+;
+#pragma link C++ class BeamMonitorRawData+;
 
 // BGO
 #pragma link C++ class BGOTwinpeaksData+;

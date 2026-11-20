@@ -1,9 +1,31 @@
+#include "BeamMonitorOnlineSpectra.h"
+#include "BeamMonitorReader.h"
+#include "EventHeader.h"
+#include "FairLogger.h"
+#include "FairRootFileSink.h"
+#include "FairRootManager.h"
+#include "FairRunOnline.h"
+#include "UcesbSource.h"
+
+#include <TFolder.h>
+#include <TStopwatch.h>
+#include <cstddef>
+#include <ctime>
+#include <iomanip>
+#include <iostream>
+#include <sstream>
+
+R__LOAD_LIBRARY(libc4source)
+R__LOAD_LIBRARY(libc4Analysis)
+
 typedef struct EXT_STR_h101_t
 {   
     EXT_STR_h101_beammonitor_onion_t beammonitor;
 } EXT_STR_h101;
 
-void run_bm_online(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t fExpId = 1)
+void run_bm_online(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t fExpId = 1,
+                   const char* input = "trans://R4L-36", const char* output = "",
+                   const char* unpacker = "/u/cjones/c4Root/unpack/exps/beammonitor/beammonitor")
 {   
 
     TString cRunId = Form("%04d", fRunId);
@@ -19,18 +41,15 @@ void run_bm_online(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t fEx
 
     FairLogger::GetLogger()->SetLogScreenLevel("INFO");
     FairLogger::GetLogger()->SetColoredLog(true);
-    TString filename = "trans://R4L-36";
-    //TString filename = "~/lustre/despec/beam_mon_2024/beam_mon_test_x7.lmd";
-    // TString outputpath = "run_online_bm_test";
-    // TString outputFileName = outputpath + ".root";
+    const TString filename = input;
+    const TString outputFileName = output;
+    const bool persist = !outputFileName.IsNull();
 
     Int_t refresh = 1; // Refresh rate for online histograms
     Int_t port = 7070;
      
     TString ntuple_options = "UNPACK";
-   //TString ucesb_dir = getenv("UCESB_DIR"); // .bashrc
-    TString ucesb_dir = "/u/cjones/c4Root/unpack/exps";
-    TString ucesb_path = ucesb_dir + "/beammonitor/beammonitor --allow-errors --input-buffer=200Mi";
+    TString ucesb_path = TString(unpacker) + " --allow-errors --input-buffer=200Mi";
     ucesb_path.ReplaceAll("//","/");
 
     // Create online run
@@ -39,7 +58,7 @@ void run_bm_online(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t fEx
     EvtHead->Register(false);
     run->SetEventHeader(EvtHead);
     run->SetRunId(1);
-    //run->SetSink(new FairRootFileSink(outputFileName));
+    if (persist) run->SetSink(new FairRootFileSink(outputFileName));
     run->ActivateHttpServer(refresh, port);
     TFolder* histograms = new TFolder("Histograms", "Histograms");
     FairRootManager::Instance()->Register("Histograms", "Histograms Folder", histograms, false);
@@ -55,7 +74,7 @@ void run_bm_online(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t fEx
     BeamMonitorReader* unpackbeammonitor = new BeamMonitorReader((EXT_STR_h101_beammonitor_onion*)&ucesb_struct.beammonitor, offsetof(EXT_STR_h101, beammonitor));
 
     // Add readers
-    unpackbeammonitor->SetOnline(true);
+    unpackbeammonitor->SetOnline(!persist);
     source->AddReader(unpackbeammonitor);
 
     run->SetSource(source);
@@ -73,10 +92,10 @@ void run_bm_online(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t fEx
     FairLogger::GetLogger()->SetLogScreenLevel("info");
 
     // Information about portnumber and main data stream
-    cout << "\n\n" << endl;
-    cout << "Data stream is: " << filename << endl;
-    cout << "Beam monitor online port server: " << port << endl;
-    cout << "\n\n" << endl;
+    std::cout << "\n\n" << std::endl;
+    std::cout << "Data stream is: " << filename << std::endl;
+    std::cout << "Beam monitor online port server: " << port << std::endl;
+    std::cout << "\n\n" << std::endl;
 
     // Run
     run->Run((nev < 0) ? nev : 0, (nev < 0) ? 0 : nev);
@@ -86,10 +105,10 @@ void run_bm_online(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t fEx
     Double_t rtime = timer.RealTime();
     Double_t ctime = timer.CpuTime();
     Float_t cpuUsage = ctime / rtime;
-    cout << "CPU used: " << cpuUsage << endl;
+    std::cout << "CPU used: " << cpuUsage << std::endl;
     std::cout << std::endl << std::endl;
     std::cout << "Macro finished successfully." << std::endl;
-    // std::cout << "Output file is " << outputFileName << std::endl;
+    if (persist) std::cout << "Output file is " << outputFileName << std::endl;
     std::cout << "Real time " << rtime << " s, CPU time " << ctime << " s" << std::endl << std::endl;
    // gApplication->Terminate(0);
 }

@@ -18,10 +18,16 @@
 #include "FairRootManager.h"
 
 #include "BB7FebexData.h"
+#include "BB7RawData.h"
+#include "FebexTiming.h"
+#include "FebexSummary.h"
+#include "VmeDigitiserDecode.h"
 #include "BB7FebexReader.h"
 #include "c4Logger.h"
 
-#include "TClonesArray.h"
+#include <algorithm>
+#include <cstring>
+#include <iterator>
 #include "ext_data_struct_info.hh"
 
 extern "C"
@@ -32,10 +38,10 @@ extern "C"
 
 BB7FebexReader::BB7FebexReader(EXT_STR_h101_bbfebex_onion* data, size_t offset)
     :   c4Reader("BB7FebexReader")
-    ,   fNEvent(0)
     ,   fData(data)
     ,   fOffset(offset)
     ,   fOnline(kFALSE)
+    ,   fRaw(new BB7FebexRawData)
     ,   bb7array(new std::vector<BB7FebexItem>)
     ,   bb7empty(new std::vector<BB7EmptyItem>)
 {
@@ -44,12 +50,14 @@ BB7FebexReader::BB7FebexReader(EXT_STR_h101_bbfebex_onion* data, size_t offset)
 
 BB7FebexReader::~BB7FebexReader()
 {
+    delete fRaw;
     delete bb7array;
     delete bb7empty;
 }
 
 Bool_t BB7FebexReader::Init(ext_data_struct_info* a_struct_info)
 {
+    if (!a_struct_info || !fData || !FairRootManager::Instance()) return kFALSE;
     Int_t ok;
     c4LOG(info, "");
 
@@ -63,243 +71,112 @@ Bool_t BB7FebexReader::Init(ext_data_struct_info* a_struct_info)
 
     FairRootManager::Instance()->RegisterAny("BB7FebexData", bb7array, !fOnline);
     FairRootManager::Instance()->RegisterAny("BB7EmptyData", bb7empty, !fOnline);
-    bb7array->clear();
-    bb7empty->clear();
+    FairRootManager::Instance()->RegisterAny("BB7FebexRawData", fRaw, !fOnline);
+    Reset();
 
-    memset(fData, 0, sizeof *fData);
+    std::memset(fData, 0, sizeof *fData);
 
     return kTRUE;
+}
+
+namespace
+{
+template <typename Board, std::size_t N>
+void ReadCrate(const Board (&boards)[N], BB7FebexRawCrate& crate)
+{
+    if (!crate.wrTimestamp) return;
+    for (std::size_t slot = 0; slot < N; ++slot)
+    {
+        const auto& input = boards[slot];
+        const auto ticks = febex::JoinTicks(input.event_trigger_time_hi, input.event_trigger_time_lo);
+        if (!ticks) continue;
+
+        auto& board = crate.boards.emplace_back();
+        board.reportedHits = input.num_channels_fired;
+        auto& summary = board.summary;
+        summary.detectorName = "BB7";
+        summary.eventTicks = ticks;
+        summary.wrTimestamp = crate.wrTimestamp;
+        summary.wrId = crate.wrId;
+        summary.procid = crate.procid;
+        summary.hitPattern = input.hit_pattern;
+        summary.slot = slot;
+        summary.card = input.board_num;
+        summary.trigger = input.trig;
+
+        const auto count = std::min<std::size_t>({input.num_channels_fired, input.channel_id,
+            input.channel_trigger_time_hi, input.channel_trigger_time_lo, input.channel_energy,
+            input.pileup, input.overflow, std::size(input.channel_idv)});
+        for (std::size_t i = 0; i < count; ++i)
+        {
+            const auto channel = input.channel_idv[i];
+            if (channel >= std::size(input.trace_traces)) continue;
+
+            const auto& trace = input.trace_traces[channel];
+            const auto traceSize = std::min<std::size_t>(trace._, std::size(trace.v));
+            board.traces.emplace_back(trace.v, trace.v + traceSize);
+            auto& hit = summary.hits.emplace_back();
+            hit.channel = channel;
+            hit.channelTicks = febex::JoinTicks(input.channel_trigger_time_hiv[i], input.channel_trigger_time_lov[i]);
+            hit.energyWord = input.channel_energyv[i];
+            hit.cfd = i < input.channel_cfd ? input.channel_cfdv[i] : 0;
+            hit.pileup = (input.pileupv[i] & 1u) != 0;
+            hit.overflow = (input.overflowv[i] & 1u) != 0;
+        }
+    }
+}
+
+void FillLegacyCrate(const BB7FebexRawCrate& crate, int id, std::vector<BB7FebexItem>& hits,
+                     std::vector<BB7EmptyItem>& emptyBoards)
+{
+    bool recordedEmpty = false;
+    for (const auto& board : crate.boards)
+    {
+        const auto& raw = board.summary;
+        if (board.reportedHits == 0 && !recordedEmpty)
+        {
+            emptyBoards.emplace_back().SetAll(crate.wrTimestamp, crate.wrId, id, raw.card, raw.eventTicks * 10);
+            recordedEmpty = true;
+        }
+        for (std::size_t i = 0; i < raw.hits.size(); ++i)
+        {
+            const auto& hit = raw.hits[i];
+            hits.emplace_back().SetAll(crate.wrTimestamp, crate.wrId, id, raw.card, raw.eventTicks * 10,
+                hit.channel, hit.channelTicks * 10, hit.pileup, hit.overflow,
+                febex::GammaSignedEnergy(hit.energyWord), hit.channel, board.traces[i]);
+        }
+    }
+}
 }
 
 Bool_t BB7FebexReader::Read()
 {
     if (!fData) return kTRUE;
-    bb7array->clear();
-    bb7empty->clear();
-    wr_t_first = 0;
-    wr_t_second = 0;
+    Reset();
 
-    //int64_t wr_t = (((uint64_t)fData->bbsfebex_ts_t[3]) << 48) + (((uint64_t)fData->bbsfebex_ts_t[2]) << 32) + (((uint64_t)fData->bbsfebex_ts_t[1]) << 16) + (uint64_t)(fData->bbsfebex_ts_t[0]);
-    wr_t_first = (((uint64_t)fData->bbfirst_ts_t[3]) << 48) + (((uint64_t)fData->bbfirst_ts_t[2]) << 32) + (((uint64_t)fData->bbfirst_ts_t[1]) << 16) + (uint64_t)(fData->bbfirst_ts_t[0]);
-    uint32_t wr_id_first = fData->bbfirst_ts_subsystem_id;
-    
-    if (wr_t_first != 0)
-    {
-        nReads++;
-        for (int it_board_number = 0; it_board_number < 5; it_board_number++)
-        {
-            //since the febex card has a 100MHz clock which timestamps events.
-            uint16_t trig = fData->bbfirst_data[it_board_number].trig;
-            uint64_t event_trigger_time_long = (((uint64_t)(fData->bbfirst_data[it_board_number].event_trigger_time_hi) << 32) + (fData->bbfirst_data[it_board_number].event_trigger_time_lo))*10;
-            
-            if (event_trigger_time_long <= 0) continue; // skip boards that don't fire, since NBoards is set to absolute maximum
-    
-            uint32_t board_num = fData->bbfirst_data[it_board_number].board_num;
+    auto& first = fRaw->first;
+    first.wrTimestamp = c4::vme::Timestamp(fData->bbfirst_ts_t);
+    first.wrId = fData->bbfirst_ts_subsystem_id;
+    first.procid = 35;
+    ReadCrate(fData->bbfirst_data, first);
+    FillLegacyCrate(first, 0, *bb7array, *bb7empty);
 
-            //::::::::::::::Multiplicity: Called num_channels_fired from unpacker
-            uint32_t M = fData->bbfirst_data[it_board_number].num_channels_fired;
+    auto& second = fRaw->second;
+    second.wrTimestamp = c4::vme::Timestamp(fData->bbsecond_ts_t);
+    second.wrId = fData->bbsecond_ts_subsystem_id;
+    second.procid = 36;
+    ReadCrate(fData->bbsecond_data, second);
+    FillLegacyCrate(second, 1, *bb7array, *bb7empty);
 
-            if (M == 0 && n_zero_f0_0 == 0)
-            {
-                auto & entry = bb7empty->emplace_back();
-                entry.SetAll(
-                    wr_t_first,
-                    wr_id_first,
-                    0, // crate
-                    board_num,
-                    event_trigger_time_long
-                );
-                n_zero_f0_0++;
-            }
-
-            for (int index = 0; index < M; index++) //GENERAL
-            {
-                //::::::::::::::Channel ID
-                uint32_t channel_id = fData->bbfirst_data[it_board_number].channel_idv[index];
-
-                //::::::::::::::Channel Trigger Time
-                uint64_t channel_trigger_time_long = (((uint64_t)(fData->bbfirst_data[it_board_number].channel_trigger_time_hiv[index]) << 32) + 
-                (fData->bbfirst_data[it_board_number].channel_trigger_time_lov[index]))*10;
-
-                //::::::::::::::Channel PileUp
-                bool pileup = fData->bbfirst_data[it_board_number].pileupv[index] & 0x1;
-        
-                //::::::::::::::Channel OverFlow
-                bool overflow = fData->bbfirst_data[it_board_number].overflowv[index] & 0x1;
-
-
-
-                //::::::::::::::Channel Energy
-                //according to febex manual on gsi website, the 24th bit of the energy denotes the sign to indicate the polarity of the pulse
-                if (fData->bbfirst_data[it_board_number].channel_energyv[index] & (1 << 23))
-                {
-                    energy = -(int32_t)(fData->bbfirst_data[it_board_number].channel_energyv[index] & 0x007FFFFF);
-                }
-                else
-                {
-                    energy = +(int32_t)(fData->bbfirst_data[it_board_number].channel_energyv[index] & 0x007FFFFF);            
-                }
-
-                std::vector<UShort_t> trace;
-
-
-                // this is changed from "index" to "channel_id" since sometimes we get less than 16 channels fired, but we always get 16 traces in order
-
-                //::::::::::::::Channel Traces with ID from channel header
-                for (int l = 0; l < fData->bbfirst_data[it_board_number].trace_traces[channel_id]._ ; l++)
-                {
-                    trace.emplace_back(fData->bbfirst_data[it_board_number].trace_traces[channel_id].v[l]);    
-                }
-
-                // if (energy < 0)
-                // {
-                //     std::cout << "trace size w neg energy: " << trace.size() << std::endl;
-                // } 
-                // else
-                // {
-                //     if (trace.size() > 0) std::cout << "yay?" << std::endl;
-                // }
-
-
-                auto & entry = bb7array->emplace_back();
-                entry.SetAll(
-                    wr_t_first,
-                    wr_id_first,
-                    0,
-                    board_num,
-                    event_trigger_time_long,
-                    channel_id,
-                    channel_trigger_time_long,
-                    pileup,
-                    overflow,
-                    energy,
-                    channel_id, // can be removed, "ID from trace header"
-                    trace
-                );
-
-            }
-        }
-    } // check first wr to loop
-
-    // bb7array->clear();
-
-    // second crate solution I guess
-    wr_t_second = (((uint64_t)fData->bbsecond_ts_t[3]) << 48) + (((uint64_t)fData->bbsecond_ts_t[2]) << 32) + (((uint64_t)fData->bbsecond_ts_t[1]) << 16) + (uint64_t)(fData->bbsecond_ts_t[0]);
-    uint32_t wr_id_second = fData->bbsecond_ts_subsystem_id;
-
-    if (wr_t_second != 0)
-    {
-        nReads++;
-        for (int it_board_number = 0; it_board_number < 4; it_board_number++)
-        {
-            //since the febex card has a 100MHz clock which timestamps events.
-            uint16_t trig = fData->bbsecond_data[it_board_number].trig;
-            uint64_t event_trigger_time_long = (((uint64_t)(fData->bbsecond_data[it_board_number].event_trigger_time_hi) << 32) + (fData->bbsecond_data[it_board_number].event_trigger_time_lo))*10;
-            
-            if (event_trigger_time_long <= 0) continue; // skip boards that don't fire, since NBoards is set to absolute maximum
-    
-            uint32_t board_num = fData->bbsecond_data[it_board_number].board_num;
-
-            //::::::::::::::Multiplicity: Called num_channels_fired from unpacker
-            uint32_t M = fData->bbsecond_data[it_board_number].num_channels_fired;
-
-            if (M == 0 && n_zero_f0_1 == 0)
-            {
-                auto & entry = bb7empty->emplace_back();
-                entry.SetAll(
-                    wr_t_second,
-                    wr_id_second,
-                    1, // crate
-                    board_num,
-                    event_trigger_time_long
-                );
-                n_zero_f0_1++;
-            }
-
-            for (int index = 0; index < M; index++) //GENERAL
-            {
-                //::::::::::::::Channel ID
-                uint32_t channel_id = fData->bbsecond_data[it_board_number].channel_idv[index];
-
-                //::::::::::::::Channel Trigger Time
-                uint64_t channel_trigger_time_long = (((uint64_t)(fData->bbsecond_data[it_board_number].channel_trigger_time_hiv[index]) << 32) + 
-                (fData->bbsecond_data[it_board_number].channel_trigger_time_lov[index]))*10;
-
-                //::::::::::::::Channel PileUp
-                bool pileup = fData->bbsecond_data[it_board_number].pileupv[index] & 0x1;
-        
-                //::::::::::::::Channel OverFlow
-                bool overflow = fData->bbsecond_data[it_board_number].overflowv[index] & 0x1;
-
-                //::::::::::::::Channel Energy
-                //according to febex manual on gsi website, the 24th bit of the energy denotes the sign to indicate the polarity of the pulse
-                bool check_polarity = fData->bbsecond_data[it_board_number].channel_energyv[index] & (1 << 23);
-                if (check_polarity)
-                {
-                    energy = -(int32_t)(fData->bbsecond_data[it_board_number].channel_energyv[index] & 0x007FFFFF);
-                }
-                else
-                {
-                    energy = +(int32_t)(fData->bbsecond_data[it_board_number].channel_energyv[index] & 0x007FFFFF);            
-                }
-
-                std::vector<uint16_t> trace;
-
-                // if (energy < 0) 
-                // {
-                //     std::cout << std::hex << energy << std::dec << std::endl;
-                // }
-
-                // this is changed from "index" to "channel_id" since sometimes we get less than 16 channels fired, but we always get 16 traces in order
-                // not really sure what the solution for LISA is 
-
-                //::::::::::::::Channel Traces with ID from channel header
-                for (int l = 0 ; l < fData->bbsecond_data[it_board_number].trace_traces[channel_id]._ ; l++)
-                {
-                    trace.emplace_back(fData->bbsecond_data[it_board_number].trace_traces[channel_id].v[l]);    
-                    // if (energy > 0) std::cout << trace.at(l) << std::endl;
-                }
-
-                // if (energy < 0)
-                // {
-                //     std::cout << "trace size w neg energy: " << trace.size() << std::endl;
-                //     std::cout << "energy:: " << energy << std::endl;
-                // } 
-                // else
-                // {
-                //     if (trace.size() > 0) std::cout << "yay?" << std::endl;
-                // }
-
-                auto & entry = bb7array->emplace_back();
-                entry.SetAll(
-                    wr_t_second,
-                    wr_id_second,
-                    1, // crate
-                    board_num,
-                    event_trigger_time_long,
-                    channel_id,
-                    channel_trigger_time_long,
-                    pileup,
-                    overflow,
-                    energy,
-                    channel_id, // can be removed, "ID from trace header"
-                    trace
-                );
-
-            }
-        }
-    }
-
-    fNEvent += 1;
     return kTRUE;
-
 }
 
 void BB7FebexReader::Reset()
 {
-    energy = 0;
-    n_zero_f0_0 = 0;
-    n_zero_f0_1 = 0;
+    fRaw->first = {};
+    fRaw->second = {};
+    bb7array->clear();
+    bb7empty->clear();
 }
 
 ClassImp(BB7FebexReader)
