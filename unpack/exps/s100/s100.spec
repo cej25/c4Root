@@ -75,7 +75,10 @@ SUBEVENT(febex_subev)
     };
 }
 
-DECLARE_TAMEX_SUBEVENT(fatima_tamex_subev, S100_WR_FATIMA, S100_TAMEX_CARDS_FATIMA)
+SUBEVENT(fatima_tamex_subev)
+{
+    S100_TAMEX_PAYLOAD(S100_WR_FATIMA, S100_TAMEX_CARDS_FATIMA)
+}
 
 SUBEVENT(fatima_vme_subev)
 {
@@ -113,7 +116,10 @@ SUBEVENT(fatima_vme_subev)
     };
 }
 
-DECLARE_TAMEX_SUBEVENT(bplast_subev, S100_WR_BPLAST, S100_TAMEX_CARDS_BPLAST)
+SUBEVENT(bplast_subev)
+{
+    S100_TAMEX_PAYLOAD(S100_WR_BPLAST, S100_TAMEX_CARDS_BPLAST)
+}
 
 SUBEVENT(frs_main_subev)
 {   

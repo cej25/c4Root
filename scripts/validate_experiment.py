@@ -20,12 +20,13 @@ S100_CONFIG_INCLUDE = "s100_config.gen.spec"
 S100_WR_MEMBERS = {"aida", "beammonitor", "bgo", "bplast", "fatima", "fatimavme", "frstpat", "germanium"}
 S100_EVENT_MEMBERS = S100_WR_MEMBERS | {"frsmain", "frstpc", "frsuser"}
 S100_TAMEX_MEMBERS = {"fatima", "bplast", "bgo"}
-S100_TAMEX_TEMPLATE_MEMBERS = {"fatima", "bplast"}
 S100_VME_MODELS = {
     "v1751": ("S100_V1751_BANKS", "qdc", "VME_CAEN_V1751", "board"),
     "v1290": ("S100_V1290_BANKS", "tdc", "VME_CAEN_V1290_GEO", "geom_expected"),
 }
-WR_ARGUMENT = re.compile(r"\bTIMESTAMP_WHITERABBIT\(\s*id\s*=\s*(\w+)\s*\)")
+WR_ARGUMENT = re.compile(
+    r"\b(?:TIMESTAMP_WHITERABBIT\(\s*id\s*=\s*|S100_TAMEX_PAYLOAD\(\s*)(\w+)(?=\s*[,)])"
+)
 
 
 def read_yaml(path):
@@ -183,15 +184,6 @@ def check_s100_routing(spec, configuration):
         )
         if procid != [procid_symbol(member)]:
             warnings.append(f"{detector}: UCESB EVENT must use {procid_symbol(member)}")
-        if member in S100_TAMEX_TEMPLATE_MEMBERS:
-            declarations = re.findall(
-                rf"(?m)^\s*DECLARE_TAMEX_SUBEVENT\(\s*{subevent}\s*,\s*(\w+)\s*,\s*(\w+)\s*\)",
-                spec,
-            )
-            if declarations != [(wr_symbol(member), tamex_cards_symbol(member))]:
-                warnings.append(f"{detector}: UCESB must declare {subevent} with "
-                                f"{wr_symbol(member)} and {tamex_cards_symbol(member)}")
-            continue
         if member in ids:
             body = read_subevent(spec, subevent)
             if WR_ARGUMENT.findall(body) != [wr_symbol(member)]:
@@ -231,7 +223,7 @@ def validate(experiment, root=ROOT):
         member = item.get("member")
         if not isinstance(subevent, str) or not isinstance(member, str):
             raise ValueError(f"{detector}: specify subevent and member in experiment.yaml")
-        body = read_subevent(spec, subevent) if not s100 else None
+        body = read_subevent(spec, subevent)
         if not s100:
             procid = item.get("procid")
             if type(procid) is not int:
@@ -246,7 +238,7 @@ def validate(experiment, root=ROOT):
             )
             if not event_match or int(event_match.group(1)) != procid:
                 warnings.append(f"{detector}: procid does not match UCESB EVENT declaration")
-            ts = WR_ARGUMENT.search(body)
+            ts = re.search(r"TIMESTAMP_WHITERABBIT\(\s*id\s*=\s*(0x[0-9a-fA-F]+|\d+)", body)
             wr = item.get("whiterabbit")
             if type(wr) is not int or not ts or int(ts.group(1), 0) != wr:
                 warnings.append(f"{detector}: White Rabbit subsystem ID differs from UCESB")
