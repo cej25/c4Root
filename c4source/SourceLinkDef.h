@@ -30,7 +30,6 @@
 #pragma link C++ class UnpackReader+;
 #pragma link C++ class BeamMonitorReader+;
 #pragma link C++ class FatimaReader+;
-#pragma link C++ class FatimaEventReader+;
 #pragma link C++ class FatimaRaw2Cal+;
 #pragma link C++ class BGOReader+;
 #pragma link C++ class TamexReader+;

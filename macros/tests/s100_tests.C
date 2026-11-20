@@ -12,7 +12,7 @@
 #include "FairRootFileSink.h"
 #include "FairRootManager.h"
 #include "FairRunOnline.h"
-#include "FatimaEventReader.h"
+#include "FatimaReader.h"
 #include "FatimaOnlineSpectra.h"
 #include "FatimaRaw2Cal.h"
 #include "FatimaVmeOnlineSpectra.h"
@@ -242,12 +242,12 @@ void s100_tests(const char* input = "/u/cjones/data/lustre/despec/fatima_test_20
     
     if (FATIMA_ON || (FATIMA_VME_ON && !legacyVmeAndBplast))
     {
-        const FatimaEventReader::TamexInput tamex{
+        const FatimaReader::TamexInput tamex{
             FATIMA_ON ? &ucesb_struct.fatima : nullptr, offsetof(EXT_STR_h101, fatima), S100_PROCID_FATIMA};
-        const FatimaEventReader::VmeInput vme{
+        const FatimaReader::VmeInput vme{
             FATIMA_VME_ON && !legacyVmeAndBplast ? &ucesb_struct.fatimavme : nullptr,
             offsetof(EXT_STR_h101, fatimavme), S100_PROCID_FATIMAVME};
-        auto* reader = new FatimaEventReader(tamex, vme);
+        auto* reader = new FatimaReader(tamex, vme);
         reader->SetOnline(!persist);
         source->AddReader(reader);
     }

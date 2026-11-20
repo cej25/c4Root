@@ -33,7 +33,7 @@ class ext_data_struct_info;
 class FatimaVmeReader : public c4Reader
 {
     public:
-        // Adapt the VME chain from a preceding FatimaEventReader for existing tasks.
+        // Adapt the VME chain from a preceding FatimaReader for existing tasks.
         FatimaVmeReader();
         FatimaVmeReader(EXT_STR_h101_fatimavme_onion*, size_t);
 

@@ -1,4 +1,4 @@
-#include "FatimaEventReader.h"
+#include "FatimaReader.h"
 #include "FatimaRaw2Cal.h"
 #include "ext_h101_fatima.h"
 #include "../../unpack/exps/s100/s100_config.gen.spec"
@@ -162,9 +162,9 @@ void c_fat_test_2025()
     
     if (FATIMA_ON)
     {
-        const FatimaEventReader::TamexInput tamex{
+        const FatimaReader::TamexInput tamex{
             &ucesb_struct.fatima, offsetof(EXT_STR_h101, fatima), S100_PROCID_FATIMA};
-        auto* unpackfatima = new FatimaEventReader(tamex, {});
+        auto* unpackfatima = new FatimaReader(tamex, {});
 
         unpackfatima->SetOnline(true);
         source->AddReader(unpackfatima);

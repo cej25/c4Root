@@ -1,4 +1,4 @@
-#include "FatimaEventReader.h"
+#include "FatimaReader.h"
 #include "FatimaRaw2Cal.h"
 #include "ext_h101_fatima.h"
 #include <TROOT.h>
@@ -133,9 +133,9 @@ void s143_tests()
 
     if (FATIMA_ON)
     {
-        const FatimaEventReader::TamexInput tamex{
+        const FatimaReader::TamexInput tamex{
             &ucesb_struct.fatima, offsetof(EXT_STR_h101, fatima), 80};
-        auto* unpackfatima = new FatimaEventReader(tamex, {});
+        auto* unpackfatima = new FatimaReader(tamex, {});
 
         unpackfatima->SetOnline(true);
         source->AddReader(unpackfatima);

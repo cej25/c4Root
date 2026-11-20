@@ -342,7 +342,7 @@ void FatimaRaw2Cal::WriteTamexFineTimeHistograms()
             double total = 0.0;
             for (std::size_t bin = 0; bin < counts.size(); ++bin)
             {
-                // Preserve compatibility with legacy FatimaReader (TH1I).
+                // Use TH1I for compatibility with existing fine-time files.
                 if (counts[bin] > static_cast<std::uint64_t>(std::numeric_limits<int>::max()))
                 {
                     c4LOG(error, "FATIMA fine-time histogram bin exceeds TH1I capacity: " << name);

@@ -1,7 +1,7 @@
 #include "EventHeader.h"
 #include "FairRootFileSink.h"
 #include "FairRunOnline.h"
-#include "FatimaEventReader.h"
+#include "FatimaReader.h"
 #include "FatimaRawData.h"
 #include "FatimaRaw2Cal.h"
 #include "FatimaTwinpeaksCalData.h"
@@ -327,8 +327,8 @@ void s100_fatima_raw(const char* input = "../calum.lmd",
                                    &data, sizeof(data));
     source->SetMaxEvents(events);
     source->AddReader(new UnpackReader(&data.header, offsetof(EXT_STR_h101_t, header)));
-    const FatimaEventReader::TamexInput tamex{&data.tamex, offsetof(EXT_STR_h101_t, tamex), S100_PROCID_FATIMA};
-    const FatimaEventReader::VmeInput vme{&data.vme, offsetof(EXT_STR_h101_t, vme), S100_PROCID_FATIMAVME};
+    const FatimaReader::TamexInput tamex{&data.tamex, offsetof(EXT_STR_h101_t, tamex), S100_PROCID_FATIMA};
+    const FatimaReader::VmeInput vme{&data.vme, offsetof(EXT_STR_h101_t, vme), S100_PROCID_FATIMAVME};
     if (mode != "combined")
     {
         auto* tamexReader = new TamexReader(tamex.bank, tamex.offset, tamex.procid, "FATIMA");
@@ -343,10 +343,10 @@ void s100_fatima_raw(const char* input = "../calum.lmd",
         source->AddReader(tdcReader);
     }
     if (mode == "raw")
-        source->AddReader(new FatimaEventReader(tamex, vme, FatimaEventReader::BankAccess::AlreadyRegistered));
+        source->AddReader(new FatimaReader(tamex, vme, FatimaReader::BankAccess::AlreadyRegistered));
     if (mode == "combined")
     {
-        auto* reader = new FatimaEventReader(tamex, vme);
+        auto* reader = new FatimaReader(tamex, vme);
         reader->SetOnline(true);
         source->AddReader(reader);
     }

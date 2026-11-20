@@ -1,3 +1,7 @@
+#include "FatimaReader.h"
+#include "FatimaRaw2Cal.h"
+#include "ext_h101_fatima.h"
+#include "../../../unpack/exps/s100/s100_config.gen.spec"
 #include "ext_h101_fatimavme.h"
 #include <TROOT.h>
 
@@ -182,9 +186,9 @@ void s100_online_thresholds(const Int_t nev = -1, const Int_t fRunId = 1, const 
     
     if (FATIMA_ON)
     {
-        FatimaReader* unpackfatima = new FatimaReader((EXT_STR_h101_fatima_onion*)&ucesb_struct.fatima, offsetof(EXT_STR_h101, fatima));
-      //unpackfatima->DoFineTimeCalOnline(config_path + "/fatima/fine_time_9apr_test.root", 200000);
-        unpackfatima->SetInputFileFineTimeHistos(config_path + "/fatima/fine_time_9apr_test.root");
+        const FatimaReader::TamexInput tamex{
+            &ucesb_struct.fatima, offsetof(EXT_STR_h101, fatima), S100_PROCID_FATIMA};
+        auto* unpackfatima = new FatimaReader(tamex, {});
 
         unpackfatima->SetOnline(true);
         source->AddReader(unpackfatima);
@@ -268,6 +272,10 @@ void s100_online_thresholds(const Int_t nev = -1, const Int_t fRunId = 1, const 
     if (FATIMA_ON)
     {
         FatimaRaw2Cal* calfatima = new FatimaRaw2Cal();
+        // Replace online calibration with this call once the histograms are available.
+        // calfatima->UseFatimaRawInput(config_path + "/fatima/fine_time_9apr_test.root");
+        calfatima->UseFatimaRawInput();
+        calfatima->CalibrateTamexFineTimeOnline("", 200000);
         // calfatima->PrintDetectorMap();
         // calfatima->PrintDetectorCal();
         
