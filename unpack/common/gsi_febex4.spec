@@ -14,9 +14,11 @@ FEBEX_PADDING()
 
 FEBEX_EVENT(card)
 {
+#ifdef FEBEX_EXPORT_BOARD_METADATA
     MEMBER(DATA8 present);
     MEMBER(DATA8 sfp);
     MEMBER(DATA8 board_id);
+#endif
     MEMBER(DATA8 trig);
 	MEMBER(DATA32 event_trigger_time_hi); // trigger time
 	MEMBER(DATA32 event_trigger_time_lo); // "..."
@@ -36,9 +38,11 @@ FEBEX_EVENT(card)
         12_15: sfpnr;
         16_23: card = MATCH(card);
         24_31: 0xFF;
+#ifdef FEBEX_EXPORT_BOARD_METADATA
         ENCODE(present, (value=1));
         ENCODE(sfp, (value=sfpnr));
         ENCODE(board_id, (value=card));
+#endif
         ENCODE(trig, (value=trigger_type));
     }
 

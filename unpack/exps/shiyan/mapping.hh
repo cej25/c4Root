@@ -64,7 +64,7 @@ SIGNAL(MUSIC2_LOT_1, frsuser.data.v1290.measurement.leadOrTrail[24], MUSIC2_LOT_
 // :::::::::::::::::::::::::::::::::::::::
 
 // ::::::: TPAT Crate ::::::::::::::::::::
-SIGNAL(WR_ID, frstpat.wr.subsystem_id, DATA16);
+SIGNAL(WR_ID, frstpat.wr.subsystem_id, DATA12);
 SIGNAL(WR_T1, frstpat.wr.t1, DATA16);
 SIGNAL(WR_T2, frstpat.wr.t2, DATA16);
 SIGNAL(WR_T3, frstpat.wr.t3, DATA16);

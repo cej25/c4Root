@@ -1,6 +1,6 @@
 // -*- C++ -*-
 
-#include "../../common/whiterabbit.spec"
+#include "../../common/whiterabbit_13bit.spec"
 #include "../../../config/s452/setup.hh"
 
 #include "../../common/vme_caen_v1x90.spec"

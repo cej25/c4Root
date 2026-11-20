@@ -1,6 +1,6 @@
 // -*- C++ -*-
 
-#include "../../common/whiterabbit.spec"
+#include "../../common/whiterabbit_13bit.spec"
 
 #define BM_MAX_HITS 100000
 

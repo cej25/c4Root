@@ -1,6 +1,6 @@
 // -*- C++ -*-
 
-#include "../../common/whiterabbit.spec"
+#include "../../common/whiterabbit_13bit.spec"
 #include "../../common/gsi_tamex4.spec"
 
 DUMMY()

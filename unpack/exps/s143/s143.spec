@@ -1,6 +1,6 @@
 // -*- C++ -*-
 
-#include "../../common/whiterabbit.spec"
+#include "../../common/whiterabbit_13bit.spec"
 #include "../../common/clock_tdc.spec"
 #include "../../common/vme_mesytec_mdpp16.spec"
 #include "../frs/frs_s143.spec"

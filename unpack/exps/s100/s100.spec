@@ -2,8 +2,10 @@
 
 // #include "../../../config/setup.h"
 #include "s100_config.gen.spec"
-#include "../../common/whiterabbit.spec"
+#include "../../common/whiterabbit_13bit.spec"
+#define FEBEX_EXPORT_BOARD_METADATA
 #include "../../common/gsi_febex4.spec"
+#undef FEBEX_EXPORT_BOARD_METADATA
 #include "../../common/gsi_tamex4.spec"
 #include "tamex_payload.spec"
 #include "../../common/vme_caen_v1751.spec"
