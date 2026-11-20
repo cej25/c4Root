@@ -98,6 +98,8 @@
 #pragma link C++ class FebexRawHit+;
 #pragma link C++ class std::vector<FebexRawHit>+;
 #pragma link C++ class FebexRawData+;
+#pragma link C++ class std::vector<FebexRawData>+;
+#pragma link C++ class DegasRawData+;
 
 // HISPEC10 MCP
 #pragma link C++ class H10MCPTwinpeaksData+;

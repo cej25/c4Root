@@ -23,6 +23,7 @@ ${C4ROOT_SOURCE_DIR}/c4source/fimp
 ${C4ROOT_SOURCE_DIR}/c4source/mcp
 ${C4ROOT_SOURCE_DIR}/c4source/stefan
 ${C4ROOT_SOURCE_DIR}/c4source/digitisers/tamex
+${C4ROOT_SOURCE_DIR}/c4source/digitisers/febex
 ${C4ROOT_SOURCE_DIR}/c4source/digitisers/vme
 ${C4ROOT_SOURCE_DIR}/c4data
 ${C4ROOT_SOURCE_DIR}/c4data/frsData
@@ -41,6 +42,7 @@ ${C4ROOT_SOURCE_DIR}/c4data/mcpData
 ${C4ROOT_SOURCE_DIR}/c4data/stefanData
 ${C4ROOT_SOURCE_DIR}/c4data/tamexData
 ${C4ROOT_SOURCE_DIR}/c4data/febexData
+${C4ROOT_SOURCE_DIR}/c4data/degasData
 ${C4ROOT_SOURCE_DIR}/c4data/baseData
 )
 
@@ -62,6 +64,7 @@ set(SRCS
 ./base/GainShift.cxx
 ./digitisers/tamex/TamexReader.cxx
 ./digitisers/febex/FebexReader.cxx
+./degas/DegasReader.cxx
 ./digitisers/vme/V1751Reader.cxx
 ./digitisers/vme/V1290Reader.cxx
 ./aida/AidaReader.cxx

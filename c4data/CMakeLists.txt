@@ -18,6 +18,7 @@ ${C4ROOT_SOURCE_DIR}/c4data/fimpData
 ${C4ROOT_SOURCE_DIR}/c4data/mcpData
 ${C4ROOT_SOURCE_DIR}/c4data/tamexData
 ${C4ROOT_SOURCE_DIR}/c4data/febexData
+${C4ROOT_SOURCE_DIR}/c4data/degasData
 ${C4ROOT_SOURCE_DIR}/c4data/stefanData
 ${C4ROOT_SOURCE_DIR}/c4source
 ${C4ROOT_SOURCE_DIR}/c4source/base
@@ -75,6 +76,7 @@ fimpData/TFimpConfiguration.cxx
 mcpData/H10MCPTwinpeaksData.cxx
 tamexData/TamexRawData.cxx
 febexData/FebexRawData.cxx
+degasData/DegasRawData.cxx
 mcpData/H10MCPTwinpeaksCalData.cxx
 mcpData/H10MCPTwinpeaksAnaData.cxx
 mcpData/TH10MCPConfiguration.cxx
