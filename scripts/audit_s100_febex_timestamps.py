@@ -13,20 +13,23 @@ from tempfile import TemporaryFile
 from compare_s100_whiterabbit import EVENT, capture
 from validate_experiment import FEBEX_BOARD_FIELDS, FEBEX_CHANNEL_FIELDS, FEBEX_CHANNELS, FEBEX_MAX_BOARDS
 
-BOARD = re.compile(r"^\.UNPACK\.germanium\.data\[(\d+)\]\.(\w+)(?:\[(\d+)\])?$")
 BOARD_FIELDS = {"trig", "event_trigger_time_hi", "event_trigger_time_lo", "hit_pattern"}
 HIT_FIELDS = (
     "channel_trigger_time_hi", "channel_trigger_time_lo",
     "channel_cfd", "channel_energy", "pileup", "overflow",
 )
 WR_FIELDS = {"subsystem_id", "t1", "t2", "t3", "t4"}
-WR_PREFIX = ".UNPACK.germanium.ts."
+RAW_FIELD = re.compile(r"(?:WR\.ID|WR\.T\[\d+\]|[A-Z]+\[\d+\])$")
 CLOCK_NS = 10
 LOW_MASK = (1 << 24) - 1
 COUNTER_MODULUS = 1 << 48
 
 
-def read_events(stream):
+def read_events(stream, member, bank):
+    unpack_prefix = f".UNPACK.{member}."
+    wr_prefix = unpack_prefix + "ts."
+    raw_prefix = ".RAW." + bank.replace("_", ".") + "."
+    board_pattern = re.compile(re.escape(unpack_prefix) + r"data\[(\d+)\]\.(\w+)(?:\[(\d+)\])?$")
     event, wr, boards, raw = None, {}, {}, {}
     for line in stream:
         header = EVENT.fullmatch(line)
@@ -36,16 +39,16 @@ def read_events(stream):
             event, wr, boards, raw = tuple(map(int, header.groups())), {}, {}, {}
             continue
         name, _, value = line.partition(":")
-        board_field = BOARD.fullmatch(name)
+        board_field = board_pattern.fullmatch(name)
         if board_field:
             board, field, channel = board_field.groups()
             board_words, hits = boards.setdefault(int(board), ({}, {}))
             target = board_words if channel is None else hits.setdefault(int(channel), {})
-        elif name.startswith(WR_PREFIX):
-            field = name[len(WR_PREFIX):]
+        elif name.startswith(wr_prefix):
+            field = name[len(wr_prefix):]
             target = wr
-        elif name.startswith(".RAW.FEBEX."):
-            field = name.removeprefix(".RAW.FEBEX.")
+        elif name.startswith(raw_prefix) and RAW_FIELD.fullmatch(name[len(raw_prefix):]):
+            field = name[len(raw_prefix):]
             target = raw
         else:
             continue
@@ -79,15 +82,15 @@ def check_raw(event, wr, boards, raw):
     return len(expected)
 
 
-def audit(stream, writer=None, *, compare_raw=False):
+def audit(stream, writer=None, *, compare_raw=False, member="germanium", bank="FEBEX"):
     counts = Counter()
     min_offset = max_offset = worst_difference = None
-    for (event, trigger), wr, boards, raw in read_events(stream):
+    for (event, trigger), wr, boards, raw in read_events(stream, member, bank):
         counts["event_headers"] += 1
         if not boards and not wr and not raw:
             continue
         if set(wr) != WR_FIELDS or not boards:
-            raise ValueError(f"Incomplete Germanium dump at event {event}")
+            raise ValueError(f"Incomplete {member} dump at event {event}")
         wr_time = sum(wr[f"t{i}"] << (16 * (i - 1)) for i in range(1, 5))
         for slot, (board, hits) in sorted(boards.items()):
             if not BOARD_FIELDS <= board.keys():
@@ -140,6 +143,8 @@ def main():
     parser.add_argument("lmd", type=Path)
     parser.add_argument("--max-events", type=int, default=25000)
     parser.add_argument("--check-raw", action="store_true", help="compare FEBEX RAW against UNPACK")
+    parser.add_argument("--member", default="germanium", help="UNPACK event member to inspect")
+    parser.add_argument("--raw-bank", default="FEBEX", help="RAW bank name to compare")
     parser.add_argument("--csv", type=Path, help="write one row per decoded hit")
     args = parser.parse_args()
     if args.max_events < 1:
@@ -160,12 +165,13 @@ def main():
                         "wr_id", "wr_timestamp", "event_ticks", "channel_ticks", "cfd",
                         "energy_word", "pileup", "overflow", "legacy_offset_ns", "full_offset_ns",
                     ))
-                counts, minimum, maximum, worst = audit(dump, writer, compare_raw=args.check_raw)
+                counts, minimum, maximum, worst = audit(dump, writer, compare_raw=args.check_raw,
+                                                       member=args.member, bank=args.raw_bank)
         if counts["event_headers"] != input_events:
             raise ValueError(f"Expected {input_events:,} event headers, found {counts['event_headers']:,}")
         print(f"FEBEX boards seen: {counts['boards']:,} | Hits: {counts['hits']:,}")
         if not counts["hits"]:
-            raise ValueError("No DEGAS hits in the replay")
+            raise ValueError(f"No {args.member} hits in the replay")
         print(f"Hits with channel ticks above 24 bits: {counts['channel_above_24_bits']:,}")
         print(f"Hits the legacy reader skips at event counter zero: {counts['legacy_zero_event_skips']:,}")
         print(f"Hits with different coarse offsets: {counts['legacy_coarse_offsets_differ']:,}")

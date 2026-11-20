@@ -1,52 +1,60 @@
 #include "FebexReader.h"
 
 #include "FebexRawData.h"
+#include "FebexRegistration.h"
 #include "FebexSummary.h"
 
 #include "FairRootManager.h"
 #include "TClonesArray.h"
+#include "TClass.h"
 #include "c4Logger.h"
 #include "ext_data_struct_info.hh"
-
-extern "C"
-{
-#include "ext_data_client.h"
-}
 
 #include <iterator>
 
 FebexReader::FebexReader(EXT_STR_h101_febex_onion_t* input, std::size_t offset,
-                         std::uint16_t procid, const std::string& detectorName)
+                         std::uint16_t procid, const std::string& detectorName,
+                         const std::string& bankName)
     : c4Reader("FebexReader"), fInput(input), fOffset(offset), fProcId(procid),
-      fDetectorName(detectorName)
+      fDetectorName(detectorName), fBankName(bankName)
 {
 }
 
 FebexReader::~FebexReader()
 {
-    delete fArray;
+    if (fOwnsArray) delete fArray;
 }
 
 Bool_t FebexReader::Init(ext_data_struct_info* info)
 {
     auto* manager = FairRootManager::Instance();
-    if (!fInput || !info || !manager || manager->GetObject("FebexRawData"))
+    if (!fInput || !info || !manager || fBankName.empty())
     {
-        c4LOG(error, "FebexReader requires one FEBEX RAW bank, structure info, and FairRootManager");
+        c4LOG(error, "FebexReader requires a FEBEX RAW bank, structure info, and FairRootManager");
         return kFALSE;
     }
 
-    Int_t ok = 0;
-    EXT_STR_h101_febex_ITEMS_INFO(ok, *info, fOffset, EXT_STR_h101_febex, 0);
-    if (!ok)
+    auto* existing = manager->GetObject("FebexRawData");
+    fArray = dynamic_cast<TClonesArray*>(existing);
+    if (existing && (!fArray || fArray->GetClass() != FebexRawData::Class()))
     {
-        c4LOG(error, "Failed to register FEBEX RAW structure");
+        c4LOG(error, "Existing FebexRawData branch has an incompatible type");
+        return kFALSE;
+    }
+
+    if (!febex::RegisterBank(*info, fOffset, fBankName))
+    {
+        c4LOG(error, "Failed to register FEBEX RAW bank " << fBankName);
         return kFALSE;
     }
 
     *fInput = {};
-    fArray = new TClonesArray("FebexRawData");
-    manager->Register("FebexRawData", "FEBEX raw data", fArray, !fOnline);
+    if (!existing)
+    {
+        fArray = new TClonesArray("FebexRawData");
+        fOwnsArray = true;
+        manager->Register("FebexRawData", "FEBEX raw data", fArray, !fOnline);
+    }
     return kTRUE;
 }
 
@@ -55,7 +63,7 @@ Bool_t FebexReader::Read()
     const auto& bank = *fInput;
     if (!febex::ValidSummary(bank))
     {
-        c4LOG(error, "FEBEX RAW hit columns disagree or refer to an absent board");
+        c4LOG(error, fBankName << ": FEBEX RAW hit columns disagree or refer to an absent board");
         return kFALSE;
     }
 
@@ -95,5 +103,6 @@ Bool_t FebexReader::Read()
 
 void FebexReader::Reset()
 {
-    if (fArray) fArray->Clear();
+    // UcesbSource resets all readers after the event. Clear the shared array once.
+    if (fOwnsArray) fArray->Clear();
 }

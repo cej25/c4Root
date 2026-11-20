@@ -4,8 +4,10 @@
 S100 also checks the installed hardware and generated reader headers.
 """
 import argparse
+import json
 import re
 import sys
+from collections import Counter
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -103,29 +105,29 @@ def compiled_febex_slots(detector, item):
     return slots
 
 
-def febex_raw_signals(member, board_count):
+def febex_raw_signals(member, board_count, bank):
     """Map the source slots, reserving the same RAW dimensions in every run."""
     source = f"{member}.data"
-    signals = [f"SIGNAL(FEBEX_WR_ID, {member}.ts.subsystem_id, DATA16);"]
-    signals.extend(f"SIGNAL(FEBEX_WR_T{i}, {member}.ts.t{i}, DATA16);" for i in range(1, 5))
+    signals = [f"SIGNAL({bank}_WR_ID, {member}.ts.subsystem_id, DATA16);"]
+    signals.extend(f"SIGNAL({bank}_WR_T{i}, {member}.ts.t{i}, DATA16);" for i in range(1, 5))
     # A signal with no source fixes the upper array bound without mapping a spare card.
     for raw, field, data_type in FEBEX_BOARD_FIELDS:
-        end = f"FEBEX_{raw}{board_count}"
-        signals.append(f"SIGNAL(FEBEX_{raw}1, {source}[0].{field}, "
+        end = f"{bank}_{raw}{board_count}"
+        signals.append(f"SIGNAL({bank}_{raw}1, {source}[0].{field}, "
                        f"{end}, {source}[{board_count - 1}].{field}, {data_type});"
                        if board_count > 1 else f"SIGNAL({end}, {source}[0].{field}, {data_type});")
         if board_count < FEBEX_MAX_BOARDS:
-            signals.append(f"SIGNAL(FEBEX_{raw}{FEBEX_MAX_BOARDS}, , {data_type});")
+            signals.append(f"SIGNAL({bank}_{raw}{FEBEX_MAX_BOARDS}, , {data_type});")
     capacity = FEBEX_MAX_BOARDS * FEBEX_CHANNELS
     for raw, field, data_type in FEBEX_CHANNEL_FIELDS:
-        signals.append(f"SIGNAL(ZERO_SUPPRESS: FEBEX_{raw}{capacity});")
+        signals.append(f"SIGNAL(ZERO_SUPPRESS: {bank}_{raw}{capacity});")
         for slot in range(board_count):
             first = slot * FEBEX_CHANNELS + 1
             last = first + FEBEX_CHANNELS - 1
-            signals.append(f"SIGNAL(FEBEX_{raw}{first}, {source}[{slot}].{field}[0], "
-                           f"FEBEX_{raw}{last}, {source}[{slot}].{field}[{FEBEX_CHANNELS - 1}], {data_type});")
+            signals.append(f"SIGNAL({bank}_{raw}{first}, {source}[{slot}].{field}[0], "
+                           f"{bank}_{raw}{last}, {source}[{slot}].{field}[{FEBEX_CHANNELS - 1}], {data_type});")
         if board_count < FEBEX_MAX_BOARDS:
-            signals.append(f"SIGNAL(FEBEX_{raw}{capacity}, , {data_type});")
+            signals.append(f"SIGNAL({bank}_{raw}{capacity}, , {data_type});")
     return signals
 
 
@@ -187,6 +189,47 @@ def wr_ids(configuration):
     return ids
 
 
+def s100_febex_routes(routes, ids):
+    febex = []
+    seen_banks = set()
+    field_names = {"WR"} | {name for name, _, _ in FEBEX_BOARD_FIELDS + FEBEX_CHANNEL_FIELDS}
+    subevent_counts = Counter(item["subevent"] for _, item in routes.values())
+    for member, (detector, item) in sorted(routes.items()):
+        if item.get("digitiser") != "febex":
+            continue
+        if not isinstance(detector, str) or not detector.isprintable():
+            raise ValueError(f"{member}: FEBEX needs a printable detector name")
+        bank = item.get("raw_bank", "FEBEX" if member == "germanium" else None)
+        if not isinstance(bank, str) or not re.fullmatch(r"FEBEX(?:_[A-Z]+)*", bank):
+            raise ValueError(f"{detector}: raw_bank must be FEBEX or a name like FEBEX_AUX")
+        parts = bank.split("_")[1:]
+        if field_names.intersection(parts):
+            raise ValueError(f"{detector}: raw_bank conflicts with a FEBEX field name")
+        if bank in seen_banks:
+            raise ValueError(f"{detector}: duplicate FEBEX raw_bank {bank}")
+        subevent = item["subevent"]
+        if subevent_counts[subevent] != 1:
+            raise ValueError(f"{detector}: FEBEX subevent {subevent} must be unique")
+        if member not in ids:
+            raise ValueError(f"{detector}: FEBEX requires a White Rabbit ID")
+        if item.get("traces") is True:
+            raise ValueError(f"{detector}: the summary RAW mapping does not accept traces")
+        cards = compiled_febex_slots(detector, item)
+        selectors = {"type": 10, "subtype": 1, "procid": item["procid"], "control": 20}
+        for key, limit in (("type", 65535), ("subtype", 65535), ("control", 255), ("subcrate", 255)):
+            if key not in item:
+                continue
+            value = item[key]
+            if type(value) is not int or not 0 <= value <= limit:
+                raise ValueError(f"{detector}: invalid FEBEX {key}")
+            selectors[key] = value
+        febex.append((member, detector, subevent, bank, cards, selectors))
+        seen_banks.add(bank)
+    if "germanium" not in {member for member, *_ in febex}:
+        raise ValueError("S100 Germanium requires a FEBEX bank")
+    return febex
+
+
 def read_subevent(spec, name):
     match = re.search(r"\bSUBEVENT\(\s*" + re.escape(name) + r"\s*\)\s*\{", spec)
     if not match:
@@ -231,7 +274,13 @@ def check_s100_routing(spec, configuration):
     if event is None:
         raise ValueError("UCESB EVENT block not found")
     warnings = []
+    febex = s100_febex_routes(routes, ids)
+    febex_members = {member for member, *_ in febex}
+    if spec.count("S100_FEBEX_SUBEVENTS") != 1 or event.group(1).count("S100_FEBEX_EVENT_ROUTES") != 1:
+        warnings.append("S100 spec must include the generated FEBEX subevents and EVENT routes")
     for member, (detector, item) in routes.items():
+        if member in febex_members:
+            continue
         subevent = item["subevent"]
         procid = re.findall(
             rf"(?m)^[ \t]*(?:revisit[ \t]+)?{member}\s*=\s*{subevent}\s*\("
@@ -248,10 +297,6 @@ def check_s100_routing(spec, configuration):
                 slots = re.findall(r"\bS100_TAMEX_CARDS_\w+\b", body)
                 if slots != [tamex_cards_symbol(member)] or TAMEX.search(body):
                     warnings.append(f"{detector}: UCESB must use {tamex_cards_symbol(member)}")
-            if member == "germanium":
-                compiled_febex_slots(detector, item)
-                if body.count("S100_FEBEX_CARDS") != 1 or FEBEX.search(body):
-                    warnings.append(f"{detector}: UCESB must use S100_FEBEX_CARDS")
             if member == "fatimavme":
                 for model, (symbol, _, _, _) in S100_VME_MODELS.items():
                     compiled_vme_slots(item, model)
@@ -358,7 +403,11 @@ def validate(experiment, root=ROOT):
         member = item.get("member")
         if not isinstance(subevent, str) or not isinstance(member, str):
             raise ValueError(f"{detector}: specify subevent and member in experiment.yaml")
-        body = read_subevent(spec, subevent)
+        if digitiser == "febex" and member != "germanium":
+            slots = compiled_febex_slots(detector, item)
+            notes.append(f"{detector}: {len(slots)} FEBEX cards, {FEBEX_MAX_BOARDS} RAW board slots")
+            continue
+        body = read_subevent(spec, subevent) if digitiser != "febex" else ""
         header_path = root / "c4source" / (
             "fatima" if member in ("fatima", "fatimavme") else member
         ) / f"ext_h101_{member}.h"
@@ -455,14 +504,38 @@ def emit_whiterabbit(config, include_procids=False):
         print(f"#define {symbol} {banks}")
 
     if routes:
-        detector, item = routes["germanium"]
-        cards = compiled_febex_slots(detector, item)
-        print("#define S100_FEBEX_CARDS " + " ".join(
-            f"data[{slot}] = FEBEX_EVENT(card = {card});" for slot, card in enumerate(cards)
-        ))
-        continuation = " \\\n    "
-        print("#define S100_FEBEX_RAW_SIGNALS " + continuation.join(
-            febex_raw_signals("germanium", len(cards))))
+        definitions, bindings, signals = [], [], []
+        for member, _, subevent, bank, cards, selectors in s100_febex_routes(routes, ids):
+            declarations = " ".join(f"data[{i}] = FEBEX_EVENT(card = {card});"
+                                    for i, card in enumerate(cards))
+            definitions.append(
+                f"SUBEVENT({subevent}) {{ "
+                f"select optional {{ ts = TIMESTAMP_WHITERABBIT(id = {wr_symbol(member)}); }}; "
+                f"select several {{ padding = FEBEX_PADDING(); }}; "
+                f"select several {{ {declarations} }}; }}"
+            )
+            arguments = ", ".join(f"{name} = {procid_symbol(member) if name == 'procid' else value}"
+                                  for name, value in selectors.items())
+            bindings.append(f"{member} = {subevent}({arguments});")
+            signals.extend(febex_raw_signals(member, len(cards), bank))
+        continuation = " " + chr(92) + "\n    "
+        for macro, rows in (("S100_FEBEX_SUBEVENTS", definitions),
+                            ("S100_FEBEX_EVENT_ROUTES", bindings),
+                            ("S100_FEBEX_RAW_SIGNALS", signals)):
+            print(f"#define {macro} " + continuation.join(rows))
+
+
+def emit_s100_febex_readers(config):
+    configuration = read_yaml(config)
+    routes = s100_febex_routes(s100_routes(configuration), wr_ids(configuration))
+    print("// Generated from config/s100/experiment.yaml.")
+    print("#pragma once\n#include <array>\n#include <cstdint>\n")
+    print("struct S100FebexBank { const char* name; std::uint16_t procid; const char* detector; };")
+    print(f"inline constexpr std::array<S100FebexBank, {len(routes)}> s100FebexBanks{{{{")
+    for _, detector, _, bank, _, selectors in routes:
+        name = json.dumps(detector, ensure_ascii=False)
+        print(f'    {{"{bank}", {selectors["procid"]}, {name}}},')
+    print("}};")
 
 
 def main():
@@ -473,7 +546,15 @@ def main():
                         help="print the S100 White Rabbit spec include")
     action.add_argument("--emit-s100-routing", type=Path, metavar="S100_YAML",
                         help="print the S100 procids, White Rabbit IDs, and compiled layouts")
+    action.add_argument("--emit-s100-febex-readers", type=Path, metavar="S100_YAML",
+                        help="print the C++ FEBEX bank configuration for the S100 macro")
     args = parser.parse_args()
+    if args.emit_s100_febex_readers:
+        try:
+            emit_s100_febex_readers(args.emit_s100_febex_readers)
+        except (ValueError, OSError) as exc:
+            parser.exit(2, f"ERROR generating S100 FEBEX reader setup: {exc}\n")
+        return 0
     config = args.emit_s100_routing or args.emit_whiterabbit
     if config:
         try:

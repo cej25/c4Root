@@ -52,6 +52,38 @@ class ExperimentValidationTests(unittest.TestCase):
             self.assertIn("#define S100_WR_FATIMA 0x1600\n", output.getvalue())
             self.assertEqual(output.getvalue().count("#define S100_PROCID_"), 11)
 
+    def test_two_febex_sources_generate_distinct_banks_from_one_configuration(self):
+        config = (ROOT / "config/s100/experiment.yaml").read_text()
+        auxiliary = """
+Auxiliary:
+  subevent: aux_febex_subev
+  member: auxfebex
+  digitiser: febex
+  version: 4
+  procid: 91
+  whiterabbit: 0x600
+  raw_bank: FEBEX_AUX
+  compiled_slots: [0]
+"""
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "experiment.yaml"
+            path.write_text(config + auxiliary)
+            output = io.StringIO()
+            with redirect_stdout(output):
+                module.emit_whiterabbit(path, include_procids=True)
+                module.emit_s100_febex_readers(path)
+            generated = output.getvalue()
+            self.assertIn("auxfebex = aux_febex_subev(type = 10, subtype = 1, "
+                          "procid = S100_PROCID_AUXFEBEX, control = 20);", generated)
+            self.assertIn("SIGNAL(FEBEX_AUX_CARD1, auxfebex.data[0].board_id", generated)
+            self.assertIn("SIGNAL(FEBEX_AUX_WR_ID, auxfebex.ts.subsystem_id", generated)
+            self.assertIn("SIGNAL(FEBEX_CARD1, germanium.data[0].board_id", generated)
+            self.assertIn('{"FEBEX", 60, "DEGAS"}', generated)
+            self.assertIn('{"FEBEX_AUX", 91, "Auxiliary"}', generated)
+            path.write_text(config + auxiliary.replace("raw_bank: FEBEX_AUX", "raw_bank: FEBEX"))
+            with self.assertRaisesRegex(ValueError, "duplicate FEBEX raw_bank"):
+                module.emit_s100_febex_readers(path)
+
     def test_s100_rejects_invalid_and_duplicate_procids(self):
         config = module.read_yaml(ROOT / "config/s100/experiment.yaml")
         for invalid in (-1, 65536, True):

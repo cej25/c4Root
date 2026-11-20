@@ -15,7 +15,8 @@ class FebexReader : public c4Reader
 {
 public:
     FebexReader(EXT_STR_h101_febex_onion_t* input, std::size_t offset,
-                std::uint16_t procid, const std::string& detectorName = "");
+                std::uint16_t procid, const std::string& detectorName = "",
+                const std::string& bankName = "FEBEX");
     ~FebexReader() override;
 
     Bool_t Init(ext_data_struct_info*) override;
@@ -30,8 +31,10 @@ private:
     std::size_t fOffset;
     std::uint16_t fProcId;
     std::string fDetectorName;
+    std::string fBankName;
     Bool_t fOnline = kFALSE;
-    TClonesArray* fArray = nullptr; //! Owns FEBEX board records
+    TClonesArray* fArray = nullptr; //! Shared FEBEX board records
+    bool fOwnsArray = false;
 };
 
 #endif

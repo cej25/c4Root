@@ -8,6 +8,7 @@
 #include "UnpackReader.h"
 #include "ext_h101_febex.h"
 #include "ext_h101_unpack.h"
+#include "../../unpack/exps/s100/s100_febex_banks.gen.hh"
 
 #include <cstddef>
 #include <stdexcept>
@@ -18,7 +19,7 @@ struct EXT_STR_h101_t
 {
     EXT_STR_h101_unpack header;
     EXT_STR_h101_germanium_onion germanium;
-    EXT_STR_h101_febex_onion febex;
+    std::array<EXT_STR_h101_febex_onion, s100FebexBanks.size()> febex;
 };
 
 void s100_febex_raw(const char* input = "../calum.lmd",
@@ -40,7 +41,12 @@ void s100_febex_raw(const char* input = "../calum.lmd",
     source->SetMaxEvents(events);
     source->AddReader(new UnpackReader(&data.header, offsetof(EXT_STR_h101_t, header)));
     source->AddReader(new GermaniumReader(&data.germanium, offsetof(EXT_STR_h101_t, germanium)));
-    source->AddReader(new FebexReader(&data.febex, offsetof(EXT_STR_h101_t, febex), 60, "DEGAS"));
+    for (std::size_t i = 0; i < s100FebexBanks.size(); ++i)
+    {
+        const auto& bank = s100FebexBanks[i];
+        const auto offset = offsetof(EXT_STR_h101_t, febex) + i * sizeof(data.febex[i]);
+        source->AddReader(new FebexReader(&data.febex[i], offset, bank.procid, bank.detector, bank.name));
+    }
     run->SetSource(source);
 
     run->AddTask(new GermaniumRaw2Cal());

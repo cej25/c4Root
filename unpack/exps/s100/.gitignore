@@ -8,3 +8,4 @@
 # The previous generated name can still exist in older build trees.
 s100_whiterabbit.generated.spec
 s100_config.gen.spec
+s100_febex_banks.gen.hh
