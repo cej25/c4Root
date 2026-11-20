@@ -31,6 +31,7 @@
 
 #include "TClonesArray.h"
 #include "GermaniumRaw2Cal.h"
+#include "../digitisers/febex/FebexTiming.h"
 
 /*
 Empty constructor for FairRoot.
@@ -204,6 +205,8 @@ void GermaniumRaw2Cal::Exec(Option_t* option)
             // }
 
             // std::cout << "wr germanium: " << funcal_hit->Get_wr_t() << std::endl;
+            const auto hitOffset = febex::LegacyHitOffsetNs(funcal_hit->Get_event_trigger_time(),
+                                                           funcal_hit->Get_channel_trigger_time());
             new ((*fcal_data)[fcal_data->GetEntriesFast()]) GermaniumCalData(
                 funcal_hit->Get_trigger(),
                 funcal_hit->Get_event_trigger_time(),
@@ -215,7 +218,7 @@ void GermaniumRaw2Cal::Exec(Option_t* option)
                 detector_id,
                 funcal_hit->Get_wr_subsystem_id(),
                 funcal_hit->Get_wr_t(),
-                ((int64_t)funcal_hit->Get_wr_t() + ((int64_t)funcal_hit->Get_channel_trigger_time() - (int64_t)funcal_hit->Get_event_trigger_time()))
+                static_cast<std::int64_t>(funcal_hit->Get_wr_t()) + hitOffset
                 );
             
             fNEvents++;
