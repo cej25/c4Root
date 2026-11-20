@@ -2,6 +2,7 @@
 #define BGOReader_H
 
 #include "c4Reader.h"
+#include "TamexRawData.h"
 
 #include "TH1.h"
 #include <Rtypes.h>
@@ -41,6 +42,13 @@ class BGOReader : public c4Reader
         virtual void Reset() override;
 
         void SetOnline(Bool_t option) { fOnline = option; }
+
+        // Publish BGO electronics words for BGORaw2Cal.
+        void UseTamexRawOutput(std::uint16_t procid)
+        {
+            fWriteTamexRaw = true;
+            fProcId = procid;
+        }
 
         void DoFineTimeCalibration();
         
@@ -83,6 +91,9 @@ class BGOReader : public c4Reader
         Bool_t fPrintStatistics = false;
 
         TClonesArray* fArray;
+        bool fWriteTamexRaw = false; //!
+        std::uint16_t fProcId = 0; //!
+        std::vector<TamexRawData>* fRawBoards = nullptr; //!
 
         Long64_t wr_t;
 

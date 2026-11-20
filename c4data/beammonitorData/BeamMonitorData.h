@@ -2,6 +2,7 @@
 #define BeamMonitorData_H
 
 #include "TObject.h"
+#include <cstdint>
 #include <vector>
 
 
@@ -21,6 +22,17 @@ class BeamMonitorItem : public TObject
     
     private:
         UInt_t tdelta;
+};
+
+class BeamMonitorRawData : public TObject
+{
+public:
+    std::uint64_t wrTimestamp = 0;
+    std::uint16_t wrId = 0;
+    std::vector<std::uint32_t> S2;
+    std::vector<std::uint32_t> S4;
+
+    ClassDef(BeamMonitorRawData, 1);
 };
 
 #endif

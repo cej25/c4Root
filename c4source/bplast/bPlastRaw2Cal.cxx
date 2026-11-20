@@ -31,6 +31,10 @@
 
 #include "TClonesArray.h"
 
+#include "TamexFineTimeHistograms.h"
+#include "TamexTwinpeaksHits.h"
+#include "TamexRawData.h"
+
 #include "bPlastRaw2Cal.h"
 #include <string>
 #include <chrono>
@@ -70,6 +74,7 @@ Clearing old constructed objects.
 */
 bPlastRaw2Cal::~bPlastRaw2Cal(){
     c4LOG(info, "Deleting bPlastRaw2Cal task");
+    delete fTamexHits;
     if (fcal_data) delete fcal_data;
     if (ftime_machine_array) delete ftime_machine_array;
 }
@@ -102,8 +107,32 @@ InitStatus bPlastRaw2Cal::Init()
     header = (EventHeader*)mgr->GetObject("EventHeader.");
     c4LOG_IF(error, !header, "Branch EventHeader. not found");
 
-    funcal_data = (TClonesArray*)mgr->GetObject("bPlastTwinpeaksData");
-    c4LOG_IF(fatal, !funcal_data, "bPlast branch of bPlastTwinpeaksData not found.");
+    if (fUseTamexRaw)
+    {
+        fRawBoards = mgr->InitObjectAs<decltype(fRawBoards)>("bPlastRawData");
+        if (!fRawBoards)
+        {
+            c4LOG(error, "bPlastRawData input branch not found");
+            return kFATAL;
+        }
+        constexpr std::size_t max_boards = 12; // Standard TAMEX unpacker capacity
+        try
+        {
+            fFineTimes = tamex::ReadFineTimeHistograms(fFineTimeFile, max_boards);
+        }
+        catch (const std::runtime_error& error)
+        {
+            c4LOG(error, "bPlast TAMEX fine-time calibration: " << error.what());
+            return kFATAL;
+        }
+        fTamexHits = new TClonesArray("bPlastTwinpeaksData");
+        funcal_data = fTamexHits;
+    }
+    else
+    {
+        funcal_data = (TClonesArray*)mgr->GetObject("bPlastTwinpeaksData");
+        c4LOG_IF(fatal, !funcal_data, "bPlast branch of bPlastTwinpeaksData not found.");
+    }
     
     //needs to have the name of the detector subsystem here:
     FairRootManager::Instance()->Register("bPlastTwinpeaksCalData", "bPlast Cal Data", fcal_data, !fOnline);
@@ -112,6 +141,27 @@ InitStatus bPlastRaw2Cal::Init()
     fcal_data->Clear();
 
     return kSUCCESS;
+}
+
+void bPlastRaw2Cal::BuildTwinpeaksHits()
+{
+    fTamexHits->Clear();
+    constexpr auto channels = tamex::Tamex4Format::channel_count;
+    for (const auto& board : *fRawBoards)
+    {
+        if (board.Trigger() == 3)
+            new ((*fTamexHits)[fTamexHits->GetEntriesFast()]) bPlastTwinpeaksData(
+                board.Trigger(), board.Board(), 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                board.WrSubsystem(), board.WrTimestamp());
+
+        if (board.Words().empty()) continue;
+        if (board.FormatVersion() != 4 || board.Board() >= fFineTimes.size() / channels)
+        {
+            c4LOG(error, "No bPlast TAMEX4 calibration for board " << board.Board());
+            continue;
+        }
+        tamex::AppendTwinpeaksHits<bPlastTwinpeaksData>(board, fFineTimes, *fTamexHits);
+    }
 }
 
 /*
@@ -230,6 +280,7 @@ Writes the times in ns!
 */
 void bPlastRaw2Cal::Exec(Option_t* option)
 {
+    if (fRawBoards) BuildTwinpeaksHits();
     int first_trig3 = 1;
     auto start = std::chrono::high_resolution_clock::now();
 

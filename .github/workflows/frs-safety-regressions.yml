@@ -28,7 +28,11 @@ jobs:
             echo "::group::${test_name}"
             g++ -std=c++17 -O1 -g -Wall -Wextra -Werror -pedantic \
               -fsanitize=undefined -fno-sanitize-recover=all \
-              "$source" -o "$binary"
+              -Ic4source/base -Ic4source/fatima "$source" -o "$binary"
             "$binary"
             echo "::endgroup::"
           done
+
+          echo '::group::s100_fatima_vme_subevent_test'
+          python3 tests/s100_fatima_vme_subevent_test.py
+          echo '::endgroup::'

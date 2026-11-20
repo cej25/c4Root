@@ -22,6 +22,7 @@
 #include "BGOTwinpeaksData.h"
 #include "BGOReader.h"
 #include "BGOPackedSafety.h"
+#include "TamexRawDecode.h"
 #include "c4Logger.h"
 
 #include "TFile.h"
@@ -92,6 +93,7 @@ BGOReader::~BGOReader() {
     }
 
     if (fArray != nullptr) delete fArray;
+    delete fRawBoards;
 
     if (fNEvent > 0)
         c4LOG(info, "Average execution time: " << (double)total_time_microsecs/fNEvent << " microseconds.");
@@ -117,6 +119,14 @@ Bool_t BGOReader::Init(ext_data_struct_info* a_struct_info)
     {
         c4LOG(error, "Failed to set up structure information");
         return kFALSE;
+    }
+
+    if (fWriteTamexRaw)
+    {
+        fRawBoards = new std::vector<TamexRawData>;
+        FairRootManager::Instance()->RegisterAny("BGORawData", fRawBoards, !fOnline);
+        memset(fData, 0, sizeof *fData);
+        return kTRUE;
     }
 
     // allocated 3D array for the fine time calibration look-up table: fine_time_calibration_coeffs[board nr][channel nr][tdc value nr]
@@ -318,6 +328,16 @@ Some assumptions:
 Bool_t BGOReader::Read()
 {
     if (!fData) return kTRUE;
+
+    if (fRawBoards)
+    {
+        fRawBoards->clear();
+        const auto timestamp = tamex::AssembleWhiteRabbitTimestamp(fData->bgo_ts_t);
+        static const std::string detector = "BGO";
+        tamex::ReadBoards(fData->bgo_tamex, fProcId, detector, fData->bgo_ts_subsystem_id,
+                          timestamp, [this]() -> TamexRawData& { return fRawBoards->emplace_back(); });
+        return kTRUE;
+    }
 
     auto start = std::chrono::high_resolution_clock::now();
 
@@ -635,8 +655,8 @@ Memory management. Do not touch.
 */
 void BGOReader::Reset()
 {
-    // reset output array
-    fArray->Clear(); 
+    if (fRawBoards) fRawBoards->clear();
+    else fArray->Clear();
 }
 
 ClassImp(BGOReader)

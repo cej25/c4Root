@@ -1,27 +1,30 @@
 #include "TamexRawData.h"
 
-TamexRawData::TamexRawData(std::uint16_t source, std::uint16_t board, std::uint16_t trigger,
-                           std::uint16_t wr_subsystem, std::uint64_t wr_timestamp,
-                           std::uint16_t format_version)
-    : source_(source),
-      board_(board),
-      trigger_(trigger),
-      wr_subsystem_(wr_subsystem),
-      wr_timestamp_(wr_timestamp),
-      format_version_(format_version)
+TamexRawData::TamexRawData(std::uint16_t procidValue, std::uint16_t boardValue, std::uint16_t triggerValue,
+                           std::uint16_t wr_subsystemValue, std::uint64_t wr_timestampValue,
+                           std::uint16_t format_versionValue, const std::string& detectorNameValue)
+    : procid(procidValue),
+      detector_name(detectorNameValue),
+      board(boardValue),
+      trigger(triggerValue),
+      wr_subsystem(wr_subsystemValue),
+      wr_timestamp(wr_timestampValue),
+      format_version(format_versionValue)
 {
 }
 
-void TamexRawData::SetMetadata(std::uint16_t source, std::uint16_t board,
-                               std::uint16_t trigger, std::uint16_t wr_subsystem,
-                               std::uint64_t wr_timestamp, std::uint16_t format_version)
+void TamexRawData::SetMetadata(std::uint16_t procidValue, std::uint16_t boardValue,
+                               std::uint16_t triggerValue, std::uint16_t wr_subsystemValue,
+                               std::uint64_t wr_timestampValue, std::uint16_t format_versionValue,
+                               const std::string& detectorNameValue)
 {
-    source_ = source;
-    board_ = board;
-    trigger_ = trigger;
-    wr_subsystem_ = wr_subsystem;
-    wr_timestamp_ = wr_timestamp;
-    format_version_ = format_version;
+    this->procid = procidValue;
+    this->detector_name = detectorNameValue;
+    this->board = boardValue;
+    this->trigger = triggerValue;
+    this->wr_subsystem = wr_subsystemValue;
+    this->wr_timestamp = wr_timestampValue;
+    this->format_version = format_versionValue;
 }
 
 void TamexRawData::Clear(Option_t*)
@@ -31,13 +34,14 @@ void TamexRawData::Clear(Option_t*)
 
 void TamexRawData::Reset()
 {
-    source_ = 0;
-    board_ = 0;
-    trigger_ = 0;
-    wr_subsystem_ = 0;
-    wr_timestamp_ = 0;
-    format_version_ = 0;
-    words_.clear();
+    procid = 0;
+    detector_name.clear();
+    board = 0;
+    trigger = 0;
+    wr_subsystem = 0;
+    wr_timestamp = 0;
+    format_version = 0;
+    words.clear();
 }
 
 ClassImp(TamexRawWord)

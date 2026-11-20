@@ -27,6 +27,7 @@
 #include "bPlastTwinpeaksData.h"
 #include "bPlastReader.h"
 #include "TamexPackedSafety.h"
+#include "TamexRawDecode.h"
 #include "c4Logger.h"
 
 #include "TClonesArray.h"
@@ -96,6 +97,7 @@ bPlastReader::~bPlastReader() {
     }
 
     if (fArray != nullptr) delete fArray;
+    delete fRawBoards;
 
     if (fNEvent > 0)
         c4LOG(info, "Average execution time: " << (double)total_time_microsecs/fNEvent << " microseconds.");
@@ -121,6 +123,14 @@ Bool_t bPlastReader::Init(ext_data_struct_info* a_struct_info)
     {
         c4LOG(error, "Failed to set up structure information");
         return kFALSE;
+    }
+
+    if (fWriteTamexRaw)
+    {
+        fRawBoards = new std::vector<TamexRawData>;
+        FairRootManager::Instance()->RegisterAny("bPlastRawData", fRawBoards, !fOnline);
+        memset(fData, 0, sizeof *fData);
+        return kTRUE;
     }
 
     //allocated 3D array for the fine time calibration look-up table: fine_time_calibration_coeffs[board nr][channel nr][tdc value nr]
@@ -321,6 +331,16 @@ Bool_t bPlastReader::Read() //do fine time here:
      auto start = std::chrono::high_resolution_clock::now();
 
     if (!fData) return kTRUE;
+
+    if (fRawBoards)
+    {
+        fRawBoards->clear();
+        const auto timestamp = tamex::AssembleWhiteRabbitTimestamp(fData->bplast_ts_t);
+        static const std::string detector = "bPlast";
+        tamex::ReadBoards(fData->bplast_tamex, fProcId, detector, fData->bplast_ts_subsystem_id,
+                          timestamp, [this]() -> TamexRawData& { return fRawBoards->emplace_back(); });
+        return kTRUE;
+    }
 
     if ((fNEvent==fine_time_calibration_after)  & (!fine_time_calibration_set)){
         DoFineTimeCalibration();
@@ -703,8 +723,8 @@ Memory management. Do not touch.
 */
 void bPlastReader::Reset()
 {
-    // reset output array
-    fArray->Clear();
+    if (fRawBoards) fRawBoards->clear();
+    else fArray->Clear();
        
 }
 

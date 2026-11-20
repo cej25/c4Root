@@ -26,6 +26,9 @@
 
 #include "TClonesArray.h"
 #include "TFolder.h" //?
+#include <algorithm>
+#include <iterator>
+#include <string_view>
 #include <vector>
 #include "ext_data_struct_info.hh"
 
@@ -33,6 +36,44 @@ extern "C"
 {
     #include "ext_data_client.h" 
     #include "ext_h101_frs.h"
+}
+
+namespace
+{
+struct S100RawRegistration
+{
+    ext_data_structure_info* info;
+
+    static int ScintillatorLimit(std::string_view field, int fallback)
+    {
+        if (field == "SCI_TAC_DE" || field == "SCI_TAC_DT" ||
+            field == "SCI_MHTDC_TM" || field == "SCI_MHTDC_LOTM") return 16;
+        if (field == "SCI_MHTDC_T" || field == "SCI_MHTDC_LOT") return 16 * 128;
+        return fallback;
+    }
+};
+
+// The generated ITEMS_INFO supplies client offsets. Register only the S100
+// fields and capacities while keeping the generic reader's backing storage.
+int ext_data_struct_info_item(S100RawRegistration registration, std::size_t offset, std::size_t size,
+                             int type, const char* parent, int index, const char* field,
+                             const char* control, int limit, std::uint32_t flags)
+{
+    if (std::string_view(field).substr(0, 7) == "TM_WR_T") return 0;
+    if (const auto count = S100RawRegistration::ScintillatorLimit(control, 0))
+        size = count * sizeof(std::uint32_t);
+    limit = S100RawRegistration::ScintillatorLimit(field, limit);
+    return ::ext_data_struct_info_item(registration.info, offset, size, type, parent, index,
+                                      field, control, limit, flags);
+}
+
+int ext_data_struct_info_item_stderr(S100RawRegistration registration, std::size_t offset,
+                                    std::size_t size, int type, const char* parent, int index,
+                                    const char* field, const char* control, int limit, std::uint32_t flags)
+{
+    return ext_data_struct_info_item(registration, offset, size, type, parent, index,
+                                    field, control, limit, flags) == 0;
+}
 }
 
 FrsReader::FrsReader(EXT_STR_h101_frs_onion* data, size_t offset)
@@ -58,7 +99,15 @@ Bool_t FrsReader::Init(ext_data_struct_info* a_struct_info)
 {
     Int_t ok;
     
-    EXT_STR_h101_frs_ITEMS_INFO(ok, *a_struct_info, fOffset, EXT_STR_h101_frs, 0);
+    if (fUseS100Layout)
+    {
+        const S100RawRegistration registration{*a_struct_info};
+        EXT_STR_h101_frs_ITEMS_INFO(ok, registration, fOffset, EXT_STR_h101_frs, 0);
+    }
+    else
+    {
+        EXT_STR_h101_frs_ITEMS_INFO(ok, *a_struct_info, fOffset, EXT_STR_h101_frs, 0);
+    }
 
     if (!ok)
     {
@@ -118,10 +167,13 @@ void FrsReader::ScalerReader()
 {
     for (int i = 0; i < 2; i++)
     {
-        for (int j = 0; j < fData->SCALERS[i]._; j++)
+        const auto& bank = fData->SCALERS[i];
+        const auto count = std::min<std::size_t>(bank._, std::size(bank.I));
+        for (std::size_t j = 0; j < count; ++j)
         {
-            uint32_t index = fData->SCALERS[i].I[j] + i * 32; // 2 sets of scalers
-            uint32_t scaler = fData->SCALERS[i].v[j];
+            if (!frs_reader_safety::ValidOneBasedChannel(bank.I[j], std::size(bank.I))) continue;
+            uint32_t index = bank.I[j] + i * 32; // 2 sets of scalers
+            uint32_t scaler = bank.v[j];
             auto & entry = scalerArray->emplace_back();
             entry.SetAll(index, scaler);
         }

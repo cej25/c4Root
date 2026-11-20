@@ -1,0 +1,67 @@
+# Active routes in unpack/exps/s115/s115.spec.
+# compiled_slots lists addresses in output slot order. Installed boards are
+# recorded only where the run setup is known.
+# Slot addresses use TAMEX [SFP, card], FEBEX card IDs.
+
+AIDA:
+  subevent: aida_subev
+  member: aida
+  type: 10
+  subtype: 1
+  procid: 90
+  control: 37
+  revisit: true
+  whiterabbit: 0x700
+
+Germanium:
+  subevent: febex_subev
+  member: germanium
+  type: 10
+  subtype: 1
+  procid: 60
+  control: 20
+  whiterabbit: 0x400
+  digitiser: febex
+  version: 4
+  traces: false
+  compiled_slots: [0, 1, 2, 3, 4, 5]
+
+bPlast:
+  subevent: bplast_subev
+  member: bplast
+  type: 10
+  subtype: 1
+  procid: 80
+  control: 20
+  whiterabbit: 0x500
+  digitiser: tamex
+  version: 4
+  compiled_slots: [[0, 0], [0, 1], [0, 2], [0, 3], [0, 4], [0, 5], [0, 6], [0, 7], [0, 8]]
+
+FRS_Main:
+  subevent: frs_main_subev
+  member: frsmain
+  procid: 10
+
+FRS_TPC:
+  subevent: frs_tpc_subev
+  member: frstpc
+  procid: 20
+
+FRS_User:
+  subevent: frs_user_subev
+  member: frsuser
+  procid: 30
+
+FRS_TPAT:
+  subevent: frs_tpat_subev
+  member: frstpat
+  procid: 15
+  whiterabbit: 0x100
+
+FRS_Travelling_MUSIC:
+  subevent: frs_travmus_subev
+  member: frstravmus
+  procid: 35
+  control: 30
+  whiterabbit: 0x200

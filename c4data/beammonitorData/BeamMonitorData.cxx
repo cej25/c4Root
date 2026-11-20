@@ -28,3 +28,4 @@ void BeamMonitorItem::SetAll(UInt_t dt)
 
 
 ClassImp(BeamMonitorItem)
+ClassImp(BeamMonitorRawData)

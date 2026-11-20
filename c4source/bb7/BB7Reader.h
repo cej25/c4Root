@@ -12,7 +12,7 @@ extern "C"
     #include "ext_h101_bb7vme.h"
 }
 
-class TClonesArray;
+class BB7VmeRawData;
 class BB7V7x5Item;
 
 struct EXT_STR_h101_bb7vme_t;
@@ -36,7 +36,6 @@ class BB7Reader : public c4Reader
         void SetOnline(Bool_t option) { fOnline = option; }
 
     private:
-        Int_t fNEvent;
 
         EXT_STR_h101_bb7vme_onion* fData;
 
@@ -47,11 +46,11 @@ class BB7Reader : public c4Reader
         std::vector<BB7V7x5Item>* v7x5array;
         std::vector<BB7V1290Item>* v1290array;
 
-        uint64_t wr_t;
+        BB7VmeRawData* fRaw; //! Owns detector raw branch
 
     
     public:
-        ClassDefOverride(BB7Reader, 1);
+        ClassDefOverride(BB7Reader, 2);
 
 
 };

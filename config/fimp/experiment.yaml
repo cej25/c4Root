@@ -1,0 +1,12 @@
+# Active routes in unpack/exps/fimp/fimp.spec.
+# compiled_slots lists addresses in output slot order. Installed boards are
+# recorded only where the run setup is known.
+# Slot addresses use clock TDC [SFP, TDC ID].
+
+FIMP:
+  subevent: fimp_subev
+  member: fimp
+  procid: 100
+  whiterabbit: 0x300
+  digitiser: clock_tdc
+  compiled_slots: [[1, 0]]

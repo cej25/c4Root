@@ -4,12 +4,20 @@
 #include "FairTask.h"
 #include "TFatimaTwinpeaksConfiguration.h"
 #include "TClonesArray.h"
+#include <array>
+#include <cstddef>
+#include <cstdint>
+#include <string>
+#include <vector>
 
 class TClonesArray;
 class EventHeader;
 class FatimaTwinpeaksData;
 class FatimaTwinpeaksCalData;
 class TimeMachineData;
+class FatimaVmeCalibrator;
+class FatimaRawData;
+class TamexRawData;
 
 class FatimaRaw2Cal : public FairTask
 {
@@ -30,16 +38,44 @@ class FatimaRaw2Cal : public FairTask
 
         void SetOnline(Bool_t set_online){fOnline = set_online;}
 
+        // Select FATIMA processing modes; independent of generic reader setup.
+        void Electronics(const std::string& first, const std::string& second = "");
+        void Electronics(const std::vector<std::string>& readouts);
+
+        // Read the selected electronics from the detector-level FatimaRawData branch.
+        // With no Electronics() selection, use TAMEX. The fine-time file can be
+        // omitted for VME-only or online fine-time calibration.
+        void UseFatimaRawInput(const TString& fine_time_histograms = "");
+
+        // Compatibility with existing validation macros.
+        // Use generic V1751/V1290 inputs for FATIMA VME calibration.
+        // Can be enabled alongside UseTamexRawInput().
+        void UseVmeRawInput() { fUseVmeRaw = true; }
+
         virtual void SetParContainers();
 
         virtual InitStatus Init();
 
         void SetMultiplicityFilter(bool v, int s){ApplyMultiplicityCondition = v; MultiplicityGate = s;}
 
+        // Opt in to the generic TAMEX Raw branch. Omit the file only when
+        // CalibrateTamexFineTimeOnline is also called before Init().
+        void UseTamexRawInput(std::uint16_t procid, const TString& fine_time_histograms = "");
+        // Learn from leading edges in the first N events, then reconstruct
+        // subsequent events. Output uses legacy ROOT histogram names.
+        void CalibrateTamexFineTimeOnline(const TString& output_file, std::uint64_t events_to_collect);
+
         int CountMultiplicity(TClonesArray *);
 
 
     private:
+        void ProcessTamex();
+        void BuildTamexLegacyHits();
+        void AccumulateTamexFineTime();
+        void FinaliseTamexFineTime();
+        void WriteTamexFineTimeHistograms();
+        std::size_t TamexBoardCount() const;
+        const TamexRawData* TamexBoardAt(std::size_t index) const;
 
         TFatimaTwinpeaksConfiguration const* fatima_configuration;
 
@@ -48,6 +84,23 @@ class FatimaRaw2Cal : public FairTask
         TClonesArray* fcal_data;
         TClonesArray* funcal_data;
         TClonesArray* ftime_machine_array;
+
+        bool fUseVmeRaw = false;
+        FatimaVmeCalibrator* fVmeProcessor = nullptr; //! Owned transient calibration helper
+        bool fUseTamexRaw = false;
+        bool fUseFatimaRaw = false; //! Select detector-level raw input
+        const FatimaRawData* fFatimaRaw = nullptr; //! Borrowed from FairRootManager
+        std::uint16_t fTamexProcId = 0;
+        TString fTamexFineTimeFile;
+        TString fTamexFineTimeOutput;
+        bool fTamexCalibrateOnline = false;
+        bool fTamexCalibrationReady = false;
+        std::uint64_t fTamexCalibrationEvents = 0;
+        std::uint64_t fTamexEventsSeen = 0;
+        std::vector<std::array<std::uint64_t, 1024>> fTamexFineCounts; //! board*33 + channel
+        TClonesArray* fTamexInput = nullptr; //! Borrowed from FairRootManager
+        TClonesArray* fTamexLegacyHits = nullptr; //! Owned transient compatibility hits
+        std::vector<std::array<double, 1024>> fTamexFineTimes; //! per (board*33 + channel)
 
 
         FatimaTwinpeaksData* funcal_hit;
@@ -87,7 +140,7 @@ class FatimaRaw2Cal : public FairTask
         double a0,a1,a2,a3;
 
     public:
-        ClassDef(FatimaRaw2Cal, 1);
+        ClassDef(FatimaRaw2Cal, 2);
 };
 
 #endif

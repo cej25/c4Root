@@ -1,6 +1,6 @@
 // -*- C++ -*-
 
-#include "../../common/whiterabbit.spec"
+#include "../../common/whiterabbit_13bit.spec"
 
 #define BM_MAX_HITS 100000
 
@@ -88,7 +88,7 @@ SUBEVENT(bm_subev)
 { 
    select optional 
    {
-        ts = TIMESTAMP_WHITERABBIT_EXTENDED(id=0x1700);
+        ts = TIMESTAMP_WHITERABBIT(id=0x1700);
    }
 
    select optional

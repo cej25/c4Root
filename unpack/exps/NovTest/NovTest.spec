@@ -1,6 +1,6 @@
 // -*- C++ -*-
 
-#include "../../common/whiterabbit.spec"
+#include "../../common/whiterabbit_13bit.spec"
 #include "../../common/gsi_tamex4.spec"
 #include "../../common/gsi_febex4.spec"
 #include "../frs/frs_NovTest.spec"
@@ -36,7 +36,7 @@ SUBEVENT(febex_subev)
 
 SUBEVENT(fatima_tamex_subev)
 {
-    ts = TIMESTAMP_WHITERABBIT_EXTENDED(id=0x1600);
+    ts = TIMESTAMP_WHITERABBIT(id=0x1600);
     trigger_window = TAMEX4_HEADER();
     select several 
     {

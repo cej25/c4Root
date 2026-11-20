@@ -1,6 +1,6 @@
 // -*- C++ -*-
 
-#include "../../common/whiterabbit.spec"
+#include "../../common/whiterabbit_13bit.spec"
 #include "../../common/gsi_febex4.spec"
 
 
@@ -8,7 +8,7 @@ SUBEVENT(bb_first_subev)
 {
     select optional 
     {
-        ts = TIMESTAMP_WHITERABBIT_EXTENDED(id = 0x1800);
+        ts = TIMESTAMP_WHITERABBIT(id = 0x1800);
     }
 
     select several
@@ -34,7 +34,7 @@ SUBEVENT(bb_second_subev)
 {
     select optional 
     {
-        ts = TIMESTAMP_WHITERABBIT_EXTENDED(id = 0x1900);
+        ts = TIMESTAMP_WHITERABBIT(id = 0x1900);
     }
 
     select several

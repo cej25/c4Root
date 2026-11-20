@@ -1,3 +1,8 @@
+#include "FatimaReader.h"
+#include "FatimaRaw2Cal.h"
+#include "ext_h101_fatima.h"
+#include "../../../unpack/exps/s100/s100_config.gen.spec"
+#include "ext_h101_fatimavme.h"
 #include <TROOT.h>
 
 // Switch all tasks related to {subsystem} on (1)/off (0)
@@ -181,9 +186,9 @@ void s100_online_new()
     
     if (FATIMA_ON)
     {
-        FatimaReader* unpackfatima = new FatimaReader((EXT_STR_h101_fatima_onion*)&ucesb_struct.fatima, offsetof(EXT_STR_h101, fatima));
-        //unpackfatima->DoFineTimeCalOnline(config_path + "/fatima/fine_time_4apr_test.root", 100000);
-        unpackfatima->SetInputFileFineTimeHistos(config_path + "/fatima/fine_time_4apr_test.root");
+        const FatimaReader::TamexInput tamex{
+            &ucesb_struct.fatima, offsetof(EXT_STR_h101, fatima), S100_PROCID_FATIMA};
+        auto* unpackfatima = new FatimaReader(tamex, {});
 
         unpackfatima->SetOnline(true);
         source->AddReader(unpackfatima);
@@ -267,6 +272,7 @@ void s100_online_new()
     if (FATIMA_ON)
     {
         FatimaRaw2Cal* calfatima = new FatimaRaw2Cal();
+        calfatima->UseFatimaRawInput(config_path + "/fatima/fine_time_4apr_test.root");
         // calfatima->PrintDetectorMap();
         // calfatima->PrintDetectorCal();
         

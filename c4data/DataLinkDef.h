@@ -19,6 +19,13 @@
 #pragma link C++ class std::vector<AidaHit>+;
 
 // BB7
+#pragma link C++ class BB7FebexRawBoard+;
+#pragma link C++ class std::vector<BB7FebexRawBoard>+;
+#pragma link C++ class BB7FebexRawCrate+;
+#pragma link C++ class BB7FebexRawData+;
+#pragma link C++ class BB7V7x5RawHit+;
+#pragma link C++ class std::vector<BB7V7x5RawHit>+;
+#pragma link C++ class BB7VmeRawData+;
 #pragma link C++ class BB7FebexItem+;
 #pragma link C++ class BB7EmptyItem+;
 #pragma link C++ class BB7FebexCalItem+;
@@ -32,6 +39,7 @@
 
 // BeamMonitor
 #pragma link C++ class BeamMonitorItem+;
+#pragma link C++ class BeamMonitorRawData+;
 
 // BGO
 #pragma link C++ class BGOTwinpeaksData+;
@@ -45,8 +53,14 @@
 #pragma link C++ class FatimaTwinpeaksData+;
 #pragma link C++ class FatimaTwinpeaksCalData+;
 
+#pragma link C++ class V1751RawData+;
+#pragma link C++ class V1290RawData+;
+#pragma link C++ class FatimaVmeQdcCalHit+;
+#pragma link C++ class FatimaVmeTdcCalHit+;
 #pragma link C++ class FatimaVmeQDCItem+;
 #pragma link C++ class FatimaVmeTDCItem+;
+#pragma link C++ class std::vector<FatimaVmeQDCItem>+;
+#pragma link C++ class std::vector<FatimaVmeTDCItem>+;
 #pragma link C++ class FatimaVmeQDCCalItem+;
 #pragma link C++ class FatimaVmeTDCCalItem+;
 #pragma link C++ class FatimaVmeResiduals+;
@@ -89,6 +103,17 @@
 #pragma link C++ class TamexRawWord+;
 #pragma link C++ class std::vector<TamexRawWord>+;
 #pragma link C++ class TamexRawData+;
+#pragma link C++ class std::vector<TamexRawData>+;
+#pragma link C++ class std::vector<V1751RawData>+;
+#pragma link C++ class std::vector<V1290RawData>+;
+#pragma link C++ class FatimaTamexRaw+;
+#pragma link C++ class FatimaVmeChainRaw+;
+#pragma link C++ class FatimaRawData+;
+#pragma link C++ class FebexRawHit+;
+#pragma link C++ class std::vector<FebexRawHit>+;
+#pragma link C++ class FebexRawData+;
+#pragma link C++ class std::vector<FebexRawData>+;
+#pragma link C++ class DegasRawData+;
 
 // HISPEC10 MCP
 #pragma link C++ class H10MCPTwinpeaksData+;

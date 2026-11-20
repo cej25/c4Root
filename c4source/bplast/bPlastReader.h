@@ -2,6 +2,7 @@
 #define bPlastReader_H
 
 #include "c4Reader.h"
+#include "TamexRawData.h"
 
 #include "TH1.h"
 
@@ -46,6 +47,13 @@ class bPlastReader : public c4Reader
 
         void SetOnline(Bool_t option) { fOnline = option; }
 
+        // Publish electronics words for bPlastRaw2Cal to calibrate.
+        void UseTamexRawOutput(std::uint16_t procid)
+        {
+            fWriteTamexRaw = true;
+            fProcId = procid;
+        }
+
         void DoFineTimeCalibration();
         
         double GetFineTime(int tdc_fine_time_channel, int board_id, int channel_id);
@@ -87,6 +95,9 @@ class bPlastReader : public c4Reader
         Bool_t fPrintStatistics = false;
         
         TClonesArray* fArray;
+        bool fWriteTamexRaw = false; //!
+        std::uint16_t fProcId = 0; //!
+        std::vector<TamexRawData>* fRawBoards = nullptr; //!
 
         uint64_t wr_t;
 

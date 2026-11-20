@@ -1,0 +1,111 @@
+# Active routes in unpack/exps/s181/s181.spec.
+# compiled_slots lists addresses in output slot order. Installed boards are
+# recorded only where the run setup is known.
+# Slot addresses use TAMEX [SFP, card], FEBEX card IDs.
+
+AIDA:
+  subevent: aida_subev
+  member: aida
+  type: 10
+  subtype: 1
+  procid: 90
+  control: 37
+  revisit: true
+  whiterabbit: 0x700
+
+Germanium:
+  subevent: febex_subev
+  member: germanium
+  type: 10
+  subtype: 1
+  procid: 60
+  control: 20
+  whiterabbit: 0x400
+  digitiser: febex
+  version: 4
+  traces: false
+  compiled_slots: [0, 1, 2, 3]
+
+FATIMA:
+  subevent: fatima_tamex_subev
+  member: fatima
+  type: 10
+  subtype: 1
+  procid: 75
+  control: 20
+  whiterabbit: 0x1600
+  digitiser: tamex
+  version: 4
+  compiled_slots: [[0, 0], [0, 1], [0, 2], [0, 3]]
+
+FATIMA_VME:
+  subevent: fatima_vme_subev
+  member: fatimavme
+  type: 10
+  subtype: 1
+  procid: 70
+  control: 20
+  whiterabbit: 0x1500
+  digitiser: vme
+  v1751:
+    boards: [6, 7, 8, 9, 10]
+    compiled_slots: [6, 7, 8, 9, 10, 31]
+  v1290:
+    boards: [12, 13]
+    compiled_slots: [12, 13, 31, 30, 29, 28]
+
+bPlast:
+  subevent: bplast_subev
+  member: bplast
+  type: 10
+  subtype: 1
+  procid: 80
+  control: 20
+  whiterabbit: 0x500
+  digitiser: tamex
+  version: 4
+  compiled_slots: [[0, 0], [0, 1], [0, 2], [0, 3], [0, 4], [0, 5], [0, 6], [0, 7], [0, 8]]
+
+BGO:
+  subevent: bgo_tamex_subevent
+  member: bgo
+  procid: 100
+  whiterabbit: 0x1900
+  digitiser: tamex
+  version: 4
+  compiled_slots: [[1, 0], [1, 1], [1, 2]]
+
+BB7:
+  subevent: bb7_subev
+  member: bbseven
+  procid: 31
+  whiterabbit: 0x1800
+  digitiser: v775
+  compiled_slots: [11, 13, 15, 17]
+
+FRS_Main:
+  subevent: frs_main_subev
+  member: frsmain
+  procid: 10
+
+FRS_TPC:
+  subevent: frs_tpc_subev
+  member: frstpc
+  procid: 20
+
+FRS_User:
+  subevent: frs_user_subev
+  member: frsuser
+  procid: 30
+
+FRS_TPAT:
+  subevent: frs_tpat_subev
+  member: frstpat
+  procid: 15
+  whiterabbit: 0x100
+
+BeamMonitor:
+  subevent: bm_subev
+  member: beammonitor
+  procid: 1
+  whiterabbit: 0x1700

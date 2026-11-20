@@ -19,6 +19,7 @@ extern "C"
 
 class TClonesArray;
 class FatimaVmeData;
+class FatimaRawData;
 // class vector;
 
 struct EXT_STR_h101_fatimavme_t;
@@ -32,6 +33,8 @@ class ext_data_struct_info;
 class FatimaVmeReader : public c4Reader
 {
     public:
+        // Adapt the VME chain from a preceding FatimaReader for existing tasks.
+        FatimaVmeReader();
         FatimaVmeReader(EXT_STR_h101_fatimavme_onion*, size_t);
 
         virtual ~FatimaVmeReader();
@@ -43,6 +46,9 @@ class FatimaVmeReader : public c4Reader
         virtual void Reset() override;
 
         void SetOnline(Bool_t option) { fOnline = option; }
+        // Opt-in for validation with other readers of the same UCESB bank.
+        // The registering reader owns the structure definition and input buffer.
+        void SetSharedInput(Bool_t shared) { fSharedInput = shared; }
         //void Set_Allocation(TString& filepath);
 
         std::vector<int> Get_Channels(Int_t channel_mask);
@@ -58,6 +64,9 @@ class FatimaVmeReader : public c4Reader
 
         Int_t fNEvent = 0;
         Bool_t fOnline;
+        Bool_t fSharedInput = kFALSE;
+        bool fUseFatimaRaw = false; //!
+        const FatimaRawData* fFatimaRaw = nullptr; //!
 
         EXT_STR_h101_fatimavme_onion* fData;
         size_t fOffset;

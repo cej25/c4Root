@@ -1,18 +1,89 @@
+#include "AidaCal2Hit.h"
+#include "AidaOnlineSpectra.h"
+#include "AidaReader.h"
+#include "AidaUnpack2Cal.h"
+#include "BGOOnlineSpectra.h"
+#include "BGORaw2Cal.h"
+#include "BGOReader.h"
+#include "BeamMonitorOnlineSpectra.h"
+#include "BeamMonitorReader.h"
+#include "DegasRaw2Cal.h"
+#include "DegasReader.h"
+#include "EventHeader.h"
+#include "FairLogger.h"
+#include "FairRootFileSink.h"
+#include "FairRootManager.h"
+#include "FairRunOnline.h"
+#include "FatimaReader.h"
+#include "FatimaOnlineSpectra.h"
+#include "FatimaRaw2Cal.h"
+#include "FatimaVmeOnlineSpectra.h"
+#include "FatimaVmeRaw2Cal.h"
+#include "FatimaVmeReader.h"
+#include "FrsAidaCorrelationsOnline.h"
+#include "FrsCal2Hit.h"
+#include "FrsCalSpectra.h"
+#include "FrsGate.h"
+#include "FrsOnlineSpectra.h"
+#include "FrsRawSpectra.h"
+#include "FrsRaw2Cal.h"
+#include "FrsReader.h"
+#include "GermaniumOnlineSpectra.h"
+#include "TAidaConfiguration.h"
+#include "TBGOTwinpeaksConfiguration.h"
+#include "TCorrelationsConfiguration.h"
+#include "TExperimentConfiguration.h"
+#include "TFatimaTwinpeaksConfiguration.h"
+#include "TFatimaVmeConfiguration.h"
+#include "TFrsConfiguration.h"
+#include "TGermaniumConfiguration.h"
+#include "TimeMachineOnline.h"
+#include "UcesbSource.h"
+#include "UnpackReader.h"
+#include "WhiterabbitCorrelationOnline.h"
+#include "bPlastGermaniumCorrelationsOnline.h"
+#include "bPlastOnlineSpectra.h"
+#include "bPlastRaw2Cal.h"
+#include "bPlastReader.h"
+#include "TbPlastConfiguration.h"
+#include "ext_h101_fatima.h"
+#include "ext_h101_fatimavme.h"
+#include "ext_h101_febex.h"
+#include "ext_h101_unpack.h"
+#include "../../unpack/exps/s100/s100_config.gen.spec"
+#include "../../unpack/exps/s100/s100_febex_banks.gen.hh"
+
+#include <TFolder.h>
 #include <TROOT.h>
+#include <TStopwatch.h>
+#include <algorithm>
+#include <array>
+#include <cstddef>
+#include <ctime>
+#include <iomanip>
+#include <iostream>
+#include <sstream>
+#include <stdexcept>
+#include <string_view>
+
+R__LOAD_LIBRARY(libc4source)
+R__LOAD_LIBRARY(libc4Analysis)
 
 // Switch all tasks related to {subsystem} on (1)/off (0)
-#define FATIMA_ON 0
+#define FATIMA_ON 1
 #define FATIMA_VME_ON 1
 #define AIDA_ON 0
-#define BPLAST_ON 0
-#define GERMANIUM_ON 0
-#define BGO_ON 0
+#define BPLAST_ON 1
+#define DEGAS_ON 1
+#define BGO_ON 1
 #define FRS_ON 0
 #define TIME_MACHINE_ON 0
 #define BEAMMONITOR_ON 0
 #define WHITE_RABBIT_CORS 0
 
-// Define FRS setup.C file - FRS should provide; place in /config/{expName}/frs/
+// The FRS setup macro uses unqualified stream names.
+using std::cout;
+using std::endl;
 extern "C"
 {
     #include "../../config/s100/frs/setup_des_s100_030_2024_conv.C"
@@ -26,7 +97,7 @@ typedef struct EXT_STR_h101_t
     EXT_STR_h101_fatimavme_onion_t fatimavme;
     EXT_STR_h101_aida_onion_t aida;
     EXT_STR_h101_bplast_onion_t bplast;
-    EXT_STR_h101_germanium_onion_t germanium;
+    std::array<EXT_STR_h101_febex_onion, s100FebexBanks.size()> febex;
     EXT_STR_h101_frs_onion_t frs;
     EXT_STR_h101_beammonitor_onion_t beammonitor;
     EXT_STR_h101_bgo_onion_t bgo;
@@ -34,9 +105,11 @@ typedef struct EXT_STR_h101_t
 } EXT_STR_h101;
 
 
-void s100_tests()
-{   
-    const Int_t nev = -1; const Int_t fRunId = 1; const Int_t fExpId = 1;
+void s100_tests(const char* input = "/u/cjones/data/lustre/despec/fatima_test_2025/run_0009_0001.lmd",
+                Int_t nev = -1, const char* repository = "/u/cjones/c4Root",
+                const char* output = "")
+{
+    const Int_t fRunId = 1; const Int_t fExpId = 1;
 
     // Name your experiment. Make sure all relevant directories are named identically.
     // TString fExpName = "NovTest";
@@ -47,9 +120,9 @@ void s100_tests()
     //TString c4Root_path = "/u/jbormans/c4Root";
     //TString c4Root_path = "/u/despec/s100_online/c4Root";
     TString screenshot_path = "~/lustre/gamma/dryrunmarch24/screenshots/";
-    TString c4Root_path = "/u/cjones/c4Root";
+    TString c4Root_path = repository;
     //TString c4Root_path = "/u/cjones/s100_workspace/c4Root";
-    TString ucesb_path = c4Root_path + "/unpack/exps/" + fExpName + "/" + fExpName + " --debug --input-buffer=200Mi --event-sizes --allow-errors";
+    TString ucesb_path = c4Root_path + "/unpack/exps/" + fExpName + "/" + fExpName + " --input-buffer=200Mi --allow-errors";
     ucesb_path.ReplaceAll("//","/");
 
     std::string config_path = std::string(c4Root_path.Data()) + "/config/" + std::string(fExpName.Data());
@@ -84,9 +157,10 @@ void s100_tests()
     //TString filename = "~/Au_beam_0010_0001.lmd";
     // TString filename =  "~/lustre/gamma/s100_files/ts/168Dy_new_0006_0104.lmd";
     //TString filename = "~/lustre/gamma/nhubbard/162Eu_0052_TEST_0001.lmd";
-    TString filename = "/u/cjones/data/lustre/despec/fatima_test_2025/run_0009_0001.lmd";
-    TString outputpath = "output";
-    TString outputFileName = outputpath + ".root";
+    TString filename = input;
+    TString outputFileName = output;
+    const bool persist = !outputFileName.IsNull();
+    const TString germaniumBranch = "DegasCalData";
 
     // Create Online run
     Int_t refresh = 1; // Refresh rate for online histograms
@@ -97,14 +171,14 @@ void s100_tests()
     //EvtHead->Register(false);
     run->SetEventHeader(EvtHead);
     run->SetRunId(1);
-    //run->SetSink(new FairRootFileSink(outputFileName));
+    if (persist) run->SetSink(new FairRootFileSink(outputFileName));
     run->ActivateHttpServer(refresh, port);
     TFolder* histograms = new TFolder("Histograms", "Histograms");
     FairRootManager::Instance()->Register("Histograms", "Histogram Folder", histograms, false);
     run->AddObject(histograms);
 
     // Create source using ucesb for input
-    EXT_STR_h101 ucesb_struct;
+    static EXT_STR_h101 ucesb_struct{};
     TString ntuple_options = "UNPACK,RAW"; // Define which level of data to unpack - we don't use "RAW" or "CAL"
     UcesbSource* source = new UcesbSource(filename, ntuple_options, ucesb_path, &ucesb_struct, sizeof(ucesb_struct));
     source->SetMaxEvents(nev);
@@ -173,24 +247,26 @@ void s100_tests()
     
     source->AddReader(unpackheader);
     
-    if (FATIMA_ON)
+    if (FATIMA_ON || FATIMA_VME_ON)
     {
-        FatimaReader* unpackfatima = new FatimaReader((EXT_STR_h101_fatima_onion*)&ucesb_struct.fatima, offsetof(EXT_STR_h101, fatima));
-        //unpackfatima->DoFineTimeCalOnline(config_path + "/fatima/fine_time_4apr_test.root", 100000);
-        unpackfatima->SetInputFileFineTimeHistos(config_path + "/fatima/fine_time_4apr_test.root");
-
-        unpackfatima->SetOnline(true);
-        source->AddReader(unpackfatima);
+        const FatimaReader::TamexInput tamex{
+            FATIMA_ON ? &ucesb_struct.fatima : nullptr, offsetof(EXT_STR_h101, fatima), S100_PROCID_FATIMA};
+        const FatimaReader::VmeInput vme{
+            FATIMA_VME_ON ? &ucesb_struct.fatimavme : nullptr,
+            offsetof(EXT_STR_h101, fatimavme), S100_PROCID_FATIMAVME};
+        auto* reader = new FatimaReader(tamex, vme);
+        reader->SetOnline(!persist);
+        source->AddReader(reader);
     }
-    
+
     if (FATIMA_VME_ON)
     {
-        FatimaVmeReader* unpackfatimavme = new FatimaVmeReader((EXT_STR_h101_fatimavme_onion*)&ucesb_struct.fatimavme, offsetof(EXT_STR_h101, fatimavme));
-        
-        unpackfatimavme->SetOnline(true);
-        source->AddReader(unpackfatimavme);
+        // The spectra and correlation tasks consume the established VME branches.
+        auto* reader = new FatimaVmeReader();
+        reader->SetOnline(!persist);
+        source->AddReader(reader);
     }
-    
+
     if (AIDA_ON)
     {
         AidaReader* unpackaida = new AidaReader((EXT_STR_h101_aida_onion*)&ucesb_struct.aida, offsetof(EXT_STR_h101, aida));
@@ -202,28 +278,30 @@ void s100_tests()
     if (BPLAST_ON)
     {
         bPlastReader* unpackbplast = new bPlastReader((EXT_STR_h101_bplast_onion*)&ucesb_struct.bplast, offsetof(EXT_STR_h101, bplast));
-        //unpackbplast->DoFineTimeCalOnline(config_path + "/bplast/fine_time_4apr_test.root", 1000000);
-        unpackbplast->SetInputFileFineTimeHistos(config_path + "/bplast/fine_time_4apr_test.root");
-        
-        unpackbplast->SetOnline(true);
+        unpackbplast->UseTamexRawOutput(S100_PROCID_BPLAST);
+        unpackbplast->SetOnline(!persist);
         source->AddReader(unpackbplast);
     }
 
-    if (GERMANIUM_ON)
+    if (DEGAS_ON)
     {
-        GermaniumReader* unpackgermanium = new GermaniumReader((EXT_STR_h101_germanium_onion*)&ucesb_struct.germanium, offsetof(EXT_STR_h101, germanium));
-        
-        unpackgermanium->SetOnline(true);
-        source->AddReader(unpackgermanium);
+        const auto bank = std::find_if(s100FebexBanks.begin(), s100FebexBanks.end(), [](const auto& spec) {
+            return std::string_view(spec.detector) == "DEGAS";
+        });
+        if (bank == s100FebexBanks.end()) throw std::runtime_error("Missing DEGAS bank in the S100 configuration");
+        const auto index = static_cast<std::size_t>(bank - s100FebexBanks.begin());
+        const auto offset = offsetof(EXT_STR_h101, febex) + index * sizeof(EXT_STR_h101_febex_onion);
+        auto* reader = new DegasReader(&ucesb_struct.febex[index], offset, bank->procid, bank->name);
+        reader->SetOnline(!persist);
+        source->AddReader(reader);
     }
-    
+
     if (BGO_ON)
     {
         BGOReader* unpackbgo = new BGOReader((EXT_STR_h101_bgo_onion*)&ucesb_struct.bgo, offsetof(EXT_STR_h101, bgo));
-        //unpackbgo->DoFineTimeCalOnline(config_path + "/bgo/fine_time_histos_17apr.root", 1000000);
-        unpackbgo->SetInputFileFineTimeHistos(config_path + "/bgo/fine_time_histos_17apr.root");
-        
-        unpackbgo->SetOnline(true);
+        unpackbgo->UseTamexRawOutput(S100_PROCID_BGO);
+
+        unpackbgo->SetOnline(!persist);
         source->AddReader(unpackbgo);
         
     }
@@ -232,7 +310,8 @@ void s100_tests()
     {
         FrsReader* unpackfrs = new FrsReader((EXT_STR_h101_frs_onion*)&ucesb_struct.frs, offsetof(EXT_STR_h101, frs));
         
-        unpackfrs->SetOnline(true);
+        unpackfrs->UseS100Layout();
+        unpackfrs->SetOnline(!persist);
         
         source->AddReader(unpackfrs);
     }
@@ -241,7 +320,7 @@ void s100_tests()
     {
         BeamMonitorReader* unpackbeammonitor = new BeamMonitorReader((EXT_STR_h101_beammonitor_onion*)&ucesb_struct.beammonitor, offsetof(EXT_STR_h101, beammonitor));
         
-        unpackbeammonitor->SetOnline(true);
+        unpackbeammonitor->SetOnline(!persist);
         source->AddReader(unpackbeammonitor);
     }
 
@@ -252,10 +331,8 @@ void s100_tests()
     if (FATIMA_ON)
     {
         FatimaRaw2Cal* calfatima = new FatimaRaw2Cal();
-        // calfatima->PrintDetectorMap();
-        // calfatima->PrintDetectorCal();
-        
-        calfatima->SetOnline(true);
+        calfatima->UseFatimaRawInput(config_path + "/fatima/fine_time_23apr_beamON.root");
+        calfatima->SetOnline(!persist);
         run->AddTask(calfatima);
     }
     
@@ -263,7 +340,7 @@ void s100_tests()
     {
         FatimaVmeRaw2Cal* calfatimavme = new FatimaVmeRaw2Cal();
         
-        calfatimavme->SetOnline(true);
+        calfatimavme->SetOnline(!persist);
         run->AddTask(calfatimavme);
         
     }
@@ -281,27 +358,25 @@ void s100_tests()
     {
         bPlastRaw2Cal* calbplast = new bPlastRaw2Cal();
         
-        calbplast->SetOnline(true);
+        calbplast->UseTamexRawInput(config_path + "/bplast/fine_time_4apr_test.root");
+        calbplast->SetOnline(!persist);
         run->AddTask(calbplast);
         
         
     }
     
-    if (GERMANIUM_ON)
+    if (DEGAS_ON)
     {
-        GermaniumRaw2Cal* calge = new GermaniumRaw2Cal();
-        // calge->PrintDetectorMap();
-
-        calge->SetOnline(true);
-        run->AddTask(calge);
+        auto* calibrator = new DegasRaw2Cal();
+        calibrator->SetOnline(!persist);
+        run->AddTask(calibrator);
     }
-    
+
     if (BGO_ON)
     {
         BGORaw2Cal* calbgo = new BGORaw2Cal();
-        // calbgo->PrintDetectorMap();
-        
-        calbgo->SetOnline(true);
+        calbgo->UseTamexRawInput(config_path + "/bgo/fine_time_histos_17apr.root");
+        calbgo->SetOnline(!persist);
         run->AddTask(calbgo);
     }
         
@@ -382,9 +457,10 @@ void s100_tests()
         
     }
     
-    if (GERMANIUM_ON)
+    if (DEGAS_ON)
     {
         GermaniumOnlineSpectra* onlinege = new GermaniumOnlineSpectra();
+        onlinege->SetGermaniumCalBranch(germaniumBranch);
         onlinege->SetBinningEnergy(6e3,0,3e3);
         onlinege->AddReferenceDetector(15,0);
         onlinege->AddReferenceDetector(1,0);
@@ -394,9 +470,10 @@ void s100_tests()
     
     TBGOTwinpeaksConfiguration::SetCoincidenceWindow(5000); 
     TBGOTwinpeaksConfiguration::SetCoincidenceOffset(0);
-    if (BGO_ON)
+    if (BGO_ON && DEGAS_ON)
     {
-        BGOOnlineSpectra* onlinebgo = new BGOOnlineSpectra();
+        auto* onlinebgo = new BGOOnlineSpectra();
+        onlinebgo->SetGermaniumCalBranch(germaniumBranch);
         onlinebgo->SetBinningEnergy(1500,0.1,1500.1);
         //onlinebgo->SetCoincidenceWindow(5000);
 
@@ -409,11 +486,9 @@ void s100_tests()
     TFrsConfiguration::Set_AoQ_range(2.3,2.7);
 
     std::vector<FrsGate*> fgs;
-    FrsGate* Gd164 = new FrsGate("Gd164", config_path + "/frs/Gates/164Gd.root");
-    fgs.emplace_back(Gd164);
-    
     if (FRS_ON)
     {
+        fgs.push_back(new FrsGate("Gd164", config_path + "/frs/Gates/164Gd.root"));
         FrsOnlineSpectra* onlinefrs = new FrsOnlineSpectra(fgs);
         // For monitoring FRS on our side
         FrsRawSpectra* frsrawspec = new FrsRawSpectra();
@@ -436,7 +511,7 @@ void s100_tests()
     TString c = "Fatima";
     TString d = "FatimaVme";
     TString e = "bPlast";
-    TString f = "Germanium";
+    TString f = "Degas";
     TString g = "Frs";
 
     if (TIME_MACHINE_ON) // a little complicated because it falls apart if the right subsystem is switched off
@@ -464,9 +539,10 @@ void s100_tests()
         run->AddTask(frsaidaonline);
     }
 
-    if (BPLAST_ON && GERMANIUM_ON)
+    if (BPLAST_ON && DEGAS_ON)
     {
         bPlastGermaniumCorrelationsOnline* bplastgecorr = new bPlastGermaniumCorrelationsOnline();
+        bplastgecorr->SetGermaniumCalBranch(germaniumBranch);
         // set bplast multiplicity
         // ???
         run->AddTask(bplastgecorr);
@@ -484,13 +560,13 @@ void s100_tests()
     FairLogger::GetLogger()->SetLogScreenLevel("info");
 
     // Information about portnumber and main data stream
-    cout << "\n\n" << endl;
-    cout << "Data stream is: " << filename << endl;
-    cout << "Online port server: " << port << endl;
-    cout << "\n\n" << endl;
+    std::cout << "\n\n" << std::endl;
+    std::cout << "Data stream is: " << filename << std::endl;
+    std::cout << "Online port server: " << port << std::endl;
+    std::cout << "\n\n" << std::endl;
 
     // Run
-    run->Run((nev < 0) ? nev : 0, (nev < 0) ? 0 : nev); 
+    run->Run((nev < 0) ? nev : 0, (nev < 0) ? 0 : nev);
 
     // write online histograms if desired.
     //TFile* tf = new TFile(sf->GetFileName(), "UPDATE");
@@ -503,10 +579,10 @@ void s100_tests()
     Double_t rtime = timer.RealTime();
     Double_t ctime = timer.CpuTime();
     Float_t cpuUsage = ctime / rtime;
-    cout << "CPU used: " << cpuUsage << endl;
+    std::cout << "CPU used: " << cpuUsage << std::endl;
     std::cout << std::endl << std::endl;
     std::cout << "Macro finished successfully." << std::endl;
-    std::cout << "Output file is " << outputFileName << std::endl;
+    if (persist) std::cout << "Output file is " << outputFileName << std::endl;
     std::cout << "Real time " << rtime << " s, CPU time " << ctime << " s" << std::endl << std::endl;
    // gApplication->Terminate(0);
    

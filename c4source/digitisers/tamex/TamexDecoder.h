@@ -90,6 +90,7 @@ struct Tamex4Format
 {
     static constexpr std::uint32_t channel_count = 33; // 0 = trigger
     static constexpr std::uint32_t fine_bins = 1024;
+    static constexpr double fine_clock_ns = 5.0;
     static constexpr std::uint32_t invalid_fine_code = 0x3ff;
     static constexpr std::uint32_t epoch_mask = 0x0fffffff;
     static constexpr std::uint32_t channel_mask = 0x7f;

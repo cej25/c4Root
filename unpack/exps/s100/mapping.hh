@@ -58,9 +58,11 @@ SIGNAL(MUSIC2_E_1, frsuser.data.v785[0].data[8], MUSIC2_E_8, frsuser.data.v785[0
 // :::::::::::::::::::::::::::::::::::::::
 
 // ::::::: TPAT Crate ::::::::::::::::::::
-SIGNAL(WR_ID, frstpat.wr.subsystem_id, DATA12);
+SIGNAL(WR_ID, frstpat.wr.subsystem_id, DATA16);
 SIGNAL(WR_T1, frstpat.wr.t1, DATA16);
 SIGNAL(WR_T2, frstpat.wr.t2, DATA16);
 SIGNAL(WR_T3, frstpat.wr.t3, DATA16);
 SIGNAL(WR_T4, frstpat.wr.t4, DATA16);
 SIGNAL(TPAT, frstpat.data.tpat, DATA16);
+// Stable RAW fields for the DEGAS FEBEX summary stream.
+S100_FEBEX_RAW_SIGNALS

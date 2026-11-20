@@ -63,7 +63,6 @@ WhiterabbitCorrelationOnline::~WhiterabbitCorrelationOnline()
 {
     if (fHitFatimaTwinpeaks) delete fHitFatimaTwinpeaks;
     if (fHitbPlastTwinpeaks) delete fHitbPlastTwinpeaks;
-    if (fHitGe) delete fHitGe;
     if (fAidaDecays) delete fAidaDecays;
     if (fEventHeader) delete fEventHeader;
 }
@@ -113,10 +112,11 @@ InitStatus WhiterabbitCorrelationOnline::Init()
             fatVmeArray = mgr->InitObjectAs<decltype(fatVmeArray)>("FatimaVmeTDCCalData");
             c4LOG_IF(fatal, !fatVmeArray, "Branch FatimaVmeTDCCalData not found!");
         }
-        else if (fDetectorSystems.at(i) == "Germanium")
+        else if (fDetectorSystems.at(i) == "Germanium" || fDetectorSystems.at(i) == "Degas")
         {
-            fHitGe = (TClonesArray*)mgr->GetObject("GermaniumCalData");
-            c4LOG_IF(error, !fHitGe, "Branch GermaniumCalData. not found");
+            const TString branch = fDetectorSystems.at(i) + "CalData";
+            fHitGe = dynamic_cast<TClonesArray*>(mgr->GetObject(branch.Data()));
+            c4LOG_IF(error, !fHitGe, "Missing branch " << branch);
         }
         else if (fDetectorSystems.at(i) == "Aida")
         {
@@ -718,10 +718,6 @@ void WhiterabbitCorrelationOnline::FinishEvent()
     if (fHitbPlastTwinpeaks)
     {
         fHitbPlastTwinpeaks->Clear();
-    }
-    if (fHitGe)
-    {
-        fHitGe->Clear();
     }
 }
 

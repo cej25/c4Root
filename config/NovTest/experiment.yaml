@@ -1,0 +1,30 @@
+# Active routes in unpack/exps/NovTest/NovTest.spec.
+# compiled_slots lists addresses in output slot order. Installed boards are
+# recorded only where the run setup is known.
+# Slot addresses use TAMEX [SFP, card].
+
+FATIMA:
+  subevent: fatima_tamex_subev
+  member: fatima
+  type: 10
+  subtype: 1
+  procid: 75
+  control: 20
+  subcrate: 0
+  whiterabbit: 0x1600
+  digitiser: tamex
+  version: 4
+  compiled_slots: [[0, 0], [0, 1]]
+
+bPlast:
+  subevent: bplast_subev
+  member: bplast
+  type: 10
+  subtype: 1
+  procid: 80
+  control: 20
+  subcrate: 0
+  whiterabbit: 0x500
+  digitiser: tamex
+  version: 4
+  compiled_slots: [[0, 0], [0, 1], [0, 2], [0, 3], [0, 4]]

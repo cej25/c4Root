@@ -1,6 +1,6 @@
 // -*- C++ -*-
 
-#include "../../common/whiterabbit.spec"
+#include "../../common/whiterabbit_13bit.spec"
 #include "../../common/clock_tdc.spec"
 #include "../../common/vme_mesytec_mdpp16.spec"
 #include "../frs/frs_s143.spec"
@@ -122,7 +122,7 @@ SUBEVENT(fimp_subev)
 
     select optional
     {
-        ts = TIMESTAMP_WHITERABBIT_EXTENDED(id=0x1300);
+        ts = TIMESTAMP_WHITERABBIT(id=0x1300);
     };
 
     select optional

@@ -1,0 +1,94 @@
+# s100 electronics layout. Board indices are local to each UCESB subevent.
+# Edit this file, then use scripts/sync_experiment.py --experiment s100 --check.
+# boards and sfp describe installed cards. compiled_slots lists TAMEX [SFP, card]
+# pairs, FEBEX card IDs, V1751 board IDs, or V1290 GEOs in output order.
+# Rebuild the unpacker after editing routing or compiled slots.
+FATIMA:
+  subevent: fatima_tamex_subev
+  member: fatima
+  digitiser: tamex
+  version: 4
+  procid: 75
+  whiterabbit: 0x1600
+  sfp: 0
+  boards: [0, 1, 2, 3]
+  compiled_slots: [[0, 0], [0, 1], [0, 2], [0, 3]]
+
+bPlast:
+  subevent: bplast_subev
+  member: bplast
+  digitiser: tamex
+  version: 4
+  procid: 80
+  whiterabbit: 0x500
+  sfp: 0
+  boards: [0, 1, 2, 3, 4, 5, 6, 7, 8]
+  compiled_slots: [[0, 0], [0, 1], [0, 2], [0, 3], [0, 4], [0, 5], [0, 6], [0, 7], [0, 8]]
+
+BGO:
+  subevent: bgo_tamex_subevent
+  member: bgo
+  digitiser: tamex
+  version: 4
+  procid: 100
+  whiterabbit: 0x1900
+  sfp: 1
+  boards: [0, 1, 2]
+  compiled_slots: [[1, 0], [1, 1], [1, 2]]
+
+# FATIMA VME is a separate UCESB subevent and may run alongside TAMEX.
+FATIMA_VME:
+  subevent: fatima_vme_subev
+  member: fatimavme
+  digitiser: vme
+  procid: 70
+  whiterabbit: 0x1500
+  v1751:
+    boards: [6, 7, 8, 9, 10]
+    compiled_slots: [6, 7, 8, 9, 10, 31]
+  v1290:
+    boards: [12, 13]
+    compiled_slots: [12, 13, 31, 30, 29, 28]
+
+AIDA:
+  subevent: aida_subev
+  member: aida
+  procid: 90
+  whiterabbit: 0x700
+
+DEGAS:
+  subevent: febex_subev
+  member: germanium
+  digitiser: febex
+  version: 4
+  procid: 60
+  whiterabbit: 0x400
+  raw_bank: FEBEX
+  compiled_slots: [0, 1, 2, 3, 4, 5]
+
+FRS_Main:
+  subevent: frs_main_subev
+  member: frsmain
+  procid: 10
+
+FRS_TPC:
+  subevent: frs_tpc_subev
+  member: frstpc
+  procid: 20
+
+FRS_User:
+  subevent: frs_user_subev
+  member: frsuser
+  procid: 30
+
+FRS_TPAT:
+  subevent: frs_tpat_subev
+  member: frstpat
+  procid: 15
+  whiterabbit: 0x100
+
+BeamMonitor:
+  subevent: bm_subev
+  member: beammonitor
+  procid: 1
+  whiterabbit: 0x1700

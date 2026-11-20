@@ -153,11 +153,6 @@ void fatvme_online(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t fEx
     // EventHeader - should always be done
     UnpackReader* unpackheader = new UnpackReader((EXT_STR_h101_unpack*)&ucesb_struct.eventheaders, offsetof(EXT_STR_h101, eventheaders));
 
-    // FATIMA
-    //FatimaReader* unpackfatima = new FatimaReader((EXT_STR_h101_fatima_onion*)&ucesb_struct.fatima, offsetof(EXT_STR_h101, fatima));
-    // unpackfatima->DoFineTimeCalOnline(config_path + "/fatima/fine_time_histos_111223_fatima.root", 50000);
-    // unpackfatima->SetInputFileFineTimeHistos(config_path + "/fatima/fine_time_histos_111223_fatima.root");
-
     FatimaVmeReader* unpackfatimavme = new FatimaVmeReader((EXT_STR_h101_fatimavme_onion*)&ucesb_struct.fatimavme, offsetof(EXT_STR_h101, fatimavme));
     
     // AIDA

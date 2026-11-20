@@ -1,6 +1,6 @@
 // -*- C++ -*-
 
-#include "../../common/whiterabbit.spec"
+#include "../../common/whiterabbit_13bit.spec"
 //#include "../../common/gsi_febex4.spec"
 #include "../../common/vme_caen_v7x5.spec"
 #include "../../common/vme_caen_v1x90.spec"
@@ -20,7 +20,7 @@ SUBEVENT(bb7_subev)
 {
     select optional 
     {
-        ts = TIMESTAMP_WHITERABBIT_EXTENDED(id = 0x1800);
+        ts = TIMESTAMP_WHITERABBIT(id = 0x1800);
     }
 
     select several

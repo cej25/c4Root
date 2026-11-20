@@ -83,8 +83,8 @@ InitStatus BGOOnlineSpectra::Init()
     header = (EventHeader*)mgr->GetObject("EventHeader.");
     c4LOG_IF(error, !header, "Branch EventHeader. not found");
 
-    fHitGe = (TClonesArray*)mgr->GetObject("GermaniumCalData");
-    c4LOG_IF(fatal, !fHitGe, "Branch GermaniumCalData not found!");
+    fHitGe = dynamic_cast<TClonesArray*>(mgr->GetObject(fGermaniumCalBranch.Data()));
+    c4LOG_IF(fatal, !fHitGe, "Missing branch " << fGermaniumCalBranch);
 
 
     fHitBGO = (TClonesArray*)mgr->GetObject("BGOTwinpeaksCalData");

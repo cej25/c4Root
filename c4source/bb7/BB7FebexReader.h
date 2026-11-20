@@ -12,7 +12,7 @@ extern "C"
     #include "ext_h101_bbfebex.h"
 }
 
-class TClonesArray;
+class BB7FebexRawData;
 
 struct EXT_STR_h101_bbfebex_t;
 typedef struct EXT_STR_h101_bbfebex_t EXT_STR_h101_bbfebex;
@@ -35,32 +35,15 @@ class BB7FebexReader : public c4Reader
         void SetOnline(Bool_t option) { fOnline = option; }
 
     private:
-        Int_t fNEvent;
-
         EXT_STR_h101_bbfebex_onion* fData;
-
         size_t fOffset;
-
         Bool_t fOnline;
-        
-        TClonesArray* fArray;
-
-        const int NBoards = 5; // maximum (2 x BB7 boards which don't exist right now?)
-
-        int32_t energy;
-        int64_t wr_t_first = 0;
-        int64_t wr_t_second = 0;
-
+        BB7FebexRawData* fRaw; //! Owns the detector raw branch
         std::vector<BB7FebexItem>* bb7array;
         std::vector<BB7EmptyItem>* bb7empty;
 
-        Int_t nReads = 0;
-        Int_t n_zero_f0_0 = 0;
-        Int_t n_zero_f0_1 = 0;
-
-    
     public:
-        ClassDefOverride(BB7FebexReader, 1);
+        ClassDefOverride(BB7FebexReader, 2);
 
 
 };

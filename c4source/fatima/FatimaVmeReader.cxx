@@ -22,8 +22,10 @@
 #include "TFile.h"
 
 #include <iomanip>
+#include <type_traits>
 
 // c4
+#include "FatimaRawData.h"
 #include "FatimaVmeData.h"
 #include "FatimaVmeReader.h"
 #include "FatimaVmeQdcSafety.h"
@@ -53,6 +55,12 @@ FatimaVmeReader::FatimaVmeReader(EXT_STR_h101_fatimavme_onion* data, size_t offs
 {
 }
 
+FatimaVmeReader::FatimaVmeReader()
+    : FatimaVmeReader(nullptr, 0)
+{
+    fUseFatimaRaw = true;
+}
+
 FatimaVmeReader::~FatimaVmeReader()
 {   
     c4LOG(info, "");
@@ -63,7 +71,12 @@ Bool_t FatimaVmeReader::Init(ext_data_struct_info* a_struct_info)
 {
     Int_t ok;
 
-    EXT_STR_h101_fatimavme_ITEMS_INFO(ok, *a_struct_info, fOffset, EXT_STR_h101_fatimavme, 0);
+    ok = 1;
+    if (!fSharedInput && fData)
+    {
+        EXT_STR_h101_fatimavme_ITEMS_INFO(ok, *a_struct_info, fOffset, EXT_STR_h101_fatimavme, 0);
+        memset(fData, 0, sizeof *fData);
+    }
 
     if (!ok)
     {
@@ -71,16 +84,21 @@ Bool_t FatimaVmeReader::Init(ext_data_struct_info* a_struct_info)
         return kFALSE;
     }
 
-    // bunch of stuff
-
+    if (fUseFatimaRaw)
+    {
+        fFatimaRaw = FairRootManager::Instance()->InitObjectAs<const FatimaRawData*>("FatimaRawData");
+        if (!fFatimaRaw)
+        {
+            c4LOG(error, "FATIMA VME requires an earlier reader providing FatimaRawData");
+            return kFALSE;
+        }
+    }
 
     FairRootManager::Instance()->Register("FatimaVmeData", "FatimaVmeDataFolder", fArray, !fOnline);
     FairRootManager::Instance()->RegisterAny("FatimaVmeQDCData", qdcArray, !fOnline);
     FairRootManager::Instance()->RegisterAny("FatimaVmeTDCData", tdcArray, !fOnline);
 
     fArray->Clear();
-
-    memset(fData, 0, sizeof *fData);
 
     TFatimaVmeConfiguration const* fatvme_conf = TFatimaVmeConfiguration::GetInstance();
     num_qdc_boards = fatvme_conf->NQDCBoards();
@@ -94,60 +112,89 @@ Bool_t FatimaVmeReader::Init(ext_data_struct_info* a_struct_info)
 
 Bool_t FatimaVmeReader::Read()
 {
-    if (!fData) return kTRUE;
     qdcArray->clear();
     tdcArray->clear();
+    if (fFatimaRaw)
+    {
+        for (const auto& raw : fFatimaRaw->VMEChain.QDC)
+        {
+            if (raw.board_id == 0) continue;
+            const auto mapping = dets_qdc.find({raw.board_id, raw.channel});
+            if (mapping == dets_qdc.end()) continue;
+            const double fine_time = (std::uint64_t(raw.coarse) + (std::uint64_t(raw.extended) << 32))
+                                     + raw.fine / 1024.;
+            qdcArray->emplace_back().SetAll(raw.wr_timestamp, mapping->second, raw.coarse,
+                                           fine_time, raw.fine, raw.qlong, raw.qshort, raw.waveform);
+        }
+        for (const auto& raw : fFatimaRaw->VMEChain.TDC)
+        {
+            if (raw.geo == 0) continue;
+            const auto mapping = dets_tdc.find({raw.geo, raw.channel});
+            if (mapping == dets_tdc.end()) continue;
+            tdcArray->emplace_back().SetAll(raw.wr_timestamp, raw.wr_subsystem, mapping->second,
+                                           raw.measurement, raw.leading_or_trailing);
+        }
+        ++fNEvent;
+        return kTRUE;
+    }
+    const auto* data = fData;
+    if (!data) return kTRUE;
     
     
     //whiterabbit timestamp:
-    wr_t = (((uint64_t)fData->fatimavme_ts_t[3]) << 48) + (((uint64_t)fData->fatimavme_ts_t[2]) << 32) + (((uint64_t)fData->fatimavme_ts_t[1]) << 16) + (uint64_t)(fData->fatimavme_ts_t[0]);
+    wr_t = (((uint64_t)data->fatimavme_ts_t[3]) << 48) + (((uint64_t)data->fatimavme_ts_t[2]) << 32) + (((uint64_t)data->fatimavme_ts_t[1]) << 16) + (uint64_t)(data->fatimavme_ts_t[0]);
     // if (wr_t == 0) return kTRUE;
 
-    uint32_t wr_subsystem_id = fData->fatimavme_ts_subsystem_id;
+    uint32_t wr_subsystem_id = data->fatimavme_ts_subsystem_id;
 
     int qdcs_fired = 0;
     
-    for (int qdc = 0; qdc < 5; qdc++)
+    // Use the slot count from the UCESB-generated structure.
+    constexpr auto qdc_capacity = std::extent<decltype(data->fatimavme_qdc)>::value;
+    for (size_t qdc = 0; qdc < qdc_capacity; ++qdc)
     {
-        Int_t board_id = fData->fatimavme_qdc[qdc]._board_id;
-        
-        Int_t channel_mask = fData->fatimavme_qdc[qdc]._channels;
+        Int_t board_id = data->fatimavme_qdc[qdc]._board_id;
+        // A spare/unmatched bank remains zero-initialised. Do not interpret
+        // a placeholder GEO/board slot as a physical detector.
+        if (board_id == 0) continue;
+
+        Int_t channel_mask = data->fatimavme_qdc[qdc]._channels;
         std::vector<int> channels_fired = Get_Channels(channel_mask);
 
         for (UInt_t channel = 0; channel < channels_fired.size(); channel++)
         {
-            const auto& qdc_data = fData->fatimavme_qdc[qdc];
+            const auto& qdc_data = data->fatimavme_qdc[qdc];
             if (!fatima_vme_qdc_safety::CompleteEntry(
                     channel, qdc_data._channel_time, qdc_data._chan_ext_time,
                     qdc_data._chan_fine_time, qdc_data._qlong, qdc_data._qshort))
                 continue;
 
-            auto & entry = qdcArray->emplace_back();
-
-            int current_detector = dets_qdc[std::make_pair(board_id, channels_fired[channel])];
+            const auto mapping = dets_qdc.find(std::make_pair(board_id, channels_fired[channel]));
+            if (mapping == dets_qdc.end()) continue;
+            int current_detector = mapping->second;
             //qdc_detectors.emplace_back(current_detector);
             
-            uint32_t ct = fData->fatimavme_qdc[qdc]._channel_timev[channel];
-            int fb = fData->fatimavme_qdc[qdc]._chan_fine_timev[channel];
-            //QDC_time_coarse.emplace_back(fData->fatimavme_qdc[qdc]._channel_timev[channel]);
+            uint32_t ct = data->fatimavme_qdc[qdc]._channel_timev[channel];
+            int fb = data->fatimavme_qdc[qdc]._chan_fine_timev[channel];
+            //QDC_time_coarse.emplace_back(data->fatimavme_qdc[qdc]._channel_timev[channel]);
 
             // std::cout << "unpacked coarse time:: " << ct << std::endl;
             // std::cout << "unpacked fine bin:: " << fb << std::endl;
 
-            double ft = (ULong64_t)fData->fatimavme_qdc[qdc]._channel_timev[channel] + ((ULong64_t)(fData->fatimavme_qdc[qdc]._chan_ext_timev[channel]) << 32) + (double)(fData->fatimavme_qdc[qdc]._chan_fine_timev[channel] / 1024.);
-            //QDC_time_fine.emplace_back((uint64_t)fData->fatimavme_qdc[qdc]._channel_timev[channel] + ((uint64_t)(fData->fatimavme_qdc[qdc]._chan_ext_timev[channel]) << 32) + fData->fatimavme_qdc[qdc]._chan_fine_timev[channel] / 1024.);
+            double ft = (ULong64_t)data->fatimavme_qdc[qdc]._channel_timev[channel] + ((ULong64_t)(data->fatimavme_qdc[qdc]._chan_ext_timev[channel]) << 32) + (double)(data->fatimavme_qdc[qdc]._chan_fine_timev[channel] / 1024.);
+            //QDC_time_fine.emplace_back((uint64_t)data->fatimavme_qdc[qdc]._channel_timev[channel] + ((uint64_t)(data->fatimavme_qdc[qdc]._chan_ext_timev[channel]) << 32) + data->fatimavme_qdc[qdc]._chan_fine_timev[channel] / 1024.);
 
             // std::cout << "unpacked fine time:: " << ft << std::endl;
 
-            uint32_t qlr = fData->fatimavme_qdc[qdc]._qlongv[channel];
-            //QLong_raw.emplace_back(fData->fatimavme_qdc[qdc]._qlongv[channel]);
+            uint32_t qlr = data->fatimavme_qdc[qdc]._qlongv[channel];
+            //QLong_raw.emplace_back(data->fatimavme_qdc[qdc]._qlongv[channel]);
 
-            uint32_t qsr = fData->fatimavme_qdc[qdc]._qshortv[channel];
-            //QShort_raw.emplace_back(fData->fatimavme_qdc[qdc]._qshortv[channel]);
+            uint32_t qsr = data->fatimavme_qdc[qdc]._qshortv[channel];
+            //QShort_raw.emplace_back(data->fatimavme_qdc[qdc]._qshortv[channel]);
 
-            UInt_t sazc = fData->fatimavme_qdc[qdc]._chan_sazcv[channel];
-            UInt_t sbzc = fData->fatimavme_qdc[qdc]._chan_sbzcv[channel];
-            UInt_t midscale = fData->fatimavme_qdc[qdc]._chan_midscalev[channel];
+            UInt_t sazc = data->fatimavme_qdc[qdc]._chan_sazcv[channel];
+            UInt_t sbzc = data->fatimavme_qdc[qdc]._chan_sbzcv[channel];
+            UInt_t midscale = data->fatimavme_qdc[qdc]._chan_midscalev[channel];
 
             // CEJ not configured
             // if (qdc == 0)
@@ -176,6 +223,7 @@ Bool_t FatimaVmeReader::Read()
                 }
             }
 
+            auto& entry = qdcArray->emplace_back();
             entry.SetAll(wr_t, current_detector, ct, ft, fb, qlr, qsr, waveform_one);
 
             qdcs_fired++;
@@ -185,18 +233,20 @@ Bool_t FatimaVmeReader::Read()
     
     int tdcs_fired = 0;
     
-    for (int tdc = 0; tdc < 2; tdc++)
+    constexpr auto tdc_capacity = std::extent<decltype(data->fatimavme_tdc)>::value;
+    for (size_t tdc = 0; tdc < tdc_capacity; ++tdc)
     {
-        int geo = fData->fatimavme_tdc[tdc]._geo;
-        
+        int geo = data->fatimavme_tdc[tdc]._geo;
+        if (geo == 0) continue; // Empty V1290 spare slot.
+
         int hit_index = 0;
-        const auto& tdc_data = fData->fatimavme_tdc[tdc];
+        const auto& tdc_data = data->fatimavme_tdc[tdc];
         const auto block_count = fatima_vme_packed_safety::BoundedBlockCount(
             tdc_data._measurement_nM);
         for (uint32_t channel_index = 0; channel_index < block_count; ++channel_index)
         {
-            int current_channel = fData->fatimavme_tdc[tdc]._measurement_nMI[channel_index]; // channel to read now!
-            int next_channel_start = fData->fatimavme_tdc[tdc]._measurement_nME[channel_index];
+            int current_channel = data->fatimavme_tdc[tdc]._measurement_nMI[channel_index]; // channel to read now!
+            int next_channel_start = data->fatimavme_tdc[tdc]._measurement_nME[channel_index];
 
             if (!fatima_vme_packed_safety::ValidTdcBlock(
                     hit_index, next_channel_start, tdc_data._measurement_n,
@@ -207,19 +257,24 @@ Bool_t FatimaVmeReader::Read()
                 continue;
             }
 
-            int current_detector = dets_tdc[std::make_pair(geo, current_channel)];
+            const auto mapping = dets_tdc.find(std::make_pair(geo, current_channel));
+            if (mapping == dets_tdc.end()) {
+                hit_index = next_channel_start;
+                continue;
+            }
+            int current_detector = mapping->second;
 
             for (uint32_t j = hit_index; j < next_channel_start; j++)
             {
                 auto & entry = tdcArray->emplace_back();
                 //tdc_detectors.emplace_back(current_detector);
-                uint32_t data = fData->fatimavme_tdc[tdc]._measurement_data[j];
-                uint8_t lot = fData->fatimavme_tdc[tdc]._measurement_leadOrTrailv[j];
-                //v1290_data.emplace_back(fData->fatimavme_tdc[tdc]._data[j]);
-                //v1290_lot.emplace_back(fData->fatimavme_tdc[tdc]._leadOrTrailv[j]);
+                uint32_t measurement = tdc_data._measurement_data[j];
+                uint8_t lot = data->fatimavme_tdc[tdc]._measurement_leadOrTrailv[j];
+                //v1290_data.emplace_back(data->fatimavme_tdc[tdc]._data[j]);
+                //v1290_lot.emplace_back(data->fatimavme_tdc[tdc]._leadOrTrailv[j]);
 
 
-                entry.SetAll(wr_t, wr_subsystem_id, current_detector, data, lot);
+                entry.SetAll(wr_t, wr_subsystem_id, current_detector, measurement, lot);
                 tdcs_fired++;
             }
 
