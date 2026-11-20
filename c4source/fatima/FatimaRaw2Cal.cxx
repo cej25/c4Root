@@ -33,6 +33,7 @@
 #include <chrono>
 
 #include "FatimaRaw2Cal.h"
+#include "FatimaRawData.h"
 #include "FatimaVmeCalibrator.h"
 #include "FatimaLegacyPulseBuilder.h"
 #include "TamexFineTimeCalibration.h"
@@ -113,9 +114,17 @@ void FatimaRaw2Cal::Electronics(const std::vector<std::string>& readouts)
     fUseVmeRaw = vme;
 }
 
+void FatimaRaw2Cal::UseFatimaRawInput(const TString& fine_time_histograms)
+{
+    fUseFatimaRaw = true;
+    if (!fUseVmeRaw) fUseTamexRaw = true;
+    fTamexFineTimeFile = fine_time_histograms;
+}
+
 void FatimaRaw2Cal::UseTamexRawInput(std::uint16_t procid, const TString& fine_time_histograms)
 {
     fUseTamexRaw = true;
+    fUseFatimaRaw = false;
     fTamexProcId = procid;
     fTamexFineTimeFile = fine_time_histograms;
 }
@@ -143,10 +152,19 @@ InitStatus FatimaRaw2Cal::Init()
     c4LOG_IF(fatal, NULL == mgr, "FairRootManager not found");
 
 
+    if (fUseFatimaRaw)
+    {
+        fFatimaRaw = mgr->InitObjectAs<const FatimaRawData*>("FatimaRawData");
+        if (!fFatimaRaw)
+        {
+            c4LOG(error, "FATIMA input branch FatimaRawData not found");
+            return kFATAL;
+        }
+    }
     if (fUseVmeRaw)
     {
         fVmeProcessor = new FatimaVmeCalibrator();
-        if (!fVmeProcessor->Init(mgr, !fOnline)) return kFATAL;
+        if (!fVmeProcessor->Init(mgr, !fOnline, fFatimaRaw ? &fFatimaRaw->VMEChain : nullptr)) return kFATAL;
     }
     // VME-only mode never requires the TAMEX calibration configuration
     // or its event branches.
@@ -158,12 +176,14 @@ InitStatus FatimaRaw2Cal::Init()
 
     if (fUseTamexRaw)
     {
-        const TString branch = "TamexRawData";
-        fTamexInput = dynamic_cast<TClonesArray*>(mgr->GetObject(branch.Data()));
-        if (!fTamexInput)
+        if (!fFatimaRaw)
         {
-            c4LOG(error, "FATIMA TAMEX Raw input branch not found: " << branch);
-            return kFATAL;
+            fTamexInput = dynamic_cast<TClonesArray*>(mgr->GetObject("TamexRawData"));
+            if (!fTamexInput)
+            {
+                c4LOG(error, "FATIMA TAMEX input branch TamexRawData not found");
+                return kFATAL;
+            }
         }
 
         constexpr std::size_t channels_per_board = 33;
@@ -305,6 +325,19 @@ void FatimaRaw2Cal::PrintDetectorCal()
     }
 }        
 
+std::size_t FatimaRaw2Cal::TamexBoardCount() const
+{
+    if (fFatimaRaw) return fFatimaRaw->TAMEX.boards.size();
+    return fTamexInput->GetEntriesFast();
+}
+
+const TamexRawData* FatimaRaw2Cal::TamexBoardAt(std::size_t index) const
+{
+    if (fFatimaRaw) return &fFatimaRaw->TAMEX.boards[index];
+    const auto* board = static_cast<const TamexRawData*>(fTamexInput->At(index));
+    return board && board->ProcId() == fTamexProcId ? board : nullptr;
+}
+
 /*
 The event loop executable. This is where the events are analyzed. Only used implicitly by FairRoot during Run().
 
@@ -317,12 +350,11 @@ Writes the times in ns!
 */
 void FatimaRaw2Cal::AccumulateTamexFineTime()
 {
-    if (!fTamexInput) return;
     constexpr std::size_t channels_per_board = 33;
-    for (Int_t i = 0; i < fTamexInput->GetEntriesFast(); ++i)
+    for (std::size_t i = 0; i < TamexBoardCount(); ++i)
     {
-        const auto* board = static_cast<const TamexRawData*>(fTamexInput->At(i));
-        if (!board || board->ProcId() != fTamexProcId ||
+        const auto* board = TamexBoardAt(i);
+        if (!board ||
             board->FormatVersion() != 4 ||
             board->Board() >= fTamexFineCounts.size() / channels_per_board) continue;
 
@@ -399,13 +431,12 @@ void FatimaRaw2Cal::FinaliseTamexFineTime()
 
 void FatimaRaw2Cal::BuildTamexLegacyHits()
 {
-    if (!fTamexInput || !fTamexLegacyHits) return;
     fTamexLegacyHits->Clear();
     constexpr std::size_t channels_per_board = 33;
-    for (Int_t i = 0; i < fTamexInput->GetEntriesFast(); ++i)
+    for (std::size_t i = 0; i < TamexBoardCount(); ++i)
     {
-        const auto* board = static_cast<const TamexRawData*>(fTamexInput->At(i));
-        if (!board || board->ProcId() != fTamexProcId || board->FormatVersion() != 4 ||
+        const auto* board = TamexBoardAt(i);
+        if (!board || board->FormatVersion() != 4 ||
             board->Board() >= fTamexFineTimes.size() / channels_per_board)
         {
             c4LOG(error, "Unsupported procid, format or FATIMA board in TAMEX Raw input");

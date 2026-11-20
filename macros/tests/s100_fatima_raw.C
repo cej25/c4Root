@@ -1,7 +1,13 @@
+#include "EventHeader.h"
 #include "FairRootFileSink.h"
 #include "FairRunOnline.h"
 #include "FatimaEventReader.h"
 #include "FatimaRawData.h"
+#include "FatimaRaw2Cal.h"
+#include "FatimaTwinpeaksCalData.h"
+#include "FatimaVmeElectronicsCalData.h"
+#include "TFatimaVmeConfiguration.h"
+#include "TimeMachineData.h"
 #include "TamexReader.h"
 #include "UcesbSource.h"
 #include "UnpackReader.h"
@@ -17,6 +23,7 @@
 #include <TTree.h>
 
 #include <algorithm>
+#include <array>
 #include <cstddef>
 #include <iostream>
 #include <stdexcept>
@@ -117,16 +124,102 @@ void CheckFatimaRaw(const char* output, int events)
               << " events, " << tamexBoards << " TAMEX boards, " << qdcHits << " QDC hits and "
               << tdcHits << " TDC hits.\nEvents with board or hit data from both chains: " << both << '\n';
 }
+template <typename Hit, typename Fields>
+std::size_t CompareCal(const TClonesArray& reference, const TClonesArray& actual,
+                       const char* branch, Long64_t entry, Fields fields)
+{
+    const auto mismatch = [&]() {
+        return std::runtime_error(std::string(branch) + " mismatch at entry " + std::to_string(entry));
+    };
+    if (reference.GetEntriesFast() != actual.GetEntriesFast()) throw mismatch();
+    for (int i = 0; i < reference.GetEntriesFast(); ++i)
+    {
+        if (fields(*static_cast<const Hit*>(reference.At(i))) !=
+            fields(*static_cast<const Hit*>(actual.At(i)))) throw mismatch();
+    }
+    return actual.GetEntriesFast();
+}
+
+void CheckFatimaCal(const char* reference, const char* output, int events)
+{
+    constexpr std::array<const char*, 4> branches{
+        "FatimaTwinpeaksCalData", "FatimaVmeQdcCalHit", "FatimaVmeTdcCalHit", "FatimaTimeMachineData"
+    };
+    TFile files[]{TFile(reference, "READ"), TFile(output, "READ")};
+    TTree* trees[2]{};
+    EventHeader* headers[2]{};
+    TClonesArray* hits[2][branches.size()]{};
+    for (std::size_t file = 0; file < 2; ++file)
+    {
+        trees[file] = files[file].Get<TTree>("evt");
+        if (!trees[file]) trees[file] = files[file].Get<TTree>("cbmsim");
+        if (!trees[file] || trees[file]->GetEntries() != events ||
+            trees[file]->SetBranchAddress("EventHeader.", &headers[file]) < 0)
+            throw std::runtime_error("Missing event tree, event header or incorrect event count");
+        for (std::size_t branch = 0; branch < branches.size(); ++branch)
+            if (trees[file]->SetBranchAddress(branches[branch], &hits[file][branch]) < 0)
+                throw std::runtime_error(std::string("Missing branch ") + branches[branch]);
+    }
+
+    std::array<std::size_t, branches.size()> totals{};
+    for (Long64_t entry = 0; entry < events; ++entry)
+    {
+        if (trees[0]->GetEntry(entry) <= 0 || trees[1]->GetEntry(entry) <= 0 ||
+            !headers[0] || !headers[1] ||
+            headers[0]->GetEventno() != headers[1]->GetEventno() ||
+            headers[0]->GetTrigger() != headers[1]->GetTrigger())
+            throw std::runtime_error("Event header mismatch at entry " + std::to_string(entry));
+
+        for (std::size_t branch = 0; branch < branches.size(); ++branch)
+            if (!hits[0][branch] || !hits[1][branch])
+                throw std::runtime_error(std::string("Could not read branch ") + branches[branch]);
+
+        totals[0] += CompareCal<FatimaTwinpeaksCalData>(*hits[0][0], *hits[1][0], branches[0], entry,
+            [](const auto& hit) {
+                return std::make_tuple(hit.Get_trigger(), hit.Get_board_id(), hit.Get_ch_ID(),
+                    hit.Get_detector_id(), hit.Get_slow_lead_epoch(), hit.Get_slow_lead_time(),
+                    hit.Get_slow_trail_epoch(), hit.Get_slow_trail_time(), hit.Get_fast_lead_epoch(),
+                    hit.Get_fast_lead_time(), hit.Get_fast_trail_epoch(), hit.Get_fast_trail_time(),
+                    hit.Get_fast_ToT(), hit.Get_slow_ToT(), hit.Get_energy(), hit.Get_wr_subsystem_id(),
+                    hit.Get_wr_t(), hit.Get_absolute_event_time());
+            });
+        totals[1] += CompareCal<FatimaVmeQdcCalHit>(*hits[0][1], *hits[1][1], branches[1], entry,
+            [](const auto& hit) {
+                return std::tie(hit.wr_timestamp, hit.detector_id, hit.board_id, hit.channel,
+                    hit.coarse_raw, hit.fine_raw, hit.qlong_raw, hit.qshort_raw,
+                    hit.coarse_time, hit.fine_time, hit.energy);
+            });
+        totals[2] += CompareCal<FatimaVmeTdcCalHit>(*hits[0][2], *hits[1][2], branches[2], entry,
+            [](const auto& hit) {
+                return std::tie(hit.wr_timestamp, hit.wr_subsystem, hit.detector_id, hit.geo,
+                    hit.channel, hit.measurement_raw, hit.leading_or_trailing, hit.time);
+            });
+        totals[3] += CompareCal<TimeMachineData>(*hits[0][3], *hits[1][3], branches[3], entry,
+            [](const auto& hit) {
+                return std::make_tuple(hit.Get_undelayed_time(), hit.Get_delayed_time(),
+                                       hit.Get_wr_subsystem_id(), hit.Get_wr_t());
+            });
+    }
+    if (!totals[0] || !totals[1] || !totals[2])
+        throw std::runtime_error("The replay did not produce calibrated hits on all three digitiser paths");
+    for (std::size_t branch = 0; branch < branches.size(); ++branch)
+        std::cout << branches[branch] << ": " << totals[branch] << " entries\n";
+    std::cout << "PASS: FATIMA calibrated output agrees across " << events << " events.\n";
+}
 }
 
 void s100_fatima_raw(const char* input = "../calum.lmd",
                      const char* output = "s100_fatima_raw_compare.root", int events = 25000,
-                     bool checkOnly = false)
+                     bool checkOnly = false, const std::string& mode = "raw",
+                     const char* fineTimeFile = "config/s100/fatima/fine_time_23apr_beamON.root")
 {
     if (events < 1) throw std::invalid_argument("The replay needs a positive event limit");
+    if (mode != "raw" && mode != "split" && mode != "combined")
+        throw std::invalid_argument("Expected FATIMA replay mode raw, split or combined");
     if (checkOnly)
     {
-        CheckFatimaRaw(output, events);
+        if (mode == "raw") CheckFatimaRaw(output, events);
+        else CheckFatimaCal(input, output, events);
         return;
     }
     static EXT_STR_h101_t data{};
@@ -142,12 +235,43 @@ void s100_fatima_raw(const char* input = "../calum.lmd",
     source->AddReader(new UnpackReader(&data.header, offsetof(EXT_STR_h101_t, header)));
     const FatimaEventReader::TamexInput tamex{&data.tamex, offsetof(EXT_STR_h101_t, tamex), S100_PROCID_FATIMA};
     const FatimaEventReader::VmeInput vme{&data.vme, offsetof(EXT_STR_h101_t, vme), S100_PROCID_FATIMAVME};
-    source->AddReader(new TamexReader(tamex.bank, tamex.offset, tamex.procid, "FATIMA"));
-    source->AddReader(new V1751Reader(vme.bank, vme.offset, vme.procid));
-    auto* tdcReader = new V1290Reader(vme.bank, vme.offset, vme.procid);
-    tdcReader->SetRegisterStructure(false);
-    source->AddReader(tdcReader);
-    source->AddReader(new FatimaEventReader(tamex, vme, FatimaEventReader::BankAccess::AlreadyRegistered));
+    if (mode != "combined")
+    {
+        auto* tamexReader = new TamexReader(tamex.bank, tamex.offset, tamex.procid, "FATIMA");
+        auto* qdcReader = new V1751Reader(vme.bank, vme.offset, vme.procid);
+        tamexReader->SetOnline(mode == "split");
+        qdcReader->SetOnline(mode == "split");
+        source->AddReader(tamexReader);
+        source->AddReader(qdcReader);
+        auto* tdcReader = new V1290Reader(vme.bank, vme.offset, vme.procid);
+        tdcReader->SetRegisterStructure(false);
+        tdcReader->SetOnline(mode == "split");
+        source->AddReader(tdcReader);
+    }
+    if (mode == "raw")
+        source->AddReader(new FatimaEventReader(tamex, vme, FatimaEventReader::BankAccess::AlreadyRegistered));
+    if (mode == "combined")
+    {
+        auto* reader = new FatimaEventReader(tamex, vme);
+        reader->SetOnline(true);
+        source->AddReader(reader);
+    }
+
+    if (mode != "raw")
+    {
+        const std::string config = "config/s100/fatima/";
+        TFatimaTwinpeaksConfiguration::SetDetectorConfigurationFile(config + "fatima_alloc_apr18.txt");
+        TFatimaTwinpeaksConfiguration::SetDetectorCoefficientFile(config + "fatima_cal_apr18.txt");
+        TFatimaVmeConfiguration::SetDetectorMapFile(config + "Fatima_VME_allocation.txt");
+        TFatimaVmeConfiguration::Set_QDC_E_CalFile(config + "Rough_Cal_2005.txt");
+        TFatimaVmeConfiguration::Set_QDC_T_CalFile(config + "Fatima_QDC_Time_Calibration.txt");
+        TFatimaVmeConfiguration::Set_TDC_T_CalFile(config + "Fatima_TDC_Time_Calibration.txt");
+        auto* cal = new FatimaRaw2Cal();
+        cal->Electronics("tamex", "vme");
+        if (mode == "combined") cal->UseFatimaRawInput(fineTimeFile);
+        else cal->UseTamexRawInput(tamex.procid, fineTimeFile);
+        run->AddTask(cal);
+    }
     run->SetSource(source);
     run->Init();
     run->Run(0, events);

@@ -7,6 +7,9 @@
 #include <utility>
 
 class FairRootManager;
+struct FatimaVmeChainRaw;
+class V1751RawData;
+class V1290RawData;
 class TFatimaVmeConfiguration;
 
 // Internal FATIMA VME processor, not a FairTask. FatimaRaw2Cal owns
@@ -19,11 +22,15 @@ public:
     FatimaVmeCalibrator(const FatimaVmeCalibrator&) = delete;
     FatimaVmeCalibrator& operator=(const FatimaVmeCalibrator&) = delete;
 
-    bool Init(FairRootManager* manager, Bool_t persist);
+    bool Init(FairRootManager* manager, Bool_t persist, const FatimaVmeChainRaw* chain);
     void Process();
     void Clear();
 
 private:
+    void ProcessQdc(const V1751RawData& raw);
+    void ProcessTdc(const V1290RawData& raw);
+
+    const FatimaVmeChainRaw* fChain = nullptr; // borrowed
     TClonesArray* fQdcInput = nullptr; // borrowed
     TClonesArray* fTdcInput = nullptr; // borrowed
     TClonesArray* fQdcOutput = nullptr; // owned
