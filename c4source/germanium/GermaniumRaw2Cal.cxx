@@ -31,6 +31,7 @@
 
 #include "TClonesArray.h"
 #include "GermaniumRaw2Cal.h"
+#include "GermaniumCalibration.h"
 #include "../digitisers/febex/FebexTiming.h"
 
 /*
@@ -148,45 +149,18 @@ void GermaniumRaw2Cal::Exec(Option_t* option)
         for (Int_t ihit = 0; ihit < event_multiplicity; ihit++)
         {
             funcal_hit = (GermaniumFebexData*)funcal_data->At(ihit);
-            // Default to raw energy if no calibration file or channel coefficients are available.
-            // Reset for every hit so energy from an earlier hit can never be reused.
-            channel_energy_cal = funcal_hit->Get_channel_energy();
-            
-            //do the detector mapping here:
-            if (germanium_configuration->MappingLoaded())
+            if (!germanium_configuration->MappingLoaded())
             {
-                std::pair<int,int> unmapped_det {funcal_hit->Get_board_id(), funcal_hit->Get_channel_id()};
-                
-                const auto mapped = mapping.find(unmapped_det);
-                if (mapped != mapping.end())
-                {
-                    detector_id = mapped->second.first;
-                    crystal_id = mapped->second.second;
-
-                    if (detector_id == -1 || crystal_id == -1) continue; //skip
-
-                }
-                else continue;// simply ignore unmapped items.
-
-                //only do calibrations if mapping is functional:
-                if (germanium_configuration->CalibrationCoefficientsLoaded())
-                {
-                    std::pair<int,int> calibdet {detector_id, crystal_id};
-                    const auto calibrated = calibrations.find(calibdet);
-                    if (calibrated != calibrations.end()){
-                    double a0 = calibrated->second.at(0);
-                    double a1 = calibrated->second.at(1);
-                    double a2 = calibrated->second.at(2);
-                    channel_energy_cal = a0 + a1*(double) funcal_hit->Get_channel_energy() + a2*(double) funcal_hit->Get_channel_energy()*(double) funcal_hit->Get_channel_energy();
-                    }else{
-                        //c4LOG(fatal, "Detector Calibrations not set - please set this using SetCalibrationMap to use the Cal Task.");
-                        channel_energy_cal = funcal_hit->Get_channel_energy();
-                        //continue;
-                    }
-                }
+                c4LOG(fatal, "Detector Mapping not set - please set this.");
+                continue;
             }
-            else c4LOG(fatal, "Detector Mapping not set - please set this."); //no map and cal: ->
-
+            const auto calibrated = germanium::CalibrateHit(
+                mapping, calibrations, funcal_hit->Get_board_id(), funcal_hit->Get_channel_id(),
+                funcal_hit->Get_channel_energy(), germanium_configuration->CalibrationCoefficientsLoaded());
+            if (!calibrated) continue;
+            detector_id = calibrated->detector;
+            crystal_id = calibrated->crystal;
+            channel_energy_cal = calibrated->energy;
 
             if (detector_id == germanium_configuration->TM_Delayed()){
                 new ((*ftime_machine_array)[ftime_machine_array->GetEntriesFast()]) TimeMachineData(0,funcal_hit->Get_channel_trigger_time(),funcal_hit->Get_wr_subsystem_id(),funcal_hit->Get_wr_t());

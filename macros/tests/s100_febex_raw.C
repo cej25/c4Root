@@ -1,11 +1,14 @@
 #include "DegasRawData.h"
+#include "DegasRaw2Cal.h"
 #include "DegasReader.h"
 #include "FairRootFileSink.h"
 #include "FairRunOnline.h"
 #include "FebexReader.h"
+#include "GermaniumCalData.h"
 #include "GermaniumRaw2Cal.h"
 #include "GermaniumReader.h"
 #include "TGermaniumConfiguration.h"
+#include "TimeMachineData.h"
 #include "UcesbSource.h"
 #include "UnpackReader.h"
 #include "ext_h101_febex.h"
@@ -51,6 +54,36 @@ bool SameBoard(const FebexRawData& first, const FebexRawData& second)
                       });
 }
 
+auto CalFields(const GermaniumCalData& hit)
+{
+    return std::make_tuple(hit.Get_trigger(), hit.Get_event_trigger_time(), hit.Get_pileup(),
+                           hit.Get_overflow(), hit.Get_channel_trigger_time(), hit.Get_channel_energy(),
+                           hit.Get_crystal_id(), hit.Get_detector_id(), hit.Get_wr_subsystem_id(),
+                           hit.Get_wr_t(), hit.Get_absolute_event_time());
+}
+
+auto TimeMachineFields(const TimeMachineData& hit)
+{
+    return std::make_tuple(hit.Get_undelayed_time(), hit.Get_delayed_time(),
+                           hit.Get_wr_subsystem_id(), hit.Get_wr_t());
+}
+
+template <typename Hit, typename Fields>
+void CheckCalibrated(const TClonesArray& reference, const TClonesArray& candidate,
+                     Long64_t entry, const char* branch, Fields fields)
+{
+    if (reference.GetEntriesFast() != candidate.GetEntriesFast())
+        throw std::runtime_error(std::string(branch) + " count mismatch at entry " + std::to_string(entry));
+    for (int i = 0; i < reference.GetEntriesFast(); ++i)
+    {
+        const auto& first = *static_cast<const Hit*>(reference.At(i));
+        const auto& second = *static_cast<const Hit*>(candidate.At(i));
+        if (fields(first) != fields(second))
+            throw std::runtime_error(std::string(branch) + " value mismatch at entry " +
+                                     std::to_string(entry) + ", hit " + std::to_string(i));
+    }
+}
+
 void CheckDegasRaw(const char* output, int events, std::uint16_t procid)
 {
     TFile file(output, "READ");
@@ -62,16 +95,25 @@ void CheckDegasRaw(const char* output, int events, std::uint16_t procid)
         throw std::runtime_error("Event count differs from the requested replay");
 
     TClonesArray* shared = nullptr;
+    TClonesArray* germaniumCal = nullptr;
+    TClonesArray* degasCal = nullptr;
+    TClonesArray* germaniumTiming = nullptr;
+    TClonesArray* degasTiming = nullptr;
     DegasRawData* degas = nullptr;
     const char* degasBranch = tree->GetBranch("DegasRawData") ? "DegasRawData" : "DegasRawData.";
     if (tree->SetBranchAddress("FebexRawData", &shared) < 0 ||
-        tree->SetBranchAddress(degasBranch, &degas) < 0)
-        throw std::runtime_error("Could not bind both FEBEX output branches");
+        tree->SetBranchAddress(degasBranch, &degas) < 0 ||
+        tree->SetBranchAddress("GermaniumCalData", &germaniumCal) < 0 ||
+        tree->SetBranchAddress("DegasCalData", &degasCal) < 0 ||
+        tree->SetBranchAddress("GermaniumTimeMachineData", &germaniumTiming) < 0 ||
+        tree->SetBranchAddress("DegasTimeMachineData", &degasTiming) < 0)
+        throw std::runtime_error("Could not bind the raw and calibrated comparison branches");
 
-    std::size_t boards = 0, hits = 0;
+    std::size_t boards = 0, hits = 0, calibrated = 0, timing = 0;
     for (Long64_t entry = 0; entry < tree->GetEntries(); ++entry)
     {
-        if (tree->GetEntry(entry) <= 0 || !degas || !shared)
+        if (tree->GetEntry(entry) <= 0 || !degas || !shared ||
+            !germaniumCal || !degasCal || !germaniumTiming || !degasTiming)
             throw std::runtime_error("Could not read entry " + std::to_string(entry));
 
         std::size_t slot = 0;
@@ -86,10 +128,18 @@ void CheckDegasRaw(const char* output, int events, std::uint16_t procid)
         }
         if (slot != degas->FEBEX.size())
             throw std::runtime_error("Extra DEGAS board data at entry " + std::to_string(entry));
+
+        CheckCalibrated<GermaniumCalData>(*germaniumCal, *degasCal, entry, "DegasCalData", CalFields);
+        CheckCalibrated<TimeMachineData>(*germaniumTiming, *degasTiming, entry,
+                                        "DegasTimeMachineData", TimeMachineFields);
+        calibrated += degasCal->GetEntriesFast();
+        timing += degasTiming->GetEntriesFast();
     }
-    if (!hits) throw std::runtime_error("No DEGAS hits compared");
+    if (!hits || !calibrated) throw std::runtime_error("No DEGAS raw or calibrated hits compared");
     std::cout << "PASS: DegasRawData matches FebexRawData across " << tree->GetEntries()
               << " events, " << boards << " boards and " << hits << " hits.\n";
+    std::cout << "PASS: DEGAS matches Germanium across " << calibrated << " calibrated hits and "
+              << timing << " Time Machine records.\n";
 }
 }
 
@@ -136,6 +186,7 @@ void s100_febex_raw(const char* input = "../calum.lmd",
     run->SetSource(source);
 
     run->AddTask(new GermaniumRaw2Cal());
+    run->AddTask(new DegasRaw2Cal());
     run->Init();
     run->Run(0, events);
 }

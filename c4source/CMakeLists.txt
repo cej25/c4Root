@@ -65,6 +65,7 @@ set(SRCS
 ./digitisers/tamex/TamexReader.cxx
 ./digitisers/febex/FebexReader.cxx
 ./degas/DegasReader.cxx
+./degas/DegasRaw2Cal.cxx
 ./digitisers/vme/V1751Reader.cxx
 ./digitisers/vme/V1290Reader.cxx
 ./aida/AidaReader.cxx
