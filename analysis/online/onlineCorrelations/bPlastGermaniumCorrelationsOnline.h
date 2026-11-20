@@ -36,7 +36,10 @@ class bPlastGermaniumCorrelationsOnline : public FairTask
         virtual void FinishTask();
 
 
+        void SetGermaniumCalBranch(const TString& branch) { fGermaniumCalBranch = branch; }
+
     private:
+        TString fGermaniumCalBranch = "GermaniumCalData"; //! Runtime input branch
         TGermaniumConfiguration const* germanium_config;
         TbPlastConfiguration const* bplast_config;
 

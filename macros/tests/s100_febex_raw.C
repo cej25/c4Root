@@ -1,4 +1,6 @@
 #include "DegasRawData.h"
+#include "EventHeader.h"
+#include "FebexTiming.h"
 #include "DegasRaw2Cal.h"
 #include "DegasReader.h"
 #include "FairRootFileSink.h"
@@ -22,6 +24,7 @@
 #include <algorithm>
 #include <cstddef>
 #include <iostream>
+#include <limits>
 #include <stdexcept>
 #include <string>
 #include <string_view>
@@ -59,7 +62,7 @@ auto CalFields(const GermaniumCalData& hit)
     return std::make_tuple(hit.Get_trigger(), hit.Get_event_trigger_time(), hit.Get_pileup(),
                            hit.Get_overflow(), hit.Get_channel_trigger_time(), hit.Get_channel_energy(),
                            hit.Get_crystal_id(), hit.Get_detector_id(), hit.Get_wr_subsystem_id(),
-                           hit.Get_wr_t(), hit.Get_absolute_event_time());
+                           hit.Get_wr_t());
 }
 
 auto TimeMachineFields(const TimeMachineData& hit)
@@ -129,7 +132,8 @@ void CheckDegasRaw(const char* output, int events, std::uint16_t procid)
         if (slot != degas->FEBEX.size())
             throw std::runtime_error("Extra DEGAS board data at entry " + std::to_string(entry));
 
-        CheckCalibrated<GermaniumCalData>(*germaniumCal, *degasCal, entry, "DegasCalData", CalFields);
+        CheckCalibrated<GermaniumCalData>(*germaniumCal, *degasCal, entry, "DegasCalData",
+            [](const auto& hit) { return std::make_tuple(CalFields(hit), hit.Get_absolute_event_time()); });
         CheckCalibrated<TimeMachineData>(*germaniumTiming, *degasTiming, entry,
                                         "DegasTimeMachineData", TimeMachineFields);
         calibrated += degasCal->GetEntriesFast();
@@ -141,11 +145,90 @@ void CheckDegasRaw(const char* output, int events, std::uint16_t procid)
     std::cout << "PASS: DEGAS matches Germanium across " << calibrated << " calibrated hits and "
               << timing << " Time Machine records.\n";
 }
+struct AnalysisTree
+{
+    AnalysisTree(const char* path, int events, const char* branch) : file(path, "READ")
+    {
+        tree = file.Get<TTree>("evt");
+        if (!tree) tree = file.Get<TTree>("cbmsim");
+        if (!tree || tree->GetEntries() != events ||
+            tree->SetBranchAddress("EventHeader.", &header) < 0 ||
+            tree->SetBranchAddress(branch, &hits) < 0)
+            throw std::runtime_error(std::string("Invalid S100 analysis tree in ") + path);
+    }
+
+    TFile file;
+    TTree* tree = nullptr;
+    EventHeader* header = nullptr;
+    TClonesArray* hits = nullptr;
+};
+
+void CheckDegasAnalysis(const char* reference, const char* candidate, int events)
+{
+    AnalysisTree before(reference, events, "GermaniumCalData");
+    AnalysisTree after(candidate, events, "DegasCalData");
+    DegasRawData* raw = nullptr;
+    const char* branch = after.tree->GetBranch("DegasRawData") ? "DegasRawData" : "DegasRawData.";
+    if (after.tree->SetBranchAddress(branch, &raw) < 0)
+        throw std::runtime_error("Missing DegasRawData in the S100 candidate");
+
+    const auto* config = TGermaniumConfiguration::GetInstance();
+    if (!config->MappingLoaded()) throw std::runtime_error("Missing S100 detector map");
+    const auto mapping = config->Mapping();
+
+    std::size_t total = 0, timingDifferences = 0;
+    auto minOffset = std::numeric_limits<std::int64_t>::max();
+    auto maxOffset = std::numeric_limits<std::int64_t>::min();
+    for (Long64_t entry = 0; entry < events; ++entry)
+    {
+        if (before.tree->GetEntry(entry) <= 0 || after.tree->GetEntry(entry) <= 0 ||
+            !before.header || !after.header || !before.hits || !after.hits || !raw ||
+            before.header->GetEventno() != after.header->GetEventno() ||
+            before.header->GetTrigger() != after.header->GetTrigger())
+            throw std::runtime_error("Could not match event headers at entry " + std::to_string(entry));
+        CheckCalibrated<GermaniumCalData>(*before.hits, *after.hits, entry, "DEGAS energy and mapping", CalFields);
+
+        int index = 0;
+        for (const auto& board : raw->FEBEX)
+        {
+            if (board.eventTicks == 0) continue;
+            for (const auto& hit : board.hits)
+            {
+                if (hit.pileup || hit.overflow) continue;
+                const auto detector = mapping.find({board.slot, hit.channel});
+                if (detector == mapping.end() || detector->second.first == -1 || detector->second.second == -1)
+                    continue;
+                if (index >= after.hits->GetEntriesFast())
+                    throw std::runtime_error("Missing calibrated DEGAS hit at entry " + std::to_string(entry));
+                const auto& actual = *static_cast<const GermaniumCalData*>(after.hits->At(index));
+                const auto& legacy = *static_cast<const GermaniumCalData*>(before.hits->At(index));
+                const auto offset = febex::HitOffsetNs(board.eventTicks, hit.channelTicks, hit.cfd);
+                if (actual.Get_detector_id() != detector->second.first ||
+                    actual.Get_crystal_id() != detector->second.second ||
+                    actual.Get_wr_t() != board.wrTimestamp ||
+                    actual.Get_absolute_event_time() != static_cast<std::int64_t>(board.wrTimestamp) + offset)
+                    throw std::runtime_error("DEGAS timing or mapping mismatch at entry " + std::to_string(entry));
+                timingDifferences += actual.Get_absolute_event_time() != legacy.Get_absolute_event_time();
+                minOffset = std::min(minOffset, offset);
+                maxOffset = std::max(maxOffset, offset);
+                ++index;
+            }
+        }
+        if (index != after.hits->GetEntriesFast())
+            throw std::runtime_error("Extra calibrated DEGAS hits at entry " + std::to_string(entry));
+        total += index;
+    }
+    if (!total) throw std::runtime_error("No calibrated DEGAS hits were compared");
+    std::cout << "PASS: detector mapping and calibrated fields agree for " << total << " DEGAS hits\n"
+              << "PASS: absolute times agree with full-width FEBEX input, "
+              << "offsets range from " << minOffset << " to " << maxOffset << " ns; "
+              << timingDifferences << " absolute times differ from the Germanium reference.\n";
+}
 }
 
 void s100_febex_raw(const char* input = "../calum.lmd",
                     const char* output = "s100_febex_raw_25k.root", int events = 25000,
-                    bool checkOnly = false)
+                    bool checkOnly = false, const char* analysisReference = "")
 {
     if (events < 1) throw std::invalid_argument("The replay needs a positive event limit");
     const auto degas = std::find_if(s100FebexBanks.begin(), s100FebexBanks.end(), [](const auto& bank) {
@@ -155,7 +238,12 @@ void s100_febex_raw(const char* input = "../calum.lmd",
         throw std::runtime_error("The S100 setup needs a DEGAS FEBEX bank for this replay");
     if (checkOnly)
     {
-        CheckDegasRaw(output, events, degas->procid);
+        if (*analysisReference)
+        {
+            TGermaniumConfiguration::SetDetectorConfigurationFile("config/s100/germanium/ge_alloc_apr15.txt");
+            CheckDegasAnalysis(analysisReference, output, events);
+        }
+        else CheckDegasRaw(output, events, degas->procid);
         return;
     }
     static EXT_STR_h101_t data{};

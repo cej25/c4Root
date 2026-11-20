@@ -49,8 +49,6 @@ bPlastGermaniumCorrelationsOnline::bPlastGermaniumCorrelationsOnline(const TStri
 
 bPlastGermaniumCorrelationsOnline::~bPlastGermaniumCorrelationsOnline()
 {
-    delete fHitbPlastTwinpeaks;
-    delete fHitGermanium;
 }
 
 InitStatus bPlastGermaniumCorrelationsOnline::Init()
@@ -66,8 +64,8 @@ InitStatus bPlastGermaniumCorrelationsOnline::Init()
     fHitbPlastTwinpeaks = (TClonesArray*)mgr->GetObject("bPlastTwinpeaksCalData");
     c4LOG_IF(fatal, !fHitbPlastTwinpeaks, "Branch bPlastTwinpeaksCalData not found!");
 
-    fHitGermanium = (TClonesArray*)mgr->GetObject("GermaniumCalData");
-    c4LOG_IF(fatal, !fHitGermanium, "Branch GermaniumCalData not found!");
+    fHitGermanium = dynamic_cast<TClonesArray*>(mgr->GetObject(fGermaniumCalBranch.Data()));
+    c4LOG_IF(fatal, !fHitGermanium, "Missing branch " << fGermaniumCalBranch);
 
     dir_germanium = (TDirectory*)mgr->GetObject("DEGAS");
 

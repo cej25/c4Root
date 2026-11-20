@@ -83,8 +83,8 @@ InitStatus BGOOnlineSpectra::Init()
     header = (EventHeader*)mgr->GetObject("EventHeader.");
     c4LOG_IF(error, !header, "Branch EventHeader. not found");
 
-    fHitGe = (TClonesArray*)mgr->GetObject("GermaniumCalData");
-    c4LOG_IF(fatal, !fHitGe, "Branch GermaniumCalData not found!");
+    fHitGe = dynamic_cast<TClonesArray*>(mgr->GetObject(fGermaniumCalBranch.Data()));
+    c4LOG_IF(fatal, !fHitGe, "Missing branch " << fGermaniumCalBranch);
 
 
     fHitBGO = (TClonesArray*)mgr->GetObject("BGOTwinpeaksCalData");
@@ -305,6 +305,19 @@ void BGOOnlineSpectra::Exec(Option_t* option)
     
     
     fNEvents += 1;
+}
+
+void BGOOnlineSpectra::PrintVetoCounts() const
+{
+    const auto entries = [](const auto& spectra) {
+        double total = 0;
+        for (const auto* histogram : spectra) total += histogram->GetEntries();
+        return total;
+    };
+    c4LOG(info, "BGO veto using " << fGermaniumCalBranch
+                << " | coincidence pairs " << entries(h1_germanium_bgo_veto_timedifferences)
+                << " | vetoed " << entries(h1_germanium_bgo_vetotrue_energy)
+                << " | accepted " << entries(h1_germanium_bgo_veto_energy));
 }
 
 void BGOOnlineSpectra::FinishEvent()

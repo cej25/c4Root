@@ -81,7 +81,10 @@ class GermaniumOnlineSpectra : public FairTask
         // range setters
 
     
+        void SetGermaniumCalBranch(const TString& branch) { fGermaniumCalBranch = branch; }
+
     private:
+        TString fGermaniumCalBranch = "GermaniumCalData"; //! Runtime input branch
         TClonesArray* fHitGe;
 
         const TGermaniumConfiguration * germanium_configuration;
