@@ -4,11 +4,15 @@
 #include "FairTask.h"
 #include "TBGOTwinpeaksConfiguration.h"
 
+#include <array>
+#include <vector>
+
 class TClonesArray;
 class EventHeader;
 class BGOTwinpeaksData;
 class BGOTwinpeaksCalData;
 class TimeMachineData;
+class TamexRawData;
 
 class BGORaw2Cal : public FairTask
 {
@@ -29,12 +33,27 @@ class BGORaw2Cal : public FairTask
 
         void SetOnline(Bool_t set_online){fOnline = set_online;}
 
+        // Read BGORawData using existing TAMEX fine-time histograms.
+        void UseTamexRawInput(const TString& fine_time_file)
+        {
+            fUseTamexRaw = true;
+            fFineTimeFile = fine_time_file;
+        }
+
         virtual void SetParContainers();
 
         virtual InitStatus Init();
 
 
     private:
+
+        void BuildTwinpeaksHits();
+
+        bool fUseTamexRaw = false; //!
+        TString fFineTimeFile; //!
+        const std::vector<TamexRawData>* fRawBoards = nullptr; //!
+        TClonesArray* fTamexHits = nullptr; //!
+        std::vector<std::array<double, 1024>> fFineTimes; //!
 
         TBGOTwinpeaksConfiguration const* BGO_configuration;
 

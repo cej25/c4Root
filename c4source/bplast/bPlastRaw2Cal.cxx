@@ -32,7 +32,7 @@
 #include "TClonesArray.h"
 
 #include "TamexFineTimeHistograms.h"
-#include "TamexPulseBuilder.h"
+#include "TamexTwinpeaksHits.h"
 #include "TamexRawData.h"
 
 #include "bPlastRaw2Cal.h"
@@ -147,7 +147,6 @@ void bPlastRaw2Cal::BuildTwinpeaksHits()
 {
     fTamexHits->Clear();
     constexpr auto channels = tamex::Tamex4Format::channel_count;
-    constexpr auto bins = tamex::FineTimeCalibration<>::bins;
     for (const auto& board : *fRawBoards)
     {
         if (board.Trigger() == 3)
@@ -161,24 +160,7 @@ void bPlastRaw2Cal::BuildTwinpeaksHits()
             c4LOG(error, "No bPlast TAMEX4 calibration for board " << board.Board());
             continue;
         }
-        tamex::LegacyPulseBuilder builder;
-        const auto fine_time = [&](std::uint16_t channel, std::uint32_t fine) {
-            return fFineTimes[board.Board() * channels + channel][fine];
-        };
-        for (const auto& word : board.Words())
-        {
-            if (word.kind != TamexRawWord::Edge || word.channel >= channels || word.fine >= bins) continue;
-            builder.Process(word, true, fine_time, [&](const tamex::PairedPulse& pulse) {
-                new ((*fTamexHits)[fTamexHits->GetEntriesFast()]) bPlastTwinpeaksData(
-                    board.Trigger(), board.Board(), pulse.channel,
-                    static_cast<std::int64_t>(pulse.accepted_trigger_ns),
-                    pulse.accepted_trigger.epoch, pulse.accepted_trigger.coarse,
-                    pulse.accepted_trigger.fine_ns,
-                    pulse.lead.epoch, pulse.lead.coarse, pulse.lead.fine_ns,
-                    pulse.trail.epoch, pulse.trail.coarse, pulse.trail.fine_ns,
-                    board.WrSubsystem(), board.WrTimestamp());
-            });
-        }
+        tamex::AppendTwinpeaksHits<bPlastTwinpeaksData>(board, fFineTimes, *fTamexHits);
     }
 }
 

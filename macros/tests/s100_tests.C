@@ -69,7 +69,7 @@ R__LOAD_LIBRARY(libc4Analysis)
 #define AIDA_ON 0
 #define BPLAST_ON 1
 #define GERMANIUM_ON 0
-#define BGO_ON 0
+#define BGO_ON 1
 #define FRS_ON 0
 #define TIME_MACHINE_ON 0
 #define BEAMMONITOR_ON 0
@@ -101,7 +101,7 @@ typedef struct EXT_STR_h101_t
 
 void s100_tests(const char* input = "/u/cjones/data/lustre/despec/fatima_test_2025/run_0009_0001.lmd",
                 Int_t nev = -1, const char* repository = "/u/cjones/c4Root",
-                const char* output = "", bool legacyVmeAndBplast = false)
+                const char* output = "", bool legacyReadout = false)
 {
     const Int_t fRunId = 1; const Int_t fExpId = 1;
 
@@ -240,12 +240,12 @@ void s100_tests(const char* input = "/u/cjones/data/lustre/despec/fatima_test_20
     
     source->AddReader(unpackheader);
     
-    if (FATIMA_ON || (FATIMA_VME_ON && !legacyVmeAndBplast))
+    if (FATIMA_ON || (FATIMA_VME_ON && !legacyReadout))
     {
         const FatimaReader::TamexInput tamex{
             FATIMA_ON ? &ucesb_struct.fatima : nullptr, offsetof(EXT_STR_h101, fatima), S100_PROCID_FATIMA};
         const FatimaReader::VmeInput vme{
-            FATIMA_VME_ON && !legacyVmeAndBplast ? &ucesb_struct.fatimavme : nullptr,
+            FATIMA_VME_ON && !legacyReadout ? &ucesb_struct.fatimavme : nullptr,
             offsetof(EXT_STR_h101, fatimavme), S100_PROCID_FATIMAVME};
         auto* reader = new FatimaReader(tamex, vme);
         reader->SetOnline(!persist);
@@ -255,7 +255,7 @@ void s100_tests(const char* input = "/u/cjones/data/lustre/despec/fatima_test_20
     if (FATIMA_VME_ON)
     {
         // The spectra and correlation tasks consume the established VME branches.
-        auto* reader = legacyVmeAndBplast
+        auto* reader = legacyReadout
             ? new FatimaVmeReader(&ucesb_struct.fatimavme, offsetof(EXT_STR_h101, fatimavme))
             : new FatimaVmeReader();
         reader->SetOnline(!persist);
@@ -273,7 +273,7 @@ void s100_tests(const char* input = "/u/cjones/data/lustre/despec/fatima_test_20
     if (BPLAST_ON)
     {
         bPlastReader* unpackbplast = new bPlastReader((EXT_STR_h101_bplast_onion*)&ucesb_struct.bplast, offsetof(EXT_STR_h101, bplast));
-        if (legacyVmeAndBplast)
+        if (legacyReadout)
             unpackbplast->SetInputFileFineTimeHistos(config_path + "/bplast/fine_time_4apr_test.root");
         else
             unpackbplast->UseTamexRawOutput(S100_PROCID_BPLAST);
@@ -292,10 +292,12 @@ void s100_tests(const char* input = "/u/cjones/data/lustre/despec/fatima_test_20
     if (BGO_ON)
     {
         BGOReader* unpackbgo = new BGOReader((EXT_STR_h101_bgo_onion*)&ucesb_struct.bgo, offsetof(EXT_STR_h101, bgo));
-        //unpackbgo->DoFineTimeCalOnline(config_path + "/bgo/fine_time_histos_17apr.root", 1000000);
-        unpackbgo->SetInputFileFineTimeHistos(config_path + "/bgo/fine_time_histos_17apr.root");
-        
-        unpackbgo->SetOnline(true);
+        if (legacyReadout)
+            unpackbgo->SetInputFileFineTimeHistos(config_path + "/bgo/fine_time_histos_17apr.root");
+        else
+            unpackbgo->UseTamexRawOutput(S100_PROCID_BGO);
+
+        unpackbgo->SetOnline(!persist);
         source->AddReader(unpackbgo);
         
     }
@@ -351,7 +353,7 @@ void s100_tests(const char* input = "/u/cjones/data/lustre/despec/fatima_test_20
     {
         bPlastRaw2Cal* calbplast = new bPlastRaw2Cal();
         
-        if (!legacyVmeAndBplast)
+        if (!legacyReadout)
             calbplast->UseTamexRawInput(config_path + "/bplast/fine_time_4apr_test.root");
         calbplast->SetOnline(!persist);
         run->AddTask(calbplast);
@@ -371,9 +373,9 @@ void s100_tests(const char* input = "/u/cjones/data/lustre/despec/fatima_test_20
     if (BGO_ON)
     {
         BGORaw2Cal* calbgo = new BGORaw2Cal();
-        // calbgo->PrintDetectorMap();
-        
-        calbgo->SetOnline(true);
+        if (!legacyReadout)
+            calbgo->UseTamexRawInput(config_path + "/bgo/fine_time_histos_17apr.root");
+        calbgo->SetOnline(!persist);
         run->AddTask(calbgo);
     }
         
@@ -466,7 +468,7 @@ void s100_tests(const char* input = "/u/cjones/data/lustre/despec/fatima_test_20
     
     TBGOTwinpeaksConfiguration::SetCoincidenceWindow(5000); 
     TBGOTwinpeaksConfiguration::SetCoincidenceOffset(0);
-    if (BGO_ON)
+    if (BGO_ON && GERMANIUM_ON)
     {
         BGOOnlineSpectra* onlinebgo = new BGOOnlineSpectra();
         onlinebgo->SetBinningEnergy(1500,0.1,1500.1);

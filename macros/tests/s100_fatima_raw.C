@@ -1,3 +1,4 @@
+#include "BGOTwinpeaksCalData.h"
 #include "EventHeader.h"
 #include "FairRootFileSink.h"
 #include "FairRunOnline.h"
@@ -142,7 +143,8 @@ std::size_t CompareCal(const TClonesArray& reference, const TClonesArray& actual
     return actual.GetEntriesFast();
 }
 
-auto FatimaCalFields(const FatimaTwinpeaksCalData& hit)
+template <typename Hit>
+auto FatimaAndBgoTimingFields(const Hit& hit)
 {
     return std::make_tuple(hit.Get_trigger(), hit.Get_board_id(), hit.Get_ch_ID(),
         hit.Get_detector_id(), hit.Get_slow_lead_epoch(), hit.Get_slow_lead_time(),
@@ -187,7 +189,7 @@ void CheckFatimaCal(const char* reference, const char* output, int events)
                 throw std::runtime_error(std::string("Could not read branch ") + branches[branch]);
 
         totals[0] += CompareCal<FatimaTwinpeaksCalData>(*hits[0][0], *hits[1][0], branches[0], entry,
-            FatimaCalFields);
+            FatimaAndBgoTimingFields<FatimaTwinpeaksCalData>);
         totals[1] += CompareCal<FatimaVmeQdcCalHit>(*hits[0][1], *hits[1][1], branches[1], entry,
             [](const auto& hit) {
                 return std::tie(hit.wr_timestamp, hit.detector_id, hit.board_id, hit.channel,
@@ -223,7 +225,7 @@ std::size_t CompareVector(const std::vector<Record>& reference, const std::vecto
 
 struct S100AnalysisBranches
 {
-    S100AnalysisBranches(const char* path, int events) : file(path, "READ")
+    S100AnalysisBranches(const char* path, int events, bool includeBgo) : file(path, "READ")
     {
         tree = file.Get<TTree>("evt");
         if (!tree) tree = file.Get<TTree>("cbmsim");
@@ -235,6 +237,9 @@ struct S100AnalysisBranches
             tree->SetBranchAddress("bPlastTwinpeaksCalData", &bplast) < 0 ||
             tree->SetBranchAddress("bPlastTimeMachineData", &bplastTimeMachine) < 0)
             throw std::runtime_error(std::string("Missing S100 analysis branch or incorrect event count in ") + path);
+        if (includeBgo && (tree->SetBranchAddress("BGOTwinpeaksCalData", &bgo) < 0 ||
+                           tree->SetBranchAddress("BGOTimeMachineData", &bgoTimeMachine) < 0))
+            throw std::runtime_error(std::string("Missing S100 BGO branch in ") + path);
     }
 
     TFile file;
@@ -245,13 +250,19 @@ struct S100AnalysisBranches
     std::vector<FatimaVmeTDCItem>* tdc = nullptr;
     TClonesArray* bplast = nullptr;
     TClonesArray* bplastTimeMachine = nullptr;
+    TClonesArray* bgo = nullptr;
+    TClonesArray* bgoTimeMachine = nullptr;
 };
 
-void CheckS100Analysis(const char* reference, const char* output, int events)
+void CheckS100Analysis(const char* reference, const char* output, int events, bool includeBgo)
 {
-    S100AnalysisBranches before(reference, events);
-    S100AnalysisBranches after(output, events);
-    std::size_t fatima = 0, qdc = 0, tdc = 0, bplast = 0, timeMachine = 0;
+    S100AnalysisBranches before(reference, events, includeBgo);
+    S100AnalysisBranches after(output, events, includeBgo);
+    std::size_t fatima = 0, qdc = 0, tdc = 0, bplast = 0, timeMachine = 0, bgo = 0, bgoTimeMachine = 0;
+    const auto timeMachineFields = [](const TimeMachineData& hit) {
+        return std::make_tuple(hit.Get_undelayed_time(), hit.Get_delayed_time(),
+                               hit.Get_wr_subsystem_id(), hit.Get_wr_t());
+    };
     for (Long64_t entry = 0; entry < events; ++entry)
     {
         for (auto* data : {&before, &after})
@@ -263,7 +274,7 @@ void CheckS100Analysis(const char* reference, const char* output, int events)
             before.header->GetTrigger() != after.header->GetTrigger())
             throw std::runtime_error("S100 event header mismatch at entry " + std::to_string(entry));
         fatima += CompareCal<FatimaTwinpeaksCalData>(*before.fatima, *after.fatima,
-            "FatimaTwinpeaksCalData", entry, FatimaCalFields);
+            "FatimaTwinpeaksCalData", entry, FatimaAndBgoTimingFields<FatimaTwinpeaksCalData>);
         qdc += CompareVector(*before.qdc, *after.qdc, "FatimaVmeQDCData", entry, [](const auto& hit) {
             return std::make_tuple(hit.Get_wr_t(), hit.Get_detector(), hit.Get_coarse_time(),
                 hit.Get_fine_time(), hit.Get_fine_bin(), hit.Get_qlong_raw(), hit.Get_qshort_raw(),
@@ -283,17 +294,30 @@ void CheckS100Analysis(const char* reference, const char* output, int events)
                     hit.Get_wr_t(), hit.Get_absolute_event_time());
             });
         timeMachine += CompareCal<TimeMachineData>(*before.bplastTimeMachine, *after.bplastTimeMachine,
-            "bPlastTimeMachineData", entry, [](const auto& hit) {
-                return std::make_tuple(hit.Get_undelayed_time(), hit.Get_delayed_time(),
-                                       hit.Get_wr_subsystem_id(), hit.Get_wr_t());
-            });
+            "bPlastTimeMachineData", entry, timeMachineFields);
+        if (includeBgo)
+        {
+            if (!before.bgo || !after.bgo || !before.bgoTimeMachine || !after.bgoTimeMachine)
+                throw std::runtime_error("Could not read BGO entry " + std::to_string(entry));
+            bgo += CompareCal<BGOTwinpeaksCalData>(*before.bgo, *after.bgo,
+                "BGOTwinpeaksCalData", entry, [](const auto& hit) {
+                    return std::make_tuple(FatimaAndBgoTimingFields(hit), hit.Get_crystal_id());
+                });
+            bgoTimeMachine += CompareCal<TimeMachineData>(*before.bgoTimeMachine, *after.bgoTimeMachine,
+                "BGOTimeMachineData", entry, timeMachineFields);
+        }
     }
+    if (includeBgo && !bgo)
+        throw std::runtime_error("The replay did not produce calibrated BGO hits");
     if (!fatima || !qdc || !tdc || !bplast)
         throw std::runtime_error("The replay did not exercise FATIMA TAMEX, QDC, TDC and calibrated bPlast");
     std::cout << "PASS: " << events << " S100 events, " << fatima << " calibrated FATIMA TAMEX hits, "
               << qdc << " FATIMA QDC hits, " << tdc
               << " FATIMA TDC hits, " << bplast << " calibrated bPlast hits and "
               << timeMachine << " bPlast Time Machine entries match.\n";
+    if (includeBgo)
+        std::cout << "PASS: " << bgo << " calibrated BGO hits and "
+                  << bgoTimeMachine << " BGO Time Machine entries match.\n";
 }
 }
 
@@ -303,9 +327,9 @@ void s100_fatima_raw(const char* input = "../calum.lmd",
                      const char* fineTimeFile = "config/s100/fatima/fine_time_23apr_beamON.root")
 {
     if (events < 1) throw std::invalid_argument("The replay needs a positive event limit");
-    if (checkOnly && mode == "analysis")
+    if (checkOnly && (mode == "analysis" || mode == "analysis-bgo"))
     {
-        CheckS100Analysis(input, output, events);
+        CheckS100Analysis(input, output, events, mode == "analysis-bgo");
         return;
     }
     if (mode != "raw" && mode != "split" && mode != "combined")
