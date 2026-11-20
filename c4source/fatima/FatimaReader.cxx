@@ -17,8 +17,8 @@ extern "C"
 #include <iterator>
 #include <string>
 
-FatimaReader::FatimaReader(TamexInput tamex, VmeInput vme, BankAccess access)
-    : c4Reader("FatimaReader"), fTamex(tamex), fVme(vme), fAccess(access),
+FatimaReader::FatimaReader(TamexInput tamex, VmeInput vme)
+    : c4Reader("FatimaReader"), fTamex(tamex), fVme(vme),
       fOutput(new FatimaRawData)
 {
 }
@@ -32,29 +32,26 @@ Bool_t FatimaReader::Init(ext_data_struct_info* info)
 {
     auto* manager = FairRootManager::Instance();
     if (!info || !manager || (!fTamex.bank && !fVme.bank)) return kFALSE;
-    if (fAccess == BankAccess::Register)
+    Int_t ok = 1;
+    if (fTamex.bank)
     {
-        Int_t ok = 1;
-        if (fTamex.bank)
+        EXT_STR_h101_fatima_ITEMS_INFO(ok, *info, fTamex.offset, EXT_STR_h101_fatima, 0);
+        if (!ok)
         {
-            EXT_STR_h101_fatima_ITEMS_INFO(ok, *info, fTamex.offset, EXT_STR_h101_fatima, 0);
-            if (!ok)
-            {
-                c4LOG(error, "Could not register the FATIMA TAMEX bank");
-                return kFALSE;
-            }
-            *fTamex.bank = {};
+            c4LOG(error, "Could not register the FATIMA TAMEX bank");
+            return kFALSE;
         }
-        if (fVme.bank)
+        *fTamex.bank = {};
+    }
+    if (fVme.bank)
+    {
+        EXT_STR_h101_fatimavme_ITEMS_INFO(ok, *info, fVme.offset, EXT_STR_h101_fatimavme, 0);
+        if (!ok)
         {
-            EXT_STR_h101_fatimavme_ITEMS_INFO(ok, *info, fVme.offset, EXT_STR_h101_fatimavme, 0);
-            if (!ok)
-            {
-                c4LOG(error, "Could not register the FATIMA VME bank");
-                return kFALSE;
-            }
-            *fVme.bank = {};
+            c4LOG(error, "Could not register the FATIMA VME bank");
+            return kFALSE;
         }
+        *fVme.bank = {};
     }
     manager->RegisterAny("FatimaRawData", fOutput, !fOnline);
     return kTRUE;

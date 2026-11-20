@@ -14,7 +14,6 @@ struct EXT_STR_h101_fatimavme_onion_t;
 class FatimaReader : public c4Reader
 {
 public:
-    enum class BankAccess { Register, AlreadyRegistered };
     struct TamexInput
     {
         EXT_STR_h101_fatima_onion_t* bank = nullptr;
@@ -28,7 +27,7 @@ public:
         std::uint16_t procid = 0;
     };
 
-    FatimaReader(TamexInput tamex, VmeInput vme, BankAccess access = BankAccess::Register);
+    FatimaReader(TamexInput tamex, VmeInput vme);
     ~FatimaReader() override;
     Bool_t Init(ext_data_struct_info*) override;
     Bool_t Read() override;
@@ -40,7 +39,6 @@ public:
 private:
     TamexInput fTamex; //! Borrowed UCESB input
     VmeInput fVme; //! Borrowed UCESB input
-    BankAccess fAccess;
     FatimaRawData* fOutput; //! Owns the detector event
     Bool_t fOnline = kFALSE;
 };

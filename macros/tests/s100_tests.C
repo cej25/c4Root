@@ -101,7 +101,7 @@ typedef struct EXT_STR_h101_t
 
 void s100_tests(const char* input = "/u/cjones/data/lustre/despec/fatima_test_2025/run_0009_0001.lmd",
                 Int_t nev = -1, const char* repository = "/u/cjones/c4Root",
-                const char* output = "", bool legacyReadout = false)
+                const char* output = "")
 {
     const Int_t fRunId = 1; const Int_t fExpId = 1;
 
@@ -240,12 +240,12 @@ void s100_tests(const char* input = "/u/cjones/data/lustre/despec/fatima_test_20
     
     source->AddReader(unpackheader);
     
-    if (FATIMA_ON || (FATIMA_VME_ON && !legacyReadout))
+    if (FATIMA_ON || FATIMA_VME_ON)
     {
         const FatimaReader::TamexInput tamex{
             FATIMA_ON ? &ucesb_struct.fatima : nullptr, offsetof(EXT_STR_h101, fatima), S100_PROCID_FATIMA};
         const FatimaReader::VmeInput vme{
-            FATIMA_VME_ON && !legacyReadout ? &ucesb_struct.fatimavme : nullptr,
+            FATIMA_VME_ON ? &ucesb_struct.fatimavme : nullptr,
             offsetof(EXT_STR_h101, fatimavme), S100_PROCID_FATIMAVME};
         auto* reader = new FatimaReader(tamex, vme);
         reader->SetOnline(!persist);
@@ -255,9 +255,7 @@ void s100_tests(const char* input = "/u/cjones/data/lustre/despec/fatima_test_20
     if (FATIMA_VME_ON)
     {
         // The spectra and correlation tasks consume the established VME branches.
-        auto* reader = legacyReadout
-            ? new FatimaVmeReader(&ucesb_struct.fatimavme, offsetof(EXT_STR_h101, fatimavme))
-            : new FatimaVmeReader();
+        auto* reader = new FatimaVmeReader();
         reader->SetOnline(!persist);
         source->AddReader(reader);
     }
@@ -273,10 +271,7 @@ void s100_tests(const char* input = "/u/cjones/data/lustre/despec/fatima_test_20
     if (BPLAST_ON)
     {
         bPlastReader* unpackbplast = new bPlastReader((EXT_STR_h101_bplast_onion*)&ucesb_struct.bplast, offsetof(EXT_STR_h101, bplast));
-        if (legacyReadout)
-            unpackbplast->SetInputFileFineTimeHistos(config_path + "/bplast/fine_time_4apr_test.root");
-        else
-            unpackbplast->UseTamexRawOutput(S100_PROCID_BPLAST);
+        unpackbplast->UseTamexRawOutput(S100_PROCID_BPLAST);
         unpackbplast->SetOnline(!persist);
         source->AddReader(unpackbplast);
     }
@@ -292,10 +287,7 @@ void s100_tests(const char* input = "/u/cjones/data/lustre/despec/fatima_test_20
     if (BGO_ON)
     {
         BGOReader* unpackbgo = new BGOReader((EXT_STR_h101_bgo_onion*)&ucesb_struct.bgo, offsetof(EXT_STR_h101, bgo));
-        if (legacyReadout)
-            unpackbgo->SetInputFileFineTimeHistos(config_path + "/bgo/fine_time_histos_17apr.root");
-        else
-            unpackbgo->UseTamexRawOutput(S100_PROCID_BGO);
+        unpackbgo->UseTamexRawOutput(S100_PROCID_BGO);
 
         unpackbgo->SetOnline(!persist);
         source->AddReader(unpackbgo);
@@ -353,8 +345,7 @@ void s100_tests(const char* input = "/u/cjones/data/lustre/despec/fatima_test_20
     {
         bPlastRaw2Cal* calbplast = new bPlastRaw2Cal();
         
-        if (!legacyReadout)
-            calbplast->UseTamexRawInput(config_path + "/bplast/fine_time_4apr_test.root");
+        calbplast->UseTamexRawInput(config_path + "/bplast/fine_time_4apr_test.root");
         calbplast->SetOnline(!persist);
         run->AddTask(calbplast);
         
@@ -373,8 +364,7 @@ void s100_tests(const char* input = "/u/cjones/data/lustre/despec/fatima_test_20
     if (BGO_ON)
     {
         BGORaw2Cal* calbgo = new BGORaw2Cal();
-        if (!legacyReadout)
-            calbgo->UseTamexRawInput(config_path + "/bgo/fine_time_histos_17apr.root");
+        calbgo->UseTamexRawInput(config_path + "/bgo/fine_time_histos_17apr.root");
         calbgo->SetOnline(!persist);
         run->AddTask(calbgo);
     }
