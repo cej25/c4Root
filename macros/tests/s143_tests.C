@@ -1,3 +1,6 @@
+#include "FatimaEventReader.h"
+#include "FatimaRaw2Cal.h"
+#include "ext_h101_fatima.h"
 #include <TROOT.h>
 
 // Switch all tasks related to {subsystem} on (1)/off (0)
@@ -130,9 +133,9 @@ void s143_tests()
 
     if (FATIMA_ON)
     {
-        FatimaReader* unpackfatima = new FatimaReader((EXT_STR_h101_fatima_onion*)&ucesb_struct.fatima, offsetof(EXT_STR_h101, fatima));
-        //unpackfatima->DoFineTimeCalOnline(config_path + "/fatima/fine_time_14may_test.root", 100000);
-        unpackfatima->SetInputFileFineTimeHistos(config_path + "/fatima/fine_time_23apr_beamON.root");
+        const FatimaEventReader::TamexInput tamex{
+            &ucesb_struct.fatima, offsetof(EXT_STR_h101, fatima), 80};
+        auto* unpackfatima = new FatimaEventReader(tamex, {});
 
         unpackfatima->SetOnline(true);
         source->AddReader(unpackfatima);
@@ -180,6 +183,7 @@ void s143_tests()
     if (FATIMA_ON)
     {
         FatimaRaw2Cal* calfatima = new FatimaRaw2Cal();
+        calfatima->UseFatimaRawInput(config_path + "/fatima/fine_time_23apr_beamON.root");
         
         calfatima->SetOnline(true);
         run->AddTask(calfatima);

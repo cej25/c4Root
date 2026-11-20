@@ -1,3 +1,6 @@
+#include "FatimaEventReader.h"
+#include "FatimaRaw2Cal.h"
+#include "ext_h101_fatima.h"
 #include <TROOT.h>
 
 // Struct should containt all subsystem h101 structures
@@ -73,14 +76,15 @@ void example_online(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t fE
     
     source->AddReader(unpackheader);
     
-    FatimaReader* unpackfatima = new FatimaReader((EXT_STR_h101_fatima_onion*)&ucesb_struct.fatima, offsetof(EXT_STR_h101, fatima));
-    //unpackfatima->DoFineTimeCalOnline(config_path + "/fatima/fine_time_4apr_test.root", 100000);
-    unpackfatima->SetInputFileFineTimeHistos(config_path + "/fatima/fine_time_23apr_beamON.root");
+    const FatimaEventReader::TamexInput tamex{
+        &ucesb_struct.fatima, offsetof(EXT_STR_h101, fatima), 75};
+    auto* unpackfatima = new FatimaEventReader(tamex, {});
 
     unpackfatima->SetOnline(true);
     source->AddReader(unpackfatima);
 
     FatimaRaw2Cal* calfatima = new FatimaRaw2Cal();
+    calfatima->UseFatimaRawInput(config_path + "/fatima/fine_time_23apr_beamON.root");
     
     calfatima->SetOnline(true);
     run->AddTask(calfatima);
