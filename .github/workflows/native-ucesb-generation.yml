@@ -40,7 +40,11 @@ jobs:
           (cd s452 && "$s452" /dev/null --ntuple=NOTRIGEVENTNO,UNPACK:fatimavme,STRUCT_HH,id=h101_fatimavme,ext_h101_fatimavme.h)
           sha256sum ext_h101_*.h s181/*.h s452/*.h
           cmp ext_h101_fatimavme.h s181/ext_h101_fatimavme.h
-          cmp ext_h101_fatimavme.h s452/ext_h101_fatimavme.h
+          "$s181" /dev/null --ntuple=NOTRIGEVENTNO,UNPACK:bbseven,STRUCT,- > s181-bb7.struct
+          "$s181" /dev/null --ntuple=NOTRIGEVENTNO,UNPACK:fatimavme,STRUCT,- > s181-fatima.struct
+          "$s452" /dev/null --ntuple=NOTRIGEVENTNO,UNPACK:fatimavme,STRUCT,- > s452-fatima.struct
+          "$s100" /dev/null --ntuple=NOTRIGEVENTNO,UNPACK:fatimavme,STRUCT,- > s100-fatima.struct
+          "$s100" /dev/null --ntuple=NOTRIGEVENTNO,RAW:FEBEX,STRUCT,- > s100-febex.struct
           mkdir ucesb-client
           cp "${RUNNER_TEMP}"/ucesb/hbook/ext_data_{client.h,client.c,proto.h,struct_info.hh} ucesb-client/
       - uses: actions/upload-artifact@v4
