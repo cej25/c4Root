@@ -1,5 +1,5 @@
-#ifndef C4_FATIMA_VME_CALIBRATOR_H
-#define C4_FATIMA_VME_CALIBRATOR_H
+#ifndef FATIMA_VME_CALIBRATOR_H
+#define FATIMA_VME_CALIBRATOR_H
 
 #include "RtypesCore.h"
 #include "TClonesArray.h"

@@ -1,5 +1,5 @@
 #include "FatimaVmeCalibrator.h"
-#include "FatimaVmeElectronicsCalData.h"
+#include "FatimaVmeCalData.h"
 #include "FatimaRawData.h"
 #include "TFatimaVmeConfiguration.h"
 #include "FairRootManager.h"

@@ -1,3 +1,6 @@
+#include "FatimaReader.h"
+#include "FatimaVmeReader.h"
+#include "../../unpack/exps/s100/s100_config.gen.spec"
 #include "ext_h101_fatimavme.h"
 #include <TROOT.h>
 
@@ -119,9 +122,15 @@ void c_fat_test_2025_trees()
     source->AddReader(unpackheader);
     
     
-    FatimaVmeReader* unpackfatimavme = new FatimaVmeReader((EXT_STR_h101_fatimavme_onion*)&ucesb_struct.fatimavme, offsetof(EXT_STR_h101, fatimavme));
+    const FatimaReader::VmeInput vme{
+        &ucesb_struct.fatimavme, offsetof(EXT_STR_h101, fatimavme), S100_PROCID_FATIMAVME};
+    auto* unpackfatima = new FatimaReader({}, vme);
+    // The existing tasks and trees consume the legacy VME branches.
+    unpackfatima->SetOnline(true);
+    auto* unpackfatimavme = new FatimaVmeReader();
     
     unpackfatimavme->SetOnline(false);
+    source->AddReader(unpackfatima);
     source->AddReader(unpackfatimavme);
     
 

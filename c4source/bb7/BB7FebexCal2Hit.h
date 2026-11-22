@@ -8,8 +8,6 @@
 #include <vector>
 #include "EventHeader.h"
 
-class BB7Cluster;
-
 class BB7FebexCal2Hit : public FairTask
 {
     public:
@@ -40,39 +38,8 @@ class BB7FebexCal2Hit : public FairTask
         Int_t ncalImplantEvents = 0;
         Int_t ncalDecayEvents = 0;
 
-        std::vector<BB7Cluster> ItemsToClusters(std::vector<BB7FebexCalItem> const& );
-        BB7FebexHitItem ClusterPairToHit(std::pair<BB7Cluster, BB7Cluster> const&);
-
     public:
         ClassDef(BB7FebexCal2Hit, 1)
 };
 
-class BB7Cluster
-{
-    public:
-
-        int DSSD;
-        int Side;
-        int Strip;
-        bool HighEnergy;
-        double Energy;
-        int64_t Time;
-
-        int StripMin, StripMax;
-        int64_t TimeMin, TimeMax;
-
-        int StripSum;
-        int N;
-
-        BB7Cluster() { Zero(); }
-        void Zero();
-        ~BB7Cluster() {}
-        void AddItem(BB7FebexCalItem const& item);
-        void AddCluster(BB7Cluster const& cluster);
-        bool IsAdjacent(BB7FebexCalItem const& item) const;
-        bool IsGoodTime(BB7FebexCalItem const& item, int window = 2000) const;
-        bool IsGoodTime(BB7Cluster const& cluster, int window) const;
-};
-
 #endif /* BB7FebexCal2Hit_H */
-

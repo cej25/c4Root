@@ -1,6 +1,8 @@
 #include "FatimaReader.h"
+#include "FatimaVmeReader.h"
 #include "FatimaRaw2Cal.h"
 #include "ext_h101_fatima.h"
+#include "ext_h101_fatimavme.h"
 #include <TROOT.h>
 
 // Switch all tasks related to {subsystem} on (1)/off (0)
@@ -177,11 +179,14 @@ void s181_online()
     
     source->AddReader(unpackheader);
     
-    if (FATIMA_ON)
+    if (FATIMA_ON || FATIMA_VME_ON)
     {
         const FatimaReader::TamexInput tamex{
-            &ucesb_struct.fatima, offsetof(EXT_STR_h101, fatima), 75};
-        auto* unpackfatima = new FatimaReader(tamex, {});
+            FATIMA_ON ? &ucesb_struct.fatima : nullptr, offsetof(EXT_STR_h101, fatima), 75};
+        const FatimaReader::VmeInput vme{
+            FATIMA_VME_ON ? &ucesb_struct.fatimavme : nullptr,
+            offsetof(EXT_STR_h101, fatimavme), 70};
+        auto* unpackfatima = new FatimaReader(tamex, vme);
 
         unpackfatima->SetOnline(true);
         source->AddReader(unpackfatima);
@@ -189,7 +194,7 @@ void s181_online()
     
     if (FATIMA_VME_ON)
     {
-        FatimaVmeReader* unpackfatimavme = new FatimaVmeReader((EXT_STR_h101_fatimavme_onion*)&ucesb_struct.fatimavme, offsetof(EXT_STR_h101, fatimavme));
+        auto* unpackfatimavme = new FatimaVmeReader();
         
         unpackfatimavme->SetOnline(true);
         source->AddReader(unpackfatimavme);

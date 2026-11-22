@@ -1,12 +1,21 @@
-#include "../c4source/base/ClusterTimeOverlap.h"
+#include "../c4source/base/StripClustering.h"
 
 #include <cassert>
 #include <cstdint>
 #include <limits>
 
+struct StripItem
+{
+    int DSSD;
+    int Side;
+    int Strip;
+    std::int64_t AbsoluteTime;
+    double Energy;
+};
+
 int main()
 {
-    using c4_cluster_time::IntervalsOverlap;
+    using strip_clustering::IntervalsOverlap;
     assert(IntervalsOverlap(100, 200, 150, 250, 0));
     assert(IntervalsOverlap(100, 200, 100, 200, 0));
     assert(IntervalsOverlap(100, 200, 200, 220, 0));
@@ -40,5 +49,21 @@ int main()
     assert(!IntervalsOverlap(low + 11, low + 20, low, low, 10));
     assert(!IntervalsOverlap(high - 20, high - 11, high, high, 10));
     assert(!IntervalsOverlap(low, low, high, high, high));
+    // Strip 11 joins the clusters on strips 10 and 12. The other DSSD,
+    // opposite side, out-of-window hit and invalid DSSD exercise the filters.
+    const std::vector<StripItem> items{
+        {0, 0, 10, 100, 1}, {0, 0, 12, 110, 2}, {0, 0, 11, 105, 3},
+        {1, 0, 11, 105, 1}, {0, 1, 15, 105, 7}, {0, 0, 11, 121, 9},
+        {-1, 0, 11, 105, 1}
+    };
+    const auto clusters = strip_clustering::BuildClusters(items, 10);
+    assert(clusters.size() == 4);
+    const auto& front = clusters[0];
+    assert(front.N == 3 && front.Strip == 11 && front.Energy == 6);
+    assert(front.StripMin == 10 && front.StripMax == 12);
+    assert(front.Time == 100 && front.TimeMin == 100 && front.TimeMax == 110);
+    assert(strip_clustering::MatchesFrontBack(front, clusters[2], 2, 0));
+    assert(!strip_clustering::MatchesFrontBack(front, clusters[2], 1, 0));
+    assert(!strip_clustering::MatchesFrontBack(front, clusters[1], 10, 0));
     return 0;
 }

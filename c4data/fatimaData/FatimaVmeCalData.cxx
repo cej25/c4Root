@@ -94,3 +94,6 @@ void FatimaVmeResiduals::Reset()
 
 
 ClassImp(FatimaVmeResiduals)
+
+ClassImp(FatimaVmeQdcCalHit)
+ClassImp(FatimaVmeTdcCalHit)

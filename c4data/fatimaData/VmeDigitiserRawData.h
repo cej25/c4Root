@@ -1,5 +1,5 @@
-#ifndef C4_VME_DIGITISER_RAW_DATA_H
-#define C4_VME_DIGITISER_RAW_DATA_H
+#ifndef VME_DIGITISER_RAW_DATA_H
+#define VME_DIGITISER_RAW_DATA_H
 #include "TObject.h"
 #include <cstdint>
 #include <vector>
