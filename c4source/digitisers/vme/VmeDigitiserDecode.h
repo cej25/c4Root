@@ -20,6 +20,21 @@ std::uint64_t Timestamp(const Words& words) {
            std::uint64_t(words[0]);
 }
 
+template <std::size_t Channels, typename Emit>
+void DecodeV775(std::uint32_t count, const std::uint32_t (&indices)[Channels],
+                const std::uint32_t (&samples)[Channels], Emit emit)
+{
+    const auto bounded = std::min<std::size_t>(count, Channels);
+    for (std::size_t i = 0; i < bounded; ++i)
+    {
+        const auto index = indices[i];
+        if (index == 0 || index > Channels) continue;
+
+        const auto sample = samples[i];
+        emit(index - 1, sample & 0x0fff, static_cast<std::int32_t>((sample >> 12) & 0x7));
+    }
+}
+
 template<typename Bank, typename Emit>
 void DecodeV1751(const Bank& bank, std::size_t slot, Emit emit) {
     const auto mask = static_cast<std::uint32_t>(bank._channels);

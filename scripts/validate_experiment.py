@@ -32,10 +32,10 @@ FEBEX_CHANNEL_FIELDS = (
     ("OVERFLOW", "overflow", "DATA8"),
 )
 TAMEX = re.compile(r"\btamex\[(\d+)\]\s*=\s*TAMEX4_SFP\(\s*sfp\s*=\s*(\d+)\s*,\s*card\s*=\s*(\d+)\s*\)")
-V1751 = re.compile(r"\bqdc(\d+)\s*=\s*VME_CAEN_V1751\(\s*board\s*=\s*(\d+)\s*\)")
+V1751 = re.compile(r"\bqdc(\[\d+\]|\d+)\s*=\s*VME_CAEN_V1751\(\s*board\s*=\s*(\d+)\s*\)")
 V1290_GEO = re.compile(r"\btdc(\d+)\s*=\s*VME_CAEN_V1290_GEO\(\s*geom_expected\s*=\s*(\d+)\s*\)")
 FEBEX = re.compile(r"\bdata\[(\d+)\]\s*=\s*FEBEX_EVENT(_TRACES)?\(\s*card\s*=\s*(\d+)\s*\)")
-V775 = re.compile(r"\bv7x5_module\[(\d+)\]\s*=\s*VME_CAEN_V775\(\s*geom\s*=\s*(\d+)\s*\)")
+V775 = re.compile(r"\bv7x5(?:_module)?\[(\d+)\]\s*=\s*VME_CAEN_V775(?:_RAW)?\(\s*geom\s*=\s*(\d+)\s*\)")
 CLOCK_TDC = re.compile(r"\bCLOCK_TDC_EVENT_16PH\(\s*sfp_id\s*=\s*(\d+)\s*,\s*tdc_id\s*=\s*(\d+)\s*\)")
 MEMBER = {"fatima": "fatima", "bplast": "bplast", "bgo": "bgo", "fatimavme": "fatimavme"}
 
@@ -348,7 +348,7 @@ def spec_inventory(spec):
         elif member == "fatimavme":
             route["digitiser"] = "vme"
             for model, regex in (("v1751", V1751), ("v1290", V1290_GEO)):
-                slots = sorted((int(slot), int(address)) for slot, address in regex.findall(body))
+                slots = sorted((int(slot.strip("[]")), int(address)) for slot, address in regex.findall(body))
                 route[model] = {"compiled_slots": [address for _, address in slots]}
         inventory[member] = route
     return inventory

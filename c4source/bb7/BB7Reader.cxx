@@ -23,7 +23,6 @@
 #include "BB7Reader.h"
 #include "c4Logger.h"
 
-#include <algorithm>
 #include <cstring>
 #include <iterator>
 #include "ext_data_struct_info.hh"
@@ -86,39 +85,28 @@ Bool_t BB7Reader::Read()
     fRaw->wrId = input.bbseven_ts_subsystem_id;
     fRaw->procid = 31;
 
-    const auto readV7x5 = [this](std::uint32_t module, std::uint32_t n, const auto& values,
-                               std::uint32_t nChannels, const auto& channels,
-                               std::uint32_t nGeos, const auto& geos) {
-        const auto count = std::min<std::size_t>({n, nChannels, nGeos, std::size(values),
-                                                  std::size(channels), std::size(geos)});
-        for (std::size_t i = 0; i < count; ++i)
-            fRaw->V7x5.push_back({module, geos[i], channels[i], values[i]});
-    };
-    readV7x5(1, input.bbseven_v7x5_module1n, input.bbseven_v7x5_module1data,
-              input.bbseven_v7x5_module1channel, input.bbseven_v7x5_module1channelv,
-              input.bbseven_v7x5_module1geo, input.bbseven_v7x5_module1geov);
-    readV7x5(2, input.bbseven_v7x5_module2n, input.bbseven_v7x5_module2data,
-              input.bbseven_v7x5_module2channel, input.bbseven_v7x5_module2channelv,
-              input.bbseven_v7x5_module2geo, input.bbseven_v7x5_module2geov);
-    readV7x5(3, input.bbseven_v7x5_module3n, input.bbseven_v7x5_module3data,
-              input.bbseven_v7x5_module3channel, input.bbseven_v7x5_module3channelv,
-              input.bbseven_v7x5_module3geo, input.bbseven_v7x5_module3geov);
-    readV7x5(4, input.bbseven_v7x5_module4n, input.bbseven_v7x5_module4data,
-              input.bbseven_v7x5_module4channel, input.bbseven_v7x5_module4channelv,
-              input.bbseven_v7x5_module4geo, input.bbseven_v7x5_module4geov);
+    for (std::size_t slot = 0; slot < std::size(input.bbseven_v7x5); ++slot)
+    {
+        const auto& module = input.bbseven_v7x5[slot];
+        c4::vme::DecodeV775(module.n, module.nI, module.data,
+            [&](std::uint32_t channel, std::uint32_t value, std::int32_t status) {
+                fRaw->V7x5.push_back({static_cast<std::uint32_t>(slot + 1), module.geo, channel, value, status});
+            });
+    }
 
-    c4::vme::DecodeV1290Blocks(input.bbseven_v1290_module_nM, input.bbseven_v1290_module_nMI,
-        input.bbseven_v1290_module_nME, input.bbseven_v1290_module_n, input.bbseven_v1290_module_leadOrTrail,
+    const auto& tdc = input.bbseven_v1290;
+    c4::vme::DecodeV1290Blocks(tdc.measurement_nM, tdc.measurement_nMI, tdc.measurement_nME,
+        tdc.measurement_n, tdc.measurement_leadOrTrail,
         [&](std::uint32_t channel, std::uint32_t index) {
-            if (channel == 0 || channel > std::size(input.bbseven_v1290_module_nMI)) return;
+            if (channel == 0 || channel > 32) return;
             auto& hit = fRaw->V1290.emplace_back();
             hit.procid = fRaw->procid;
-            hit.geo = input.bbseven_v1290_module_geo;
-            hit.channel = channel - 1; // BB7's UCESB index is one-based.
+            hit.geo = tdc.geo;
+            hit.channel = channel - 1; // UCESB's sparse index is one-based.
             hit.wr_subsystem = fRaw->wrId;
             hit.wr_timestamp = fRaw->wrTimestamp;
-            hit.measurement = input.bbseven_v1290_module_data[index];
-            hit.leading_or_trailing = input.bbseven_v1290_module_leadOrTrailv[index];
+            hit.measurement = tdc.measurement_data[index];
+            hit.leading_or_trailing = tdc.measurement_leadOrTrailv[index];
         });
 
     for (const auto& hit : fRaw->V7x5)

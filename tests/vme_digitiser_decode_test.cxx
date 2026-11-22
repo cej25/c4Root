@@ -1,7 +1,9 @@
+#include "../c4source/bb7/ext_h101_bb7vme.h"
 #include "../c4source/digitisers/vme/VmeDigitiserDecode.h"
 #include <cassert>
 #include <cstdint>
 #include <iostream>
+#include <tuple>
 #include <vector>
 
 struct MockQdc {
@@ -20,6 +22,23 @@ struct MockTdc {
 int main() {
     const std::uint16_t ts[] = {0x1234, 0x5678, 0x9abc, 0xdef0};
     assert(c4::vme::Timestamp(ts) == 0xdef09abc56781234ULL);
+
+    EXT_STR_h101_bb7vme_onion bb7 = {};
+    auto& v775 = bb7.bbseven_v7x5[1];
+    v775.geo = 13;
+    v775.n = 3;
+    v775.nI[0] = 1;  // Physical channel 0 with a recorded zero.
+    v775.nI[1] = 32; // Physical channel 31 with all status bits set.
+    v775.data[1] = 0x7fff;
+    v775.nI[2] = 33; // Outside the module's 32 channels.
+    using V775Hit = std::tuple<std::uint32_t, std::uint32_t, std::uint32_t, std::int32_t>;
+    std::vector<V775Hit> hits;
+    for (const auto& module : bb7.bbseven_v7x5)
+        c4::vme::DecodeV775(module.n, module.nI, module.data,
+            [&](auto channel, auto value, auto status) {
+                hits.emplace_back(module.geo, channel, value, status);
+            });
+    assert((hits == std::vector<V775Hit>{{13, 0, 0, 0}, {13, 31, 4095, 7}}));
 
     MockQdc qdc;
     qdc._channels = (1u << 1) | (1u << 6);

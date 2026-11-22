@@ -4,6 +4,7 @@
 #include "../../common/gsi_febex4.spec"
 #include "../../common/gsi_tamex4.spec"
 #include "../../common/vme_caen_v1751.spec"
+#include "../../common/vme_caen_v775_raw.spec"
 #include "../frs/frs_s181.spec"
 #include "../../common/vme_caen_v1290_geo.spec"
 #include "fatima_vme.spec"
@@ -34,12 +35,12 @@ SUBEVENT(bb7_subev)
 
     select several
     {
-        v7x5_module[0] = VME_CAEN_V775(geom=11);
-	    v7x5_dummy = V7X5_DUMMY();
-        v7x5_module[1] = VME_CAEN_V775(geom=13);
-        v7x5_module[2] = VME_CAEN_V775(geom=15);
-        v7x5_module[3] = VME_CAEN_V775(geom=17);
-        v1290_module = VME_CAEN_V1290_N();
+        v7x5[0] = VME_CAEN_V775_RAW(geom=11);
+        v7x5_dummy = V7X5_DUMMY();
+        v7x5[1] = VME_CAEN_V775_RAW(geom=13);
+        v7x5[2] = VME_CAEN_V775_RAW(geom=15);
+        v7x5[3] = VME_CAEN_V775_RAW(geom=17);
+        v1290 = VME_CAEN_V1290_N();
     }
 	
     list (0 <= i < 3)
@@ -152,12 +153,12 @@ SUBEVENT(fatima_vme_subev)
     // The other addresses reserve space in the shared six-slot layout.
     select several
     {
-        qdc1 = VME_CAEN_V1751(board = 6);
-        qdc2 = VME_CAEN_V1751(board = 7);
-        qdc3 = VME_CAEN_V1751(board = 8);
-        qdc4 = VME_CAEN_V1751(board = 9);
-        qdc5 = VME_CAEN_V1751(board = 10);
-        qdc6 = VME_CAEN_V1751(board = 31);
+        qdc[0] = VME_CAEN_V1751(board = 6);
+        qdc[1] = VME_CAEN_V1751(board = 7);
+        qdc[2] = VME_CAEN_V1751(board = 8);
+        qdc[3] = VME_CAEN_V1751(board = 9);
+        qdc[4] = VME_CAEN_V1751(board = 10);
+        qdc[5] = VME_CAEN_V1751(board = 31);
         error2 = ERR_WORD_SIX();
     };
 

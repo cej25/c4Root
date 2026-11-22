@@ -20,6 +20,12 @@ class ExperimentValidationTests(unittest.TestCase):
         self.assertTrue(any("FATIMA_VME/v1751" in note for note in notes))
         self.assertTrue(any("FATIMA_VME/v1290" in note for note in notes))
 
+    def test_s181_indexed_qdc_slots_preserve_the_board_order(self):
+        spec = (ROOT / "unpack/exps/s181/s181.spec").read_text()
+        route = module.spec_inventory(spec)["fatimavme"]
+        self.assertEqual(route["v1751"]["compiled_slots"], [6, 7, 8, 9, 10, 31])
+        self.assertEqual(module.validate("s181", ROOT), ([], []))
+
     def test_yaml_generates_current_and_edited_white_rabbit_ids(self):
         config = (ROOT / "config/s100/experiment.yaml").read_text()
         with tempfile.TemporaryDirectory() as directory:

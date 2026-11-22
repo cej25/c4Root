@@ -15,9 +15,6 @@ extern "C"
 class BB7VmeRawData;
 class BB7V7x5Item;
 
-struct EXT_STR_h101_bb7vme_t;
-typedef struct EXT_STR_h101_bb7vme_t EXT_STR_h101_bb7vme;
-typedef struct EXT_STR_h101_bb7vme_onion_t EXT_STR_h101_bb7vme_onion;
 class ext_data_struct_info;
 
 class BB7Reader : public c4Reader

@@ -40,7 +40,10 @@ struct BB7V7x5RawHit
     std::uint32_t channel = 0;
     std::uint32_t value = 0;
 
-    ClassDefNV(BB7V7x5RawHit, 1);
+    // Bits 0–2 are overflow, under threshold and valid. -1 denotes unavailable status.
+    std::int32_t status = -1;
+
+    ClassDefNV(BB7V7x5RawHit, 2);
 };
 
 class BB7VmeRawData : public TObject
