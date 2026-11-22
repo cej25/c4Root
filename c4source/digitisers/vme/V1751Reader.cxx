@@ -42,10 +42,10 @@ Bool_t V1751Reader::Read() {
     ++fEventsRead;
     for (std::size_t slot = 0; slot < std::size(input->fatimavme_qdc); ++slot) {
         const auto& qdc_bank = input->fatimavme_qdc[slot];
-        const auto mask = static_cast<std::uint32_t>(qdc_bank._channels);
+        const auto mask = static_cast<std::uint32_t>(qdc_bank.channels);
         if (mask != 0) ++fBanksWithMask;
-        if (qdc_bank._channel_time || qdc_bank._chan_ext_time ||
-            qdc_bank._chan_fine_time || qdc_bank._qlong || qdc_bank._qshort)
+        if (qdc_bank.channel_time || qdc_bank.chan_ext_time ||
+            qdc_bank.chan_fine_time || qdc_bank.qlong || qdc_bank.qshort)
             ++fBanksWithPackedCounts;
         for (std::uint32_t channel = 0; channel < 8; ++channel)
             if (mask & (1u << channel)) ++fCandidateChannels;

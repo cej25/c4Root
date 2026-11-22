@@ -55,16 +55,17 @@ def regenerate_headers(layouts, targets):
         for member, target in targets.items():
             command = [
                 str(UNPACK_DIR / "s100"), "/dev/null",
-                f"--ntuple=UNPACK:{member},STRUCT_HH,id=h101_{member},{target.name}",
+                f"--ntuple=NOTRIGEVENTNO,UNPACK:{member},STRUCT_HH,id=h101_{member},{target.name}",
             ]
             subprocess.run(command, cwd=directory, check=True)
-            generated = (Path(directory) / target.name).read_text()
-            if (read_array_size(generated, f"{member}_tamex") != len(layouts[member])
-                    or f"EXT_STR_h101_{member}_onion" not in generated):
+            generated = (Path(directory) / target.name).read_bytes()
+            layout = generated.decode()
+            if (read_array_size(layout, f"{member}_tamex") != len(layouts[member])
+                    or f"EXT_STR_h101_{member}_onion" not in layout):
                 raise ValueError(f"UCESB generated an unexpected layout for {member}")
             staged[target] = generated
     for target, generated in staged.items():
-        with tempfile.NamedTemporaryFile(mode="w", dir=target.parent, delete=False) as output:
+        with tempfile.NamedTemporaryFile(mode="wb", dir=target.parent, delete=False) as output:
             temporary = Path(output.name)
             try:
                 output.write(generated)

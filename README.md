@@ -45,6 +45,11 @@ make empty -j
 
 Individual experimental unpackers can be built later as required.
 
+UCESB owns the checked-in `ext_h101_*.h` files. Regenerate them with the
+experiment unpacker's `STRUCT_HH` output and copy the result byte for byte.
+When the generated layout changes, update the reader and verify its field
+registration against the unpacker.
+
 ## Compiling c4Root
 
 Set the FairRoot and UCESB locations:

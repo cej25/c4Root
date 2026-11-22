@@ -32,8 +32,10 @@ class S100VmeSpecTests(unittest.TestCase):
             addresses = config[model]["compiled_slots"]
             self.assertEqual(block.count(symbol), 1)
             line = next(line for line in generated.getvalue().splitlines() if line.startswith(f"#define {symbol} "))
-            actual = re.findall(rf"\b{bank}(\d+)\s*=\s*{decoder}\({argument}\s*=\s*(\d+)\)", line)
-            self.assertEqual(actual, [(str(slot), str(address)) for slot, address in enumerate(addresses, 1)])
+            slot_pattern = r"\[(\d+)\]" if model == "v1751" else r"(\d+)"
+            actual = re.findall(rf"\b{bank}{slot_pattern}\s*=\s*{decoder}\({argument}\s*=\s*(\d+)\)", line)
+            first_slot = 0 if model == "v1751" else 1
+            self.assertEqual(actual, [(str(slot), str(address)) for slot, address in enumerate(addresses, first_slot)])
         for marker in ("error1", "error2", "error3"):
             self.assertEqual(block.count(f"{marker} = ERR_WORD_SIX()"), 1)
         self.assertIn("scalers = FATIMA_VME_SCALERS();", block)

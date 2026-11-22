@@ -17,15 +17,15 @@ void FillV1751(V1751RawData& hit, std::uint16_t procid, std::uint32_t subsystem,
     hit.channel = static_cast<std::uint16_t>(channel);
     hit.wr_timestamp = wr;
     hit.wr_subsystem = subsystem;
-    hit.coarse = bank._channel_timev[packed];
-    hit.extended = bank._chan_ext_timev[packed];
-    hit.fine = bank._chan_fine_timev[packed];
-    hit.qlong = bank._qlongv[packed];
-    hit.qshort = bank._qshortv[packed];
-    hit.sazc = packed < bank._chan_sazc ? bank._chan_sazcv[packed] : 0;
-    hit.sbzc = packed < bank._chan_sbzc ? bank._chan_sbzcv[packed] : 0;
-    hit.midscale = packed < bank._chan_midscale ?
-        bank._chan_midscalev[packed] : 0;
+    hit.coarse = bank.channel_timev[packed];
+    hit.extended = bank.chan_ext_timev[packed];
+    hit.fine = bank.chan_fine_timev[packed];
+    hit.qlong = bank.qlongv[packed];
+    hit.qshort = bank.qshortv[packed];
+    hit.sazc = packed < bank.chan_sazc ? bank.chan_sazcv[packed] : 0;
+    hit.sbzc = packed < bank.chan_sbzc ? bank.chan_sbzcv[packed] : 0;
+    hit.midscale = packed < bank.chan_midscale ?
+        bank.chan_midscalev[packed] : 0;
     hit.waveform = c4::vme::Waveform(bank, packed);
 }
 

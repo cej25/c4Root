@@ -21,6 +21,8 @@
 #include "TH1.h"
 #include "TFile.h"
 
+#include <cmath>
+#include <cstring>
 #include <iomanip>
 #include <type_traits>
 
@@ -153,20 +155,20 @@ Bool_t FatimaVmeReader::Read()
     constexpr auto qdc_capacity = std::extent<decltype(data->fatimavme_qdc)>::value;
     for (size_t qdc = 0; qdc < qdc_capacity; ++qdc)
     {
-        Int_t board_id = data->fatimavme_qdc[qdc]._board_id;
+        const auto& qdc_data = data->fatimavme_qdc[qdc];
+        Int_t board_id = qdc_data.board_id;
         // A spare/unmatched bank remains zero-initialised. Do not interpret
         // a placeholder GEO/board slot as a physical detector.
         if (board_id == 0) continue;
 
-        Int_t channel_mask = data->fatimavme_qdc[qdc]._channels;
+        Int_t channel_mask = qdc_data.channels;
         std::vector<int> channels_fired = Get_Channels(channel_mask);
 
         for (UInt_t channel = 0; channel < channels_fired.size(); channel++)
         {
-            const auto& qdc_data = data->fatimavme_qdc[qdc];
             if (!fatima_vme_qdc_safety::CompleteEntry(
-                    channel, qdc_data._channel_time, qdc_data._chan_ext_time,
-                    qdc_data._chan_fine_time, qdc_data._qlong, qdc_data._qshort))
+                    channel, qdc_data.channel_time, qdc_data.chan_ext_time,
+                    qdc_data.chan_fine_time, qdc_data.qlong, qdc_data.qshort))
                 continue;
 
             const auto mapping = dets_qdc.find(std::make_pair(board_id, channels_fired[channel]));
@@ -174,27 +176,27 @@ Bool_t FatimaVmeReader::Read()
             int current_detector = mapping->second;
             //qdc_detectors.emplace_back(current_detector);
             
-            uint32_t ct = data->fatimavme_qdc[qdc]._channel_timev[channel];
-            int fb = data->fatimavme_qdc[qdc]._chan_fine_timev[channel];
-            //QDC_time_coarse.emplace_back(data->fatimavme_qdc[qdc]._channel_timev[channel]);
+            uint32_t ct = qdc_data.channel_timev[channel];
+            int fb = qdc_data.chan_fine_timev[channel];
+            //QDC_time_coarse.emplace_back(qdc_data.channel_timev[channel]);
 
             // std::cout << "unpacked coarse time:: " << ct << std::endl;
             // std::cout << "unpacked fine bin:: " << fb << std::endl;
 
-            double ft = (ULong64_t)data->fatimavme_qdc[qdc]._channel_timev[channel] + ((ULong64_t)(data->fatimavme_qdc[qdc]._chan_ext_timev[channel]) << 32) + (double)(data->fatimavme_qdc[qdc]._chan_fine_timev[channel] / 1024.);
-            //QDC_time_fine.emplace_back((uint64_t)data->fatimavme_qdc[qdc]._channel_timev[channel] + ((uint64_t)(data->fatimavme_qdc[qdc]._chan_ext_timev[channel]) << 32) + data->fatimavme_qdc[qdc]._chan_fine_timev[channel] / 1024.);
+            double ft = (ULong64_t)qdc_data.channel_timev[channel] + ((ULong64_t)(qdc_data.chan_ext_timev[channel]) << 32) + (double)(qdc_data.chan_fine_timev[channel] / 1024.);
+            //QDC_time_fine.emplace_back((uint64_t)qdc_data.channel_timev[channel] + ((uint64_t)(qdc_data.chan_ext_timev[channel]) << 32) + qdc_data.chan_fine_timev[channel] / 1024.);
 
             // std::cout << "unpacked fine time:: " << ft << std::endl;
 
-            uint32_t qlr = data->fatimavme_qdc[qdc]._qlongv[channel];
-            //QLong_raw.emplace_back(data->fatimavme_qdc[qdc]._qlongv[channel]);
+            uint32_t qlr = qdc_data.qlongv[channel];
+            //QLong_raw.emplace_back(qdc_data.qlongv[channel]);
 
-            uint32_t qsr = data->fatimavme_qdc[qdc]._qshortv[channel];
-            //QShort_raw.emplace_back(data->fatimavme_qdc[qdc]._qshortv[channel]);
+            uint32_t qsr = qdc_data.qshortv[channel];
+            //QShort_raw.emplace_back(qdc_data.qshortv[channel]);
 
-            UInt_t sazc = data->fatimavme_qdc[qdc]._chan_sazcv[channel];
-            UInt_t sbzc = data->fatimavme_qdc[qdc]._chan_sbzcv[channel];
-            UInt_t midscale = data->fatimavme_qdc[qdc]._chan_midscalev[channel];
+            UInt_t sazc = qdc_data.chan_sazcv[channel];
+            UInt_t sbzc = qdc_data.chan_sbzcv[channel];
+            UInt_t midscale = qdc_data.chan_midscalev[channel];
 
             // CEJ not configured
             // if (qdc == 0)
@@ -209,9 +211,9 @@ Bool_t FatimaVmeReader::Read()
             {
                 // Copy only complete triplets; UCESB stores a separate sample
                 // count for each of the three waveform banks.
-                const auto& first = qdc_data._sample_one[channel];
-                const auto& second = qdc_data._sample_two[channel];
-                const auto& third = qdc_data._sample_three[channel];
+                const auto& first = qdc_data.sample_one[channel];
+                const auto& second = qdc_data.sample_two[channel];
+                const auto& third = qdc_data.sample_three[channel];
                 const auto triplets = fatima_vme_qdc_safety::CompleteWaveformTriplets(
                     first._, second._, third._);
                 waveform_one.reserve(3 * triplets);

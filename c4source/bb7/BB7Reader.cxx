@@ -24,7 +24,6 @@
 #include "c4Logger.h"
 
 #include <cstring>
-#include <iterator>
 #include "ext_data_struct_info.hh"
 
 extern "C"
@@ -85,28 +84,31 @@ Bool_t BB7Reader::Read()
     fRaw->wrId = input.bbseven_ts_subsystem_id;
     fRaw->procid = 31;
 
-    for (std::size_t slot = 0; slot < std::size(input.bbseven_v7x5); ++slot)
-    {
-        const auto& module = input.bbseven_v7x5[slot];
-        c4::vme::DecodeV775(module.n, module.nI, module.data,
+    const auto readModule = [this](std::uint32_t module, std::uint32_t geo,
+                                   std::uint32_t count, const auto& indices, const auto& samples) {
+        c4::vme::DecodeV775(count, indices, samples,
             [&](std::uint32_t channel, std::uint32_t value, std::int32_t status) {
-                fRaw->V7x5.push_back({static_cast<std::uint32_t>(slot + 1), module.geo, channel, value, status});
+                fRaw->V7x5.push_back({module, geo, channel, value, status});
             });
-    }
+    };
+    readModule(1, input.bbseven_v7x51geo, input.bbseven_v7x51n, input.bbseven_v7x51nI, input.bbseven_v7x51data);
+    readModule(2, input.bbseven_v7x52geo, input.bbseven_v7x52n, input.bbseven_v7x52nI, input.bbseven_v7x52data);
+    readModule(3, input.bbseven_v7x53geo, input.bbseven_v7x53n, input.bbseven_v7x53nI, input.bbseven_v7x53data);
+    readModule(4, input.bbseven_v7x54geo, input.bbseven_v7x54n, input.bbseven_v7x54nI, input.bbseven_v7x54data);
 
-    const auto& tdc = input.bbseven_v1290;
-    c4::vme::DecodeV1290Blocks(tdc.measurement_nM, tdc.measurement_nMI, tdc.measurement_nME,
-        tdc.measurement_n, tdc.measurement_leadOrTrail,
+    c4::vme::DecodeV1290Blocks(input.bbseven_v1290_measurement_nM, input.bbseven_v1290_measurement_nMI,
+        input.bbseven_v1290_measurement_nME, input.bbseven_v1290_measurement_n,
+        input.bbseven_v1290_measurement_leadOrTrail,
         [&](std::uint32_t channel, std::uint32_t index) {
             if (channel == 0 || channel > 32) return;
             auto& hit = fRaw->V1290.emplace_back();
             hit.procid = fRaw->procid;
-            hit.geo = tdc.geo;
+            hit.geo = input.bbseven_v1290_geo;
             hit.channel = channel - 1; // UCESB's sparse index is one-based.
             hit.wr_subsystem = fRaw->wrId;
             hit.wr_timestamp = fRaw->wrTimestamp;
-            hit.measurement = tdc.measurement_data[index];
-            hit.leading_or_trailing = tdc.measurement_leadOrTrailv[index];
+            hit.measurement = input.bbseven_v1290_measurement_data[index];
+            hit.leading_or_trailing = input.bbseven_v1290_measurement_leadOrTrailv[index];
         });
 
     for (const auto& hit : fRaw->V7x5)

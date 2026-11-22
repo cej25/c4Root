@@ -63,7 +63,6 @@ DEGAS:
   version: 4
   procid: 60
   whiterabbit: 0x400
-  raw_bank: FEBEX
   compiled_slots: [0, 1, 2, 3, 4, 5]
 
 FRS_Main:

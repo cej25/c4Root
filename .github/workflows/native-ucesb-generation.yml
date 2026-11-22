@@ -1,4 +1,4 @@
-name: Generate native UCESB headers
+name: Generate native DEGAS UNPACK header
 on:
   push:
     branches: [validation/ucesb-structure-headers]
@@ -7,49 +7,26 @@ permissions:
 jobs:
   generate:
     runs-on: ubuntu-22.04
-    timeout-minutes: 18
+    timeout-minutes: 12
     steps:
       - uses: actions/checkout@v4
-      - name: Install build dependencies
-        run: |
+      - run: |
           sudo apt-get update -qq
           sudo apt-get install -y -qq flex bison libncurses-dev libtirpc-dev python3-yaml
-      - name: Build UCESB and the unpackers
-        run: |
-          git clone --depth 1 https://git.chalmers.se/expsubphys/ucesb.git "${RUNNER_TEMP}/ucesb"
-          git -C "${RUNNER_TEMP}/ucesb" rev-parse HEAD
           export UCESB_BASE_DIR="${RUNNER_TEMP}/ucesb"
+          git clone https://git.chalmers.se/expsubphys/ucesb.git "$UCESB_BASE_DIR"
+          git -C "$UCESB_BASE_DIR" checkout effbaebdc2ea00e804ac8aea66d71c8b325e1e32
           make -C "$UCESB_BASE_DIR" -j2 empty USE_CURSES=1
-          make -C unpack/exps/s181 -j2 s181
           make -C unpack/exps/s100 -j2 s100
-          make -C unpack/exps/s452 -j2 s452
-      - name: Generate native structure headers
-        run: |
-          out="${RUNNER_TEMP}/native-ucesb"
-          mkdir -p "$out"
-          s181="$PWD/unpack/exps/s181/s181"
+          mkdir -p "$RUNNER_TEMP/degas"
           s100="$PWD/unpack/exps/s100/s100"
-          s452="$PWD/unpack/exps/s452/s452"
-          cd "$out"
-          "$s181" /dev/null --ntuple=NOTRIGEVENTNO,UNPACK:bbseven,STRUCT_HH,id=h101_bb7vme,ext_h101_bb7vme.h
-          "$s100" /dev/null --ntuple=NOTRIGEVENTNO,UNPACK:fatimavme,STRUCT_HH,id=h101_fatimavme,ext_h101_fatimavme.h
-          "$s100" /dev/null --ntuple=NOTRIGEVENTNO,RAW:FEBEX,STRUCT_HH,id=h101_febex,ext_h101_febex.h
-          mkdir s181
-          (cd s181 && "$s181" /dev/null --ntuple=NOTRIGEVENTNO,UNPACK:fatimavme,STRUCT_HH,id=h101_fatimavme,ext_h101_fatimavme.h)
-          mkdir s452
-          (cd s452 && "$s452" /dev/null --ntuple=NOTRIGEVENTNO,UNPACK:fatimavme,STRUCT_HH,id=h101_fatimavme,ext_h101_fatimavme.h)
-          sha256sum ext_h101_*.h s181/*.h s452/*.h
-          cmp ext_h101_fatimavme.h s181/ext_h101_fatimavme.h
-          "$s181" /dev/null --ntuple=NOTRIGEVENTNO,UNPACK:bbseven,STRUCT,- > s181-bb7.struct
-          "$s181" /dev/null --ntuple=NOTRIGEVENTNO,UNPACK:fatimavme,STRUCT,- > s181-fatima.struct
-          "$s452" /dev/null --ntuple=NOTRIGEVENTNO,UNPACK:fatimavme,STRUCT,- > s452-fatima.struct
-          "$s100" /dev/null --ntuple=NOTRIGEVENTNO,UNPACK:fatimavme,STRUCT,- > s100-fatima.struct
-          "$s100" /dev/null --ntuple=NOTRIGEVENTNO,RAW:FEBEX,STRUCT,- > s100-febex.struct
-          mkdir ucesb-client
-          cp "${RUNNER_TEMP}"/ucesb/hbook/ext_data_{client.h,client.c,proto.h,struct_info.hh} ucesb-client/
+          cd "$RUNNER_TEMP/degas"
+          "$s100" /dev/null --ntuple=NOTRIGEVENTNO,UNPACK:germanium,STRUCT_HH,id=h101_degas,ext_h101_degas.h
+          "$s100" /dev/null --ntuple=NOTRIGEVENTNO,UNPACK:germanium,STRUCT,- > degas.struct
+          sha256sum ext_h101_degas.h
       - uses: actions/upload-artifact@v4
         with:
-          name: native-ucesb-headers
-          path: ${{ runner.temp }}/native-ucesb/
+          name: native-degas-header
+          path: ${{ runner.temp }}/degas/
           if-no-files-found: error
           retention-days: 2

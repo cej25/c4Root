@@ -1,7 +1,10 @@
 """Check six-slot native UCESB header staging validation without UCESB installed."""
 import importlib.util
+import sys
+from tempfile import TemporaryDirectory
 from pathlib import Path
 import unittest
+from unittest.mock import patch
 
 ROOT = Path(__file__).resolve().parents[1]
 spec = importlib.util.spec_from_file_location(
@@ -31,8 +34,24 @@ class StageVmeHeaderTests(unittest.TestCase):
             module.validate_generated_header(
                 PREFIX.replace("EXT_STR_h101_fatimavme_ITEMS_INFO", "MISSING_LAYOUT"))
 
-    def test_installed_header_is_not_rewritten_by_this_module(self):
-        self.assertFalse("write_text" in module.validate_generated_header.__code__.co_names)
+    def test_staging_preserves_all_generator_output_bytes(self):
+        generated = (PREFIX + "\n/* Native packed layout table */\n").replace("\n", "\r\n").encode()
+        with TemporaryDirectory() as folder:
+            directory = Path(folder)
+            unpacker = directory / "ucesb"
+            unpacker.touch()
+            output = directory / "staged.h"
+
+            def generate(command, cwd, check):
+                (Path(cwd) / "ext_h101_fatimavme.h").write_bytes(generated)
+                return module.subprocess.CompletedProcess(command, 0)
+
+            argv = ["stage_fatima_vme_header", "--unpacker", str(unpacker),
+                    "--output", str(output)]
+            with patch.object(sys, "argv", argv), patch.object(module.subprocess, "run", generate):
+                self.assertEqual(module.main(), 0)
+
+            self.assertEqual(output.read_bytes(), generated)
 
 
 if __name__ == "__main__":
