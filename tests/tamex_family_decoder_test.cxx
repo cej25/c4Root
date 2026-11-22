@@ -1,7 +1,10 @@
+#include "../c4source/bgo/BGOPackedSafety.h"
 #include "../c4source/digitisers/tamex/TamexReader.h"
+#include "../c4source/mcp/McpTimestampSafety.h"
 
 #include <cassert>
 #include <cstdint>
+#include <limits>
 #include <vector>
 
 using tamex::PackedBoardView;
@@ -82,15 +85,6 @@ static void TestUcesbBoardView()
     board.time_finev[1] = 12;
     assert(input.fine[1] == 12);
 
-    const std::uint32_t wr_words[4] = {0x5678, 0x1234, 0xdef0, 0x9abc};
-    assert(tamex::AssembleWhiteRabbitTimestamp(wr_words) ==
-           UINT64_C(0x9abcdef012345678));
-    const std::uint32_t wr_max[4] = {0xffff, 0xffff, 0xffff, 0xffff};
-    assert(tamex::AssembleWhiteRabbitTimestamp(wr_max) == UINT64_MAX);
-    const std::uint32_t wr_high_bit[4] = {0, 0, 0, 0x8000};
-    assert(tamex::AssembleWhiteRabbitTimestamp(wr_high_bit) ==
-           (UINT64_C(1) << 63));
-
     // Empty trigger-only board: no decoded words, but its trigger can be kept
     // by the reader when it constructs the board-level Raw data record.
     UcesbBoardFixture trigger_only{};
@@ -103,8 +97,70 @@ static void TestUcesbBoardView()
     assert(empty_stats.edge_words == 0 && empty_stats.epoch_words == 0);
 }
 
+static void TestWhiteRabbit()
+{
+    using Words = std::uint32_t[4];
+    const auto check = [](const Words& words, std::uint64_t expected) {
+        assert(tamex::AssembleWhiteRabbitTimestamp(words) == expected);
+        assert(mcp_timestamp_safety::AssembleWhiteRabbitTimestamp(
+                   words[0], words[1], words[2], words[3]) == expected);
+    };
+
+    check({0, 0, 0, 0}, 0);
+    check({0x5678, 0x1234, 0xdef0, 0x9abc}, UINT64_C(0x9abcdef012345678));
+    check({0xffff, 0xffff, 0xffff, 0x7fff}, std::numeric_limits<std::int64_t>::max());
+    check({0, 0, 0, 0x8000}, UINT64_C(1) << 63);
+    check({0xffff, 0xffff, 0xffff, 0xffff}, std::numeric_limits<std::uint64_t>::max());
+    check({0x10001, 0x10002, 0x10003, 0x10004}, UINT64_C(0x0004000300020001));
+}
+
+static void TestPackedBounds()
+{
+    const auto checkBudget = [](std::uint32_t bytes, std::uint32_t expected) {
+        assert(c4_tamex_packed_safety::EventHitBudget(bytes) == expected);
+        assert(bgo_packed_safety::EventHitBudget(bytes) == expected);
+    };
+    for (const auto bytes : {0u, 4u, 8u, 11u, 12u})
+        checkBudget(bytes, 0);
+    checkBudget(16, 1);
+    checkBudget(20, 2);
+    checkBudget(4 * (1024 + 3), 1024);
+    checkBudget(std::numeric_limits<std::uint32_t>::max(), 1024);
+
+    const auto checkChannel = [](std::uint32_t channel, bool expected) {
+        assert(c4_tamex_packed_safety::ValidChannel(channel, 33) == expected);
+        assert(bgo_packed_safety::ValidChannel(channel) == expected);
+    };
+    checkChannel(0, true);
+    checkChannel(32, true);
+    checkChannel(33, false);
+    checkChannel(127, false);
+    checkChannel(std::numeric_limits<std::uint32_t>::max(), false);
+    assert(!c4_tamex_packed_safety::ValidChannel(0, 0));
+
+    const auto checkFineBin = [](std::uint32_t fine, bool expected) {
+        assert(c4_tamex_packed_safety::ValidFineBin(fine, 1024) == expected);
+        assert(bgo_packed_safety::ValidFineBin(fine) == expected);
+    };
+    checkFineBin(0, true);
+    checkFineBin(1023, true);
+    checkFineBin(1024, false);
+    checkFineBin(65535, false);
+
+    using c4_tamex_packed_safety::HasCompleteHit;
+    assert(HasCompleteHit(0, 1, 1, 1, 1, 1));
+    assert(HasCompleteHit(15, 16, 16, 16, 16, 16));
+    assert(!HasCompleteHit(1, 1, 2, 2, 2, 2));
+    assert(!HasCompleteHit(1, 2, 1, 2, 2, 2));
+    assert(!HasCompleteHit(1, 2, 2, 1, 2, 2));
+    assert(!HasCompleteHit(1, 2, 2, 2, 1, 2));
+    assert(!HasCompleteHit(1, 2, 2, 2, 2, 1));
+}
+
 int main()
 {
+    TestWhiteRabbit();
+    TestPackedBounds();
     TestUcesbBoardView();
 
     // Two epoch markers; one trigger channel and two detector edges.
