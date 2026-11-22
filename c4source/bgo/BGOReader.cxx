@@ -22,7 +22,7 @@
 #include "BGOTwinpeaksData.h"
 #include "BGOReader.h"
 #include "BGOPackedSafety.h"
-#include "TamexRawDecode.h"
+#include "TamexReader.h"
 #include "c4Logger.h"
 
 #include "TFile.h"

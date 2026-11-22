@@ -30,8 +30,9 @@
 #include "c4Logger.h"
 
 #include "TClonesArray.h"
-#include "TamexFineTimeHistograms.h"
-#include "TamexTwinpeaksHits.h"
+#include "TamexFineTimeCalibration.h"
+#include "TamexPulseBuilder.h"
+#include "TamexRawData.h"
 
 #include "BGORaw2Cal.h"
 

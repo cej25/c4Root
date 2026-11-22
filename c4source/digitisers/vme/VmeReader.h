@@ -1,5 +1,5 @@
-#ifndef C4_VME_DIGITISER_DECODE_H
-#define C4_VME_DIGITISER_DECODE_H
+#ifndef VME_READER_H
+#define VME_READER_H
 
 #include "FatimaVmePackedSafety.h"
 #include "FatimaVmeQdcSafety.h"
@@ -96,6 +96,44 @@ std::vector<std::uint32_t> Waveform(const Bank& bank, std::uint32_t packed) {
         result.push_back(c.v[i]);
     }
     return result;
+}
+
+template <typename Hit, typename Bank>
+void FillV1751(Hit& hit, std::uint16_t procid, std::uint32_t subsystem,
+                 std::uint64_t wr, std::size_t slot, int board,
+                 std::uint32_t channel, std::uint32_t packed, const Bank& bank)
+{
+    hit.procid = procid;
+    hit.board_slot = static_cast<std::uint16_t>(slot);
+    hit.board_id = board;
+    hit.channel = static_cast<std::uint16_t>(channel);
+    hit.wr_timestamp = wr;
+    hit.wr_subsystem = subsystem;
+    hit.coarse = bank.channel_timev[packed];
+    hit.extended = bank.chan_ext_timev[packed];
+    hit.fine = bank.chan_fine_timev[packed];
+    hit.qlong = bank.qlongv[packed];
+    hit.qshort = bank.qshortv[packed];
+    hit.sazc = packed < bank.chan_sazc ? bank.chan_sazcv[packed] : 0;
+    hit.sbzc = packed < bank.chan_sbzc ? bank.chan_sbzcv[packed] : 0;
+    hit.midscale = packed < bank.chan_midscale ?
+        bank.chan_midscalev[packed] : 0;
+    hit.waveform = c4::vme::Waveform(bank, packed);
+}
+
+template <typename Hit, typename Bank>
+void FillV1290(Hit& hit, std::uint16_t procid, std::uint32_t subsystem,
+                 std::uint64_t wr, std::size_t slot, int geo,
+                 std::uint32_t channel, std::uint32_t index, const Bank& bank)
+{
+    hit.procid = procid;
+    hit.board_slot = static_cast<std::uint16_t>(slot);
+    hit.geo = geo;
+    hit.channel = static_cast<std::uint16_t>(channel);
+    hit.wr_timestamp = wr;
+    hit.wr_subsystem = subsystem;
+    hit.measurement = bank._measurement_data[index];
+    hit.leading_or_trailing = bank._measurement_leadOrTrailv[index];
 }
 
 }} // namespace c4::vme

@@ -1,56 +1,231 @@
 #ifndef TAMEX_READER_H
 #define TAMEX_READER_H
 
-#include "c4Reader.h"
+#include "../../base/TamexPackedSafety.h"
 
-#include <cstddef>
 #include <cstdint>
 #include <string>
+#include <type_traits>
+#include <utility>
 
-class TClonesArray;
-class ext_data_struct_info;
-struct EXT_STR_h101_bgo_onion_t;
-struct EXT_STR_h101_fatima_onion_t;
-struct EXT_STR_h101_bplast_onion_t;
-struct EXT_STR_h101_mcp_onion_t;
+namespace tamex
+{
+// Borrowed view of one board's UCESB-unpacked packed-word columns.
+// Each count is independent; the owning unpacker retains the memory.
+struct PackedBoardView
+{
+    std::uint32_t event_size_bytes = 0;
+    const std::uint32_t* epoch = nullptr;
+    const std::uint32_t* coarse = nullptr;
+    const std::uint32_t* fine = nullptr;
+    const std::uint32_t* channel = nullptr;
+    const std::uint32_t* edge = nullptr;
+    std::uint32_t epoch_count = 0;
+    std::uint32_t coarse_count = 0;
+    std::uint32_t fine_count = 0;
+    std::uint32_t channel_count = 0;
+    std::uint32_t edge_count = 0;
+};
 
-// Generic TAMEX electronics reader. Input variants only describe the
-// generated UCESB bank layout; the emitted Raw data is detector-independent.
-class TamexReader : public c4Reader
+// Assemble the four 16-bit White Rabbit words using unsigned arithmetic.
+inline std::uint64_t AssembleWhiteRabbitTimestamp(const std::uint32_t (&words)[4])
+{
+    return (std::uint64_t{words[3] & 0xffffu} << 48) |
+           (std::uint64_t{words[2] & 0xffffu} << 32) |
+           (std::uint64_t{words[1] & 0xffffu} << 16) |
+           std::uint64_t{words[0] & 0xffffu};
+}
+
+// Generated UCESB TAMEX board records share these field names regardless of
+// which detector bank contains them. Borrow their arrays without copying.
+template <typename Board>
+PackedBoardView MakeBoardView(const Board& bank)
+{
+    return PackedBoardView{
+        bank.event_size,
+        bank.time_epochv,
+        bank.time_coarsev,
+        bank.time_finev,
+        bank.time_channelv,
+        bank.time_edgev,
+        bank.time_epoch,
+        bank.time_coarse,
+        bank.time_fine,
+        bank.time_channel,
+        bank.time_edge
+    };
+}
+
+enum class WordKind : std::uint8_t { Epoch, Edge };
+
+// Raw electronics facts, deliberately not a detector hit or a lead/trail pair.
+struct RawWord
+{
+    WordKind kind = WordKind::Epoch;
+    std::uint16_t board = 0;
+    std::uint32_t packed_index = 0;
+    std::uint32_t epoch = 0;
+    std::uint16_t channel = 0;
+    std::uint16_t coarse = 0;
+    std::uint32_t fine = 0;
+    bool leading = false;
+    bool has_preceding_epoch = false;
+    bool changed_channel_without_epoch = false;
+    bool channel_order_decreased = false;
+    bool invalid_fine = false;
+};
+
+struct DecodeStats
+{
+    std::uint32_t epoch_words = 0;
+    std::uint32_t edge_words = 0;
+    std::uint32_t incomplete_words = 0;
+    std::uint32_t invalid_channels = 0;
+    std::uint32_t invalid_fine_words = 0;
+    std::uint32_t missing_epoch_on_change = 0;
+    std::uint32_t descending_channels = 0;
+};
+
+// A format describes electronics layout, not detector identity.
+// New TAMEX versions can provide different traits without cloning the loop.
+struct Tamex4Format
+{
+    static constexpr std::uint32_t channel_count = 33; // 0 = trigger
+    static constexpr std::uint32_t fine_bins = 1024;
+    static constexpr double fine_clock_ns = 5.0;
+    static constexpr std::uint32_t invalid_fine_code = 0x3ff;
+    static constexpr std::uint32_t epoch_mask = 0x0fffffff;
+    static constexpr std::uint32_t channel_mask = 0x7f;
+    static constexpr std::uint32_t coarse_mask = 0x7ff;
+    static constexpr std::uint32_t leading_mask = 1;
+};
+
+template <typename Format>
+class Decoder
 {
 public:
-    TamexReader(EXT_STR_h101_bgo_onion_t* input, std::size_t offset,
-                std::uint16_t procid, const std::string& detectorName = "");
-    TamexReader(EXT_STR_h101_fatima_onion_t* input, std::size_t offset,
-                std::uint16_t procid, const std::string& detectorName = "");
-    TamexReader(EXT_STR_h101_bplast_onion_t* input, std::size_t offset,
-                std::uint16_t procid, const std::string& detectorName = "");
-    TamexReader(EXT_STR_h101_mcp_onion_t* input, std::size_t offset,
-                std::uint16_t procid, const std::string& detectorName = "");
-    ~TamexReader() override;
+    template <typename Emit>
+    static DecodeStats Decode(const PackedBoardView& input, std::uint16_t board, Emit&& emit)
+    {
+        DecodeStats stats{};
+        const auto budget = c4_tamex_packed_safety::EventHitBudget(input.event_size_bytes);
+        std::uint32_t previous_epoch = 0;
+        std::uint32_t previous_channel = 0;
+        bool has_epoch = false;
+        bool last_word_was_epoch = false;
 
-    Bool_t Init(ext_data_struct_info*) override;
-    Bool_t Read() override;
-    void Reset() override;
+        for (std::uint32_t i = 0; i < budget; ++i)
+        {
+            if (!c4_tamex_packed_safety::HasCompleteHit(
+                    i, input.epoch_count, input.coarse_count, input.fine_count,
+                    input.channel_count, input.edge_count) ||
+                !input.epoch || !input.coarse || !input.fine ||
+                !input.channel || !input.edge)
+            {
+                ++stats.incomplete_words;
+                continue;
+            }
 
-    void SetOnline(Bool_t online) { fOnline = online; }
+            if (input.epoch[i] != 0)
+            {
+                previous_epoch = input.epoch[i] & Format::epoch_mask;
+                has_epoch = true;
+                last_word_was_epoch = true;
+                RawWord word{};
+                word.kind = WordKind::Epoch;
+                word.board = board;
+                word.packed_index = i;
+                word.epoch = previous_epoch;
+                word.has_preceding_epoch = true;
+                emit(word);
+                ++stats.epoch_words;
+                continue;
+            }
 
-private:
-    enum class InputKind : std::uint8_t { BGO, Fatima, bPlast, MCP };
-    TamexReader(void* input, std::size_t offset, std::uint16_t procid,
-                InputKind kind, const std::string& detectorName);
+            const auto channel = input.channel[i] & Format::channel_mask;
+            if (channel >= Format::channel_count)
+            {
+                ++stats.invalid_channels;
+                continue;
+            }
 
-    void* fInput = nullptr; //! UCESB owns this memory
-    std::size_t fOffset = 0;
-    std::uint16_t fProcId = 0;
-    std::string fDetectorName;
-    InputKind fKind = InputKind::BGO;
-    Bool_t fOnline = kFALSE;
-    TClonesArray* fArray = nullptr; //! Shared FairRoot output branch
-    bool fOwnsArray = false; //! Only the registering reader owns the array
+            RawWord word{};
+            word.kind = WordKind::Edge;
+            word.board = board;
+            word.packed_index = i;
+            word.epoch = previous_epoch;
+            word.channel = static_cast<std::uint16_t>(channel);
+            word.coarse = static_cast<std::uint16_t>(input.coarse[i] & Format::coarse_mask);
+            word.fine = input.fine[i];
+            word.leading = (input.edge[i] & Format::leading_mask) != 0;
+            word.has_preceding_epoch = has_epoch;
+            word.changed_channel_without_epoch =
+                channel != 0 && channel != previous_channel && !last_word_was_epoch;
+            word.channel_order_decreased = channel < previous_channel;
+            word.invalid_fine = input.fine[i] >= Format::fine_bins ||
+                                input.fine[i] == Format::invalid_fine_code;
 
-public:
-    ClassDefOverride(TamexReader, 0);
+            // Preserve anomalous electronics words and their flags in Raw.
+            // A downstream detector task chooses any rejection/matching policy.
+            if (word.changed_channel_without_epoch) ++stats.missing_epoch_on_change;
+            if (word.channel_order_decreased) ++stats.descending_channels;
+            if (word.invalid_fine) ++stats.invalid_fine_words;
+            emit(word);
+            ++stats.edge_words;
+            previous_channel = channel;
+            last_word_was_epoch = false;
+        }
+        return stats;
+    }
 };
+
+using Tamex4Decoder = Decoder<Tamex4Format>;
+
+template <typename Board, std::size_t N, typename NextBoard>
+void ReadBoards(const Board (&banks)[N], std::uint16_t procid,
+                const std::string& detectorName, std::uint16_t wr_subsystem, std::uint64_t wr_timestamp,
+                NextBoard&& nextBoard)
+{
+    static_assert(N <= 65535, "TAMEX board identifier exceeds Raw data capacity");
+    for (std::size_t i = 0; i < N; ++i)
+    {
+        const auto& bank = banks[i];
+        // Preserve trigger-only records, including legacy bPlast trigger 3.
+        if (bank.event_size == 0 && bank.trig == 0) continue;
+
+        auto& raw = nextBoard();
+        using StoredWord = typename std::decay_t<decltype(raw.Words())>::value_type;
+        raw.Reset();
+        raw.SetMetadata(procid, static_cast<std::uint16_t>(i),
+                         static_cast<std::uint16_t>(bank.trig),
+                         wr_subsystem, wr_timestamp, 4, detectorName);
+
+        const auto view = tamex::MakeBoardView(bank);
+        raw.ReserveWords(c4_tamex_packed_safety::EventHitBudget(bank.event_size));
+        tamex::Tamex4Decoder::Decode(
+            view, static_cast<std::uint16_t>(i),
+            [&raw](const tamex::RawWord& word) {
+                StoredWord persisted{};
+                persisted.kind = word.kind == tamex::WordKind::Epoch
+                                     ? StoredWord::Epoch : StoredWord::Edge;
+                persisted.packed_index = word.packed_index;
+                persisted.epoch = word.epoch;
+                persisted.channel = word.channel;
+                persisted.coarse = word.coarse;
+                persisted.fine = word.fine;
+                persisted.leading = word.leading;
+                if (word.has_preceding_epoch)
+                    persisted.flags |= StoredWord::HasPrecedingEpoch;
+                if (word.changed_channel_without_epoch)
+                    persisted.flags |= StoredWord::MissingEpochOnChannelChange;
+                if (word.channel_order_decreased)
+                    persisted.flags |= StoredWord::DescendingChannel;
+                if (word.invalid_fine)
+                    persisted.flags |= StoredWord::InvalidFine;
+                raw.AddWord(persisted);
+            });
+    }
+}
+} // namespace tamex
 
 #endif

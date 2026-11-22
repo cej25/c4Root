@@ -37,15 +37,11 @@
 #include "FatimaVmeCalibrator.h"
 #include "TamexPulseBuilder.h"
 #include "TamexFineTimeCalibration.h"
-#include "TamexFineTimeHistograms.h"
 #include "TamexRawData.h"
-#include "TFile.h"
-#include "TH1.h"
 
 #include <array>
 #include <cstdint>
 #include <cmath>
-#include <limits>
 #include <stdexcept>
 
 /*
@@ -187,7 +183,7 @@ InitStatus FatimaRaw2Cal::Init()
             }
         }
 
-        constexpr std::size_t channels_per_board = 33;
+        constexpr auto channels_per_board = tamex::Tamex4Format::channel_count;
         constexpr std::size_t max_boards = 12; // Standard TAMEX unpacker capacity
 
         if (fTamexCalibrateOnline)
@@ -300,7 +296,7 @@ Writes the times in ns!
 */
 void FatimaRaw2Cal::AccumulateTamexFineTime()
 {
-    constexpr std::size_t channels_per_board = 33;
+    constexpr auto channels_per_board = tamex::Tamex4Format::channel_count;
     for (std::size_t i = 0; i < TamexBoardCount(); ++i)
     {
         const auto* board = TamexBoardAt(i);
@@ -312,8 +308,8 @@ void FatimaRaw2Cal::AccumulateTamexFineTime()
         {
             if (word.kind != TamexRawWord::Edge || !word.leading ||
                 (word.flags & TamexRawWord::InvalidFine) ||
-                word.channel >= channels_per_board || word.fine >= 1024 ||
-                word.fine == 0x3ffu) continue;
+                word.channel >= channels_per_board || word.fine >= tamex::Tamex4Format::fine_bins ||
+                word.fine == tamex::Tamex4Format::invalid_fine_code) continue;
 
             ++fTamexFineCounts[static_cast<std::size_t>(board->Board()) *
                                channels_per_board + word.channel][word.fine];
@@ -324,40 +320,15 @@ void FatimaRaw2Cal::AccumulateTamexFineTime()
 void FatimaRaw2Cal::WriteTamexFineTimeHistograms()
 {
     if (fTamexFineTimeOutput.IsNull()) return;
-    TFile output(fTamexFineTimeOutput, "RECREATE");
-    if (output.IsZombie())
+    try
     {
-        c4LOG(error, "Cannot write FATIMA fine-time histograms: " << fTamexFineTimeOutput);
+        tamex::WriteFineTimeHistograms(fTamexFineTimeOutput, fTamexFineCounts);
+    }
+    catch (const std::runtime_error& error)
+    {
+        c4LOG(error, "FATIMA TAMEX fine-time calibration: " << error.what());
         return;
     }
-    constexpr std::size_t channels_per_board = 33;
-    for (std::size_t board = 0; board < fTamexFineCounts.size() / channels_per_board; ++board)
-    {
-        for (std::size_t channel = 0; channel < channels_per_board; ++channel)
-        {
-            const TString name = TString::Format("fine_time_hits_%u_%u",
-                static_cast<unsigned>(board), static_cast<unsigned>(channel));
-            TH1I histogram(name, name, 1024, 0, 1024);
-            const auto& counts = fTamexFineCounts[board * channels_per_board + channel];
-            double total = 0.0;
-            for (std::size_t bin = 0; bin < counts.size(); ++bin)
-            {
-                // Use TH1I for compatibility with existing fine-time files.
-                if (counts[bin] > static_cast<std::uint64_t>(std::numeric_limits<int>::max()))
-                {
-                    c4LOG(error, "FATIMA fine-time histogram bin exceeds TH1I capacity: " << name);
-                    output.Close();
-                    return;
-                }
-                const double count = static_cast<double>(counts[bin]);
-                histogram.SetBinContent(static_cast<int>(bin + 1), count);
-                total += count;
-            }
-            histogram.SetEntries(total);
-            histogram.Write();
-        }
-    }
-    output.Close();
     c4LOG(info, "FATIMA TAMEX fine-time histograms written to " << fTamexFineTimeOutput);
 }
 
@@ -369,9 +340,7 @@ void FatimaRaw2Cal::FinaliseTamexFineTime()
         tamex::FineTimeCalibration<> calibration;
         calibration.SetCounts(fTamexFineCounts[index]);
         calibration.Calculate();
-        auto& times = fTamexFineTimes[index];
-        for (std::size_t bin = 0; bin < times.size(); ++bin)
-            times[bin] = calibration.Time(bin);
+        fTamexFineTimes[index] = calibration.Times();
     }
     fTamexCalibrationReady = true;
     WriteTamexFineTimeHistograms();
@@ -382,7 +351,7 @@ void FatimaRaw2Cal::FinaliseTamexFineTime()
 void FatimaRaw2Cal::BuildTamexLegacyHits()
 {
     fTamexLegacyHits->Clear();
-    constexpr std::size_t channels_per_board = 33;
+    constexpr auto channels_per_board = tamex::Tamex4Format::channel_count;
     for (std::size_t i = 0; i < TamexBoardCount(); ++i)
     {
         const auto* board = TamexBoardAt(i);
@@ -392,28 +361,7 @@ void FatimaRaw2Cal::BuildTamexLegacyHits()
             c4LOG(error, "Unsupported procid, format or FATIMA board in TAMEX Raw input");
             continue;
         }
-        tamex::LegacyPulseBuilder builder;
-        builder.Reset();
-        const std::size_t board_index = board->Board();
-        const auto fine_time = [this, board_index](std::uint16_t channel, std::uint32_t fine) {
-            return fTamexFineTimes[board_index * channels_per_board + channel][fine];
-        };
-        for (const auto& word : board->Words())
-        {
-            if (word.kind != TamexRawWord::Epoch && word.kind != TamexRawWord::Edge) continue;
-            if (word.kind == TamexRawWord::Edge &&
-                (word.channel >= channels_per_board || word.fine >= 1024)) continue;
-            builder.Process(word, true, fine_time, [this, board](const tamex::PairedPulse& pulse) {
-                new ((*fTamexLegacyHits)[fTamexLegacyHits->GetEntriesFast()]) FatimaTwinpeaksData(
-                    board->Trigger(), board->Board(), pulse.channel,
-                    static_cast<std::int64_t>(pulse.accepted_trigger_ns),
-                    pulse.accepted_trigger.epoch, pulse.accepted_trigger.coarse,
-                    pulse.accepted_trigger.fine_ns,
-                    pulse.lead.epoch, pulse.lead.coarse, pulse.lead.fine_ns,
-                    pulse.trail.epoch, pulse.trail.coarse, pulse.trail.fine_ns,
-                    board->WrSubsystem(), board->WrTimestamp());
-            });
-        }
+        tamex::AppendTwinpeaksHits<FatimaTwinpeaksData>(*board, fTamexFineTimes, *fTamexLegacyHits);
     }
 }
 

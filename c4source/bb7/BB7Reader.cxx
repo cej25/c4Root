@@ -19,7 +19,7 @@
 
 #include "BB7VmeData.h"
 #include "BB7RawData.h"
-#include "VmeDigitiserDecode.h"
+#include "VmeReader.h"
 #include "BB7Reader.h"
 #include "c4Logger.h"
 

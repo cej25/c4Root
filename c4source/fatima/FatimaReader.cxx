@@ -1,8 +1,8 @@
 #include "FatimaReader.h"
 
 #include "FatimaRawData.h"
-#include "TamexRawDecode.h"
-#include "VmeRawDecode.h"
+#include "TamexReader.h"
+#include "VmeReader.h"
 #include "FairRootManager.h"
 #include "c4Logger.h"
 #include "ext_data_struct_info.hh"

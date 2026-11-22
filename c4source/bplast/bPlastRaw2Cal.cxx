@@ -31,8 +31,8 @@
 
 #include "TClonesArray.h"
 
-#include "TamexFineTimeHistograms.h"
-#include "TamexTwinpeaksHits.h"
+#include "TamexFineTimeCalibration.h"
+#include "TamexPulseBuilder.h"
 #include "TamexRawData.h"
 
 #include "bPlastRaw2Cal.h"

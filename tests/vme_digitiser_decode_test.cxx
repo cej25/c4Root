@@ -1,6 +1,6 @@
 #include "../c4source/bb7/ext_h101_bb7vme.h"
 #include "../c4source/fatima/ext_h101_fatimavme.h"
-#include "../c4source/digitisers/vme/VmeDigitiserDecode.h"
+#include "../c4source/digitisers/vme/VmeReader.h"
 #include <cassert>
 #include <cstdint>
 #include <iostream>

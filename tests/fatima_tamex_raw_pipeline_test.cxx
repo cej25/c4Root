@@ -1,4 +1,4 @@
-#include "../c4source/digitisers/tamex/TamexDecoder.h"
+#include "../c4source/digitisers/tamex/TamexReader.h"
 #include "../c4source/digitisers/tamex/TamexFineTimeCalibration.h"
 #include "../c4source/digitisers/tamex/TamexPulseBuilder.h"
 

@@ -27,7 +27,7 @@
 #include "bPlastTwinpeaksData.h"
 #include "bPlastReader.h"
 #include "TamexPackedSafety.h"
-#include "TamexRawDecode.h"
+#include "TamexReader.h"
 #include "c4Logger.h"
 
 #include "TClonesArray.h"

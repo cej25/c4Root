@@ -62,11 +62,9 @@ set(SRCS
 ./base/c4Reader.cxx
 ./base/CorrelationsMap.cxx
 ./base/GainShift.cxx
-./digitisers/tamex/TamexReader.cxx
+./digitisers/tamex/TamexFineTimeCalibration.cxx
 ./degas/DegasReader.cxx
 ./degas/DegasRaw2Cal.cxx
-./digitisers/vme/V1751Reader.cxx
-./digitisers/vme/V1290Reader.cxx
 ./aida/AidaReader.cxx
 ./aida/AidaCal2Hit.cxx
 ./aida/AidaUnpack2Cal.cxx
