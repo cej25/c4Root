@@ -1,0 +1,41 @@
+name: Generate native UCESB headers
+on:
+  push:
+    branches: [validation/ucesb-structure-headers]
+permissions:
+  contents: read
+jobs:
+  generate:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 18
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install build dependencies
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq flex bison libncurses-dev libtirpc-dev python3-yaml
+      - name: Build UCESB and the unpackers
+        run: |
+          git clone --depth 1 https://git.chalmers.se/expsubphys/ucesb.git "${RUNNER_TEMP}/ucesb"
+          git -C "${RUNNER_TEMP}/ucesb" rev-parse HEAD
+          export UCESB_BASE_DIR="${RUNNER_TEMP}/ucesb"
+          make -C "$UCESB_BASE_DIR" -j2 empty USE_CURSES=1
+          make -C unpack/exps/s181 -j2 s181
+          make -C unpack/exps/s100 -j2 s100
+      - name: Generate native structure headers
+        run: |
+          out="${RUNNER_TEMP}/native-ucesb"
+          mkdir -p "$out"
+          s181="$PWD/unpack/exps/s181/s181"
+          s100="$PWD/unpack/exps/s100/s100"
+          cd "$out"
+          "$s181" /dev/null --ntuple=NOTRIGEVENTNO,UNPACK:bbseven,STRUCT_HH,id=h101_bb7vme,ext_h101_bb7vme.h
+          "$s100" /dev/null --ntuple=NOTRIGEVENTNO,UNPACK:fatimavme,STRUCT_HH,id=h101_fatimavme,ext_h101_fatimavme.h
+          "$s100" /dev/null --ntuple=NOTRIGEVENTNO,RAW:FEBEX,STRUCT_HH,id=h101_febex,ext_h101_febex.h
+          sha256sum ext_h101_*.h
+      - uses: actions/upload-artifact@v4
+        with:
+          name: native-ucesb-headers
+          path: ${{ runner.temp }}/native-ucesb/*.h
+          if-no-files-found: error
+          retention-days: 2
