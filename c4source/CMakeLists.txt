@@ -63,7 +63,6 @@ set(SRCS
 ./base/CorrelationsMap.cxx
 ./base/GainShift.cxx
 ./digitisers/tamex/TamexReader.cxx
-./digitisers/febex/FebexReader.cxx
 ./degas/DegasReader.cxx
 ./degas/DegasRaw2Cal.cxx
 ./digitisers/vme/V1751Reader.cxx
@@ -109,7 +108,7 @@ set(SRCS
 )
 
 Set(STRUCT_HEADERS
-./digitisers/febex/ext_h101_febex.h
+./degas/ext_h101_degas.h
 ./base/ext_h101_unpack.h
 ./aida/ext_h101_aida.h
 ./frs/ext_h101_frs.h

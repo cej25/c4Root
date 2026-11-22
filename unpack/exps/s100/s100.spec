@@ -53,7 +53,21 @@ SUBEVENT(aida_subev)
     external data = EXT_AIDA();
 }
 
-S100_FEBEX_SUBEVENTS
+SUBEVENT(febex_subev)
+{
+    select optional
+    {
+        ts = TIMESTAMP_WHITERABBIT(id = S100_WR_GERMANIUM);
+    };
+    select several
+    {
+        padding = FEBEX_PADDING();
+    };
+    select several
+    {
+        S100_DEGAS_CARDS
+    };
+}
 
 SUBEVENT(fatima_tamex_subev)
 {
@@ -246,7 +260,7 @@ SUBEVENT(bm_subev)
 EVENT
 {
     revisit aida = aida_subev(type = 10, subtype = 1, procid = S100_PROCID_AIDA, control = 37);
-    S100_FEBEX_EVENT_ROUTES
+    germanium = febex_subev(type = 10, subtype = 1, procid = S100_PROCID_GERMANIUM, control = 20);
     fatima = fatima_tamex_subev(type = 10, subtype = 1, procid = S100_PROCID_FATIMA, control = 20);
     fatimavme = fatima_vme_subev(procid = S100_PROCID_FATIMAVME); // control 20, type 10, subtype 1
     bplast = bplast_subev(type = 10, subtype = 1, procid = S100_PROCID_BPLAST, control = 20);

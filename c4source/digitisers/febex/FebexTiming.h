@@ -5,6 +5,11 @@
 
 namespace febex
 {
+constexpr std::uint64_t JoinTicks(std::uint32_t high, std::uint32_t low)
+{
+    return (std::uint64_t{high} << 32) | low;
+}
+
 constexpr double LegacyChannelTimeNs(std::uint64_t channelTicks, std::uint8_t cfd)
 {
     return (static_cast<double>(channelTicks & 0xffffffu) + (cfd & 0x3fu) / 64.0) * 10.0;

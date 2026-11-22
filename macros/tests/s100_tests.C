@@ -48,23 +48,18 @@
 #include "TbPlastConfiguration.h"
 #include "ext_h101_fatima.h"
 #include "ext_h101_fatimavme.h"
-#include "ext_h101_febex.h"
+#include "ext_h101_degas.h"
 #include "ext_h101_unpack.h"
 #include "../../unpack/exps/s100/s100_config.gen.spec"
-#include "../../unpack/exps/s100/s100_febex_banks.gen.hh"
 
 #include <TFolder.h>
 #include <TROOT.h>
 #include <TStopwatch.h>
-#include <algorithm>
-#include <array>
 #include <cstddef>
 #include <ctime>
 #include <iomanip>
 #include <iostream>
 #include <sstream>
-#include <stdexcept>
-#include <string_view>
 
 R__LOAD_LIBRARY(libc4source)
 R__LOAD_LIBRARY(libc4Analysis)
@@ -97,7 +92,7 @@ typedef struct EXT_STR_h101_t
     EXT_STR_h101_fatimavme_onion_t fatimavme;
     EXT_STR_h101_aida_onion_t aida;
     EXT_STR_h101_bplast_onion_t bplast;
-    std::array<EXT_STR_h101_febex_onion, s100FebexBanks.size()> febex;
+    EXT_STR_h101_degas_onion degas;
     EXT_STR_h101_frs_onion_t frs;
     EXT_STR_h101_beammonitor_onion_t beammonitor;
     EXT_STR_h101_bgo_onion_t bgo;
@@ -179,7 +174,7 @@ void s100_tests(const char* input = "/u/cjones/data/lustre/despec/fatima_test_20
 
     // Create source using ucesb for input
     static EXT_STR_h101 ucesb_struct{};
-    TString ntuple_options = "UNPACK,RAW"; // Define which level of data to unpack - we don't use "RAW" or "CAL"
+    TString ntuple_options = "UNPACK,RAW";
     UcesbSource* source = new UcesbSource(filename, ntuple_options, ucesb_path, &ucesb_struct, sizeof(ucesb_struct));
     source->SetMaxEvents(nev);
     run->SetSource(source);
@@ -285,13 +280,8 @@ void s100_tests(const char* input = "/u/cjones/data/lustre/despec/fatima_test_20
 
     if (DEGAS_ON)
     {
-        const auto bank = std::find_if(s100FebexBanks.begin(), s100FebexBanks.end(), [](const auto& spec) {
-            return std::string_view(spec.detector) == "DEGAS";
-        });
-        if (bank == s100FebexBanks.end()) throw std::runtime_error("Missing DEGAS bank in the S100 configuration");
-        const auto index = static_cast<std::size_t>(bank - s100FebexBanks.begin());
-        const auto offset = offsetof(EXT_STR_h101, febex) + index * sizeof(EXT_STR_h101_febex_onion);
-        auto* reader = new DegasReader(&ucesb_struct.febex[index], offset, bank->procid, bank->name);
+        auto* reader = new DegasReader(&ucesb_struct.degas, offsetof(EXT_STR_h101, degas),
+                                       S100_PROCID_GERMANIUM);
         reader->SetOnline(!persist);
         source->AddReader(reader);
     }

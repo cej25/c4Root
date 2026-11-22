@@ -64,5 +64,3 @@ SIGNAL(WR_T2, frstpat.wr.t2, DATA16);
 SIGNAL(WR_T3, frstpat.wr.t3, DATA16);
 SIGNAL(WR_T4, frstpat.wr.t4, DATA16);
 SIGNAL(TPAT, frstpat.data.tpat, DATA16);
-// Stable RAW fields for the DEGAS FEBEX summary stream.
-S100_FEBEX_RAW_SIGNALS
