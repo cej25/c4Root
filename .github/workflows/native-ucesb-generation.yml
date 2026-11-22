@@ -22,19 +22,25 @@ jobs:
           make -C "$UCESB_BASE_DIR" -j2 empty USE_CURSES=1
           make -C unpack/exps/s181 -j2 s181
           make -C unpack/exps/s100 -j2 s100
+          make -C unpack/exps/s452 -j2 s452
       - name: Generate native structure headers
         run: |
           out="${RUNNER_TEMP}/native-ucesb"
           mkdir -p "$out"
           s181="$PWD/unpack/exps/s181/s181"
           s100="$PWD/unpack/exps/s100/s100"
+          s452="$PWD/unpack/exps/s452/s452"
           cd "$out"
           "$s181" /dev/null --ntuple=NOTRIGEVENTNO,UNPACK:bbseven,STRUCT_HH,id=h101_bb7vme,ext_h101_bb7vme.h
           "$s100" /dev/null --ntuple=NOTRIGEVENTNO,UNPACK:fatimavme,STRUCT_HH,id=h101_fatimavme,ext_h101_fatimavme.h
           "$s100" /dev/null --ntuple=NOTRIGEVENTNO,RAW:FEBEX,STRUCT_HH,id=h101_febex,ext_h101_febex.h
           mkdir s181
           (cd s181 && "$s181" /dev/null --ntuple=NOTRIGEVENTNO,UNPACK:fatimavme,STRUCT_HH,id=h101_fatimavme,ext_h101_fatimavme.h)
-          sha256sum ext_h101_*.h s181/*.h
+          mkdir s452
+          (cd s452 && "$s452" /dev/null --ntuple=NOTRIGEVENTNO,UNPACK:fatimavme,STRUCT_HH,id=h101_fatimavme,ext_h101_fatimavme.h)
+          sha256sum ext_h101_*.h s181/*.h s452/*.h
+          cmp ext_h101_fatimavme.h s181/ext_h101_fatimavme.h
+          cmp ext_h101_fatimavme.h s452/ext_h101_fatimavme.h
           mkdir ucesb-client
           cp "${RUNNER_TEMP}"/ucesb/hbook/ext_data_{client.h,client.c,proto.h,struct_info.hh} ucesb-client/
       - uses: actions/upload-artifact@v4
