@@ -1,4 +1,4 @@
-#include "../c4source/digitisers/febex/FebexTiming.h"
+#include "../c4source/digitisers/febex/FebexConversions.h"
 
 #include "../c4source/germanium/GermaniumCalibration.h"
 

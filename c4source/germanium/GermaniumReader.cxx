@@ -21,7 +21,7 @@
 // c4
 #include "GermaniumFebexData.h"
 #include "GermaniumReader.h"
-#include "../digitisers/febex/FebexTiming.h"
+#include "../digitisers/febex/FebexConversions.h"
 #include "GermaniumPackedSafety.h"
 #include "c4Logger.h"
 

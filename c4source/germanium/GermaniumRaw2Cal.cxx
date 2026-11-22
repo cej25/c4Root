@@ -32,7 +32,7 @@
 #include "TClonesArray.h"
 #include "GermaniumRaw2Cal.h"
 #include "GermaniumCalibration.h"
-#include "../digitisers/febex/FebexTiming.h"
+#include "../digitisers/febex/FebexConversions.h"
 
 /*
 Empty constructor for FairRoot.

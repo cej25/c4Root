@@ -1,7 +1,7 @@
 #include "DegasRaw2Cal.h"
 
 #include "DegasRawData.h"
-#include "FebexTiming.h"
+#include "FebexConversions.h"
 #include "GermaniumCalData.h"
 #include "GermaniumCalibration.h"
 #include "TGermaniumConfiguration.h"
@@ -55,12 +55,16 @@ void DegasRaw2Cal::Exec(Option_t*)
         {
             if ((fVetoPileup && hit.pileup) || (fVetoOverflow && hit.overflow)) continue;
 
+            // Older RAW trees store only the original FEBEX values.
+            const auto signedEnergy = hit.hasConvertedValues ? hit.signedEnergy
+                : febex::GammaSignedEnergy(hit.energyWord);
             // The legacy detector map uses the UCESB slot as its board key.
             const auto cal = germanium::CalibrateHit(mapping, coefficients, board.slot, hit.channel,
-                                                       febex::GammaSignedEnergy(hit.energyWord), calibrateEnergy);
+                                                       signedEnergy, calibrateEnergy);
             if (!cal) continue;
 
-            const auto channelTime = febex::LegacyChannelTimeNs(hit.channelTicks, hit.cfd);
+            const auto channelTime = hit.hasConvertedValues ? hit.legacyChannelTimeNs
+                : febex::LegacyChannelTimeNs(hit.channelTicks, hit.cfd);
             if (cal->detector == fConfig->TM_Delayed())
                 new ((*fTimeMachine)[fTimeMachine->GetEntriesFast()])
                     TimeMachineData(0, channelTime, board.wrId, board.wrTimestamp);
@@ -68,7 +72,8 @@ void DegasRaw2Cal::Exec(Option_t*)
                 new ((*fTimeMachine)[fTimeMachine->GetEntriesFast()])
                     TimeMachineData(channelTime, 0, board.wrId, board.wrTimestamp);
 
-            const auto offset = febex::HitOffsetNs(board.eventTicks, hit.channelTicks, hit.cfd);
+            const auto offset = hit.hasConvertedValues ? hit.hitOffsetNs
+                : febex::HitOffsetNs(board.eventTicks, hit.channelTicks, hit.cfd);
             new ((*fCal)[fCal->GetEntriesFast()])
                 GermaniumCalData(board.trigger, board.eventTicks * 10, hit.pileup, hit.overflow,
                                  channelTime, cal->energy, cal->crystal, cal->detector,

@@ -1,7 +1,7 @@
 #include "DegasReader.h"
 
 #include "DegasRawData.h"
-#include "FebexTiming.h"
+#include "FebexConversions.h"
 
 #include "FairRootManager.h"
 #include "c4Logger.h"
@@ -104,6 +104,10 @@ Bool_t DegasReader::Read()
             hit.cfd = board.channel_cfdv[i];
             hit.pileup = board.pileupv[i] != 0;
             hit.overflow = board.overflowv[i] != 0;
+            hit.signedEnergy = febex::GammaSignedEnergy(hit.energyWord);
+            hit.hitOffsetNs = febex::HitOffsetNs(output.eventTicks, hit.channelTicks, hit.cfd);
+            hit.legacyChannelTimeNs = febex::LegacyChannelTimeNs(hit.channelTicks, hit.cfd);
+            hit.hasConvertedValues = true;
         }
     }
     return kTRUE;
