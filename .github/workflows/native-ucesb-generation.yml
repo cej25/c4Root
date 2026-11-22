@@ -6,7 +6,7 @@ permissions:
   contents: read
 jobs:
   generate:
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-22.04
     timeout-minutes: 18
     steps:
       - uses: actions/checkout@v4
@@ -32,10 +32,14 @@ jobs:
           "$s181" /dev/null --ntuple=NOTRIGEVENTNO,UNPACK:bbseven,STRUCT_HH,id=h101_bb7vme,ext_h101_bb7vme.h
           "$s100" /dev/null --ntuple=NOTRIGEVENTNO,UNPACK:fatimavme,STRUCT_HH,id=h101_fatimavme,ext_h101_fatimavme.h
           "$s100" /dev/null --ntuple=NOTRIGEVENTNO,RAW:FEBEX,STRUCT_HH,id=h101_febex,ext_h101_febex.h
-          sha256sum ext_h101_*.h
+          mkdir s181
+          (cd s181 && "$s181" /dev/null --ntuple=NOTRIGEVENTNO,UNPACK:fatimavme,STRUCT_HH,id=h101_fatimavme,ext_h101_fatimavme.h)
+          sha256sum ext_h101_*.h s181/*.h
+          mkdir ucesb-client
+          cp "${RUNNER_TEMP}"/ucesb/hbook/ext_data_{client.h,client.c,proto.h,struct_info.hh} ucesb-client/
       - uses: actions/upload-artifact@v4
         with:
           name: native-ucesb-headers
-          path: ${{ runner.temp }}/native-ucesb/*.h
+          path: ${{ runner.temp }}/native-ucesb/
           if-no-files-found: error
           retention-days: 2
