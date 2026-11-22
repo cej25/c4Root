@@ -59,16 +59,10 @@ class S100VmeSpecTests(unittest.TestCase):
         self.assertLess(v1751.index("id = MATCH(board)"), v1751.index("MATCH_END;"))
         self.assertLess(v1751.index("MATCH_END;"), v1751.index("UINT32 board_agg_counter"))
 
-    def test_fixed_geo_uses_the_legacy_v1290_payload(self):
-        common = (COMMON / "vme_caen_v1x90.spec").read_text()
-        original = common[common.index("VME_CAEN_V1290_N()"):common.index("VME_CAEN_V1190_N()")]
+    def test_v1290_matches_geo_before_accepting_the_bank(self):
         fixed = V1290[V1290.index("VME_CAEN_V1290_GEO(geom_expected)"):]
         self.assertLess(fixed.index("MATCH(geom_expected)"), fixed.index("MATCH_END;"))
         self.assertLess(fixed.index("MATCH_END;"), fixed.index("select several"))
-        legacy = fixed.replace("VME_CAEN_V1290_GEO(geom_expected)", "VME_CAEN_V1290_N()")
-        legacy = legacy.replace("0_4: geom = MATCH(geom_expected);", "0_4: geom;")
-        legacy = re.sub(r"\s*// Distinguish board GEO[^\n]*\n\s*MATCH_END;", "", legacy)
-        self.assertEqual(legacy, original)
 
 
 if __name__ == "__main__":

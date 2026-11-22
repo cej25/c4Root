@@ -4,6 +4,7 @@
 #include <cassert>
 #include <cstdint>
 #include <iostream>
+#include <limits>
 #include <tuple>
 #include <vector>
 
@@ -14,7 +15,58 @@ struct MockTdc {
     std::uint32_t _measurement_nME[128] = {};
     std::int32_t _geo = 2;
 };
+static void TestQdcBounds()
+{
+    using namespace fatima_vme_qdc_safety;
+
+    assert(CompleteEntry(0, 1, 1, 1, 1, 1));
+    assert(!CompleteEntry(0, 0, 0, 0, 0, 0));
+    assert(CompleteEntry(7, 8, 8, 8, 8, 8));
+    assert(CompleteEntry(63, 64, 64, 64, 64, 64));
+    assert(!CompleteEntry(64, 100, 100, 100, 100, 100));
+    assert(!CompleteEntry(1, 1, 2, 2, 2, 2));
+    assert(!CompleteEntry(1, 2, 1, 2, 2, 2));
+    assert(!CompleteEntry(1, 2, 2, 1, 2, 2));
+    assert(!CompleteEntry(1, 2, 2, 2, 1, 2));
+    assert(!CompleteEntry(1, 2, 2, 2, 2, 1));
+
+    assert(CompleteWaveformTriplets(0, 120, 120) == 0);
+    assert(CompleteWaveformTriplets(1, 1, 1) == 1);
+    assert(CompleteWaveformTriplets(120, 120, 120) == 120);
+    assert(CompleteWaveformTriplets(224, 224, 224) == 120);
+    assert(CompleteWaveformTriplets(80, 90, 100) == 80);
+    assert(CompleteWaveformTriplets(100, 80, 90) == 80);
+    assert(CompleteWaveformTriplets(100, 90, 80) == 80);
+    assert(CompleteWaveformTriplets(std::numeric_limits<std::uint32_t>::max(),
+                                   120, 120) == 120);
+    assert(CompleteWaveformTriplets(120, 0, 120) == 0);
+}
+
+static void TestTdcBounds()
+{
+    using namespace fatima_vme_packed_safety;
+
+    assert(ValidTdcBlock(0, 1, 1, 1));
+    assert(ValidTdcBlock(1, 2, 2, 2));
+    assert(ValidTdcBlock(2, 2, 2, 2));
+    assert(ValidTdcBlock(0, 16384, 16384, 16384));
+    assert(!ValidTdcBlock(3, 2, 3, 3));
+    assert(!ValidTdcBlock(0, 2, 1, 2));
+    assert(!ValidTdcBlock(0, 2, 2, 1));
+    assert(!ValidTdcBlock(0, 16385, 16385, 16385));
+    assert(!ValidTdcBlock(0, std::numeric_limits<std::uint32_t>::max(), 10, 10));
+
+    assert(BoundedBlockCount(0) == 0);
+    assert(BoundedBlockCount(1) == 1);
+    assert(BoundedBlockCount(128) == 128);
+    assert(BoundedBlockCount(129) == 128);
+    assert(BoundedBlockCount(std::numeric_limits<std::uint32_t>::max()) == 128);
+}
+
 int main() {
+    TestQdcBounds();
+    TestTdcBounds();
+
     const std::uint16_t ts[] = {0x1234, 0x5678, 0x9abc, 0xdef0};
     assert(c4::vme::Timestamp(ts) == 0xdef09abc56781234ULL);
 
