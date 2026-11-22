@@ -110,6 +110,8 @@
 #pragma link C++ class FatimaVmeChainRaw+;
 #pragma link C++ class FatimaRawData+;
 #pragma link C++ class FebexRawHit+;
+#pragma read sourceClass="FebexRawHit" version="[1]" targetClass="FebexRawHit" \
+    source="" target="hasConvertedValues" code="{ hasConvertedValues = false; }"
 #pragma link C++ class std::vector<FebexRawHit>+;
 #pragma link C++ class FebexRawData+;
 #pragma link C++ class std::vector<FebexRawData>+;

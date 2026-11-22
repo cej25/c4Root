@@ -5,17 +5,16 @@
 
 #include <cstddef>
 #include <cstdint>
-#include <string>
 
 class DegasRawData;
 class ext_data_struct_info;
-struct EXT_STR_h101_febex_onion_t;
+struct EXT_STR_h101_degas_onion_t;
 
 class DegasReader : public c4Reader
 {
 public:
-    DegasReader(EXT_STR_h101_febex_onion_t* input, std::size_t offset,
-                std::uint16_t procid, const std::string& bankName = "FEBEX");
+    DegasReader(EXT_STR_h101_degas_onion_t* input, std::size_t offset,
+                std::uint16_t procid);
     ~DegasReader() override;
 
     Bool_t Init(ext_data_struct_info*) override;
@@ -26,10 +25,9 @@ public:
     ClassDefOverride(DegasReader, 0);
 
 private:
-    EXT_STR_h101_febex_onion_t* fInput; //! UCESB input
+    EXT_STR_h101_degas_onion_t* fInput; //! UCESB input
     std::size_t fOffset;
     std::uint16_t fProcId;
-    std::string fBankName;
     Bool_t fOnline = kFALSE;
     DegasRawData* fOutput; //! Owns detector data
 };

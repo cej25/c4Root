@@ -16,7 +16,13 @@ struct FebexRawHit
     bool pileup = false;
     bool overflow = false;
 
-    ClassDefNV(FebexRawHit, 1);
+    // Electronics-level values filled by DegasReader. Keep the original words above.
+    std::int32_t signedEnergy = 0;
+    std::int64_t hitOffsetNs = 0;
+    double legacyChannelTimeNs = 0.0;
+    bool hasConvertedValues = false;
+
+    ClassDefNV(FebexRawHit, 2);
 };
 
 // One present board in the FEBEX summary stream.
