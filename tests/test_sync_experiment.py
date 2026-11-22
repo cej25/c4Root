@@ -5,11 +5,12 @@ from pathlib import Path
 import sys
 import tempfile
 import unittest
+from unittest.mock import patch
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "scripts"))
 
-from sync_experiment import installed_layouts, stale_headers
+from sync_experiment import installed_layouts, regenerate_headers, stale_headers
 from validate_experiment import emit_whiterabbit, read_yaml
 
 
@@ -35,6 +36,20 @@ class SyncExperimentTests(unittest.TestCase):
             self.assertIn("tamex[0] = TAMEX4_SFP(sfp = 1, card = 9);", fatima)
             self.assertIn("tamex[4] = TAMEX4_SFP(sfp = 0, card = 0);", fatima)
             self.assertEqual(set(stale_headers(installed_layouts(read_yaml(path)))), {"fatima"})
+
+    def test_generated_header_is_installed_byte_for_byte(self):
+        generated = (b"typedef struct { struct { unsigned entry; } fatima_tamex[1]; } "
+                     b"EXT_STR_h101_fatima_onion;\r\n/* Native layout table */\r\n")
+        with tempfile.TemporaryDirectory() as folder:
+            target = Path(folder) / "ext_h101_fatima.h"
+
+            def generate(command, cwd, check):
+                (Path(cwd) / target.name).write_bytes(generated)
+
+            with patch("sync_experiment.subprocess.run", generate), patch("sync_experiment.ROOT", Path(folder)):
+                regenerate_headers({"fatima": [(0, 0)]}, {"fatima": target})
+
+            self.assertEqual(target.read_bytes(), generated)
 
     def test_bad_or_uncompiled_addresses_are_rejected(self):
         config = read_yaml(ROOT / "config/s100/experiment.yaml")

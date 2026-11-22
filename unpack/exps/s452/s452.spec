@@ -114,12 +114,12 @@ SUBEVENT(fatima_vme_subev)
     // The remaining addresses reserve slots in the shared output layout.
     select several
     {
-        qdc1 = VME_CAEN_V1751(board = 6);
-        qdc2 = VME_CAEN_V1751(board = 7);
-        qdc3 = VME_CAEN_V1751(board = 8);
-        qdc4 = VME_CAEN_V1751(board = 9);
-        qdc5 = VME_CAEN_V1751(board = 10);
-        qdc6 = VME_CAEN_V1751(board = 31);
+        qdc[0] = VME_CAEN_V1751(board = 6);
+        qdc[1] = VME_CAEN_V1751(board = 7);
+        qdc[2] = VME_CAEN_V1751(board = 8);
+        qdc[3] = VME_CAEN_V1751(board = 9);
+        qdc[4] = VME_CAEN_V1751(board = 10);
+        qdc[5] = VME_CAEN_V1751(board = 31);
         error2 = ERR_WORD_SIX();
     };
 

@@ -43,18 +43,6 @@ def validate_generated_header(text):
     return dimensions
 
 
-def client_header(text):
-    # c4Root registers through ITEMS_INFO. The standalone packed-offset table
-    # is unused and alone accounts for several MiB of generated text.
-    boundary = text.find("/********************************************************\n *\n * For internal use by the network data reader:")
-    if boundary < 0:
-        raise ValueError("UCESB output lacks the standalone layout boundary")
-    guard = re.search(r"(?m)^#endif[^\n]*__GUARD_[^\n]+$", text[boundary:])
-    if guard is None:
-        raise ValueError("UCESB output lacks its closing include guard")
-    return text[:boundary].rstrip() + "\n\n" + guard.group(0) + "\n"
-
-
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--output", type=Path, required=True,
@@ -86,9 +74,10 @@ def main():
                 raise ValueError(f"native UCESB header generation failed: {result.returncode}")
             if not generated_path.is_file():
                 raise ValueError("UCESB did not generate the requested header")
-            content = generated_path.read_text()
-            dimensions = validate_generated_header(content)
-            output.write_text(client_header(content))
+            content = generated_path.read_bytes()
+            dimensions = validate_generated_header(content.decode())
+            with output.open("xb") as header:
+                header.write(content)
         print(f"STAGED: {output}")
         print(f"FATIMA VME structure capacity: QDC={dimensions['qdc']}, TDC={dimensions['tdc']}")
         return 0

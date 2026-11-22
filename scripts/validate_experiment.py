@@ -497,9 +497,11 @@ def emit_whiterabbit(config, include_procids=False):
         print(f"#define {tamex_cards_symbol(member)} {cards}")
     for model, slots in vme.items():
         symbol, bank, decoder, parameter = S100_VME_MODELS[model]
+        names = (f"{bank}[{slot}]" if model == "v1751" else f"{bank}{slot + 1}"
+                 for slot in range(len(slots)))
         banks = " ".join(
-            f"{bank}{slot} = {decoder}({parameter} = {address});"
-            for slot, address in enumerate(slots, 1)
+            f"{name} = {decoder}({parameter} = {address});"
+            for name, address in zip(names, slots)
         )
         print(f"#define {symbol} {banks}")
 

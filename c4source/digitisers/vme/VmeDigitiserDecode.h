@@ -37,7 +37,7 @@ void DecodeV775(std::uint32_t count, const std::uint32_t (&indices)[Channels],
 
 template<typename Bank, typename Emit>
 void DecodeV1751(const Bank& bank, std::size_t slot, Emit emit) {
-    const auto mask = static_cast<std::uint32_t>(bank._channels);
+    const auto mask = static_cast<std::uint32_t>(bank.channels);
     // s100 FATIMA QDC uses channels 0..7, matching its legacy reader.
     for (std::uint32_t channel = 0; channel < 8; ++channel) {
         if ((mask & (1u << channel)) == 0) continue;
@@ -47,10 +47,10 @@ void DecodeV1751(const Bank& bank, std::size_t slot, Emit emit) {
         for (std::uint32_t c = 0; c < channel; ++c)
             if (mask & (1u << c)) ++packed;
         if (!fatima_vme_qdc_safety::CompleteEntry(
-                packed, bank._channel_time, bank._chan_ext_time,
-                bank._chan_fine_time, bank._qlong, bank._qshort))
+                packed, bank.channel_time, bank.chan_ext_time,
+                bank.chan_fine_time, bank.qlong, bank.qshort))
             continue;
-        emit(slot, static_cast<int>(bank._board_id), channel, packed, bank);
+        emit(slot, static_cast<int>(bank.board_id), channel, packed, bank);
     }
 }
 
@@ -84,9 +84,9 @@ void DecodeV1290(const Bank& bank, std::size_t slot, Emit emit) {
 
 template<typename Bank>
 std::vector<std::uint32_t> Waveform(const Bank& bank, std::uint32_t packed) {
-    const auto& a = bank._sample_one[packed];
-    const auto& b = bank._sample_two[packed];
-    const auto& c = bank._sample_three[packed];
+    const auto& a = bank.sample_one[packed];
+    const auto& b = bank.sample_two[packed];
+    const auto& c = bank.sample_three[packed];
     const auto n = fatima_vme_qdc_safety::CompleteWaveformTriplets(a._, b._, c._);
     std::vector<std::uint32_t> result;
     result.reserve(3 * n);
