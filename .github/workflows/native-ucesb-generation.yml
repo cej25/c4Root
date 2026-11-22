@@ -1,120 +1,47 @@
-name: Validate FEBEX RAW ROOT schema
+name: Validate consolidated TAMEX fine-time I/O
 on:
   push:
     branches: [validation/ucesb-structure-headers]
 permissions:
   contents: read
 jobs:
-  schema:
+  root:
     runs-on: ubuntu-24.04
-    timeout-minutes: 9
+    timeout-minutes: 8
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
           python-version: '3.11'
       - run: python -m pip install ROOT
-      - name: Round-trip the old and current DEGAS RAW layouts
+      - name: Round-trip the shared fine-time histogram format
         run: |
           set -euo pipefail
-          repo="$PWD"
-          git fetch --depth=1 origin 31b1a8ee19e3c424dadea85b90aba8fd88c8d211
-          work="$RUNNER_TEMP/schema"
-          mkdir -p "$work/old" "$work/new"
-          git show FETCH_HEAD:c4data/febexData/FebexRawData.h > "$work/old/FebexRawData.h"
-          cp c4data/febexData/FebexRawData.h "$work/new/"
-          cp c4data/degasData/DegasRawData.h "$work/old/"
-          cp c4data/degasData/DegasRawData.h "$work/new/"
           root_pkg="$(python -c 'from importlib.util import find_spec; from pathlib import Path; print(Path(find_spec("ROOT").origin).parent)')"
-          cd "$work"
-          cat > check.cxx <<'EOF'
-          #include "DegasRawData.h"
-          #include "TFile.h"
-          #include "TTree.h"
+          cat > "$RUNNER_TEMP/check.cxx" <<'EOF'
+          #include "TamexFineTimeCalibration.h"
+          #include "TString.h"
           #include <cassert>
-          #include <string>
-
-          ClassImp(FebexRawHit)
-          ClassImp(FebexRawData)
-          ClassImp(DegasRawData)
-
-          void writeTree(const char* filename)
-          {
-              TFile file(filename, "RECREATE");
-              for (int split : {0, 99}) {
-                  const auto name = "events" + std::to_string(split);
-                  TTree tree(name.c_str(), "");
-                  DegasRawData data;
-                  tree.Branch("DegasRawData", &data, 32000, split);
-                  auto& board = data.FEBEX.emplace_back();
-                  board.eventTicks = 100;
-                  auto& hit = board.hits.emplace_back();
-                  hit.channelTicks = 99;
-                  hit.energyWord = 0x800001;
-          #ifndef OLD_WRITER
-                  hit.signedEnergy = -1;
-                  hit.hitOffsetNs = -10;
-                  hit.legacyChannelTimeNs = 990.0;
-                  hit.hasConvertedValues = true;
-          #endif
-                  tree.Fill();
-                  tree.Write();
-              }
-          }
-
-          #ifndef OLD_WRITER
-          void readTree(const char* filename, bool converted)
-          {
-              TFile file(filename);
-              for (int split : {0, 99}) {
-                  const auto name = "events" + std::to_string(split);
-                  auto* tree = file.Get<TTree>(name.c_str());
-                  assert(tree);
-                  auto* data = new DegasRawData;
-                  data->FEBEX.emplace_back().hits.emplace_back().hasConvertedValues = true;
-                  assert(tree->SetBranchAddress("DegasRawData", &data) >= 0);
-                  assert(tree->GetEntry(0) > 0);
-                  const auto& hit = data->FEBEX.at(0).hits.at(0);
-                  assert(hit.channelTicks == 99 && hit.energyWord == 0x800001);
-                  assert(hit.hasConvertedValues == converted);
-                  if (converted)
-                      assert(hit.signedEnergy == -1 && hit.hitOffsetNs == -10 && hit.legacyChannelTimeNs == 990.0);
-                  tree->ResetBranchAddresses();
-                  delete data;
-              }
-          }
-          #endif
-
           int main()
           {
-          #ifdef OLD_WRITER
-              writeTree("old.root");
-          #else
-              writeTree("new.root");
-              readTree("new.root", true);
-              readTree("old.root", false);
-          #endif
+              std::vector<std::array<std::uint64_t, 1024>> counts(33);
+              counts[0][0] = 2;
+              counts[0][5] = 4;
+              counts[32][50] = 11;
+              const TString path("fine-time.root");
+              tamex::WriteFineTimeHistograms(path, counts);
+              const auto actual = tamex::ReadFineTimeHistograms(path, 2);
+              assert(actual.size() == counts.size());
+              for (std::size_t channel = 0; channel < counts.size(); ++channel) {
+                  tamex::FineTimeCalibration<> expected;
+                  expected.SetCounts(counts[channel]);
+                  expected.Calculate();
+                  assert(actual[channel] == expected.Times());
+              }
           }
           EOF
-          for version in old new; do
-            cp check.cxx "$version/"
-            (
-              cd "$version"
-              printf '%s\n' '#ifdef __CLING__' > LinkDef.h
-              grep '^#pragma link C++ class .*\(FebexRaw\|DegasRawData\)' "$repo/c4data/DataLinkDef.h" >> LinkDef.h
-              flags=()
-              if [ "$version" = new ]; then
-                grep -A1 '^#pragma read sourceClass="FebexRawHit"' "$repo/c4data/DataLinkDef.h" >> LinkDef.h
-              else
-                flags=(-DOLD_WRITER)
-              fi
-              printf '%s\n' '#endif' >> LinkDef.h
-              "$root_pkg/bin/rootcling" -f dict.cxx -I"$root_pkg/include" FebexRawData.h DegasRawData.h LinkDef.h
-              g++ -std=c++17 -I. -I"$root_pkg/include" "${flags[@]}" check.cxx dict.cxx \
-                -L"$root_pkg/lib" -Wl,-rpath,"$root_pkg/lib" -lCore -lRIO -lTree -o check
-            )
-          done
+          tamex=c4source/digitisers/tamex
+          g++ -std=c++17 -I"$root_pkg/include" -I"$tamex" "$RUNNER_TEMP/check.cxx" "$tamex/TamexFineTimeCalibration.cxx" -L"$root_pkg/lib" -Wl,-rpath,"$root_pkg/lib" -lCore -lHist -lRIO -o "$RUNNER_TEMP/check"
           export LD_LIBRARY_PATH="$root_pkg/lib:${LD_LIBRARY_PATH:-}"
-          ./old/check
-          ./new/check
-          echo "PASS: old and current DEGAS RAW trees with split levels 0 and 99"
+          "$RUNNER_TEMP/check"
+          echo 'PASS: shared TAMEX fine-time histogram I/O'

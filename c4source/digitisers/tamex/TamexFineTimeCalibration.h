@@ -4,8 +4,11 @@
 #include <array>
 #include <cstddef>
 #include <cstdint>
+#include <vector>
 
-#include "TamexDecoder.h"
+#include "TamexReader.h"
+
+class TString;
 
 namespace tamex
 {
@@ -52,6 +55,7 @@ public:
     }
 
     double Time(std::size_t fine) const { return times_.at(fine); }
+    const auto& Times() const { return times_; }
     std::uint64_t Entries() const { return entries_; }
     std::uint64_t Count(std::size_t fine) const { return counts_.at(fine); }
 
@@ -60,6 +64,12 @@ private:
     std::array<double, bins> times_{};
     std::uint64_t entries_ = 0;
 };
+std::vector<std::array<double, Tamex4Format::fine_bins>>
+ReadFineTimeHistograms(const TString& path, std::size_t max_boards);
+
+void WriteFineTimeHistograms(const TString& path,
+                             const std::vector<std::array<std::uint64_t, Tamex4Format::fine_bins>>& boardCounts);
+
 } // namespace tamex
 
 #endif

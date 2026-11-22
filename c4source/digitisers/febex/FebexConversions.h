@@ -1,5 +1,5 @@
-#ifndef FEBEX_TIMING_H
-#define FEBEX_TIMING_H
+#ifndef FEBEX_CONVERSIONS_H
+#define FEBEX_CONVERSIONS_H
 
 #include <cstdint>
 
