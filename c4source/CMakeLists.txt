@@ -142,3 +142,8 @@ set(DEPENDENCIES
 set(LIBRARY_NAME c4source)
 
 GENERATE_LIBRARY()
+
+add_executable(fimp_calibration_test EXCLUDE_FROM_ALL
+    ../tests/integration/fimp_calibration_test.cxx)
+target_link_libraries(fimp_calibration_test PRIVATE
+    c4source c4Data c4Base Base Online Core FairLogger::FairLogger ${ucesb_LIBRARY_SHARED})

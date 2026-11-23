@@ -22,7 +22,6 @@
 #include "FimpReader.h"
 #include "ClockTdcReader.h"
 #include "FimpFineTimeBins.h"
-#include "FimpMultihitSafety.h"
 #include "c4Logger.h"
 
 // ROOT
@@ -250,8 +249,8 @@ Bool_t FimpReader::Read()
         {
             counter++;
             const auto current_channel = edge.sparseIndex;
-            if (!fimp_multihit_safety::ValidFineTimeIndex(
-                    current_channel, chans_per_tdc, edge.fine, max_fine_time_bins)) return;
+            if (current_channel >= static_cast<unsigned>(chans_per_tdc) ||
+                edge.fine >= static_cast<unsigned>(max_fine_time_bins)) return;
 
             const auto raw_ft = static_cast<std::uint16_t>(edge.fine);
             if (!fine_time_calibration_set)

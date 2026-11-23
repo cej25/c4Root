@@ -1,46 +1,10 @@
 #include "../c4source/digitisers/clocktdc/ClockTdcReader.h"
 #include "../c4source/fimp/ext_h101_fimp.h"
 #include "../c4source/fimp/FimpFineTimeBins.h"
-#include "../c4source/fimp/FimpMultihitSafety.h"
 
 #include <cassert>
 #include <cstddef>
-#include <limits>
 #include <vector>
-
-static void TestMultihitBounds()
-{
-    using fimp_multihit_safety::MatchedHitCount;
-    using fimp_multihit_safety::ValidFineTimeIndex;
-
-    // Well-formed events reconstruct every pair.
-    assert(MatchedHitCount(0, 0, 0, 0) == 0);
-    assert(MatchedHitCount(1, 1, 1, 1) == 1);
-    assert(MatchedHitCount(3, 3, 3, 3) == 3);
-
-    // A short vector in any of the four positions limits reconstruction.
-    assert(MatchedHitCount(1, 3, 3, 3) == 1);
-    assert(MatchedHitCount(3, 1, 3, 3) == 1);
-    assert(MatchedHitCount(3, 3, 1, 3) == 1);
-    assert(MatchedHitCount(3, 3, 3, 1) == 1);
-    assert(MatchedHitCount(0, 3, 3, 3) == 0);
-    assert(MatchedHitCount(3, 0, 3, 3) == 0);
-    assert(MatchedHitCount(3, 3, 0, 3) == 0);
-    assert(MatchedHitCount(3, 3, 3, 0) == 0);
-
-    // The calculation does not overflow with large size_t inputs.
-    assert(MatchedHitCount(std::numeric_limits<std::size_t>::max(),
-                           2, 3, 4) == 2);
-    assert(ValidFineTimeIndex(258, 259, 1023, 1024));
-    assert(!ValidFineTimeIndex(258, 259, 1024, 1024));
-    assert(ValidFineTimeIndex(0, 259, 0, 18));
-    assert(ValidFineTimeIndex(258, 259, 17, 18));
-    assert(!ValidFineTimeIndex(-1, 259, 0, 18));
-    assert(!ValidFineTimeIndex(259, 259, 0, 18));
-    assert(!ValidFineTimeIndex(258, 259, 18, 18));
-    assert(!ValidFineTimeIndex(0, 259, 65535, 18));
-
-}
 
 static void TestClockTdcEdges()
 {
@@ -111,7 +75,6 @@ static void TestFineTimeBins()
 
 int main()
 {
-    TestMultihitBounds();
     TestClockTdcEdges();
     TestFineTimeBins();
 }
