@@ -62,7 +62,7 @@ public:
     void Reset();
     void Clear(Option_t* option = "") override;
 
-    ClassDef(TamexRawData, 3);
+    ClassDefOverride(TamexRawData, 3);
 
 private:
     std::uint16_t procid = 0;

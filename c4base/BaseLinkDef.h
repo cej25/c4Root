@@ -9,7 +9,6 @@
 #pragma link C++ class EventHeader+;
 #pragma link C++ class GainShift+;
 #pragma link C++ class c4Logger+;
-#pragma link C++ class AnalysisTools+;
 
 
 #endif
