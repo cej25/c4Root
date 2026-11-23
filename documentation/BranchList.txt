@@ -359,7 +359,7 @@ Branch:
         - "fwr_t" [uint64_t]
     
 Shared VME raw records
-    "V1751RawData" and "V1290RawData" are electronics records in c4data/vmeData.
+    "V1751RawData" and "V1290RawData" are electronics records in c4data/digitisers/vmeData.
     New FATIMA and BB7 raw data store zero-based hardware channel numbers.
     Version-1 FatimaVmeChainRaw used one-based V1290 channels. Use
     FatimaVmeChainRaw::TdcHardwareChannel when reading its TDC hits from ROOT.

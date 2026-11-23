@@ -23,7 +23,7 @@ Both readers still default to the old path. On that path they do fine-time calib
 
 - Move the remaining macros to board input before removing the readers' old pulse and fine-time paths. Update the fast/slow matchers before deleting the data classes. Include bPlast trigger-3 records in comparisons, including events with no edges.
 - Review the raw Twinpeaks include in `analysis/correlations/FrsBplastCorrelations.cxx`. Recheck `c4source/bgo/BGOPackedSafety.h` and its test coverage after removing the BGO reader’s pulse path.
-- Keep the shared `c4data/tamexData/TamexRawData.{h,cxx}`, `c4source/digitisers/tamex/TamexReader.h`, `TamexFineTimeCalibration.{h,cxx}` and `TamexPulseBuilder.h`. Review the Twinpeaks-specific adapter in `TamexPulseBuilder.h` once all three detectors use their new pulse representation. Preserve fine-time histogram compatibility and pairing behavior. `c4source/base/TamexPackedSafety.h` also serves the shared reader and MCP.
+- Keep the shared `c4data/digitisers/tamexData/TamexRawData.{h,cxx}`, `c4source/digitisers/tamex/TamexReader.h`, `TamexFineTimeCalibration.{h,cxx}` and `TamexPulseBuilder.h`. Review the Twinpeaks-specific adapter in `TamexPulseBuilder.h` once all three detectors use their new pulse representation. Preserve fine-time histogram compatibility and pairing behavior. `c4source/base/TamexPackedSafety.h` also serves the shared reader and MCP.
 - Keep `tests/tamex_family_decoder_test.cxx` and `tests/fatima_tamex_raw_pipeline_test.cxx`. Update their pulse checks as the representation changes.
 
 ## FATIMA VME
@@ -33,7 +33,7 @@ Both readers still default to the old path. On that path they do fine-time calib
 | Files | Work before retirement |
 | --- | --- |
 | `c4source/fatima/FatimaVmeReader.{h,cxx}`, `FatimaVmeRaw2Cal.{h,cxx}`, `c4data/fatimaData/FatimaVmeData.{h,cxx}` | Switch the macros and old-tree readers after validating the new output. These are removal candidates once those consumers are gone. |
-| `c4source/fatima/FatimaRaw2Cal.{h,cxx}`, `FatimaVmeCalibrator.{h,cxx}` | Keep the detector raw path. Review `UseVmeRawInput` and the fallback for separate `V1751RawData` and `V1290RawData` ROOT branches. The underlying hit types also serve the structured FATIMA and BB7 paths. Keep `c4data/vmeData/VmeDigitiserRawData.{h,cxx}`. |
+| `c4source/fatima/FatimaRaw2Cal.{h,cxx}`, `FatimaVmeCalibrator.{h,cxx}` | Keep the detector raw path. Review `UseVmeRawInput` and the fallback for separate `V1751RawData` and `V1290RawData` ROOT branches. The underlying hit types also serve the structured FATIMA and BB7 paths. Keep `c4data/digitisers/vmeData/VmeDigitiserRawData.{h,cxx}`. |
 | `c4data/fatimaData/FatimaVmeCalData.{h,cxx}` | Review individual types. This file pair holds the older calibrated types and the new `FatimaVmeQdcCalHit` and `FatimaVmeTdcCalHit` types. Keep the pair for the new output. |
 | `analysis/online/fatima/FatimaVmeOnlineSpectra.{h,cxx}`, `analysis/nearline/fatima/FatimaVmeNearlineSpectra.{h,cxx}`, `analysis/nearline/wr/WhiterabbitCorrelationNearline.{h,cxx}`, `analysis/online/wr/WhiterabbitCorrelationOnline.{h,cxx}`, `analysis/correlations/FrsFatimaVmeCorrelations.{h,cxx}` | Review raw diagnostics and the old calibrated branches `FatimaVmeCalData`, `FatimaVmeQDCCalData`, `FatimaVmeTDCCalData`, `FatimaVmeResiduals` and `FatimaVmeTimeMachineData`. Include the currently disabled FRS–FATIMA VME task when checking callers. |
 

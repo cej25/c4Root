@@ -16,9 +16,9 @@ ${C4ROOT_SOURCE_DIR}/c4data/baseData
 ${C4ROOT_SOURCE_DIR}/c4data/bb7Data
 ${C4ROOT_SOURCE_DIR}/c4data/fimpData
 ${C4ROOT_SOURCE_DIR}/c4data/mcpData
-${C4ROOT_SOURCE_DIR}/c4data/tamexData
-${C4ROOT_SOURCE_DIR}/c4data/febexData
-${C4ROOT_SOURCE_DIR}/c4data/vmeData
+${C4ROOT_SOURCE_DIR}/c4data/digitisers/tamexData
+${C4ROOT_SOURCE_DIR}/c4data/digitisers/febexData
+${C4ROOT_SOURCE_DIR}/c4data/digitisers/vmeData
 ${C4ROOT_SOURCE_DIR}/c4data/degasData
 ${C4ROOT_SOURCE_DIR}/c4data/stefanData
 ${C4ROOT_SOURCE_DIR}/c4source
@@ -61,7 +61,7 @@ bgoData/TBGOTwinpeaksConfiguration.cxx
 fatimaData/TFatimaVmeConfiguration.cxx
 fatimaData/FatimaVmeData.cxx
 fatimaData/FatimaVmeCalData.cxx
-vmeData/VmeDigitiserRawData.cxx
+digitisers/vmeData/VmeDigitiserRawData.cxx
 fatimaData/FatimaRawData.cxx
 timemachineData/TimeMachineData.cxx
 bb7Data/BB7RawData.cxx
@@ -74,8 +74,8 @@ fimpData/FimpData.cxx
 fimpData/FimpCalData.cxx
 fimpData/TFimpConfiguration.cxx
 mcpData/H10MCPTwinpeaksData.cxx
-tamexData/TamexRawData.cxx
-febexData/FebexRawData.cxx
+digitisers/tamexData/TamexRawData.cxx
+digitisers/febexData/FebexRawData.cxx
 degasData/DegasRawData.cxx
 mcpData/H10MCPTwinpeaksCalData.cxx
 mcpData/H10MCPTwinpeaksAnaData.cxx

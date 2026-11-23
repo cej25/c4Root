@@ -19,8 +19,8 @@ ${C4ROOT_SOURCE_DIR}/c4data/beammonitorData
 ${C4ROOT_SOURCE_DIR}/c4data/timemachineData
 ${C4ROOT_SOURCE_DIR}/c4data/baseData
 ${C4ROOT_SOURCE_DIR}/c4data/bb7Data
-${C4ROOT_SOURCE_DIR}/c4data/febexData
-${C4ROOT_SOURCE_DIR}/c4data/vmeData
+${C4ROOT_SOURCE_DIR}/c4data/digitisers/febexData
+${C4ROOT_SOURCE_DIR}/c4data/digitisers/vmeData
 ${C4ROOT_SOURCE_DIR}/c4data/fimpData
 ${C4ROOT_SOURCE_DIR}/c4data/mcpData
 ${C4ROOT_SOURCE_DIR}/c4data/stefanData
