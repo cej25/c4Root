@@ -20,6 +20,7 @@
 
 // c4
 #include "FimpReader.h"
+#include "ClockTdcReader.h"
 #include "FimpFineTimeBins.h"
 #include "FimpMultihitSafety.h"
 #include "c4Logger.h"
@@ -225,8 +226,6 @@ Bool_t FimpReader::Read()
         if (fine_time_calibration_save) WriteFineTimeHistosToFile();
     }
 
-    ctdc_data_store last_hit;
-
     uint64_t wr_t = (((uint64_t)fData->fimp_ts_t[3]) << 48) + 
     (((uint64_t)fData->fimp_ts_t[2]) << 32) + 
     (((uint64_t)fData->fimp_ts_t[1]) << 16) + 
@@ -236,55 +235,35 @@ Bool_t FimpReader::Read()
 
     uint32_t wr_id = fData->fimp_ts_subsystem_id;
 
-    uint64_t trig_time_long = (((uint64_t)fData->fimp_data_trig_coarse_time_hi) << 22) +
-                            ((uint64_t)fData->fimp_data_trig_coarse_time_lo);
+    const auto& input = *fData;
+    const auto trig_time_long = clocktdc::TriggerCoarseTime(
+        input.fimp_data_trig_coarse_time_hi, input.fimp_data_trig_coarse_time_lo);
 
-    // coarse time
-    int hit_index = 0;
-    int channel = -1;
     int prev_channel = -1;
     int prev_LoT = -1;
-
-    for (uint32_t channel_index = 0; channel_index < fData->fimp_data_time_coarseM; channel_index++)
-    {
-        int current_channel = fData->fimp_data_time_coarseMI[channel_index]; // channel to read now
-        int next_channel_start = fData->fimp_data_time_coarseME[channel_index]; // read current channel data until this index
-
-        if (!fimp_multihit_safety::ValidPackedHitBlock(
-                hit_index, next_channel_start,
-                fData->fimp_data_time_coarse, fData->fimp_data_time_fine,
-                fData->fimp_data_lead_or_trail, 33024))
-        {
-            if (next_channel_start > hit_index) hit_index = next_channel_start;
-            continue;
-        }
-        if (current_channel < 0 || current_channel >= chans_per_tdc)
-        {
-            hit_index = next_channel_start;
-            continue;
-        }
-
-        for (uint32_t j = hit_index; j < next_channel_start; j++)
+    clocktdc::ReadEdges(input.fimp_data_time_coarseM,
+        input.fimp_data_time_coarseMI, input.fimp_data_time_coarseME,
+        clocktdc::PackedColumn{input.fimp_data_time_coarse, input.fimp_data_time_coarsev},
+        clocktdc::PackedColumn{input.fimp_data_time_fine, input.fimp_data_time_finev},
+        clocktdc::PackedColumn{input.fimp_data_lead_or_trail, input.fimp_data_lead_or_trailv},
+        [&](const clocktdc::RawEdge& edge)
         {
             counter++;
-            uint16_t raw_ft = fData->fimp_data_time_finev[j];
+            const auto current_channel = edge.sparseIndex;
             if (!fimp_multihit_safety::ValidFineTimeIndex(
-                    current_channel, chans_per_tdc, raw_ft, max_fine_time_bins)) continue;
-            // fill ft calibration histo, or calibrate
+                    current_channel, chans_per_tdc, edge.fine, max_fine_time_bins)) return;
+
+            const auto raw_ft = static_cast<std::uint16_t>(edge.fine);
             if (!fine_time_calibration_set)
             {
                 fine_time_hits[current_channel]->Fill(raw_ft);
-                continue;
+                return;
             }
 
-            uint16_t coarse_time = fData->fimp_data_time_coarsev[j];
-            double fine_time = GetFineTime(current_channel, raw_ft);
-
-            int leadOrTrail = fData->fimp_data_lead_or_trailv[j] & 0x1;
-            channel = (current_channel - leadOrTrail)/2; // Get actual channel, 128 = trigger
-
-            //std::cout << "lead or trail: " << leadOrTrail << " channel : " << channel << std::endl;
-
+            const auto coarse_time = static_cast<std::uint16_t>(edge.coarse);
+            const auto fine_time = GetFineTime(current_channel, raw_ft);
+            const int leadOrTrail = edge.trailing;
+            const int channel = edge.channel;
 
             if (channel != prev_channel && channel < 128)
             {
@@ -311,7 +290,7 @@ Bool_t FimpReader::Read()
                     trail_fine.clear();
                     trail_raw_ft.clear();
                 }
-               
+
                 if (!leadOrTrail)
                 {
                     // open lead array, collect up to 3 (?)
@@ -383,97 +362,9 @@ Bool_t FimpReader::Read()
 
             }
 
-
-
-
-
-
-            /*// trigger leading edge
-            if (channel == 128 && !leadOrTrail)
-            {
-                auto & entry = fimpArray->emplace_back();
-                entry.SetAll(wr_t, 
-                            wr_id,
-                            trig_time_long, 
-                            channel, 
-                            coarse_time, // lead coarse
-                            fine_time, // lead fine
-                            0, // no trig trails
-                            0,
-                            raw_ft,
-                            0
-                            );
-            }
-            else if (channel < 128)
-            {
-                // check == is_leading
-                if (!leadOrTrail)
-                {   
-                    // 2 leads in a row
-                    if (last_hit.leadOrTrail == 0) 
-                    {
-                        unmatchedLeads++;
-                        //c4LOG(warn, "Unmatched lead in FIMP data: " << unmatchedLeads);
-                    }
-
-                    last_hit.channel = channel;
-                    last_hit.coarse_time = coarse_time;
-                    last_hit.fine_time = fine_time;
-                    last_hit.leadOrTrail = leadOrTrail;
-                    last_hit.raw_ft = raw_ft;
-                }
-                else
-                {   
-                    if (last_hit.leadOrTrail == -1) //c4LOG(warn, "First data item is a trail");
-                    {}
-                    else if (last_hit.leadOrTrail == 1) 
-                    {
-                        //c4LOG(warn, "Two trails in a row");
-                        continue;
-                    }
-                    else
-                    {   
-                        if (channel != last_hit.channel)
-                        {
-                            c4LOG(warn, "Couldn't match lead and trail channels!");
-                            lead_trail_unmatched_counter++;
-                            last_hit.channel = channel;
-                            last_hit.coarse_time = coarse_time;
-                            last_hit.fine_time = fine_time;
-                            last_hit.leadOrTrail = leadOrTrail;
-                            last_hit.raw_ft = raw_ft;
-                            continue;
-                        }
-                        auto & entry = fimpArray->emplace_back();
-
-                        entry.SetAll(wr_t, 
-                                    wr_id,
-                                    trig_time_long, 
-                                    channel, 
-                                    last_hit.coarse_time, // lead coarse
-                                    last_hit.fine_time, // lead fine
-                                    coarse_time, // trail coarse
-                                    fine_time, // trail fine
-                                    last_hit.raw_ft, // lead fine time bin
-                                    raw_ft // trail fine time bin
-                                    );
-
-                        last_hit.channel = channel;
-                        last_hit.coarse_time = coarse_time;
-                        last_hit.fine_time = fine_time;
-                        last_hit.leadOrTrail = leadOrTrail;
-                    }
-                }
-
-            }
-            else continue; // dummy data*/
-
             prev_channel = channel;
             prev_LoT = leadOrTrail;
-
-        }
-        hit_index = next_channel_start;
-    }
+        });
 
     // create entry for last data
     if (lead_coarse.size() > 0)

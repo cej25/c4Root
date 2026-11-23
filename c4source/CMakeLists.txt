@@ -25,6 +25,7 @@ ${C4ROOT_SOURCE_DIR}/c4source/stefan
 ${C4ROOT_SOURCE_DIR}/c4source/digitisers/tamex
 ${C4ROOT_SOURCE_DIR}/c4source/digitisers/febex
 ${C4ROOT_SOURCE_DIR}/c4source/digitisers/vme
+${C4ROOT_SOURCE_DIR}/c4source/digitisers/clocktdc
 ${C4ROOT_SOURCE_DIR}/c4data
 ${C4ROOT_SOURCE_DIR}/c4data/frsData
 ${C4ROOT_SOURCE_DIR}/c4data/lisaData

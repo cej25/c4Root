@@ -16,19 +16,6 @@ inline std::size_t MatchedHitCount(std::size_t lead_coarse,
 {
     return std::min({lead_coarse, lead_fine, trail_coarse, trail_fine});
 }
-// Packed hit blocks index coarse, fine, and lead/trail arrays in lockstep.
-inline bool ValidPackedHitBlock(int start, int end,
-                                std::size_t coarse_count,
-                                std::size_t fine_count,
-                                std::size_t lead_trail_count,
-                                std::size_t capacity)
-{
-    return start >= 0 && end >= start &&
-           static_cast<std::size_t>(end) <= coarse_count &&
-           static_cast<std::size_t>(end) <= fine_count &&
-           static_cast<std::size_t>(end) <= lead_trail_count &&
-           static_cast<std::size_t>(end) <= capacity;
-}
 
 inline bool ValidFineTimeIndex(int channel, std::size_t channels,
                                std::uint32_t fine_bin, std::size_t bins)
