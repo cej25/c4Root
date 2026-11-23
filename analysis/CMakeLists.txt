@@ -135,7 +135,7 @@ Set(LINKDEF AnaLinkDef.h)
 # )
 
 Set(DEPENDENCIES
-GeoBase ParBase Base FairTools c4Base c4Data Core Geom GenVector Physics Matrix MathCore
+GeoBase ParBase Base FairTools Online c4Base c4Data Core Geom GenVector Physics Matrix MathCore
 
 )
 

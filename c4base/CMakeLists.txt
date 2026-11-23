@@ -31,11 +31,8 @@ install(FILES "c4Logger.h" DESTINATION include)
 
 Set(LINKDEF BaseLinkDef.h)
 
-# Set(DEPENDENCIES
-#     GeoBase ParBase MbsAPI Base FairTools c4Data Core Geom GenVector Physics
-#     Matrix MathCore Hist Graf Gpad Net Imt RIO RHTTP Spectrum)
 Set(DEPENDENCIES
-GeoBase ParBase Base FairTools c4Data Core Geom GenVector Physics
+GeoBase ParBase Base FairTools Core Geom GenVector Physics
 Matrix MathCore Hist Graf Gpad Net Imt RIO RHTTP Spectrum)
 
 Set(LIBRARY_NAME c4Base)
