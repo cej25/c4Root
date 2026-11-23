@@ -39,8 +39,6 @@ class StefanReader : public c4Reader
         void SetWriteZeroMultEvents(bool v){WriteZeroMultEvents = v;}
     
     private:
-        unsigned int fNEvent;
-
         EXT_STR_h101_stefan_onion* fData;
 
         size_t fOffset;
@@ -48,17 +46,6 @@ class StefanReader : public c4Reader
         Bool_t fOnline;
 
         std::vector<StefanFebexItem>* stefanArray;
-
-
-        const int NBoards = 4; // absolutely maximum for D28 :: (28 * 3 + 4 sci signals) / (16 ch/board)
-
-        uint64_t event_trigger_time_long;
-        double channel_trigger_time_long;
-
-        int32_t channel_energy;
-
-
-        uint64_t wr_t;
 
 
         bool VetoPileup = 1; //should I veto on Pileup flag?

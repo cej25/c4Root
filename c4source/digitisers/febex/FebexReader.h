@@ -10,8 +10,14 @@
 
 namespace febex
 {
-// Transfer the native UCESB FEBEX summary. On failure return the offending slot.
-template <typename Board, std::size_t N, typename OutputBoards>
+// Older summary banks indicate board presence with a nonzero trigger timestamp.
+enum class SummaryLayout { WithBoardMetadata, WithTriggerTimestamp };
+
+// Transfer the native UCESB FEBEX summary. For layouts with board metadata,
+// a malformed hit list returns its slot. Older layouts retain complete hits
+// from independently sized columns.
+template <SummaryLayout Layout = SummaryLayout::WithBoardMetadata,
+          typename Board, std::size_t N, typename OutputBoards>
 std::optional<std::size_t> ReadBoards(const Board (&boards)[N], const std::uint32_t (&wrWords)[4],
                                       std::uint16_t wrId, std::uint16_t procid,
                                       const char* detectorName, OutputBoards& outputBoards)
@@ -23,7 +29,15 @@ std::optional<std::size_t> ReadBoards(const Board (&boards)[N], const std::uint3
     for (std::size_t slot = 0; slot < std::size(boards); ++slot)
     {
         const auto& board = boards[slot];
-        if (!board.present) continue;
+        const auto eventTicks = febex::JoinTicks(board.event_trigger_time_hi, board.event_trigger_time_lo);
+        if constexpr (Layout == SummaryLayout::WithBoardMetadata)
+        {
+            if (!board.present) continue;
+        }
+        else
+        {
+            if (!eventTicks) continue;
+        }
 
         auto& output = outputBoards.emplace_back();
         output.detectorName = detectorName;
@@ -31,44 +45,65 @@ std::optional<std::size_t> ReadBoards(const Board (&boards)[N], const std::uint3
         output.wrId = wrId;
         output.wrTimestamp = timestamp;
         output.slot = slot;
-        output.sfp = board.sfp;
-        output.card = board.board_id;
+        if constexpr (Layout == SummaryLayout::WithBoardMetadata)
+        {
+            output.sfp = board.sfp;
+            output.card = board.board_id;
+        }
+        else
+        {
+            output.card = slot;
+        }
         output.trigger = board.trig;
         output.hitPattern = board.hit_pattern;
-        output.eventTicks = febex::JoinTicks(board.event_trigger_time_hi, board.event_trigger_time_lo);
+        output.eventTicks = eventTicks;
 
-        const auto count = board.channel_energy;
-        if (count > std::size(board.channel_energyv) ||
-            count != board.channel_trigger_time_hi || count != board.channel_trigger_time_lo ||
-            count != board.channel_cfd || count != board.pileup || count != board.overflow)
+        const auto completeCount = std::min<std::size_t>({
+            board.channel_energy, board.channel_trigger_time_lo, board.channel_cfd,
+            board.pileup, board.overflow, std::size(board.channel_energyv)});
+        if constexpr (Layout == SummaryLayout::WithBoardMetadata)
         {
-            return slot;
+            if (completeCount != board.channel_energy || completeCount != board.channel_trigger_time_hi ||
+                completeCount != board.channel_trigger_time_lo || completeCount != board.channel_cfd ||
+                completeCount != board.pileup || completeCount != board.overflow)
+                return slot;
         }
 
         std::uint32_t previousChannel = 0;
-        output.hits.reserve(count);
-        for (std::size_t i = 0; i < count; ++i)
+        output.hits.reserve(completeCount);
+        for (std::size_t i = 0; i < completeCount; ++i)
         {
             const auto channel = board.channel_energyI[i];
-            if (channel <= previousChannel || channel > std::size(board.channel_energyv) ||
-                channel != board.channel_trigger_time_hiI[i] || channel != board.channel_trigger_time_loI[i] ||
-                channel != board.channel_cfdI[i] || channel != board.pileupI[i] || channel != board.overflowI[i])
+            std::uint32_t channelTimeHigh = 0;
+            if constexpr (Layout == SummaryLayout::WithBoardMetadata)
             {
-                return slot;
+                if (channel <= previousChannel || channel > std::size(board.channel_energyv) ||
+                    channel != board.channel_trigger_time_hiI[i] || channel != board.channel_trigger_time_loI[i] ||
+                    channel != board.channel_cfdI[i] || channel != board.pileupI[i] || channel != board.overflowI[i])
+                    return slot;
+
+                previousChannel = channel;
+                channelTimeHigh = board.channel_trigger_time_hiv[i];
             }
-            previousChannel = channel;
+            else
+            {
+                if (channel == 0 || channel > std::size(board.channel_energyv)) continue;
+            }
 
             auto& hit = output.hits.emplace_back();
             hit.channel = channel - 1; // UCESB sparse indices are one-based.
-            hit.channelTicks = febex::JoinTicks(board.channel_trigger_time_hiv[i], board.channel_trigger_time_lov[i]);
+            hit.channelTicks = febex::JoinTicks(channelTimeHigh, board.channel_trigger_time_lov[i]);
             hit.energyWord = board.channel_energyv[i];
             hit.cfd = board.channel_cfdv[i];
             hit.pileup = board.pileupv[i] != 0;
             hit.overflow = board.overflowv[i] != 0;
             hit.signedEnergy = febex::GammaSignedEnergy(hit.energyWord);
-            hit.hitOffsetNs = febex::HitOffsetNs(output.eventTicks, hit.channelTicks, hit.cfd);
             hit.legacyChannelTimeNs = febex::LegacyChannelTimeNs(hit.channelTicks, hit.cfd);
-            hit.hasConvertedValues = true;
+            if constexpr (Layout == SummaryLayout::WithBoardMetadata)
+            {
+                hit.hitOffsetNs = febex::HitOffsetNs(output.eventTicks, hit.channelTicks, hit.cfd);
+                hit.hasConvertedValues = true;
+            }
         }
     }
     return std::nullopt;
