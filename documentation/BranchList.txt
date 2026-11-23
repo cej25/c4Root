@@ -358,6 +358,25 @@ Branch:
         - "fwr_subsystem_id" [uint16_t]
         - "fwr_t" [uint64_t]
     
+DEGAS FEBEX summary and trace input
+    "DegasRawData" [DegasRawData]
+        - "FEBEX" [std::vector<FebexRawData>] contains boards and their hits.
+        - Raw hit channels are zero-based. DEGAS allocation files use channels 1–16.
+        - "trace" [std::vector<UShort_t>] holds the waveform for its FEBEX hit when available.
+    "DegasCalData" [TClonesArray of GermaniumCalData]
+        - Use Get_trace() to access the waveform, which is empty for summary-only input.
+        - GermaniumCal2Anl can take this branch via SetGermaniumCalBranch("DegasCalData").
+        - GermaniumAnlData carries the waveform of the hit supplying the crystal and time in add-back.
+
+    For trace runs, build the optional FEBEX unpacker from the repository root:
+        make -C unpack/exps/febex febextrace
+    Use the EXT_STR_h101_degas_traces_onion_t bank in the macro's event structure.
+    Pass its address, offset, and procid to DegasReader, as for summary input.
+    The corresponding UCESB bank is named degastrace. Regenerate its header with:
+        ./unpack/exps/febex/febextrace /dev/null --ntuple=NOTRIGEVENTNO,UNPACK:degastrace,STRUCT_HH,id=h101_degas_traces,ext_h101_degas_traces.h
+    DegasReader also accepts the older EXT_STR_h101_germanium_traces_onion_t bank
+    when replaying an unpacker that emits germanium_traces.
+
 Shared VME raw records
     "V1751RawData" and "V1290RawData" are electronics records in c4data/digitisers/vmeData.
     New FATIMA and BB7 raw data store zero-based hardware channel numbers.

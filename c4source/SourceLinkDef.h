@@ -53,6 +53,7 @@
 #pragma link C++ class EXT_STR_h101_frs_onion_t;
 #pragma link C++ class EXT_STR_h101_germanium_onion_t;
 #pragma link C++ class EXT_STR_h101_degas_onion_t;
+#pragma link C++ class EXT_STR_h101_degas_traces_onion_t;
 #pragma link C++ class EXT_STR_h101_germanium_traces_onion_t;
 #pragma link C++ class EXT_STR_h101_fatima_onion_t;
 #pragma link C++ class EXT_STR_h101_fatimavme_onion_t;

@@ -85,11 +85,11 @@ InitStatus GermaniumCal2Anl::Init()
     header = (EventHeader*)mgr->GetObject("EventHeader.");
     c4LOG_IF(error, !header, "Branch EventHeader. not found");
 
-    fcal_ge_data = (TClonesArray*)mgr->GetObject("GermaniumCalData");
-    c4LOG_IF(fatal, !fcal_ge_data, "Germanium branch of GermaniumCalData not found.");
+    fcal_ge_data = (TClonesArray*)mgr->GetObject(fGermaniumCalBranch.Data());
+    c4LOG_IF(fatal, !fcal_ge_data, "Germanium calibrated branch " << fGermaniumCalBranch << " not found.");
 
     fcal_bgo_data = (TClonesArray*)mgr->GetObject("BGOTwinpeaksCalData");
-    c4LOG_IF(fatal, !fcal_bgo_data, "BGO data not found.");
+    c4LOG_IF(fatal, BGO_veto && !fcal_bgo_data, "BGO data not found.");
  
     // needs to have the name of the detector subsystem here:
     FairRootManager::Instance()->Register("GermaniumAnlData", "Germanium Anl Data", fanl_ge_data, !fOnline);
@@ -121,6 +121,7 @@ void GermaniumCal2Anl::Exec(Option_t* option){
             if (count(skip_events.begin(), skip_events.end(), ihit) != 0) continue; //add-backed hit.
 
             fcal_ge_hit = (GermaniumCalData*)fcal_ge_data->At(ihit);
+            const auto* traceHit = fcal_ge_hit;
 
             double energy1 = fcal_ge_hit->Get_channel_energy();
             int detector_id1 = fcal_ge_hit->Get_detector_id();
@@ -192,6 +193,7 @@ void GermaniumCal2Anl::Exec(Option_t* option){
                                 energy1 = energy1 + energy2;
                                 time1 = time2;
                                 crystal_id1 = crystal_id2;
+                                traceHit = fcal_ge_hit2;
 
                             }
 
@@ -202,7 +204,8 @@ void GermaniumCal2Anl::Exec(Option_t* option){
             }
             }
 
-            new ((*fanl_ge_data)[fanl_ge_data->GetEntriesFast()]) GermaniumCalData(
+            auto& analyzed = *static_cast<GermaniumCalData*>(fanl_ge_data->ConstructedAt(fanl_ge_data->GetEntriesFast()));
+            analyzed = GermaniumCalData(
                     fcal_ge_hit->Get_trigger(),
                     fcal_ge_hit->Get_event_trigger_time(),
                     fcal_ge_hit->Get_pileup(),
@@ -215,6 +218,8 @@ void GermaniumCal2Anl::Exec(Option_t* option){
                     fcal_ge_hit->Get_wr_t(),
                     fcal_ge_hit->Get_absolute_event_time()
                 );
+            // Add-back retains the waveform of the hit supplying the crystal and time.
+            analyzed.Set_trace(traceHit->Get_trace());
             fNEvents++;
         }
     }

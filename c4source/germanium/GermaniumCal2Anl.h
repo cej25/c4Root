@@ -30,6 +30,7 @@ class GermaniumCal2Anl : public FairTask
         virtual InitStatus Init();
 
 
+        void SetGermaniumCalBranch(const TString& branch) { fGermaniumCalBranch = branch; }
         void SetBGOVeto(bool v){BGO_veto = v;};
         void SetAddBackVeto(bool v){AddBack_veto = v;};
         void SetAddBackVetoThresholdEnergy(double v){addback_energy_threshold = v;};
@@ -43,6 +44,7 @@ class GermaniumCal2Anl : public FairTask
         
         double addback_energy_threshold = 100; //keV
         
+        TString fGermaniumCalBranch = "GermaniumCalData"; //! Calibrated input branch
         TClonesArray* fcal_ge_data;
         TClonesArray* fanl_ge_data;
         TClonesArray* fcal_bgo_data;

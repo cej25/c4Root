@@ -93,6 +93,8 @@
 // Germanium
 #pragma link C++ class GermaniumFebexData+;
 #pragma link C++ class GermaniumCalData+;
+#pragma read sourceClass="GermaniumCalData" version="[1-2]" targetClass="GermaniumCalData" \
+    source="uint32_t fdetector_id" target="ftrace" code="{ ftrace.clear(); }"
 #pragma link C++ class GermaniumFebexTraceData+;
 
 // Shared TAMEX electronics Raw data
@@ -112,6 +114,8 @@
 #pragma link C++ class FebexRawHit+;
 #pragma read sourceClass="FebexRawHit" version="[1]" targetClass="FebexRawHit" \
     source="" target="hasConvertedValues" code="{ hasConvertedValues = false; }"
+#pragma read sourceClass="FebexRawHit" version="[1-2]" targetClass="FebexRawHit" \
+    source="std::uint32_t energyWord" target="trace" code="{ trace.clear(); }"
 #pragma link C++ class std::vector<FebexRawHit>+;
 #pragma link C++ class FebexRawData+;
 #pragma link C++ class std::vector<FebexRawData>+;

@@ -1,5 +1,5 @@
 #include "../c4source/bb7/BB7FebexIndexSafety.h"
-#include "../c4source/digitisers/febex/FebexConversions.h"
+#include "../c4source/digitisers/febex/FebexReader.h"
 #include "../c4source/germanium/GermaniumCalibration.h"
 #include "../c4source/germanium/GermaniumPackedSafety.h"
 
@@ -42,6 +42,22 @@ static void TestTimestampAndEnergyConversions()
                        LegacyHitOffsetNs(event * 10, febex::LegacyChannelTimeNs(channel, cfd)));
         }
     }
+}
+
+static void TestWaveformPositions()
+{
+    struct PackedWaveform
+    {
+        std::uint32_t _;
+        std::uint32_t I[5];
+        std::uint32_t v[5];
+    };
+
+    std::vector<std::uint16_t> samples;
+    febex::ReadWaveform(PackedWaveform{0, {}, {}}, samples);
+    assert(samples.empty());
+    febex::ReadWaveform(PackedWaveform{6, {1, 3, 5, 0, 6}, {0, 7, 11, 99, 88}}, samples);
+    assert((samples == std::vector<std::uint16_t>{0, 0, 7, 0, 11}));
 }
 
 static void TestGermaniumCalibration()
@@ -118,6 +134,7 @@ static void TestBB7Indices()
 int main()
 {
     TestTimestampAndEnergyConversions();
+    TestWaveformPositions();
     TestGermaniumCalibration();
     TestGermaniumPackedBounds();
     TestBB7Indices();

@@ -107,6 +107,7 @@ set(SRCS
 
 Set(STRUCT_HEADERS
 ./degas/ext_h101_degas.h
+./degas/ext_h101_degas_traces.h
 ./base/ext_h101_unpack.h
 ./aida/ext_h101_aida.h
 ./frs/ext_h101_frs.h

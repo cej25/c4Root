@@ -58,8 +58,8 @@ void DegasRaw2Cal::Exec(Option_t*)
             // Older RAW trees store only the original FEBEX values.
             const auto signedEnergy = hit.hasConvertedValues ? hit.signedEnergy
                 : febex::GammaSignedEnergy(hit.energyWord);
-            // The legacy detector map uses the UCESB slot as its board key.
-            const auto cal = germanium::CalibrateHit(mapping, coefficients, board.slot, hit.channel,
+            // Allocation files use the UCESB board slot and one-based channel numbers.
+            const auto cal = germanium::CalibrateHit(mapping, coefficients, board.slot, hit.channel + 1,
                                                        signedEnergy, calibrateEnergy);
             if (!cal) continue;
 
@@ -74,10 +74,11 @@ void DegasRaw2Cal::Exec(Option_t*)
 
             const auto offset = hit.hasConvertedValues ? hit.hitOffsetNs
                 : febex::HitOffsetNs(board.eventTicks, hit.channelTicks, hit.cfd);
-            new ((*fCal)[fCal->GetEntriesFast()])
-                GermaniumCalData(board.trigger, board.eventTicks * 10, hit.pileup, hit.overflow,
+            auto& calibrated = *static_cast<GermaniumCalData*>(fCal->ConstructedAt(fCal->GetEntriesFast()));
+            calibrated = GermaniumCalData(board.trigger, board.eventTicks * 10, hit.pileup, hit.overflow,
                                  channelTime, cal->energy, cal->crystal, cal->detector,
                                  board.wrId, board.wrTimestamp, static_cast<std::int64_t>(board.wrTimestamp) + offset);
+            calibrated.Set_trace(hit.trace);
         }
     }
 }

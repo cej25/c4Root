@@ -3,6 +3,8 @@
 
 #include "TObject.h"
 
+#include <vector>
+
 class GermaniumCalData : public TObject
 {
     public:
@@ -46,6 +48,7 @@ class GermaniumCalData : public TObject
         inline const uint16_t Get_wr_subsystem_id() const { return fwr_subsystem_id; }
         inline const uint64_t Get_wr_t() const { return fwr_t; }
         inline const int64_t Get_absolute_event_time() const { return fabsolute_event_time; }
+        const std::vector<UShort_t>& Get_trace() const { return ftrace; }
 
 
 
@@ -65,6 +68,7 @@ class GermaniumCalData : public TObject
         void Set_wr_subsystem_id(uint32_t v) { fwr_subsystem_id = v; }
         void Set_wr_t(uint64_t v) { fwr_t = v; }
         void Set_absolute_event_time(int64_t v) { fabsolute_event_time = v; }
+        void Set_trace(const std::vector<UShort_t>& trace) { ftrace = trace; }
 
     protected:
         // Data items
@@ -86,10 +90,11 @@ class GermaniumCalData : public TObject
         uint32_t fwr_subsystem_id;
         uint64_t fwr_t;
         int64_t fabsolute_event_time;
+        std::vector<UShort_t> ftrace;
     
 
     public:
-        ClassDef(GermaniumCalData, 2);
+        ClassDef(GermaniumCalData, 3);
 };
 
 #endif

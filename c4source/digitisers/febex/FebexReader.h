@@ -7,11 +7,29 @@
 #include <cstddef>
 #include <iterator>
 #include <optional>
+#include <vector>
 
 namespace febex
 {
 // Older summary banks indicate board presence with a nonzero trigger timestamp.
 enum class SummaryLayout { WithBoardMetadata, WithTriggerTimestamp };
+
+constexpr std::uint64_t WhiteRabbitTimestamp(const std::uint32_t (&words)[4])
+{
+    std::uint64_t timestamp = 0;
+    for (std::size_t word = 0; word < std::size(words); ++word)
+        timestamp |= std::uint64_t{words[word]} << (16 * word);
+    return timestamp;
+}
+
+template <typename Hit>
+void ConvertSummaryHit(Hit& hit, std::uint64_t eventTicks)
+{
+    hit.signedEnergy = febex::GammaSignedEnergy(hit.energyWord);
+    hit.hitOffsetNs = febex::HitOffsetNs(eventTicks, hit.channelTicks, hit.cfd);
+    hit.legacyChannelTimeNs = febex::LegacyChannelTimeNs(hit.channelTicks, hit.cfd);
+    hit.hasConvertedValues = true;
+}
 
 // Transfer the native UCESB FEBEX summary. For layouts with board metadata,
 // a malformed hit list returns its slot. Older layouts retain complete hits
@@ -22,9 +40,7 @@ std::optional<std::size_t> ReadBoards(const Board (&boards)[N], const std::uint3
                                       std::uint16_t wrId, std::uint16_t procid,
                                       const char* detectorName, OutputBoards& outputBoards)
 {
-    std::uint64_t timestamp = 0;
-    for (std::size_t word = 0; word < std::size(wrWords); ++word)
-        timestamp |= std::uint64_t{wrWords[word]} << (16 * word);
+    const auto timestamp = febex::WhiteRabbitTimestamp(wrWords);
 
     for (std::size_t slot = 0; slot < std::size(boards); ++slot)
     {
@@ -97,20 +113,37 @@ std::optional<std::size_t> ReadBoards(const Board (&boards)[N], const std::uint3
             hit.cfd = board.channel_cfdv[i];
             hit.pileup = board.pileupv[i] != 0;
             hit.overflow = board.overflowv[i] != 0;
-            hit.signedEnergy = febex::GammaSignedEnergy(hit.energyWord);
-            hit.legacyChannelTimeNs = febex::LegacyChannelTimeNs(hit.channelTicks, hit.cfd);
             if constexpr (Layout == SummaryLayout::WithBoardMetadata)
+                febex::ConvertSummaryHit(hit, output.eventTicks);
+            else
             {
-                hit.hitOffsetNs = febex::HitOffsetNs(output.eventTicks, hit.channelTicks, hit.cfd);
-                hit.hasConvertedValues = true;
+                hit.signedEnergy = febex::GammaSignedEnergy(hit.energyWord);
+                hit.legacyChannelTimeNs = febex::LegacyChannelTimeNs(hit.channelTicks, hit.cfd);
             }
         }
     }
     return std::nullopt;
 }
 
-// Transfer the native FEBEX trace layout, preserving its reported multiplicity.
-template <typename Board, std::size_t N, typename Crate>
+// UCESB sends one-based sample positions and a packed sample column.
+template <typename Trace, typename Samples>
+void ReadWaveform(const Trace& trace, Samples& samples)
+{
+    const auto count = std::min<std::size_t>({trace._, std::size(trace.I), std::size(trace.v)});
+    for (std::size_t i = 0; i < count; ++i)
+    {
+        const auto position = trace.I[i];
+        if (position == 0 || position > std::size(trace.v)) continue;
+        if (position > samples.size()) samples.resize(position);
+        samples[position - 1] = trace.v[i];
+    }
+}
+
+enum class TraceLayout { Nested, Flat };
+
+// Transfer trace summaries and associate waveforms using the hardware channel
+// from the summary header. Summary hits without a waveform are kept.
+template <TraceLayout Layout = TraceLayout::Nested, typename Board, std::size_t N, typename Crate>
 void ReadTraceBoards(const Board (&boards)[N], Crate& crate, const char* detectorName)
 {
     if (!crate.wrTimestamp) return;
@@ -120,6 +153,10 @@ void ReadTraceBoards(const Board (&boards)[N], Crate& crate, const char* detecto
         const auto ticks = febex::JoinTicks(input.event_trigger_time_hi, input.event_trigger_time_lo);
         if (!ticks) continue;
 
+        const auto& channels = [&]() -> const auto& {
+            if constexpr (Layout == TraceLayout::Flat) return input.traces;
+            else return input.trace_traces;
+        }();
         auto& board = crate.boards.emplace_back();
         board.reportedHits = input.num_channels_fired;
         auto& summary = board.summary;
@@ -139,18 +176,22 @@ void ReadTraceBoards(const Board (&boards)[N], Crate& crate, const char* detecto
         for (std::size_t i = 0; i < count; ++i)
         {
             const auto channel = input.channel_idv[i];
-            if (channel >= std::size(input.trace_traces)) continue;
+            const auto index = input.channel_idI[i];
+            if (channel >= std::size(channels) || index == 0 ||
+                index != input.channel_energyI[i] || index != input.channel_trigger_time_hiI[i] ||
+                index != input.channel_trigger_time_loI[i] || index != input.pileupI[i] ||
+                index != input.overflowI[i]) continue;
 
-            const auto& trace = input.trace_traces[channel];
-            const auto traceSize = std::min<std::size_t>(trace._, std::size(trace.v));
-            board.traces.emplace_back(trace.v, trace.v + traceSize);
             auto& hit = summary.hits.emplace_back();
             hit.channel = channel;
             hit.channelTicks = febex::JoinTicks(input.channel_trigger_time_hiv[i], input.channel_trigger_time_lov[i]);
             hit.energyWord = input.channel_energyv[i];
-            hit.cfd = i < input.channel_cfd ? input.channel_cfdv[i] : 0;
+            hit.cfd = i < std::min<std::size_t>(input.channel_cfd, std::size(input.channel_cfdv)) &&
+                      index == input.channel_cfdI[i] ? input.channel_cfdv[i] : 0;
             hit.pileup = (input.pileupv[i] & 1u) != 0;
             hit.overflow = (input.overflowv[i] & 1u) != 0;
+            febex::ConvertSummaryHit(hit, summary.eventTicks);
+            febex::ReadWaveform(channels[channel], board.traces.emplace_back());
         }
     }
 }
