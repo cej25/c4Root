@@ -31,6 +31,17 @@
 #include <vector>
 #include <iostream>
 
+namespace
+{
+// Unwired or unconfigured scintillators contribute zero ADC/TAC or no TDC hits.
+template <class T, std::size_t N>
+const T& MappedChannel(const T (&channels)[N], int channel)
+{
+    static const T missing{};
+    return channel >= 0 && static_cast<std::size_t>(channel) < N ? channels[channel] : missing;
+}
+}
+
 FrsRaw2Cal::FrsRaw2Cal()
     :   FairTask()
     ,   fNEvents(0)
@@ -216,75 +227,75 @@ void FrsRaw2Cal::Exec(Option_t* option)
 
 void FrsRaw2Cal::ProcessScintillators()
 {   
-    auto sciItem = sciArray->at(0);
+    const auto& sciItem = sciArray->at(0);
 
     // TAC DE
-    sciDE = sciItem.Get_de_array();
+    const auto& sciDE = sciItem.Get_de_array();
 
 
-    de_11l = sciDE[frs_config->Get_dE_11l_chan()];
-    de_11r = sciDE[frs_config->Get_dE_11r_chan()];
-    de_21l = sciDE[frs_config->Get_dE_21l_chan()];
-    de_21r = sciDE[frs_config->Get_dE_21r_chan()];
-    de_22l = sciDE[frs_config->Get_dE_22l_chan()];
-    de_22r = sciDE[frs_config->Get_dE_22r_chan()];
-    de_31l = sciDE[frs_config->Get_dE_31l_chan()];
-    de_31r = sciDE[frs_config->Get_dE_31r_chan()];
-    de_41l = sciDE[frs_config->Get_dE_41l_chan()];
-    de_41r = sciDE[frs_config->Get_dE_41r_chan()];
-    de_42l = sciDE[frs_config->Get_dE_42l_chan()];
-    de_42r = sciDE[frs_config->Get_dE_42r_chan()];
-    de_43l = sciDE[frs_config->Get_dE_43l_chan()];
-    de_43r = sciDE[frs_config->Get_dE_43r_chan()];
-    de_81l = sciDE[frs_config->Get_dE_81l_chan()];
-    de_81r = sciDE[frs_config->Get_dE_81r_chan()];
+    de_11l = MappedChannel(sciDE, frs_config->Get_dE_11l_chan());
+    de_11r = MappedChannel(sciDE, frs_config->Get_dE_11r_chan());
+    de_21l = MappedChannel(sciDE, frs_config->Get_dE_21l_chan());
+    de_21r = MappedChannel(sciDE, frs_config->Get_dE_21r_chan());
+    de_22l = MappedChannel(sciDE, frs_config->Get_dE_22l_chan());
+    de_22r = MappedChannel(sciDE, frs_config->Get_dE_22r_chan());
+    de_31l = MappedChannel(sciDE, frs_config->Get_dE_31l_chan());
+    de_31r = MappedChannel(sciDE, frs_config->Get_dE_31r_chan());
+    de_41l = MappedChannel(sciDE, frs_config->Get_dE_41l_chan());
+    de_41r = MappedChannel(sciDE, frs_config->Get_dE_41r_chan());
+    de_42l = MappedChannel(sciDE, frs_config->Get_dE_42l_chan());
+    de_42r = MappedChannel(sciDE, frs_config->Get_dE_42r_chan());
+    de_43l = MappedChannel(sciDE, frs_config->Get_dE_43l_chan());
+    de_43r = MappedChannel(sciDE, frs_config->Get_dE_43r_chan());
+    de_81l = MappedChannel(sciDE, frs_config->Get_dE_81l_chan());
+    de_81r = MappedChannel(sciDE, frs_config->Get_dE_81r_chan());
 
     // TAC DT
-    sciDT = sciItem.Get_dt_array();
-    dt_11l_11r = sciDT[frs_config->Get_dT_11l_11r_chan()];
-    dt_21l_21r = sciDT[frs_config->Get_dT_21l_21r_chan()];
-    dt_22l_22r = sciDT[frs_config->Get_dT_22l_22r_chan()];
-    dt_41l_41r = sciDT[frs_config->Get_dT_41l_41r_chan()];
-    dt_42l_42r = sciDT[frs_config->Get_dT_42l_42r_chan()];
-    dt_43l_43r = sciDT[frs_config->Get_dT_43l_43r_chan()];
-    dt_81l_81r = sciDT[frs_config->Get_dT_81l_81r_chan()];
-    dt_11l_21l = sciDT[frs_config->Get_dT_11l_21l_chan()];
-    dt_11r_21r = sciDT[frs_config->Get_dT_11r_21r_chan()];
-    dt_21l_41l = sciDT[frs_config->Get_dT_21l_41l_chan()];
-    dt_21r_41r = sciDT[frs_config->Get_dT_21r_41r_chan()];
-    dt_42r_21r = sciDT[frs_config->Get_dT_42l_21l_chan()];
-    dt_42l_21l = sciDT[frs_config->Get_dT_42r_21r_chan()];
-    dt_21l_81l = sciDT[frs_config->Get_dT_21l_81l_chan()];
-    dt_21r_81r = sciDT[frs_config->Get_dT_21r_81r_chan()];
-    dt_22l_41l = sciDT[frs_config->Get_dT_22l_41l_chan()];
-    dt_22r_41r = sciDT[frs_config->Get_dT_22r_41r_chan()];
-    dt_22l_81l = sciDT[frs_config->Get_dT_22l_81l_chan()];
-    dt_22r_81r = sciDT[frs_config->Get_dT_22r_81r_chan()];
+    const auto& sciDT = sciItem.Get_dt_array();
+    dt_11l_11r = MappedChannel(sciDT, frs_config->Get_dT_11l_11r_chan());
+    dt_21l_21r = MappedChannel(sciDT, frs_config->Get_dT_21l_21r_chan());
+    dt_22l_22r = MappedChannel(sciDT, frs_config->Get_dT_22l_22r_chan());
+    dt_41l_41r = MappedChannel(sciDT, frs_config->Get_dT_41l_41r_chan());
+    dt_42l_42r = MappedChannel(sciDT, frs_config->Get_dT_42l_42r_chan());
+    dt_43l_43r = MappedChannel(sciDT, frs_config->Get_dT_43l_43r_chan());
+    dt_81l_81r = MappedChannel(sciDT, frs_config->Get_dT_81l_81r_chan());
+    dt_11l_21l = MappedChannel(sciDT, frs_config->Get_dT_11l_21l_chan());
+    dt_11r_21r = MappedChannel(sciDT, frs_config->Get_dT_11r_21r_chan());
+    dt_21l_41l = MappedChannel(sciDT, frs_config->Get_dT_21l_41l_chan());
+    dt_21r_41r = MappedChannel(sciDT, frs_config->Get_dT_21r_41r_chan());
+    dt_42r_21r = MappedChannel(sciDT, frs_config->Get_dT_42l_21l_chan());
+    dt_42l_21l = MappedChannel(sciDT, frs_config->Get_dT_42r_21r_chan());
+    dt_21l_81l = MappedChannel(sciDT, frs_config->Get_dT_21l_81l_chan());
+    dt_21r_81r = MappedChannel(sciDT, frs_config->Get_dT_21r_81r_chan());
+    dt_22l_41l = MappedChannel(sciDT, frs_config->Get_dT_22l_41l_chan());
+    dt_22r_41r = MappedChannel(sciDT, frs_config->Get_dT_22r_41r_chan());
+    dt_22l_81l = MappedChannel(sciDT, frs_config->Get_dT_22l_81l_chan());
+    dt_22r_81r = MappedChannel(sciDT, frs_config->Get_dT_22r_81r_chan());
 
     // MHTDC T
-    sciMHTDC = sciItem.Get_mhtdc_array();
-    sci11la_hits = sciMHTDC[frs_config->Get_mhtdc_11LA_chan()];
-    sci11lb_hits = sciMHTDC[frs_config->Get_mhtdc_11LB_chan()];
-    sci11lc_hits = sciMHTDC[frs_config->Get_mhtdc_11LC_chan()];
-    sci11ld_hits = sciMHTDC[frs_config->Get_mhtdc_11LD_chan()];
-    sci11ra_hits = sciMHTDC[frs_config->Get_mhtdc_11RA_chan()];
-    sci11rb_hits = sciMHTDC[frs_config->Get_mhtdc_11RB_chan()];
-    sci11rc_hits = sciMHTDC[frs_config->Get_mhtdc_11RC_chan()];
-    sci11rd_hits = sciMHTDC[frs_config->Get_mhtdc_11RD_chan()];
-    sci21l_hits = sciMHTDC[frs_config->Get_mhtdc_21L_chan()];
-    sci21r_hits = sciMHTDC[frs_config->Get_mhtdc_21R_chan()];
-    sci22l_hits = sciMHTDC[frs_config->Get_mhtdc_22L_chan()];
-    sci22r_hits = sciMHTDC[frs_config->Get_mhtdc_22R_chan()];
-    sci31l_hits = sciMHTDC[frs_config->Get_mhtdc_31L_chan()];
-    sci31r_hits = sciMHTDC[frs_config->Get_mhtdc_31R_chan()];
-    sci41l_hits = sciMHTDC[frs_config->Get_mhtdc_41L_chan()];
-    sci41r_hits = sciMHTDC[frs_config->Get_mhtdc_41R_chan()];
-    sci42l_hits = sciMHTDC[frs_config->Get_mhtdc_42L_chan()];
-    sci42r_hits = sciMHTDC[frs_config->Get_mhtdc_42R_chan()];
-    sci43l_hits = sciMHTDC[frs_config->Get_mhtdc_43L_chan()];
-    sci43r_hits = sciMHTDC[frs_config->Get_mhtdc_43R_chan()];
-    sci81l_hits = sciMHTDC[frs_config->Get_mhtdc_81L_chan()];
-    sci81r_hits = sciMHTDC[frs_config->Get_mhtdc_81R_chan()];
+    const auto& sciMHTDC = sciItem.Get_mhtdc_array();
+    sci11la_hits = MappedChannel(sciMHTDC, frs_config->Get_mhtdc_11LA_chan());
+    sci11lb_hits = MappedChannel(sciMHTDC, frs_config->Get_mhtdc_11LB_chan());
+    sci11lc_hits = MappedChannel(sciMHTDC, frs_config->Get_mhtdc_11LC_chan());
+    sci11ld_hits = MappedChannel(sciMHTDC, frs_config->Get_mhtdc_11LD_chan());
+    sci11ra_hits = MappedChannel(sciMHTDC, frs_config->Get_mhtdc_11RA_chan());
+    sci11rb_hits = MappedChannel(sciMHTDC, frs_config->Get_mhtdc_11RB_chan());
+    sci11rc_hits = MappedChannel(sciMHTDC, frs_config->Get_mhtdc_11RC_chan());
+    sci11rd_hits = MappedChannel(sciMHTDC, frs_config->Get_mhtdc_11RD_chan());
+    sci21l_hits = MappedChannel(sciMHTDC, frs_config->Get_mhtdc_21L_chan());
+    sci21r_hits = MappedChannel(sciMHTDC, frs_config->Get_mhtdc_21R_chan());
+    sci22l_hits = MappedChannel(sciMHTDC, frs_config->Get_mhtdc_22L_chan());
+    sci22r_hits = MappedChannel(sciMHTDC, frs_config->Get_mhtdc_22R_chan());
+    sci31l_hits = MappedChannel(sciMHTDC, frs_config->Get_mhtdc_31L_chan());
+    sci31r_hits = MappedChannel(sciMHTDC, frs_config->Get_mhtdc_31R_chan());
+    sci41l_hits = MappedChannel(sciMHTDC, frs_config->Get_mhtdc_41L_chan());
+    sci41r_hits = MappedChannel(sciMHTDC, frs_config->Get_mhtdc_41R_chan());
+    sci42l_hits = MappedChannel(sciMHTDC, frs_config->Get_mhtdc_42L_chan());
+    sci42r_hits = MappedChannel(sciMHTDC, frs_config->Get_mhtdc_42R_chan());
+    sci43l_hits = MappedChannel(sciMHTDC, frs_config->Get_mhtdc_43L_chan());
+    sci43r_hits = MappedChannel(sciMHTDC, frs_config->Get_mhtdc_43R_chan());
+    sci81l_hits = MappedChannel(sciMHTDC, frs_config->Get_mhtdc_81L_chan());
+    sci81r_hits = MappedChannel(sciMHTDC, frs_config->Get_mhtdc_81R_chan());
 
     auto & entry = calSciArray->emplace_back();
     entry.SetAll(de_11l,

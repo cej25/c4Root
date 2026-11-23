@@ -40,9 +40,10 @@ extern "C"
 
 namespace
 {
-struct S100RawRegistration
+struct RawRegistration
 {
     ext_data_structure_info* info;
+    bool hasOnlyTwoMusicChambers;
 
     static int ScintillatorLimit(std::string_view field, int fallback)
     {
@@ -53,21 +54,25 @@ struct S100RawRegistration
     }
 };
 
-// The generated ITEMS_INFO supplies client offsets. Register only the S100
-// fields and capacities while keeping the generic reader's backing storage.
-int ext_data_struct_info_item(S100RawRegistration registration, std::size_t offset, std::size_t size,
+// The generated ITEMS_INFO supplies client offsets into the shared backing store.
+// Register the fields and capacities emitted by the selected 16-channel unpacker.
+int ext_data_struct_info_item(RawRegistration registration, std::size_t offset, std::size_t size,
                              int type, const char* parent, int index, const char* field,
                              const char* control, int limit, std::uint32_t flags)
 {
-    if (std::string_view(field).substr(0, 7) == "TM_WR_T") return 0;
-    if (const auto count = S100RawRegistration::ScintillatorLimit(control, 0))
+    const std::string_view name(field);
+    if (name.substr(0, 7) == "TM_WR_T") return 0;
+    const auto chamber = name.substr(0, 6);
+    if (registration.hasOnlyTwoMusicChambers &&
+        (chamber == "MUSIC3" || chamber == "MUSIC4" || chamber == "MUSIC5")) return 0;
+    if (const auto count = RawRegistration::ScintillatorLimit(control, 0))
         size = count * sizeof(std::uint32_t);
-    limit = S100RawRegistration::ScintillatorLimit(field, limit);
+    limit = RawRegistration::ScintillatorLimit(field, limit);
     return ::ext_data_struct_info_item(registration.info, offset, size, type, parent, index,
                                       field, control, limit, flags);
 }
 
-int ext_data_struct_info_item_stderr(S100RawRegistration registration, std::size_t offset,
+int ext_data_struct_info_item_stderr(RawRegistration registration, std::size_t offset,
                                     std::size_t size, int type, const char* parent, int index,
                                     const char* field, const char* control, int limit, std::uint32_t flags)
 {
@@ -99,9 +104,9 @@ Bool_t FrsReader::Init(ext_data_struct_info* a_struct_info)
 {
     Int_t ok;
     
-    if (fUseS100Layout)
+    if (fRawLayout != RawLayout::Full)
     {
-        const S100RawRegistration registration{*a_struct_info};
+        const RawRegistration registration{*a_struct_info, fRawLayout == RawLayout::S181};
         EXT_STR_h101_frs_ITEMS_INFO(ok, registration, fOffset, EXT_STR_h101_frs, 0);
     }
     else

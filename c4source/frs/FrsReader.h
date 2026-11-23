@@ -38,9 +38,12 @@ class FrsReader : public c4Reader
         virtual void Reset() override;
 
         void SetOnline(Bool_t option) { fOnline = option; }
-        void UseS100Layout() { fUseS100Layout = true; }
+        void UseS100Layout() { fRawLayout = RawLayout::S100; }
+        void UseS181Layout() { fRawLayout = RawLayout::S181; }
 
     private:
+
+        enum class RawLayout { Full, S100, S181 };
 
         unsigned int fNEvent;
         
@@ -49,7 +52,7 @@ class FrsReader : public c4Reader
         size_t fOffset;
 
         Bool_t fOnline;
-        bool fUseS100Layout = false; //! Select the 16-channel S100 RAW layout
+        RawLayout fRawLayout = RawLayout::Full; //! Select the UCESB RAW fields and capacities
 
         EventHeader* header;
 
