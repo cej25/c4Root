@@ -26,13 +26,9 @@
 #pragma link C++ class BB7V7x5RawHit+;
 #pragma link C++ class std::vector<BB7V7x5RawHit>+;
 #pragma link C++ class BB7VmeRawData+;
-#pragma link C++ class BB7FebexItem+;
-#pragma link C++ class BB7EmptyItem+;
 #pragma link C++ class BB7FebexCalItem+;
 #pragma link C++ class BB7FebexHitItem+;
 
-#pragma link C++ class BB7V7x5Item+;
-#pragma link C++ class BB7V1290Item+;
 #pragma link C++ class BB7VmeImplantItem+;
 #pragma link C++ class BB7VmeDecayItem+;
 #pragma link C++ class BB7VmeResidualItem+;

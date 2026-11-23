@@ -1,16 +1,16 @@
 #ifndef BB7Raw2Cal_H
 #define BB7Raw2Cal_H
 
+#include "FairTask.h"
 #include "TClonesArray.h"
 #include "EventHeader.h"
-#include "BB7VmeData.h"
 #include "BB7VmeCalData.h"
 #include "TBB7VmeConfiguration.h"
 
 #include <map>
 
 class TBB7VmeConfiguration;
-class BB7V7x5Item;
+class BB7VmeRawData;
 class BB7VmeImplantItem;
 class BB7VmeDecayItem;
 class BB7VmeResidualItem;
@@ -36,8 +36,7 @@ class BB7Raw2Cal : public FairTask
     private:
         TBB7VmeConfiguration const* bb7_config;
 
-        std::vector<BB7V7x5Item> const* v7x5array;
-        std::vector<BB7V1290Item> const* v1290array;
+        const BB7VmeRawData* fRaw = nullptr; //! Borrowed input
         std::vector<BB7VmeImplantItem>* implantArray;
         std::vector<BB7VmeDecayItem>* decayArray;
         std::vector<BB7VmeResidualItem>* residualArray;
@@ -50,7 +49,7 @@ class BB7Raw2Cal : public FairTask
         std::map<std::pair<int,int>, std::pair<int, std::pair<int, int>>> detector_mapping;
 
     public:
-        ClassDef(BB7Raw2Cal, 1)
+        ClassDef(BB7Raw2Cal, 2)
 
 };
 

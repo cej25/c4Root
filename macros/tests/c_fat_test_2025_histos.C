@@ -30,7 +30,6 @@ typedef struct EXT_STR_h101_t
     EXT_STR_h101_frs_onion_t frs;
     EXT_STR_h101_beammonitor_onion_t beammonitor;
     EXT_STR_h101_bgo_onion_t bgo;
-    // EXT_STR_h101_bb7febex_onion_t bb7febex;
 } EXT_STR_h101;
 
 

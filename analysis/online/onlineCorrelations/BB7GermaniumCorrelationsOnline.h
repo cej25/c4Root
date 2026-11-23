@@ -1,7 +1,7 @@
 #ifndef BB7GermaniumCorrelationsOnline_H
 #define BB7GermaniumCorrelationsOnline_H
 
-#include "BB7FebexData.h"
+#include "FairTask.h"
 #include "BB7FebexCalData.h"
 #include "BB7FebexHitData.h"
 #include "GermaniumCalData.h"
@@ -23,8 +23,7 @@ class TH1I;
 class TH2I;
 class TH2F;
 class TH2D;
-class BB7EmptyItem;
-class BB7FebexItem;
+class BB7FebexRawData;
 class BB7FebexCalItem;
 class BB7FebexHitItem;
 class TBB7FebexConfiguration;
@@ -54,8 +53,7 @@ class BB7GermaniumCorrelationsOnline : public FairTask
         TBB7FebexConfiguration const* bb7_config;
         TGermaniumConfiguration const* germanium_config;
 
-        std::vector<BB7EmptyItem> const* bb7empty;
-        std::vector<BB7FebexItem> const* bb7rawHits;
+        const BB7FebexRawData* fRaw = nullptr; //! Borrowed input
         std::vector<BB7FebexCalItem> const* bb7calImplants;
         std::vector<BB7FebexCalItem> const* bb7calDecays;
         std::vector<BB7FebexHitItem> const* bb7decays;
@@ -89,7 +87,7 @@ class BB7GermaniumCorrelationsOnline : public FairTask
         
 
     public:
-        ClassDef(BB7GermaniumCorrelationsOnline, 1)
+        ClassDef(BB7GermaniumCorrelationsOnline, 2)
 };
 
 

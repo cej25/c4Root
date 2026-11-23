@@ -14,81 +14,116 @@
  *                                06.05.25                                    *
  ******************************************************************************/
 
-#include "FairLogger.h"
-#include "FairRootManager.h"
-
-#include "BB7VmeData.h"
-#include "BB7RawData.h"
-#include "VmeReader.h"
 #include "BB7Reader.h"
+
+#include "BB7RawData.h"
+#include "FairRootManager.h"
+#include "FebexReader.h"
+#include "VmeReader.h"
 #include "c4Logger.h"
+#include "ext_data_struct_info.hh"
 
 #include <cstring>
-#include "ext_data_struct_info.hh"
 
 extern "C"
 {
     #include "ext_data_client.h"
+    #include "ext_h101_bbfebex.h"
     #include "ext_h101_bb7vme.h"
 }
 
-BB7Reader::BB7Reader(EXT_STR_h101_bb7vme_onion* data, size_t offset)
-    :   c4Reader("BB7Reader")
-    ,   fData(data)
-    ,   fOffset(offset)
-    ,   fOnline(kFALSE)
-    ,   v7x5array(new std::vector<BB7V7x5Item>)
-    ,   v1290array(new std::vector<BB7V1290Item>)
-    ,   fRaw(new BB7VmeRawData)
+BB7Reader::BB7Reader(EXT_STR_h101_bbfebex_onion_t* data, std::size_t offset)
+    : c4Reader("BB7Reader")
+    , fFebexData(data)
+    , fOffset(offset)
+    , fFebexRaw(new BB7FebexRawData)
 {
+}
 
+BB7Reader::BB7Reader(EXT_STR_h101_bb7vme_onion_t* data, std::size_t offset)
+    : c4Reader("BB7Reader")
+    , fVmeData(data)
+    , fOffset(offset)
+    , fVmeRaw(new BB7VmeRawData)
+{
 }
 
 BB7Reader::~BB7Reader()
 {
-    delete v7x5array;
-    delete v1290array;
-    delete fRaw;
+    delete fFebexRaw;
+    delete fVmeRaw;
 }
 
-Bool_t BB7Reader::Init(ext_data_struct_info* a_struct_info)
+Bool_t BB7Reader::Init(ext_data_struct_info* structInfo)
 {
-    if (!a_struct_info || !fData || !FairRootManager::Instance()) return kFALSE;
-    Int_t ok;
-    c4LOG(info, "");
+    auto* manager = FairRootManager::Instance();
+    if (!structInfo || !manager || (!fFebexData && !fVmeData)) return kFALSE;
 
-    EXT_STR_h101_bb7vme_ITEMS_INFO(ok, *a_struct_info, fOffset, EXT_STR_h101_bb7vme, 0);
+    Int_t ok;
+    if (fFebexData)
+    {
+        EXT_STR_h101_bbfebex_ITEMS_INFO(ok, *structInfo, fOffset, EXT_STR_h101_bbfebex, 0);
+    }
+    else
+    {
+        EXT_STR_h101_bb7vme_ITEMS_INFO(ok, *structInfo, fOffset, EXT_STR_h101_bb7vme, 0);
+    }
 
     if (!ok)
     {
-        c4LOG(error, "Failed to set up structure information");
+        c4LOG(error, "Failed to set up BB7 structure information");
         return kFALSE;
     }
 
-    FairRootManager::Instance()->RegisterAny("BB7V7x5Data", v7x5array, !fOnline);
-    FairRootManager::Instance()->RegisterAny("BB7V1290Data", v1290array, !fOnline);
-    FairRootManager::Instance()->RegisterAny("BB7VmeRawData", fRaw, !fOnline);
+    if (fFebexData)
+    {
+        manager->RegisterAny("BB7FebexRawData", fFebexRaw, !fOnline);
+        std::memset(fFebexData, 0, sizeof *fFebexData);
+    }
+    else
+    {
+        manager->RegisterAny("BB7VmeRawData", fVmeRaw, !fOnline);
+        std::memset(fVmeData, 0, sizeof *fVmeData);
+    }
     Reset();
-
-    std::memset(fData, 0, sizeof *fData);
-
     return kTRUE;
 }
 
 Bool_t BB7Reader::Read()
 {
-    if (!fData) return kTRUE;
     Reset();
-    const auto& input = *fData;
-    fRaw->wrTimestamp = c4::vme::Timestamp(input.bbseven_ts_t);
-    fRaw->wrId = input.bbseven_ts_subsystem_id;
-    fRaw->procid = 31;
+    if (fFebexData) ReadFebex();
+    if (fVmeData) ReadVme();
+    return kTRUE;
+}
+
+void BB7Reader::ReadFebex()
+{
+    auto& first = fFebexRaw->first;
+    first.wrTimestamp = c4::vme::Timestamp(fFebexData->bbfirst_ts_t);
+    first.wrId = fFebexData->bbfirst_ts_subsystem_id;
+    first.procid = 35;
+    febex::ReadTraceBoards(fFebexData->bbfirst_data, first, "BB7");
+
+    auto& second = fFebexRaw->second;
+    second.wrTimestamp = c4::vme::Timestamp(fFebexData->bbsecond_ts_t);
+    second.wrId = fFebexData->bbsecond_ts_subsystem_id;
+    second.procid = 36;
+    febex::ReadTraceBoards(fFebexData->bbsecond_data, second, "BB7");
+}
+
+void BB7Reader::ReadVme()
+{
+    const auto& input = *fVmeData;
+    fVmeRaw->wrTimestamp = c4::vme::Timestamp(input.bbseven_ts_t);
+    fVmeRaw->wrId = input.bbseven_ts_subsystem_id;
+    fVmeRaw->procid = 31;
 
     const auto readModule = [this](std::uint32_t module, std::uint32_t geo,
                                    std::uint32_t count, const auto& indices, const auto& samples) {
         c4::vme::DecodeV775(count, indices, samples,
             [&](std::uint32_t channel, std::uint32_t value, std::int32_t status) {
-                fRaw->V7x5.push_back({module, geo, channel, value, status});
+                fVmeRaw->V7x5.push_back({module, geo, channel, value, status});
             });
     };
     readModule(1, input.bbseven_v7x51geo, input.bbseven_v7x51n, input.bbseven_v7x51nI, input.bbseven_v7x51data);
@@ -101,33 +136,32 @@ Bool_t BB7Reader::Read()
         input.bbseven_v1290_measurement_leadOrTrail,
         [&](std::uint32_t channel, std::uint32_t index) {
             if (channel == 0 || channel > 32) return;
-            auto& hit = fRaw->V1290.emplace_back();
-            hit.procid = fRaw->procid;
+            auto& hit = fVmeRaw->V1290.emplace_back();
+            hit.procid = fVmeRaw->procid;
             hit.geo = input.bbseven_v1290_geo;
             hit.channel = channel - 1; // UCESB's sparse index is one-based.
-            hit.wr_subsystem = fRaw->wrId;
-            hit.wr_timestamp = fRaw->wrTimestamp;
+            hit.wr_subsystem = fVmeRaw->wrId;
+            hit.wr_timestamp = fVmeRaw->wrTimestamp;
             hit.measurement = input.bbseven_v1290_measurement_data[index];
             hit.leading_or_trailing = input.bbseven_v1290_measurement_leadOrTrailv[index];
         });
-
-    for (const auto& hit : fRaw->V7x5)
-        v7x5array->emplace_back().SetAll(fRaw->wrTimestamp, hit.geo, hit.value, hit.channel);
-    for (const auto& hit : fRaw->V1290)
-        v1290array->emplace_back().SetAll(hit.channel, hit.measurement, hit.leading_or_trailing);
-
-    return kTRUE;
 }
 
 void BB7Reader::Reset()
 {
-    fRaw->wrTimestamp = 0;
-    fRaw->wrId = 0;
-    fRaw->procid = 0;
-    fRaw->V7x5.clear();
-    fRaw->V1290.clear();
-    v7x5array->clear();
-    v1290array->clear();
+    if (fFebexRaw)
+    {
+        fFebexRaw->first = {};
+        fFebexRaw->second = {};
+    }
+    if (fVmeRaw)
+    {
+        fVmeRaw->wrTimestamp = 0;
+        fVmeRaw->wrId = 0;
+        fVmeRaw->procid = 0;
+        fVmeRaw->V7x5.clear();
+        fVmeRaw->V1290.clear();
+    }
 }
 
 ClassImp(BB7Reader)

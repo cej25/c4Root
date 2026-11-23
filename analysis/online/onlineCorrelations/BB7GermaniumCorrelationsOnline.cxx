@@ -19,6 +19,7 @@
 #include "FairTask.h"
 
 #include "BB7GermaniumCorrelationsOnline.h"
+#include "BB7RawData.h"
 #include "c4Logger.h"
 #include "AnalysisTools.h"
 
@@ -60,10 +61,8 @@ InitStatus BB7GermaniumCorrelationsOnline::Init()
     c4LOG_IF(error, !header, "EventHeader. not found!");
 
     // bb7 and germanium
-    bb7empty = mgr->InitObjectAs<decltype(bb7empty)>("BB7EmptyData");
-    c4LOG_IF(fatal, !bb7empty, "Branch BB7EmptyData not found!");
-    bb7rawHits = mgr->InitObjectAs<decltype(bb7rawHits)>("BB7FebexData");
-    c4LOG_IF(fatal, !bb7rawHits, "Branch BB7FebexData not found!");
+    fRaw = mgr->InitObjectAs<decltype(fRaw)>("BB7FebexRawData");
+    c4LOG_IF(fatal, !fRaw, "Branch BB7FebexRawData not found!");
 
     bb7calImplants = mgr->InitObjectAs<decltype(bb7calImplants)>("BB7FebexCalImplants");
     bb7calDecays = mgr->InitObjectAs<decltype(bb7calDecays)>("BB7FebexCalDecays");
@@ -118,9 +117,19 @@ InitStatus BB7GermaniumCorrelationsOnline::Init()
 
 void BB7GermaniumCorrelationsOnline::Exec(Option_t* option)
 { 
-    // stuff
-    if (bb7rawHits->size() > 0) n_bb7_f0++;
-    if (bb7empty->size() > 0) n_bb7_empty++;
+    bool hasHits = false;
+    bool hasEmptyBoard = false;
+    for (const auto* crate : {&fRaw->first, &fRaw->second})
+    {
+        for (const auto& board : crate->boards)
+        {
+            hasHits |= !board.summary.hits.empty();
+            hasEmptyBoard |= board.reportedHits == 0;
+        }
+    }
+
+    if (hasHits) n_bb7_f0++;
+    if (hasEmptyBoard) n_bb7_empty++;
     if (bb7calDecays->size() > 0) n_cal_decay++;
     if (bb7calImplants->size() > 0) n_cal_implant++;
     if (bb7decays->size() > 0) n_decay_event++;
@@ -128,38 +137,14 @@ void BB7GermaniumCorrelationsOnline::Exec(Option_t* option)
 
     if (germaniumHits->GetEntriesFast() > 0)
     {
-        if (bb7rawHits->size() > 0) n_coinc_f0++;
-        if (bb7empty->size() > 0) n_coinc_empty++;
+        if (hasHits) n_coinc_f0++;
+        if (hasEmptyBoard) n_coinc_empty++;
         if (bb7calDecays->size() > 0) n_coinc_cal_decay++;
         if (bb7calImplants->size() > 0) n_coinc_cal_imp++;
         if (bb7decays->size() > 0) n_coinc_decay++;
         if (bb7implants->size() > 0) n_coinc_imp++;
     }
 
-
-    // if (germaniumHits->GetEntriesFast() > 0) std::cout << germaniumHits->GetEntriesFast() << std::endl;
-
-    // if (bb7rawHits->size() > 0 && germaniumHits->GetEntriesFast() > 0)
-    // {
-    //     auto const & rawHit = bb7rawHits->at(0);
-    //     int64_t wr_bb7 = rawHit.Get_wr_t();
-    //     Int_t nHits = germaniumHits->GetEntriesFast();
-        
-    //     for (Int_t ihit = 0; ihit < nHits; ihit++)
-    //     {
-    //         GermaniumCalData* hit1 = (GermaniumCalData*)germaniumHits->At(ihit);
-
-    //         int detector_id1 = hit1->Get_detector_id();
-    //         // if (germanium_config->IsDetectorAuxilliary(detector_id1)) continue;
-
-    //         int64_t wr_germ = hit1->Get_wr_t();
-    //         std::cout << "bb7 wr::: " << wr_bb7 << " (crate: " << rawHit.Get_crate_id() << ")" << std::endl;
-    //         std::cout << "germanium wr:: " << wr_germ << std::endl;
-    //         std::cout << "dt:: " << wr_germ - wr_bb7 << std::endl;
-
-    //         break;
-    //     }
-    // }
 
     if (bb7decays->size() <= 0) return;
 

@@ -358,17 +358,16 @@ Branch:
         - "fwr_subsystem_id" [uint16_t]
         - "fwr_t" [uint64_t]
     
-    "BB7VmeData"
-        - "fwr_t" [uint64_t]
-        - "fv7x5_geo" [std::vector<uint32_t>]
-        - "fv7x5_channel" [std::vector<uint32_t>]
-        - "fv7x5_data" [std::vector<uint32_t>]
-    "BB7VmeCalData"
-        - "fwr_t" [uint64_t]
-        - "fsides" [std::vector<int>]
-        - "fstrips" [std::vector<int>]
-        - "fraw_adc" [std::vector<uint32_t>]
-
+BB7 raw branches (both provided by BB7Reader)
+    "BB7FebexRawData" [BB7FebexRawData]
+        - "first", "second" [BB7FebexRawCrate]
+        - Each crate contains its White Rabbit timestamp and boards with FEBEX summaries and traces.
+        - Calibration outputs: "BB7FebexCalImplants", "BB7FebexCalDecays".
+    "BB7VmeRawData" [BB7VmeRawData]
+        - "wrTimestamp", "wrId", "procid"
+        - "V7x5" [std::vector<BB7V7x5RawHit>]
+        - "V1290" [std::vector<V1290RawData>]
+        - Calibration outputs: "BB7ImplantData", "BB7DecayData", "BB7ResidualData", "BB7TimeMachineData".
 
 
 FRS up-to-date as of 12/12/24 :: git tag "frs-2.0"
