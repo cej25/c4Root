@@ -1,6 +1,3 @@
-#include "FatimaReader.h"
-#include "FatimaRaw2Cal.h"
-#include "ext_h101_fatima.h"
 typedef struct EXT_STR_h101_t
 
 {   

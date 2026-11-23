@@ -1,9 +1,4 @@
-#include "FatimaReader.h"
-#include "FatimaVmeReader.h"
-#include "FatimaRaw2Cal.h"
-#include "ext_h101_fatima.h"
 #include "../../unpack/exps/s100/s100_config.gen.spec"
-#include "ext_h101_fatimavme.h"
 #include <TROOT.h>
 
 // Switch all tasks related to {subsystem} on (1)/off (0)

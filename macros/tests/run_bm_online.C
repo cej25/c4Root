@@ -1,12 +1,3 @@
-#include "BeamMonitorOnlineSpectra.h"
-#include "BeamMonitorReader.h"
-#include "EventHeader.h"
-#include "FairLogger.h"
-#include "FairRootFileSink.h"
-#include "FairRootManager.h"
-#include "FairRunOnline.h"
-#include "UcesbSource.h"
-
 #include <TFolder.h>
 #include <TStopwatch.h>
 #include <cstddef>

@@ -1,6 +1,3 @@
-#include "FatimaReader.h"
-#include "FatimaRaw2Cal.h"
-#include "ext_h101_fatima.h"
 #include <TROOT.h>
 
 // Struct should containt all subsystem h101 structures
