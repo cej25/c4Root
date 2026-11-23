@@ -38,7 +38,7 @@ void DecodeV775(std::uint32_t count, const std::uint32_t (&indices)[Channels],
 template<typename Bank, typename Emit>
 void DecodeV1751(const Bank& bank, std::size_t slot, Emit emit) {
     const auto mask = static_cast<std::uint32_t>(bank.channels);
-    // s100 FATIMA QDC uses channels 0..7, matching its legacy reader.
+    // The V1751 channel mask has one bit for each of its eight hardware channels.
     for (std::uint32_t channel = 0; channel < 8; ++channel) {
         if ((mask & (1u << channel)) == 0) continue;
         // Packed fields have independent counters; index by packed entry,
@@ -67,8 +67,12 @@ void DecodeV1290Blocks(std::uint32_t count, const std::uint32_t (&channels)[Bloc
             if (end > start) start = end;
             continue;
         }
-        for (auto index = start; index < end; ++index)
-            emit(channels[block], index);
+        const auto channel = channels[block];
+        if (channel >= 1 && channel <= 32) {
+            // UCESB sparse indices start at one. The raw records use hardware channels.
+            for (auto index = start; index < end; ++index)
+                emit(channel - 1, index);
+        }
         start = end;
     }
 }

@@ -135,11 +135,10 @@ void BB7Reader::ReadVme()
         input.bbseven_v1290_measurement_nME, input.bbseven_v1290_measurement_n,
         input.bbseven_v1290_measurement_leadOrTrail,
         [&](std::uint32_t channel, std::uint32_t index) {
-            if (channel == 0 || channel > 32) return;
             auto& hit = fVmeRaw->V1290.emplace_back();
             hit.procid = fVmeRaw->procid;
             hit.geo = input.bbseven_v1290_geo;
-            hit.channel = channel - 1; // UCESB's sparse index is one-based.
+            hit.channel = channel;
             hit.wr_subsystem = fVmeRaw->wrId;
             hit.wr_timestamp = fVmeRaw->wrTimestamp;
             hit.measurement = input.bbseven_v1290_measurement_data[index];

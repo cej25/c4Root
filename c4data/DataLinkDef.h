@@ -104,6 +104,10 @@
 #pragma link C++ class std::vector<V1290RawData>+;
 #pragma link C++ class FatimaTamexRaw+;
 #pragma link C++ class FatimaVmeChainRaw+;
+// Version 1 used one-based UCESB indices for FATIMA. BB7 already stored hardware channels.
+// The existing wrId leaf triggers the rule for split ROOT trees.
+#pragma read sourceClass="FatimaVmeChainRaw" version="[1]" targetClass="FatimaVmeChainRaw" \
+    source="std::uint16_t wrId" target="tdcChannelBase" code="{ tdcChannelBase = 1; }"
 #pragma link C++ class FatimaRawData+;
 #pragma link C++ class FebexRawHit+;
 #pragma read sourceClass="FebexRawHit" version="[1]" targetClass="FebexRawHit" \

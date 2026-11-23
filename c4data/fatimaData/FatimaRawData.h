@@ -23,7 +23,15 @@ struct FatimaVmeChainRaw
     std::vector<V1751RawData> QDC;
     std::vector<V1290RawData> TDC;
 
-    ClassDefNV(FatimaVmeChainRaw, 1);
+    // ROOT sets this to one when reading version-1 FATIMA data.
+    std::uint16_t tdcChannelBase = 0;
+
+    int TdcHardwareChannel(const V1290RawData& hit) const
+    {
+        return static_cast<int>(hit.channel) - tdcChannelBase;
+    }
+
+    ClassDefNV(FatimaVmeChainRaw, 2);
 };
 
 class FatimaRawData : public TObject

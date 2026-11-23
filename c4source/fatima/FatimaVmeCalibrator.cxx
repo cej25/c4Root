@@ -45,13 +45,16 @@ void FatimaVmeCalibrator::Process() {
     Clear();
     if (fChain) {
         for (const auto& raw : fChain->QDC) ProcessQdc(raw);
-        for (const auto& raw : fChain->TDC) ProcessTdc(raw);
+        for (const auto& raw : fChain->TDC) ProcessTdc(raw, fChain->TdcHardwareChannel(raw) + 1);
         return;
     }
     for (int i = 0; i < fQdcInput->GetEntriesFast(); ++i)
         ProcessQdc(*static_cast<const V1751RawData*>(fQdcInput->At(i)));
-    for (int i = 0; i < fTdcInput->GetEntriesFast(); ++i)
-        ProcessTdc(*static_cast<const V1290RawData*>(fTdcInput->At(i)));
+    // The original standalone FATIMA branch stores the one-based allocation channel.
+    for (int i = 0; i < fTdcInput->GetEntriesFast(); ++i) {
+        const auto& raw = *static_cast<const V1290RawData*>(fTdcInput->At(i));
+        ProcessTdc(raw, raw.channel);
+    }
 }
 
 void FatimaVmeCalibrator::ProcessQdc(const V1751RawData& raw) {
@@ -82,8 +85,8 @@ void FatimaVmeCalibrator::ProcessQdc(const V1751RawData& raw) {
     hit->energy = energy;
 }
 
-void FatimaVmeCalibrator::ProcessTdc(const V1290RawData& raw) {
-    const auto mapping = fTdcMapping.find({raw.geo, raw.channel});
+void FatimaVmeCalibrator::ProcessTdc(const V1290RawData& raw, int allocationChannel) {
+    const auto mapping = fTdcMapping.find({raw.geo, allocationChannel});
     if (mapping == fTdcMapping.end() || mapping->second < 0) return;
     const int detector = mapping->second;
     auto* hit = static_cast<FatimaVmeTdcCalHit*>(
@@ -92,7 +95,7 @@ void FatimaVmeCalibrator::ProcessTdc(const V1290RawData& raw) {
     hit->wr_subsystem = raw.wr_subsystem;
     hit->detector_id = detector;
     hit->geo = raw.geo;
-    hit->channel = raw.channel;
+    hit->channel = allocationChannel;
     hit->measurement_raw = raw.measurement;
     hit->leading_or_trailing = raw.leading_or_trailing;
     hit->time = static_cast<double>(raw.measurement) + fTdcTimeOffsets[detector];

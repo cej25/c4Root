@@ -21,6 +21,7 @@ class TFatimaVmeConfiguration
 
         std::map<std::pair<int, int>, int> QDCMapping() const;
         int NQDCBoards() const;
+        // Allocation files use one-based TDC channel numbers (1–32).
         std::map<std::pair<int, int>, int> TDCMapping() const;
         int NTDCBoards() const;
         int NDetectors() const;

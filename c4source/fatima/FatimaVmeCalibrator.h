@@ -28,7 +28,7 @@ public:
 
 private:
     void ProcessQdc(const V1751RawData& raw);
-    void ProcessTdc(const V1290RawData& raw);
+    void ProcessTdc(const V1290RawData& raw, int allocationChannel);
 
     const FatimaVmeChainRaw* fChain = nullptr; // borrowed
     TClonesArray* fQdcInput = nullptr; // borrowed

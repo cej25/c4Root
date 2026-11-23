@@ -18,6 +18,7 @@ ${C4ROOT_SOURCE_DIR}/c4data/fimpData
 ${C4ROOT_SOURCE_DIR}/c4data/mcpData
 ${C4ROOT_SOURCE_DIR}/c4data/tamexData
 ${C4ROOT_SOURCE_DIR}/c4data/febexData
+${C4ROOT_SOURCE_DIR}/c4data/vmeData
 ${C4ROOT_SOURCE_DIR}/c4data/degasData
 ${C4ROOT_SOURCE_DIR}/c4data/stefanData
 ${C4ROOT_SOURCE_DIR}/c4source
@@ -60,7 +61,7 @@ bgoData/TBGOTwinpeaksConfiguration.cxx
 fatimaData/TFatimaVmeConfiguration.cxx
 fatimaData/FatimaVmeData.cxx
 fatimaData/FatimaVmeCalData.cxx
-fatimaData/VmeDigitiserRawData.cxx
+vmeData/VmeDigitiserRawData.cxx
 fatimaData/FatimaRawData.cxx
 timemachineData/TimeMachineData.cxx
 bb7Data/BB7RawData.cxx

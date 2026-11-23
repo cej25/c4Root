@@ -73,10 +73,11 @@ Bool_t FatimaVmeReader::Read()
         qdcArray->emplace_back().SetAll(raw.wr_timestamp, mapping->second, raw.coarse,
                                        fine_time, raw.fine, raw.qlong, raw.qshort, raw.waveform);
     }
-    for (const auto& raw : fFatimaRaw->VMEChain.TDC)
+    const auto& chain = fFatimaRaw->VMEChain;
+    for (const auto& raw : chain.TDC)
     {
         if (raw.geo == 0) continue;
-        const auto mapping = dets_tdc.find({raw.geo, raw.channel});
+        const auto mapping = dets_tdc.find({raw.geo, chain.TdcHardwareChannel(raw) + 1});
         if (mapping == dets_tdc.end()) continue;
         tdcArray->emplace_back().SetAll(raw.wr_timestamp, raw.wr_subsystem, mapping->second,
                                        raw.measurement, raw.leading_or_trailing);

@@ -129,9 +129,20 @@ int main() {
     c4::vme::DecodeV1290(tdc, 1,
         [&](std::size_t slot, int geo, std::uint32_t channel,
             std::uint32_t index, const auto&) {
-            assert(slot == 1 && geo == 2 && channel == 2 && index < 2);
+            assert(slot == 1 && geo == 2 && channel == 1 && index < 2);
             ++hit_count;
         });
     assert(hit_count == 2);
+    const std::uint32_t tdcIndices[] = {0, 1, 32, 33};
+    const std::uint32_t blockEnds[] = {1, 2, 3, 4};
+    channels.clear();
+    offsets.clear();
+    c4::vme::DecodeV1290Blocks(4, tdcIndices, blockEnds, 4, 4,
+        [&](std::uint32_t channel, std::uint32_t offset) {
+            channels.push_back(channel);
+            offsets.push_back(offset);
+        });
+    assert((channels == std::vector<std::uint32_t>{0, 31}));
+    assert((offsets == std::vector<std::uint32_t>{1, 2}));
     std::cout << "PASS: generic VME channel and packed block decoding\n";
 }

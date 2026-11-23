@@ -4,12 +4,12 @@
 #include <cstdint>
 #include <vector>
 
-// Electronics-level s100 VME records; channel IDs are hardware IDs,
-// not FATIMA detector IDs. One record per hit/measurement.
+// One electronics-level record per digitiser hit or measurement.
+// Current readers store zero-based hardware channels.
 class V1751RawData : public TObject {
 public:
     std::uint16_t procid = 0;
-    std::uint16_t board_slot = 0;
+    std::uint16_t board_slot = 0; // Zero-based index within the readout bank.
     std::int32_t board_id = 0;
     std::uint16_t channel = 0;
     std::uint32_t wr_subsystem = 0;
@@ -29,7 +29,7 @@ public:
 class V1290RawData : public TObject {
 public:
     std::uint16_t procid = 0;
-    std::uint16_t board_slot = 0;
+    std::uint16_t board_slot = 0; // Zero-based index within the readout bank.
     std::int32_t geo = 0;
     std::uint16_t channel = 0;
     std::uint32_t wr_subsystem = 0;
