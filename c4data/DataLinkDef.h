@@ -120,6 +120,8 @@
 #pragma link C++ class FebexRawData+;
 #pragma link C++ class std::vector<FebexRawData>+;
 #pragma link C++ class DegasRawData+;
+#pragma link C++ class TDegasConfiguration+;
+#pragma link C++ class DegasCalData+;
 
 // HISPEC10 MCP
 #pragma link C++ class H10MCPTwinpeaksData+;

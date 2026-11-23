@@ -40,7 +40,7 @@ typedef struct EXT_STR_h101_t
     EXT_STR_h101_fatimavme_onion_t fatimavme;
     EXT_STR_h101_aida_onion_t aida;
     EXT_STR_h101_bplast_onion_t bplast;
-    EXT_STR_h101_degas_onion degas;
+    EXT_STR_h101_degas_onion_t degas;
     EXT_STR_h101_frs_onion_t frs;
     EXT_STR_h101_beammonitor_onion_t beammonitor;
     EXT_STR_h101_bgo_onion_t bgo;
@@ -64,7 +64,7 @@ void s100_tests(const char* input = "/u/cjones/data/lustre/despec/fatima_test_20
     TString screenshot_path = "~/lustre/gamma/dryrunmarch24/screenshots/";
     TString c4Root_path = repository;
     //TString c4Root_path = "/u/cjones/s100_workspace/c4Root";
-    TString ucesb_path = c4Root_path + "/unpack/exps/" + fExpName + "/" + fExpName + " --input-buffer=200Mi --allow-errors";
+    TString ucesb_path = c4Root_path + "/unpack/exps/" + fExpName + "/" + fExpName + "degas --input-buffer=200Mi --allow-errors";
     ucesb_path.ReplaceAll("//","/");
 
     std::string config_path = std::string(c4Root_path.Data()) + "/config/" + std::string(fExpName.Data());
@@ -102,7 +102,6 @@ void s100_tests(const char* input = "/u/cjones/data/lustre/despec/fatima_test_20
     TString filename = input;
     TString outputFileName = output;
     const bool persist = !outputFileName.IsNull();
-    const TString germaniumBranch = "DegasCalData";
 
     // Create Online run
     Int_t refresh = 1; // Refresh rate for online histograms
@@ -146,16 +145,6 @@ void s100_tests(const char* input = "/u/cjones/data/lustre/despec/fatima_test_20
     // *** Initialise Gates *************************************************************** //
     
     
-    // Define prompt cut EdT gates for Fatima Prompt analysis
-    /*std::string fatima_gate_path = std::string(c4Root_path.Data()) + "/config/" + std::string(fExpName.Data()) + "/fatima/Gates/";
-    std::vector<std::string> FatimaPromptCuts = {"FatPromptCut1"};
-    TCutGGates* FatimaPrompt = new TCutGGates("FatimaEdT", FatimaPromptCuts, fatima_gate_path);
-
-    std::string germanium_gate_path = std::string(c4Root_path.Data()) + "/config/" + std::string(fExpName.Data()) + "/germanium/Gates/";
-    std::vector<std::string> GePromptCuts = {"GePromptCut1"};
-    TCutGGates* GePrompt = new TCutGGates("GeEdT", GePromptCuts, germanium_gate_path);*/
-    //TGermaniumConfiguration::SetPromptFlashCut(germanium_gate_path + "/GePromptCut1");
-    
     // ------------------------------------------------------------------------------------ //
     // *** Initialise Correlations ******************************************************** //
     
@@ -175,9 +164,11 @@ void s100_tests(const char* input = "/u/cjones/data/lustre/despec/fatima_test_20
     TbPlastConfiguration::SetDetectorMapFile(config_path + "/bplast/bplast_alloc_mar20.txt");
     TFrsConfiguration::SetConfigPath(config_path + "/frs/");
     TFrsConfiguration::SetCrateMapFile(config_path + "/frs/crate_map.txt");
-    TGermaniumConfiguration::SetDetectorConfigurationFile(config_path + "/germanium/ge_alloc_apr15.txt");
-    TGermaniumConfiguration::SetDetectorCoefficientFile(config_path + "/germanium/ge_calib_0904.txt");
+    TDegasConfiguration::SetDetectorConfigurationFile(config_path + "/degas/degas_allocation.txt");
+    TDegasConfiguration::SetDetectorCoefficientFile(config_path + "/degas/degas_calibration.txt");
     TBGOTwinpeaksConfiguration::SetDetectorConfigurationFile(config_path + "/bgo/bgo_alloc.txt");
+    TBGOTwinpeaksConfiguration::SetCoincidenceWindow(5000);
+    TBGOTwinpeaksConfiguration::SetCoincidenceOffset(0);
     
     
 
@@ -228,7 +219,7 @@ void s100_tests(const char* input = "/u/cjones/data/lustre/despec/fatima_test_20
     if (DEGAS_ON)
     {
         auto* reader = new DegasReader(&ucesb_struct.degas, offsetof(EXT_STR_h101, degas),
-                                       S100_PROCID_GERMANIUM);
+                                       S100_DEGAS_PROCID);
         reader->SetOnline(!persist);
         source->AddReader(reader);
     }
@@ -329,6 +320,14 @@ void s100_tests(const char* input = "/u/cjones/data/lustre/despec/fatima_test_20
 
     // ---------------------------------------------------------------------------------------- //
     // *** Analyse Subsystem Hits ************************************************************* //
+
+    if (DEGAS_ON)
+    {
+        auto* analyzer = new DegasCal2Anl();
+        analyzer->SetBGOVeto(BGO_ON);
+        analyzer->SetOnline(!persist);
+        run->AddTask(analyzer);
+    }
     
     
     if (AIDA_ON)
@@ -396,8 +395,7 @@ void s100_tests(const char* input = "/u/cjones/data/lustre/despec/fatima_test_20
     
     if (DEGAS_ON)
     {
-        GermaniumOnlineSpectra* onlinege = new GermaniumOnlineSpectra();
-        onlinege->SetGermaniumCalBranch(germaniumBranch);
+        DegasOnlineSpectra* onlinege = new DegasOnlineSpectra();
         onlinege->SetBinningEnergy(6e3,0,3e3);
         onlinege->AddReferenceDetector(15,0);
         onlinege->AddReferenceDetector(1,0);
@@ -405,12 +403,9 @@ void s100_tests(const char* input = "/u/cjones/data/lustre/despec/fatima_test_20
         run->AddTask(onlinege);
     }
     
-    TBGOTwinpeaksConfiguration::SetCoincidenceWindow(5000); 
-    TBGOTwinpeaksConfiguration::SetCoincidenceOffset(0);
     if (BGO_ON && DEGAS_ON)
     {
-        auto* onlinebgo = new BGOOnlineSpectra();
-        onlinebgo->SetGermaniumCalBranch(germaniumBranch);
+        auto* onlinebgo = new DegasBGOOnlineSpectra();
         onlinebgo->SetBinningEnergy(1500,0.1,1500.1);
         //onlinebgo->SetCoincidenceWindow(5000);
 
@@ -478,8 +473,7 @@ void s100_tests(const char* input = "/u/cjones/data/lustre/despec/fatima_test_20
 
     if (BPLAST_ON && DEGAS_ON)
     {
-        bPlastGermaniumCorrelationsOnline* bplastgecorr = new bPlastGermaniumCorrelationsOnline();
-        bplastgecorr->SetGermaniumCalBranch(germaniumBranch);
+        bPlastDegasCorrelationsOnline* bplastgecorr = new bPlastDegasCorrelationsOnline();
         // set bplast multiplicity
         // ???
         run->AddTask(bplastgecorr);

@@ -23,6 +23,7 @@
 
 // c4
 #include "WhiterabbitCorrelationOnline.h"
+#include "DegasCalData.h"
 #include "AnalysisTools.h"
 #include "c4Logger.h"
 
@@ -55,7 +56,6 @@ WhiterabbitCorrelationOnline::WhiterabbitCorrelationOnline(const TString& name, 
 {
     aida_config = TAidaConfiguration::GetInstance();
     fatima_config = TFatimaTwinpeaksConfiguration::GetInstance();
-    ge_config = TGermaniumConfiguration::GetInstance();
 }
 
 
@@ -386,8 +386,11 @@ void WhiterabbitCorrelationOnline::Exec(Option_t* option)
         {
             systems += 1;
             
-            GermaniumCalData* GermaniumHit = (GermaniumCalData*)fHitGe->At(0);
-            wr_germanium = GermaniumHit->Get_wr_t();
+            const auto* hit = fHitGe->At(0);
+            if (const auto* degasHit = dynamic_cast<const DegasCalData*>(hit))
+                wr_germanium = degasHit->Get_wr_t();
+            else if (const auto* geHit = dynamic_cast<const GermaniumCalData*>(hit))
+                wr_germanium = geHit->Get_wr_t();
 
             if (last_wr_germanium != wr_germanium) 
             {

@@ -327,7 +327,7 @@ def validate(experiment, root=ROOT):
         header = header_path.read_text()
         if digitiser == "febex":
             slots = compiled_febex_slots(detector, item)
-            capacity = read_array_size(header, f"{member}_data")
+            capacity = read_array_size(header, "degas_data")
             if capacity != len(slots):
                 warnings.append(f"{detector}: generated header has {capacity} FEBEX slots, "
                                 f"but unpacker declares {len(slots)}")
@@ -417,6 +417,7 @@ def emit_whiterabbit(config, include_procids=False):
 
     if routes:
         detector, item = routes["germanium"]
+        print(f"#define S100_DEGAS_PROCID {item['procid']}")
         slots = compiled_febex_slots(detector, item)
         cards = " ".join(f"data[{slot}] = FEBEX_EVENT(card = {card});" for slot, card in enumerate(slots))
         print(f"#define S100_DEGAS_CARDS {cards}")

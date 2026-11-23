@@ -9,7 +9,6 @@
 class DegasRawData;
 class ext_data_struct_info;
 struct EXT_STR_h101_degas_onion_t;
-struct EXT_STR_h101_germanium_traces_onion_t;
 struct EXT_STR_h101_degas_traces_onion_t;
 
 class DegasReader : public c4Reader
@@ -18,8 +17,6 @@ public:
     DegasReader(EXT_STR_h101_degas_onion_t* input, std::size_t offset,
                 std::uint16_t procid);
     DegasReader(EXT_STR_h101_degas_traces_onion_t* input, std::size_t offset,
-                std::uint16_t procid);
-    DegasReader(EXT_STR_h101_germanium_traces_onion_t* input, std::size_t offset,
                 std::uint16_t procid);
     ~DegasReader() override;
 
@@ -33,7 +30,6 @@ public:
 private:
     EXT_STR_h101_degas_onion_t* fInput = nullptr; //! UCESB summary input
     EXT_STR_h101_degas_traces_onion_t* fTraceInput = nullptr; //! UCESB trace input
-    EXT_STR_h101_germanium_traces_onion_t* fLegacyTraceInput = nullptr; //! Older UCESB trace input
     std::size_t fOffset;
     std::uint16_t fProcId;
     Bool_t fOnline = kFALSE;

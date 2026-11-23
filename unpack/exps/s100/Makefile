@@ -1,7 +1,8 @@
 #########################################################
 # Specify the name of the target executable
 
-TARGETS:=s100
+.DEFAULT_GOAL := s100
+TARGETS:=s100 s100degas
 
 #########################################################
 # Include common Makefile
@@ -15,7 +16,7 @@ GENERATED_CONFIG := s100_config.gen.spec
 SPEC_DEPENDENCIES := obj_s100/s100.spec.d
 
 .PHONY: prepare_s100_spec
-build_s100 test_s100: prepare_s100_spec
+build_s100 test_s100 build_s100degas test_s100degas: prepare_s100_spec
 
 prepare_s100_spec: $(GENERATED_CONFIG)
 	@# UCESB caches spec includes. Regenerate dependencies from older checkouts.

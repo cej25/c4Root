@@ -23,12 +23,15 @@
 
 // c4
 #include "WhiterabbitCorrelationNearline.h"
+#include "DegasCalData.h"
 #include "EventHeader.h"
 #include "TimeMachineData.h"
 #include "FatimaTwinpeaksCalData.h"
 #include "FatimaVmeCalData.h"
 #include "bPlastTwinpeaksCalData.h"
 #include "GermaniumCalData.h"
+
+#include <optional>
 
 #include "c4Logger.h"
 
@@ -39,6 +42,17 @@
 #include "TFile.h"
 #include "TRandom.h"
 #include <chrono>
+
+namespace
+{
+std::optional<ULong64_t> GammaTimestamp(const TClonesArray& hits)
+{
+    const auto* hit = hits.At(0);
+    if (const auto* degasHit = dynamic_cast<const DegasCalData*>(hit)) return degasHit->Get_wr_t();
+    if (const auto* geHit = dynamic_cast<const GermaniumCalData*>(hit)) return geHit->Get_wr_t();
+    return std::nullopt;
+}
+}
 
 WhiterabbitCorrelationNearline::WhiterabbitCorrelationNearline() : WhiterabbitCorrelationNearline("WhiterabbitCorrelationNearline")
 {
@@ -74,10 +88,7 @@ WhiterabbitCorrelationNearline::~WhiterabbitCorrelationNearline()
     {
         delete fHitbPlastTwinpeaks;
     }
-    if (fHitGe)
-    {
-        delete fHitGe;
-    }
+
     if (fAidaDecays)
     {
         delete fAidaDecays;
@@ -125,10 +136,11 @@ InitStatus WhiterabbitCorrelationNearline::Init()
             fHitFatimaVme = (TClonesArray*)mgr->GetObject("FatimaVmeCalData");
             c4LOG_IF(error, !fHitFatimaVme, "Branch FatimaVmeCalData. not found");
         }
-        else if (fDetectorSystems.at(i) == "Germanium")
+        else if (fDetectorSystems.at(i) == "Germanium" || fDetectorSystems.at(i) == "Degas")
         {
-            fHitGe = (TClonesArray*)mgr->GetObject("GermaniumCalData");
-            c4LOG_IF(error, !fHitGe, "Branch GermaniumCalData. not found");
+            const TString branch = fDetectorSystems.at(i) + "CalData";
+            fHitGe = dynamic_cast<TClonesArray*>(mgr->GetObject(branch.Data()));
+            c4LOG_IF(error, !fHitGe, "Missing branch " << branch);
         }
         else if (fDetectorSystems.at(i) == "Aida")
         {
@@ -475,9 +487,9 @@ void WhiterabbitCorrelationNearline::Exec(Option_t* option)
         
         if (fHitGe)
         {
-            GermaniumCalData* hitGe = (GermaniumCalData*)fHitGe->At(0);
+            const auto hitGe = GammaTimestamp(*fHitGe);
             if (!hitGe) continue;
-            int wr_ge = hitGe->Get_wr_t();
+            int wr_ge = *hitGe;
             int dt = wr_aida - wr_ge;
             h1_whiterabbit_correlation_aida_germanium->Fill(dt);
             if (fEventHeader->GetTrigger() == 1)
@@ -541,10 +553,10 @@ void WhiterabbitCorrelationNearline::Exec(Option_t* option)
             
             if (fHitGe) 
             {
-                GermaniumCalData* hitGe = (GermaniumCalData*)fHitGe->At(0);
+                const auto hitGe = GammaTimestamp(*fHitGe);
                 if (hitGe)
                 {
-                    int wr_ge = hitGe->Get_wr_t();
+                    int wr_ge = *hitGe;
                     int dt = wr_fatima - wr_ge;
                     h1_whiterabbit_correlation_fatima_ge->Fill(dt);
                     if (fEventHeader->GetTrigger() == 1)
@@ -591,7 +603,7 @@ void WhiterabbitCorrelationNearline::Exec(Option_t* option)
     //             GermaniumCalData* hitGe = (GermaniumCalData*)fHitGe->At(0);
     //             if (hitGe)
     //             {
-    //                 int wr_ge = hitGe->Get_wr_t();
+    //                 int wr_ge = *hitGe;
     //                 int dt = wr_fatimavme - wr_ge;
     //                 h1_whiterabbit_correlation_fatimavme_ge->Fill(dt);
     //                 if (fEventHeader->GetTrigger() == 1)
@@ -617,10 +629,10 @@ void WhiterabbitCorrelationNearline::Exec(Option_t* option)
                 int bplast_wr = hitbPlast->Get_wr_t();
                 if (fHitGe)
                 {
-                    GermaniumCalData* hitGe = (GermaniumCalData*)fHitGe->At(0);
+                    const auto hitGe = GammaTimestamp(*fHitGe);
                     if (hitGe)
                     {
-                        int wr_ge = hitGe->Get_wr_t();
+                        int wr_ge = *hitGe;
                         int dt = bplast_wr - wr_ge;
                         h1_whiterabbit_correlation_bplast_ge->Fill(dt);
                         if (fEventHeader->GetTrigger() == 1)
@@ -659,10 +671,7 @@ void WhiterabbitCorrelationNearline::FinishEvent()
     {
         fHitbPlastTwinpeaks->Clear();
     }
-    if (fHitGe)
-    {
-        fHitGe->Clear();
-    }
+
     if (fHitFatimaVme)
     {
         fHitFatimaVme->Clear();

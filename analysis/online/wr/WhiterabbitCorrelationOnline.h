@@ -4,7 +4,6 @@
 #include "FairTask.h"
 #include "TAidaConfiguration.h"
 #include "TFatimaTwinpeaksConfiguration.h"
-#include "TGermaniumConfiguration.h"
 
 #include "AidaHitData.h"
 #include "AidaData.h"
@@ -62,7 +61,6 @@ class WhiterabbitCorrelationOnline : public FairTask
     private:
         TAidaConfiguration const* aida_config;
         TFatimaTwinpeaksConfiguration const* fatima_config;
-        TGermaniumConfiguration const* ge_config;
 
         TClonesArray* fHitFatimaTwinpeaks;
         //TClonesArray* fHitFatimaVme;

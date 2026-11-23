@@ -33,6 +33,7 @@
 #pragma link C++ class BGOReader+;
 #pragma link C++ class DegasReader+;
 #pragma link C++ class DegasRaw2Cal+;
+#pragma link C++ class DegasCal2Anl+;
 #pragma link C++ class BGORaw2Cal+;
 #pragma link C++ class FatimaVmeReader+;
 #pragma link C++ class FatimaVmeRaw2Cal+;

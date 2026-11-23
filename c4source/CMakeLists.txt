@@ -16,6 +16,7 @@ ${C4ROOT_SOURCE_DIR}/c4source/aida
 ${C4ROOT_SOURCE_DIR}/c4source/bplast
 ${C4ROOT_SOURCE_DIR}/c4source/fatima
 ${C4ROOT_SOURCE_DIR}/c4source/germanium
+${C4ROOT_SOURCE_DIR}/c4source/degas
 ${C4ROOT_SOURCE_DIR}/c4source/bgo
 ${C4ROOT_SOURCE_DIR}/c4source/beammonitor
 ${C4ROOT_SOURCE_DIR}/c4source/bb7
@@ -66,6 +67,7 @@ set(SRCS
 ./digitisers/tamex/TamexFineTimeCalibration.cxx
 ./degas/DegasReader.cxx
 ./degas/DegasRaw2Cal.cxx
+./degas/DegasCal2Anl.cxx
 ./aida/AidaReader.cxx
 ./aida/AidaCal2Hit.cxx
 ./aida/AidaUnpack2Cal.cxx

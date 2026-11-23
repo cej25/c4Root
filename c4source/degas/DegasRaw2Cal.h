@@ -5,7 +5,7 @@
 
 class DegasRawData;
 class TClonesArray;
-class TGermaniumConfiguration;
+class TDegasConfiguration;
 
 class DegasRaw2Cal : public FairTask
 {
@@ -25,7 +25,7 @@ public:
 
 private:
     const DegasRawData* fRaw = nullptr; //! Borrowed detector input
-    const TGermaniumConfiguration* fConfig = nullptr; //! Run configuration
+    const TDegasConfiguration* fConfig = nullptr; //! Run configuration
     TClonesArray* fCal = nullptr; //! Owns calibrated hits
     TClonesArray* fTimeMachine = nullptr; //! Owns timing records
     Bool_t fOnline = kFALSE;

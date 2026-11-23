@@ -77,6 +77,8 @@ mcpData/H10MCPTwinpeaksData.cxx
 digitisers/tamexData/TamexRawData.cxx
 digitisers/febexData/FebexRawData.cxx
 degasData/DegasRawData.cxx
+degasData/TDegasConfiguration.cxx
+degasData/DegasCalData.cxx
 mcpData/H10MCPTwinpeaksCalData.cxx
 mcpData/H10MCPTwinpeaksAnaData.cxx
 mcpData/TH10MCPConfiguration.cxx

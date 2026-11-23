@@ -363,19 +363,24 @@ DEGAS FEBEX summary and trace input
         - "FEBEX" [std::vector<FebexRawData>] contains boards and their hits.
         - Raw hit channels are zero-based. DEGAS allocation files use channels 1–16.
         - "trace" [std::vector<UShort_t>] holds the waveform for its FEBEX hit when available.
-    "DegasCalData" [TClonesArray of GermaniumCalData]
-        - Use Get_trace() to access the waveform, which is empty for summary-only input.
-        - GermaniumCal2Anl can take this branch via SetGermaniumCalBranch("DegasCalData").
-        - GermaniumAnlData carries the waveform of the hit supplying the crystal and time in add-back.
+    "DegasCalData" and "DegasAnlData" [TClonesArray of DegasCalData]
+        - Configure the detector map, energy coefficients, time shifts and optional gates through TDegasConfiguration.
+        - Use Get_trace() for the waveform. Summary hits have an empty waveform.
+        - DegasCal2Anl applies the BGO veto and add-back before writing DegasAnlData.
+        - Add-back carries the waveform, crystal and time of the highest-energy contributor.
+        - The BGO veto and DEGAS-BGO spectra use the same detector ID and the configured BGO window and offset.
+          The time difference is BGO WR time minus the absolute DEGAS hit time, in ns.
+        - Read earlier DegasRawData trees with DegasRaw2Cal to rebuild the calibrated and analyzed branches.
 
-    For trace runs, build the optional FEBEX unpacker from the repository root:
+    For S100 summary runs, build the DEGAS bank variant used in macros/tests/s100_tests.C:
+        make -C unpack/exps/s100 s100degas
+    Use EXT_STR_h101_degas_onion_t with DegasReader. Regenerate its header with:
+        ./unpack/exps/s100/s100degas /dev/null --ntuple=NOTRIGEVENTNO,UNPACK:degas,STRUCT_HH,id=h101_degas,ext_h101_degas.h
+    For trace runs, build the optional FEBEX unpacker:
         make -C unpack/exps/febex febextrace
-    Use the EXT_STR_h101_degas_traces_onion_t bank in the macro's event structure.
-    Pass its address, offset, and procid to DegasReader, as for summary input.
-    The corresponding UCESB bank is named degastrace. Regenerate its header with:
+    Use EXT_STR_h101_degas_traces_onion_t with the same DegasReader and downstream tasks.
+    Regenerate its header with:
         ./unpack/exps/febex/febextrace /dev/null --ntuple=NOTRIGEVENTNO,UNPACK:degastrace,STRUCT_HH,id=h101_degas_traces,ext_h101_degas_traces.h
-    DegasReader also accepts the older EXT_STR_h101_germanium_traces_onion_t bank
-    when replaying an unpacker that emits germanium_traces.
 
 Shared VME raw records
     "V1751RawData" and "V1290RawData" are electronics records in c4data/digitisers/vmeData.

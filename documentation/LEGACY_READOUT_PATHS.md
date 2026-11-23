@@ -41,12 +41,12 @@ The new calibrator publishes separate QDC and TDC calibrated hits. Before removi
 
 ## Germanium and DEGAS FEBEX
 
-The legacy summary path uses `GermaniumReader` → `GermaniumFebexData` → `GermaniumRaw2Cal`. The structured path uses `DegasReader` → `DegasRawData` → `DegasRaw2Cal`. Multiple experiment macros still instantiate the Germanium tasks, and analysis often defaults to the `GermaniumCalData` branch.
+The legacy summary path uses `GermaniumReader` → `GermaniumFebexData` → `GermaniumRaw2Cal`. The DEGAS path uses `DegasReader` → `DegasRaw2Cal` → `DegasCal2Anl` with its own configuration, hit class, and analysis tasks. The existing `s100` unpacker serves legacy macros. The migrated S100 macro uses the `s100degas` unpacker and the DEGAS branches.
 
-- **Removal candidates for legacy summaries:** `c4source/germanium/GermaniumReader.{h,cxx}`, `GermaniumRaw2Cal.{h,cxx}` and `c4data/germaniumData/GermaniumFebexData.{h,cxx}`. The data pair also declares the trace class, so check that path before removing the pair. `c4source/germanium/GermaniumPackedSafety.h` is used by both legacy readers and `tests/febex_test.cxx`.
-- **Trace path:** `c4source/germanium/GermaniumTraceReader.{h,cxx}` and `analysis/online/germanium/GermaniumLabTest.{h,cxx}` use `GermaniumFebexTraceData`. DEGAS can read both trace layouts and carry waveforms through the calibrated and analysis branches. The legacy lab task still looks up its own raw branch. Keep that workflow until its users have validated the DEGAS path.
-- **Older structured DEGAS trees:** `c4source/degas/DegasRaw2Cal.cxx` computes conversions when a stored hit lacks the fields filled by newer readers. Review that fallback separately when support for those trees ends. Keep `c4source/digitisers/febex/FebexConversions.h`, `FebexReader.h`, `c4source/germanium/GermaniumCalibration.h` and `tests/febex_test.cxx` for shared behavior.
-- **Calibrated outputs:** keep `c4data/germaniumData/GermaniumCalData.{h,cxx}`. DEGAS also writes objects of this class, in the `DegasCalData` branch. Check configured branch names and migrate fixed `GermaniumCalData` and `GermaniumAnlData` lookups. Check any Time Machine configuration for the switch from `GermaniumTimeMachineData` to `DegasTimeMachineData`.
+- **Removal candidates:** `c4source/germanium/`, `c4data/germaniumData/` (including `TGermaniumConfiguration`), and the legacy detector spectra, lab and resolution tasks. Keep the shared FEBEX decoder and the common BGO readout and calibration.
+- **Trace path:** Legacy trace workflows use `GermaniumTraceReader` and `GermaniumLabTest`. The new trace bank is supported by `DegasReader` and can be monitored through `DegasLabTest`.
+- **Calibrated outputs:** Existing Germanium trees and interim `DegasCalData` branches containing `GermaniumCalData` require the legacy dictionary. Rebuild the latter with `DegasRaw2Cal` from `DegasRawData` to use the new tasks. Check Time Machine task configuration for `DegasTimeMachineData`.
+- **Analysis:** DEGAS has equivalents of the built detector and correlation tasks. Select `"Degas"` for the DEGAS input in shared White Rabbit tasks. Migrate and validate each legacy experiment macro before removing its tasks, generated banks or calibration files.
 
 ## Call sites to check
 

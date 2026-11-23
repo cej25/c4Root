@@ -257,6 +257,10 @@ SUBEVENT(bm_subev)
     }
 }
 
+#ifdef S100_WITH_DEGAS
+#define germanium degas
+#endif
+
 EVENT
 {
     revisit aida = aida_subev(type = 10, subtype = 1, procid = S100_PROCID_AIDA, control = 37);
