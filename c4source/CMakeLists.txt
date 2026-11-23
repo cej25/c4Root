@@ -61,7 +61,6 @@ set(SRCS
 ./base/UnpackReader.cxx
 ./base/c4Reader.cxx
 ./base/CorrelationsMap.cxx
-./base/GainShift.cxx
 ./digitisers/tamex/TamexFineTimeCalibration.cxx
 ./degas/DegasReader.cxx
 ./degas/DegasRaw2Cal.cxx
@@ -134,7 +133,7 @@ Set(HEADERS ${STRUCT_HEADERS} ${HEADERS})
 
 set(LINKDEF SourceLinkDef.h)
 set(DEPENDENCIES
-    GeoBase ParBase Base FairTools
+    GeoBase ParBase Base FairTools Online
     c4Base c4Data Core Geom GenVector
     Physics Matrix MathCore
     ${ucesb_LIBRARY_SHARED})

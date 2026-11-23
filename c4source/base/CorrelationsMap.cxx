@@ -98,3 +98,5 @@ CorrelationsMap::CorrelationsMap(std::string& filename)
     }
 
 }
+
+CorrelationsMap::~CorrelationsMap() = default;
