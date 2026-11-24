@@ -94,6 +94,20 @@ def existing_macro(name):
     return (MACROS / name).resolve()
 
 
+def macro_environment():
+    env = os.environ.copy()
+    includes = set()
+    for name in ("analysis", "c4base", "c4data", "c4source"):
+        directory = REPO / name
+        includes.add(str(directory))
+        includes.update(str(header.parent) for header in directory.rglob("*.h"))
+    inherited = env.get("ROOT_INCLUDE_PATH", "").split(os.pathsep)
+    env["ROOT_INCLUDE_PATH"] = os.pathsep.join(dict.fromkeys(
+        [path for path in inherited if path] + sorted(includes)
+    ))
+    return env
+
+
 class Run:
     def __init__(self, directory):
         self.directory = Path(directory)
@@ -127,7 +141,7 @@ class Run:
             with self.log.open("wb") as log:
                 self.process = subprocess.Popen(
                     ["root", "-l", "-b", "-q", expression],
-                    cwd=working_directory, stdin=subprocess.DEVNULL, stdout=log,
+                    cwd=working_directory, env=macro_environment(), stdin=subprocess.DEVNULL, stdout=log,
                     stderr=subprocess.STDOUT, start_new_session=True,
                 )
 
