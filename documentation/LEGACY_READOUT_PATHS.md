@@ -41,7 +41,7 @@ The new calibrator publishes separate QDC and TDC calibrated hits. Before removi
 
 ## Germanium and DEGAS FEBEX
 
-The legacy summary path uses `GermaniumReader` → `GermaniumFebexData` → `GermaniumRaw2Cal`. The DEGAS path uses `DegasReader` → `DegasRaw2Cal` → `DegasCal2Anl` with its own configuration, hit class, and analysis tasks. The existing `s100` unpacker serves legacy macros. The migrated S100 macro uses the `s100degas` unpacker and the DEGAS branches.
+The legacy summary path uses `GermaniumReader` → `GermaniumFebexData` → `GermaniumRaw2Cal`. The DEGAS path uses `DegasReader` → `DegasRaw2Cal` → `DegasCal2Anl` with its own configuration, hit class, and analysis tasks. The `s100` unpacker publishes the `degas` FEBEX bank for the migrated S100 macro. Legacy S100 macros using `GermaniumReader` need an unpacker built from the earlier S100 specification that published the `germanium` bank.
 
 - **Removal candidates:** `c4source/germanium/`, `c4data/germaniumData/` (including `TGermaniumConfiguration`), and the legacy detector spectra, lab and resolution tasks. Keep the shared FEBEX decoder and the common BGO readout and calibration.
 - **Trace path:** Legacy trace workflows use `GermaniumTraceReader` and `GermaniumLabTest`. The new trace bank is supported by `DegasReader` and can be monitored through `DegasLabTest`.

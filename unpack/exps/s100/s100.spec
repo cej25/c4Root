@@ -257,14 +257,10 @@ SUBEVENT(bm_subev)
     }
 }
 
-#ifdef S100_WITH_DEGAS
-#define germanium degas
-#endif
-
 EVENT
 {
     revisit aida = aida_subev(type = 10, subtype = 1, procid = S100_PROCID_AIDA, control = 37);
-    germanium = febex_subev(type = 10, subtype = 1, procid = S100_PROCID_GERMANIUM, control = 20);
+    degas = febex_subev(type = 10, subtype = 1, procid = S100_DEGAS_PROCID, control = 20);
     fatima = fatima_tamex_subev(type = 10, subtype = 1, procid = S100_PROCID_FATIMA, control = 20);
     fatimavme = fatima_vme_subev(procid = S100_PROCID_FATIMAVME); // control 20, type 10, subtype 1
     bplast = bplast_subev(type = 10, subtype = 1, procid = S100_PROCID_BPLAST, control = 20);

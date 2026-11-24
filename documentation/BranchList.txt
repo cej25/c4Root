@@ -373,9 +373,9 @@ DEGAS FEBEX summary and trace input
         - Read earlier DegasRawData trees with DegasRaw2Cal to rebuild the calibrated and analyzed branches.
 
     For S100 summary runs, build the DEGAS bank variant used in macros/tests/s100_tests.C:
-        make -C unpack/exps/s100 s100degas
+        make -C unpack/exps/s100 s100
     Use EXT_STR_h101_degas_onion_t with DegasReader. Regenerate its header with:
-        ./unpack/exps/s100/s100degas /dev/null --ntuple=NOTRIGEVENTNO,UNPACK:degas,STRUCT_HH,id=h101_degas,ext_h101_degas.h
+        ./unpack/exps/s100/s100 /dev/null --ntuple=NOTRIGEVENTNO,UNPACK:degas,STRUCT_HH,id=h101_degas,ext_h101_degas.h
     For trace runs, build the optional FEBEX unpacker:
         make -C unpack/exps/febex febextrace
     Use EXT_STR_h101_degas_traces_onion_t with the same DegasReader and downstream tasks.

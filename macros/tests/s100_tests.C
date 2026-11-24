@@ -64,7 +64,7 @@ void s100_tests(const char* input = "/u/cjones/data/lustre/despec/fatima_test_20
     TString screenshot_path = "~/lustre/gamma/dryrunmarch24/screenshots/";
     TString c4Root_path = repository;
     //TString c4Root_path = "/u/cjones/s100_workspace/c4Root";
-    TString ucesb_path = c4Root_path + "/unpack/exps/" + fExpName + "/" + fExpName + "degas --input-buffer=200Mi --allow-errors";
+    TString ucesb_path = c4Root_path + "/unpack/exps/" + fExpName + "/" + fExpName + " --input-buffer=200Mi --allow-errors";
     ucesb_path.ReplaceAll("//","/");
 
     std::string config_path = std::string(c4Root_path.Data()) + "/config/" + std::string(fExpName.Data());
