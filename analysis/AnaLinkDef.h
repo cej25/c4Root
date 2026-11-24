@@ -87,7 +87,6 @@
 //#pragma link C++ class FatimaAidaSpectra+;
 
 #pragma link C++ class BetaIonCorrelations+;
-#pragma link C++ class BetaIonDegasCorrelations+;
 
 #pragma link C++ class BB7GermaniumCorrelationsOnline+;
 #pragma link C++ class BB7DegasCorrelationsOnline+;

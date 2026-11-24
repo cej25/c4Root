@@ -258,7 +258,7 @@ This index lists histogram members booked or filled in the correlation sources, 
 </details>
 
 <details>
-<summary>BetaIonDegasCorrelations (24 member identifiers)</summary>
+<summary>BetaIonDegasCorrelations (removed) (24 member identifiers)</summary>
 
 `h1_aida_degas_dt`, `h1_all_gammas`, `h1_beta_gamma_bkg`, `h1_beta_gamma_corr_energy`, `h1_beta_gamma_diff`, `h1_cluster_size_x`, `h1_cluster_size_y`, `h1_decay_e`, `h1_decay_gamma_dt`, `h1_decay_mult`, `h1_gammas_inside_gate`, `h1_imp_decay_dt`, `h1_imp_mult`, `h1_imp_stopped_mult`, `h1_implant_e`, `h1_relevant_decay_mult`, `h1_relevant_decay_mult_less_than`, `h1_relevant_imps_per_decay`, `h1_strip_mult`, `h2_ZvsAoQ`, `h2_ZvsAoQ_inside_gate`, `h2_decay_pos_xy`, `h2_imp_stopped_pos_xy`, `h2_implant_pos_xy`
 

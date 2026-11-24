@@ -136,7 +136,6 @@ set(SRCS
 ./correlations/online/BB7GermaniumCorrelationsOnline.cxx
 ./correlations/online/BB7DegasCorrelationsOnline.cxx
 ./correlations/triplePlusCorrs/BetaIonCorrelations.cxx
-./correlations/triplePlusCorrs/BetaIonDegasCorrelations.cxx
 
 
 ./correlations/online/LisaFrsCorrelationsOnline.cxx
