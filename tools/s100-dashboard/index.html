@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>c4Root Dashboard</title>
   <link rel="stylesheet" href="/style.css">
+  <script defer src="/projections.js"></script>
   <script defer src="/app.js"></script>
 </head>
 <body>
@@ -26,6 +27,12 @@
       </div>
       <div id="subsystems" class="subsystems" role="group" aria-label="Histogram subsystems"></div>
       <div id="plots" class="plots columns"></div>
+      <article id="canvas-panel" class="panel" hidden>
+        <div class="card-heading"><h2>ROOT canvas</h2><button id="canvas-pause" aria-pressed="false">Pause</button></div>
+        <label>Canvas <select id="canvas-picker"></select></label>
+        <div id="canvas-drawing"></div>
+        <p id="canvas-status" role="status"></p>
+      </article>
     </section>
     <section id="setup" aria-labelledby="setup-title" hidden>
       <div class="section-heading"><div><h1 id="setup-title">Run Setup</h1><p>Choose a macro to prepare or run</p></div></div>
@@ -80,6 +87,7 @@
         <span class="plot-status" role="status"></span>
         <label>Refresh <select class="refresh"><option value="2">2 s</option><option value="5">5 s</option><option value="10">10 s</option><option value="30">30 s</option></select></label>
         <label class="style-label"><select class="plot-style"></select></label>
+        <button class="projection-toggle" aria-expanded="false" hidden>Projections</button>
         <label class="colour-label">Line <input class="line-colour" type="color" value="#7ce3d3"></label>
       </div>
     </article>

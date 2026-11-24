@@ -80,3 +80,12 @@ pre { background: #0b101a; border-radius: 7px; padding: 14px; max-height: 65vh; 
 
 .subsystems { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 16px; }
 .subsystems button[aria-pressed="true"] { background: #203544; border-color: #507b82; color: var(--accent); }
+
+#canvas-drawing { position: relative; height: clamp(360px, 68vh, 820px); background: white; margin-top: 16px; }
+.projection-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 290px), 1fr)); gap: 14px; margin-top: 14px; }
+.projection-card { min-width: 0; border: 1px solid #26364e; border-radius: 10px; padding: 10px; }
+.projection-card h3 { font-size: .92rem; margin: 0 0 8px; }
+.projection-actions { display: flex; gap: 6px; flex-wrap: wrap; }
+.projection-actions button, .projection-actions select { padding: 5px 7px; font-size: .78rem; }
+.projection-chart { height: 235px; }
+.projection-summary { font-size: .8rem; color: #a6b6ce; margin: 0; }

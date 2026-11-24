@@ -18,6 +18,13 @@ let subsystem = saved.subsystem || "DEGAS";
 let lastGroups = new Map(Object.entries(saved.groups || {}));
 let groups = lastGroups.size ? lastGroups : new Map(defaultSubsystems.map(name => [name, []]));
 let selections = new Map(Object.entries(saved.selections || {}));
+const canvasTab = "\u0000canvas";
+let canvases = saved.canvases || [];
+let canvasPath = saved.canvasPath || "";
+let canvasTimer, canvasRequest, canvasRenderer, canvasDrawn;
+let canvasEpoch = 0;
+let canvasPaused = false;
+let hasLocalJSROOT = false;
 let connected = false;
 let discoveredHistograms = false;
 const flags = { FATIMA_ON: "FATIMA TAMEX", FATIMA_VME_ON: "FATIMA VME", AIDA_ON: "AIDA",
@@ -38,7 +45,7 @@ async function api(path, options) {
 }
 
 function persist() {
-  const value = { subsystem, groups: Object.fromEntries(lastGroups), selections: Object.fromEntries(selections), layout: $("#layout").value, panels: panels.map((panel) => ({
+  const value = { subsystem, canvases, canvasPath, groups: Object.fromEntries(lastGroups), selections: Object.fromEntries(selections), layout: $("#layout").value, panels: panels.map((panel) => ({
     path: panel.path, refresh: panel.refresh.value, style: panel.style.value, colour: panel.colour.value,
   })) };
   try { localStorage.setItem(stateKey, JSON.stringify(value)); } catch {}
@@ -53,6 +60,16 @@ function panelFor(spec, index) {
     status: find(".plot-status"), refresh: find(".refresh"), style: find(".plot-style"),
     colour: find(".line-colour"), epoch: 0 };
   find("h2").textContent = spec.title;
+  if (spec.dimension === 2) {
+    panel.projections = new MatrixProjections(panel);
+    const toggle = find(".projection-toggle");
+    toggle.hidden = false;
+    toggle.addEventListener("click", () => {
+      const open = toggle.getAttribute("aria-expanded") === "false";
+      toggle.setAttribute("aria-expanded", String(open));
+      panel.projections.setOpen(open);
+    });
+  }
   panel.refresh.value = refresh || spec.refresh;
   if (!panel.refresh.value) panel.refresh.value = spec.refresh;
   find(".style-label").prepend(spec.styleLabel + " ");
@@ -64,6 +81,9 @@ function panelFor(spec, index) {
   panel.select.addEventListener("change", () => {
     panel.path = panel.select.value;
     panel.snapshot = null;
+    if (panel.chart.data) Plotly.purge(panel.chart);
+    panel.projections?.draw(null);
+    panel.status.textContent = panel.paused ? "Paused" : "";
     selections.set(subsystem, panels.map(item => item.path));
     persist();
     restart(panel);
@@ -87,7 +107,8 @@ function panelFor(spec, index) {
 }
 
 const panels = specs.map(panelFor);
-const plotlyReady = api("/api/status").then(({ root, localPlotly }) => {
+const plotlyReady = api("/api/status").then(({ root, localPlotly, jsroot }) => {
+  hasLocalJSROOT = jsroot;
   rootLabel = root;
   return new Promise((resolve, reject) => {
     const script = document.createElement("script");
@@ -110,6 +131,7 @@ async function render(panel, data) {
     colorbar: { title: "Counts" }, hoverongaps: false,
   };
   const layout = {
+    shapes: panel.projections?.matrixShapes(data) || [],
     autosize: true, uirevision: panel.path, paper_bgcolor: "#111a2a", plot_bgcolor: "#0b101a",
     font: { color: "#ccd9ee", family: "system-ui" },
     title: { text: data.title, font: { size: 13 } },
@@ -123,13 +145,14 @@ async function render(panel, data) {
     trace.hovertemplate = "%{customdata:.5g}<br>%{y} counts<extra></extra>";
   }
   await Plotly.react(panel.chart, [trace], layout, { responsive: true, displaylogo: false });
+  if (panel.snapshot === data) await panel.projections?.draw(data);
 }
 
 function restart(panel) {
   clearTimeout(panel.timer);
   panel.request?.abort();
   const epoch = ++panel.epoch;
-  if (activeView === "monitor" && connected && !panel.paused && panel.path) refreshPlot(panel, epoch);
+  if (activeView === "monitor" && connected && subsystem !== canvasTab && !panel.paused && panel.path) refreshPlot(panel, epoch);
 }
 
 async function refreshPlot(panel, epoch) {
@@ -167,8 +190,18 @@ function groupHistograms(items) {
 
 function showSubsystem(name) {
   subsystem = name;
+  const viewingCanvas = name === canvasTab;
+  $("#plots").hidden = viewingCanvas;
+  $("#canvas-panel").hidden = !viewingCanvas;
+  $("#layout").disabled = viewingCanvas;
   for (const button of $("#subsystems").children) {
-    button.setAttribute("aria-pressed", String(button.textContent === name));
+    button.setAttribute("aria-pressed", String(button.dataset.subsystem === name));
+  }
+  restartCanvas();
+  if (viewingCanvas) {
+    panels.forEach(restart);
+    persist();
+    return;
   }
   const items = groups.get(name) || [];
   const remembered = selections.get(name);
@@ -185,6 +218,7 @@ function showSubsystem(name) {
     const nextPath = selected?.path || "";
     if (nextPath !== panel.path) {
       panel.snapshot = null;
+      panel.projections?.draw(null);
       if (panel.chart.data) Plotly.purge(panel.chart);
       panel.status.textContent = "";
     }
@@ -199,19 +233,85 @@ function showSubsystem(name) {
   persist();
 }
 
+function restartCanvas() {
+  clearTimeout(canvasTimer);
+  canvasRequest?.abort();
+  const epoch = ++canvasEpoch;
+  if (activeView !== "monitor" || subsystem !== canvasTab || !canvasPath) return;
+  if (!connected) {
+    $("#canvas-status").textContent = canvasDrawn ? "Last live snapshot" : "Waiting for ROOT";
+  } else if (!canvasPaused || canvasDrawn !== canvasPath) {
+    refreshCanvas(epoch);
+  }
+}
+
+async function refreshCanvas(epoch) {
+  const path = canvasPath;
+  canvasRequest = new AbortController();
+  const drawing = $("#canvas-drawing");
+  const status = $("#canvas-status");
+  try {
+    if (!hasLocalJSROOT) throw new Error("JSROOT is unavailable. Start the dashboard with ROOT loaded or set --jsroot-dir.");
+    canvasRenderer ||= await import("/jsroot/modules/main.mjs");
+    if (epoch !== canvasEpoch) return;
+    const rawCanvas = await api("/api/canvas?" + new URLSearchParams({ path }), { signal: canvasRequest.signal });
+    if (epoch !== canvasEpoch) return;
+    const data = canvasRenderer.parse(rawCanvas);
+    if (canvasDrawn === path) await canvasRenderer.redraw(drawing, data);
+    else {
+      canvasRenderer.cleanup(drawing);
+      await canvasRenderer.draw(drawing, data);
+    }
+    if (epoch === canvasEpoch) {
+      canvasDrawn = path;
+      status.textContent = canvasPaused ? "Paused" : "Live · refresh every 5 s";
+    }
+  } catch (error) {
+    if (epoch === canvasEpoch) {
+      status.textContent = error.message;
+      if (hasLocalJSROOT) discoveredHistograms = false;
+    }
+  } finally {
+    if (epoch === canvasEpoch && !canvasPaused) canvasTimer = setTimeout(() => refreshCanvas(epoch), 5000);
+  }
+}
+
+$("#canvas-picker").addEventListener("change", event => {
+  canvasPath = event.target.value;
+  if (canvasDrawn && canvasDrawn !== canvasPath) {
+    canvasRenderer.cleanup($("#canvas-drawing"));
+    canvasDrawn = null;
+  }
+  persist();
+  restartCanvas();
+});
+$("#canvas-pause").addEventListener("click", event => {
+  canvasPaused = !canvasPaused;
+  event.currentTarget.textContent = canvasPaused ? "Resume" : "Pause";
+  event.currentTarget.setAttribute("aria-pressed", String(canvasPaused));
+  if (canvasPaused) $("#canvas-status").textContent = "Paused";
+  restartCanvas();
+});
+
 function showTabs() {
   const area = $("#subsystems");
   const names = [...groups.keys()].sort((a, b) => {
     const order = name => defaultSubsystems.includes(name) ? defaultSubsystems.indexOf(name) : defaultSubsystems.length;
     return order(a) - order(b) || a.localeCompare(b);
   });
+  if (canvases.length) names.push(canvasTab);
   area.replaceChildren(...names.map(name => {
     const button = document.createElement("button");
-    button.textContent = name;
+    button.dataset.subsystem = name;
+    button.textContent = name === canvasTab ? "Canvases" : name;
     button.addEventListener("click", () => showSubsystem(name));
     return button;
   }));
-  showSubsystem(groups.has(subsystem) ? subsystem : names[0]);
+  const picker = $("#canvas-picker");
+  picker.replaceChildren(...canvases.map(({ title, path }) => new Option(title + " · " + path, path)));
+  if (!canvases.some(item => item.path === canvasPath)) canvasPath = canvases[0]?.path || "";
+  picker.value = canvasPath;
+  showSubsystem(names.includes(subsystem) ? subsystem : names[0]);
 }
 
 async function reloadHistograms() {
@@ -219,13 +319,16 @@ async function reloadHistograms() {
   if (button.disabled) return;
   button.disabled = true;
   try {
-    const items = await api("/api/histograms");
+    const objects = await api("/api/objects");
+    const items = objects.filter(item => item.dimensions);
+    if (objects.length) canvases = objects.filter(item => !item.dimensions);
     connected = true;
-    discoveredHistograms = items.length > 0;
-    $("#connection").textContent = items.length ? `${rootLabel} · ${items.length} histograms`
-      : "ROOT is reachable. No TH1 or TH2 histograms are available.";
+    discoveredHistograms = objects.length > 0;
+    $("#connection").textContent = objects.length
+      ? `${rootLabel} · ${items.length} histograms · ${canvases.length} canvases`
+      : "ROOT is reachable. No histograms or canvases are available.";
     if (items.length) lastGroups = groupHistograms(items);
-    else connected = false;
+    else if (!objects.length) connected = false;
     if (lastGroups.size) groups = lastGroups;
     showTabs();
   } catch (error) {
@@ -242,7 +345,14 @@ async function reloadHistograms() {
 function setLayout(value) {
   $("#plots").className = "plots " + value;
   for (const panel of panels) {
-    if (panel.chart.data && activeView === "monitor") requestAnimationFrame(() => Plotly.Plots.resize(panel.chart));
+    if (panel.chart.data && activeView === "monitor" && subsystem !== canvasTab) {
+      requestAnimationFrame(() => {
+        Plotly.Plots.resize(panel.chart);
+        if (!panel.projections?.region.hidden) {
+          panel.projections?.views.forEach(({ chart }) => { if (chart.data) Plotly.Plots.resize(chart); });
+        }
+      });
+    }
   }
 }
 
@@ -260,6 +370,7 @@ document.querySelectorAll("nav button").forEach((button) => button.addEventListe
   $("#setup").hidden = activeView !== "setup";
   if (activeView === "monitor") setLayout($("#layout").value);
   panels.forEach(restart);
+  restartCanvas();
 }));
 
 const form = $("#run-form");

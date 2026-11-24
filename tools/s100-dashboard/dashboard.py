@@ -6,6 +6,7 @@ import json
 import os
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
+from shutil import which
 import re
 import signal
 import subprocess
@@ -188,14 +189,16 @@ def histogram(data):
     return result
 
 
-def histogram_paths(node, parent=""):
+def object_paths(node, parent=""):
     for child in node.get("_childs", []):
         name = child["_name"]
         path = f"{parent}/{name}" if parent else name
         if re.fullmatch(r"ROOT.TH[12][CSIFDL]", child.get("_kind", "")):
             yield {"path": path, "title": child.get("_title") or name,
                    "dimensions": int(child["_kind"][7])}
-        yield from histogram_paths(child, path)
+        elif child.get("_kind") == "ROOT.TCanvas":
+            yield {"path": path, "title": child.get("_title") or name, "dimensions": 0}
+        yield from object_paths(child, path)
 
 
 class NoRedirect(HTTPRedirectHandler):
@@ -236,11 +239,17 @@ class Dashboard(BaseHTTPRequestHandler):
             return
         url = urlsplit(self.path)
         assets = {"/": ("index.html", "text/html"), "/app.js": ("app.js", "text/javascript"),
+                  "/projections.js": ("projections.js", "text/javascript"),
                   "/style.css": ("style.css", "text/css")}
         try:
             if url.path in assets:
                 name, mime = assets[url.path]
                 self.send_data(200, (HERE / name).read_bytes(), f"{mime}; charset=utf-8")
+            elif url.path.startswith("/jsroot/") and self.server.jsroot:
+                asset = (self.server.jsroot / url.path.removeprefix("/jsroot/")).resolve()
+                if not asset.is_relative_to(self.server.jsroot) or asset.suffix != ".mjs":
+                    raise ValueError("Invalid JSROOT module path.")
+                self.send_data(200, asset.read_bytes(), "text/javascript; charset=utf-8")
             elif url.path == "/plotly.js" and self.server.plotly:
                 self.send_data(200, self.server.plotly.read_bytes(), "text/javascript")
             elif url.path == "/api/setup":
@@ -253,17 +262,27 @@ class Dashboard(BaseHTTPRequestHandler):
             elif url.path == "/api/run":
                 self.send_data(200, self.server.run.status())
             elif url.path == "/api/status":
-                self.send_data(200, {"root": self.server.root_url, "localPlotly": bool(self.server.plotly)})
-            elif url.path == "/api/histograms":
+                self.send_data(200, {"root": self.server.root_url, "localPlotly": bool(self.server.plotly),
+                                     "jsroot": bool(self.server.jsroot)})
+            elif url.path in ("/api/histograms", "/api/objects"):
                 tree = root_json(self.server.root_url, "h.json")
-                self.send_data(200, sorted(histogram_paths(tree), key=lambda item: item["path"]))
-            elif url.path == "/api/histogram":
+                objects = sorted(object_paths(tree), key=lambda item: item["path"])
+                if url.path == "/api/histograms":
+                    objects = [item for item in objects if item["dimensions"]]
+                self.send_data(200, objects)
+            elif url.path in ("/api/histogram", "/api/canvas"):
                 path = parse_qs(url.query).get("path", [""])[0]
                 parts = path.split("/")
                 if any(part in ("", ".", "..") for part in parts) or "\\" in path:
-                    raise ValueError("Select a valid histogram path.")
+                    raise ValueError("Select a valid ROOT object path.")
                 endpoint = "/".join(quote(part, safe="") for part in parts)
-                self.send_data(200, histogram(root_json(self.server.root_url, endpoint + "/root.json?compact=3")))
+                data = root_json(self.server.root_url, endpoint + "/root.json?compact=3")
+                if url.path == "/api/canvas":
+                    if data.get("_typename") != "TCanvas":
+                        raise ValueError("Select a TCanvas object.")
+                    self.send_data(200, data)
+                else:
+                    self.send_data(200, histogram(data))
             else:
                 self.send_data(404, {"error": "Page not found."})
         except (OSError, KeyError, ValueError, TypeError) as error:
@@ -299,7 +318,15 @@ def main():
     parser.add_argument("--root-url", default="http://127.0.0.1:6969")
     parser.add_argument("--port", type=int, default=8050)
     parser.add_argument("--plotly-js", type=Path, help="Local Plotly.js bundle for offline use")
+    parser.add_argument("--jsroot-dir", type=Path, help="Directory containing JSROOT modules/")
     args = parser.parse_args()
+    root = which("root")
+    rootsys = os.environ.get("ROOTSYS") or (Path(root).resolve().parents[1] if root else None)
+    jsroot = args.jsroot_dir or (Path(rootsys) / "js" if rootsys else None)
+    if jsroot and not (jsroot / "modules/main.mjs").is_file():
+        if args.jsroot_dir:
+            parser.error("--jsroot-dir must contain modules/main.mjs")
+        jsroot = None
     upstream = urlsplit(args.root_url)
     if upstream.scheme not in ("http", "https") or not upstream.hostname or upstream.query or upstream.fragment:
         parser.error("--root-url must be an HTTP(S) server URL without a query or fragment")
@@ -310,6 +337,7 @@ def main():
         server.run = Run(directory)
         server.root_url = args.root_url.rstrip("/")
         server.plotly = args.plotly_js
+        server.jsroot = jsroot.resolve() if jsroot else None
         print(f"c4Root Dashboard at http://127.0.0.1:{server.server_port}", flush=True)
         try:
             server.serve_forever()

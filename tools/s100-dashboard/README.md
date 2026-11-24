@@ -29,6 +29,27 @@ histograms** after connecting or starting a run that publishes new plots.
 The display uses regular X and Y bins and omits underflow and overflow.
 Only the monitor view polls histograms.
 
+### Canvases and projections
+
+**Canvases** appears when ROOT publishes a `TCanvas`. Pick a canvas to
+view its original pads, overlays and drawing options in JSROOT. The canvas
+refreshes every five seconds and can be paused. Start the dashboard with
+ROOT loaded to use its bundled JSROOT, or pass `--jsroot-dir /path/to/root/js`.
+The directory must contain `modules/main.mjs`.
+
+Select **Projections** under a matrix to view its X and Y spectra. Each
+projection has three tools:
+
+- **Zoom** narrows the displayed range.
+- **Gate** uses a horizontal drag to select whole bins touched by the
+  interval. An X gate updates the Y projection and a Y gate updates the X
+  projection. Both gates are marked on the matrix.
+- **Marker** toggles a labeled marker at the clicked bin. Clear gates and
+  markers separately.
+
+Gates and markers are remembered for each matrix while the page is open.
+The projections update from the same matrix snapshot as live counts arrive.
+
 ## Run Setup
 
 Enter a stream or transport URL such as `stream://host:6002`, or the path to
