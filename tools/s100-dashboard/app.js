@@ -9,6 +9,16 @@ let activeView = "monitor";
 let rootLabel = "";
 let macro = "";
 let setupRevision = 0;
+const defaultSubsystems = ["FRS", "AIDA", "bPlast", "FATIMA", "DEGAS"];
+const subsystemAliases = new Map([
+  ["frs online", "FRS"], ["fatima vme", "FATIMA VME"],
+  ...defaultSubsystems.map(name => [name.toLowerCase(), name]),
+]);
+let subsystem = saved.subsystem || "DEGAS";
+let groups = new Map(defaultSubsystems.map(name => [name, []]));
+let selections = new Map(Object.entries(saved.selections || {}));
+let connected = false;
+let discoveredHistograms = false;
 const flags = { FATIMA_ON: "FATIMA TAMEX", FATIMA_VME_ON: "FATIMA VME", AIDA_ON: "AIDA",
   BPLAST_ON: "bPlast", DEGAS_ON: "DEGAS", BGO_ON: "BGO", FRS_ON: "FRS",
   TIME_MACHINE_ON: "Time Machine", BEAMMONITOR_ON: "Beam Monitor", WHITE_RABBIT_CORS: "White Rabbit correlations" };
@@ -27,7 +37,7 @@ async function api(path, options) {
 }
 
 function persist() {
-  const value = { layout: $("#layout").value, panels: panels.map((panel) => ({
+  const value = { subsystem, selections: Object.fromEntries(selections), layout: $("#layout").value, panels: panels.map((panel) => ({
     path: panel.path, refresh: panel.refresh.value, style: panel.style.value, colour: panel.colour.value,
   })) };
   try { localStorage.setItem(stateKey, JSON.stringify(value)); } catch {}
@@ -53,6 +63,7 @@ function panelFor(spec, index) {
   panel.select.addEventListener("change", () => {
     panel.path = panel.select.value;
     panel.snapshot = null;
+    selections.set(subsystem, panels.map(item => item.path));
     persist();
     restart(panel);
   });
@@ -131,39 +142,94 @@ async function refreshPlot(panel, epoch) {
     await render(panel, data);
     if (epoch === panel.epoch) panel.status.textContent = number.format(data.entries) + " entries";
   } catch (error) {
-    if (epoch === panel.epoch) panel.status.textContent = error.message;
+    if (epoch === panel.epoch) {
+      panel.status.textContent = error.message;
+      discoveredHistograms = false;
+    }
   } finally {
     if (epoch === panel.epoch) panel.timer = setTimeout(() => refreshPlot(panel, epoch), 1000 * Number(panel.refresh.value));
   }
 }
 
+function groupHistograms(items) {
+  const result = new Map();
+  for (const item of items) {
+    const parts = item.path.split("/");
+    const directory = parts[0] === "Histograms" ? parts.slice(1, -1) : parts.slice(0, -1);
+    const folder = directory[0] || "Other";
+    const name = subsystemAliases.get(folder.toLowerCase()) || folder;
+    if (!result.has(name)) result.set(name, []);
+    result.get(name).push(item);
+  }
+  return result;
+}
+
+function showSubsystem(name) {
+  subsystem = name;
+  for (const button of $("#subsystems").children) {
+    button.setAttribute("aria-pressed", String(button.textContent === name));
+  }
+  const items = groups.get(name) || [];
+  const remembered = selections.get(name);
+  for (const [index, panel] of panels.entries()) {
+    const choices = items.filter(({ dimensions }) => dimensions === panel.dimension);
+    panel.select.replaceChildren(...choices.map(({ path, title }) => {
+      const option = new Option(path, path);
+      option.title = title;
+      return option;
+    }));
+    const previous = remembered?.[index] || saved.panels?.[index]?.path;
+    const selected = choices.find(({ path }) => path === previous)
+      || choices.find(({ path }) => path.split("/").at(-1) === panel.preferred) || choices[0];
+    const nextPath = selected?.path || "";
+    if (nextPath !== panel.path) {
+      panel.snapshot = null;
+      if (panel.chart.data) Plotly.purge(panel.chart);
+      panel.status.textContent = "";
+    }
+    panel.path = nextPath;
+    panel.select.value = panel.path;
+    panel.select.disabled = !selected;
+    if (!selected) panel.status.textContent = connected ? "No matching histogram" : "Waiting for ROOT";
+    restart(panel);
+  }
+  if (items.length) selections.set(name, panels.map(panel => panel.path));
+  persist();
+}
+
+function showTabs() {
+  const area = $("#subsystems");
+  const names = [...groups.keys()].sort((a, b) => {
+    const order = name => defaultSubsystems.includes(name) ? defaultSubsystems.indexOf(name) : defaultSubsystems.length;
+    return order(a) - order(b) || a.localeCompare(b);
+  });
+  area.replaceChildren(...names.map(name => {
+    const button = document.createElement("button");
+    button.textContent = name;
+    button.addEventListener("click", () => showSubsystem(name));
+    return button;
+  }));
+  showSubsystem(groups.has(subsystem) ? subsystem : names[0]);
+}
+
 async function reloadHistograms() {
   const button = $("#reload");
+  if (button.disabled) return;
   button.disabled = true;
   try {
     const items = await api("/api/histograms");
+    connected = true;
+    discoveredHistograms = items.length > 0;
     $("#connection").textContent = items.length ? `${rootLabel} · ${items.length} histograms`
       : "ROOT is reachable. No TH1 or TH2 histograms are available.";
-    for (const panel of panels) {
-      const choices = items.filter(({ dimensions }) => dimensions === panel.dimension);
-      panel.select.replaceChildren(...choices.map(({ path, title }) => {
-        const option = new Option(path, path);
-        option.title = title;
-        return option;
-      }));
-      const selected = choices.find(({ path }) => path === panel.path)
-        || choices.find(({ path }) => path.endsWith("/" + panel.preferred)) || choices[0];
-      const nextPath = selected?.path || "";
-      if (nextPath !== panel.path) panel.snapshot = null;
-      panel.path = nextPath;
-      panel.select.value = panel.path;
-      panel.select.disabled = !selected;
-      if (!selected) panel.status.textContent = "No matching histogram";
-      restart(panel);
-    }
-    persist();
+    groups = items.length ? groupHistograms(items) : new Map(defaultSubsystems.map(name => [name, []]));
+    showTabs();
   } catch (error) {
+    connected = false;
+    discoveredHistograms = false;
     $("#connection").textContent = "ROOT connection unavailable · " + error.message;
+    groups = new Map(defaultSubsystems.map(name => [name, []]));
+    showTabs();
   } finally {
     button.disabled = false;
   }
@@ -350,4 +416,8 @@ download.addEventListener("click", () => {
   link.click();
   setTimeout(() => URL.revokeObjectURL(url), 1000);
 });
+showTabs();
 reloadHistograms();
+setInterval(() => {
+  if (activeView === "monitor" && !discoveredHistograms) reloadHistograms();
+}, 5000);

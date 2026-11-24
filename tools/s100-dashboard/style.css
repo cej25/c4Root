@@ -77,3 +77,6 @@ pre { background: #0b101a; border-radius: 7px; padding: 14px; max-height: 65vh; 
 .setup-controls { display: grid; gap: 12px; align-content: start; min-width: 0; }
 .setup-controls form > p, #existing-form > label { margin-bottom: 12px; }
 #run-log { max-height: 35vh; }
+
+.subsystems { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 16px; }
+.subsystems button[aria-pressed="true"] { background: #203544; border-color: #507b82; color: var(--accent); }
