@@ -19,7 +19,8 @@ public:
 
     void SetGates(const std::vector<FrsGate*>& gates) { fGates = gates; }
     void RequireFrs(bool required = true) { fRequireFrs = required; }
-    void CorrelateTarget(const std::string& target) { fTarget = target; }
+    void CorrelateTargetStack(const std::string& target) { fTarget = target; }
+    void CorrelateTarget(const std::string& target) { CorrelateTargetStack(target); }
     void CorrelateImplants() { fUseImplants = true; }
     void CorrelateImplantBetas(std::chrono::nanoseconds window);
     void CorrelateGammas(const std::string& detector);

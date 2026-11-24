@@ -472,7 +472,7 @@ void s100_tests(const char* input = "/u/cjones/data/lustre/despec/fatima_test_20
 
         auto* ionImplants = new IonCorrelationsOnline();
         ionImplants->SetGates(fgs);
-        ionImplants->CorrelateTarget("AIDA");
+        ionImplants->CorrelateTargetStack("AIDA");
         ionImplants->CorrelateImplants();
         run->AddTask(ionImplants);
     }

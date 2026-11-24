@@ -101,13 +101,26 @@ struct ImplantSpectra
     TH1D* energy;
     TH2D* strips;
     TH2D* position;
+
+    void Fill(const TargetHit& hit) const
+    {
+        energy->Fill(hit.energy);
+        strips->Fill(hit.x, hit.y);
+        position->Fill(hit.positionX, hit.positionY);
+    }
+};
+
+struct AidaPlaneSpectra
+{
+    ImplantSpectra all;
+    ImplantSpectra stopped;
 };
 
 struct GateOutput
 {
     std::vector<Spectra> spectra;
     TH1D* implantEnergy = nullptr;
-    std::vector<ImplantSpectra> aidaImplants;
+    std::vector<AidaPlaneSpectra> aidaPlanes;
     TH2D* implantPosition = nullptr;
     TH1D* betaEnergy = nullptr;
     TH1D* implantBetaTime = nullptr;
@@ -266,16 +279,25 @@ InitStatus IonCorrelations::Init()
                     auto* plane = directory->mkdir(Form("DSSD%d", dssd));
                     if (!plane) return kFATAL;
                     TDirectory::TContext planeContext(plane);
-                    auto* energy = new TH1D("implant_energy", "Stopped implant energy;Energy [MeV];Implants",
-                                            2000, 0, 20000);
-                    auto* strips = new TH2D("implant_strip_xy", "Stopped implant hit pattern;X strip;Y strip",
-                                            xStrips, 0, xStrips, 128, 0, 128);
-                    auto* position = new TH2D("implant_pos_xy", "Stopped implant position;X [mm];Y [mm]",
-                                              xStrips, -xMax, xMax, 128, -37.8, 37.8);
-                    energy->SetDirectory(plane);
-                    strips->SetDirectory(plane);
-                    position->SetDirectory(plane);
-                    output.aidaImplants.push_back({energy, strips, position});
+                    const auto book = [&](const char* stem, const char* label) {
+                        auto* energy = new TH1D(TString::Format("%s_energy", stem),
+                                                TString::Format("%s energy;Energy [MeV];Hits", label),
+                                                2000, 0, 20000);
+                        auto* strips = new TH2D(TString::Format("%s_strip_xy", stem),
+                                                TString::Format("%s hit pattern;X strip;Y strip", label),
+                                                xStrips, 0, xStrips, 128, 0, 128);
+                        auto* position = new TH2D(TString::Format("%s_pos_xy", stem),
+                                                  TString::Format("%s position;X [mm];Y [mm]", label),
+                                                  xStrips, -xMax, xMax, 128, -37.8, 37.8);
+                        energy->SetDirectory(plane);
+                        strips->SetDirectory(plane);
+                        position->SetDirectory(plane);
+                        return ImplantSpectra{energy, strips, position};
+                    };
+                    output.aidaPlanes.push_back({
+                        book("target_hit", "Target Stack hit"),
+                        book("implant", "Stopped implant")
+                    });
                 }
             }
             if (fUseBetas)
@@ -325,8 +347,8 @@ void IonCorrelations::Exec(Option_t*)
         state.readImplants(state.implants);
         for (const auto& implant : state.implants)
         {
-            if (!implant.stopped || implant.time <= 0) continue;
-            state.latestTargetTime = std::max(state.latestTargetTime, implant.time);
+            if (implant.time <= 0 || (!implant.stopped && !state.aida)) continue;
+            if (implant.stopped) state.latestTargetTime = std::max(state.latestTargetTime, implant.time);
             const auto* selected = &eventGates;
             std::vector<std::size_t> implantGates;
             if (state.aida)
@@ -339,8 +361,14 @@ void IonCorrelations::Exec(Option_t*)
                 };
                 const auto end = state.frs->end();
                 const auto match = std::find_if(state.frs->begin(), end, inTime);
-                if (match == end) ++state.noFrsMatch;
-                else if (std::any_of(std::next(match), end, inTime)) ++state.ambiguousFrsMatch;
+                if (match == end)
+                {
+                    if (implant.stopped) ++state.noFrsMatch;
+                }
+                else if (std::any_of(std::next(match), end, inTime))
+                {
+                    if (implant.stopped) ++state.ambiguousFrsMatch;
+                }
                 else if (fGates.empty()) implantGates.push_back(0);
                 else
                 {
@@ -351,19 +379,21 @@ void IonCorrelations::Exec(Option_t*)
             }
             for (const auto i : *selected)
             {
-                state.outputs[i].implantEnergy->Fill(implant.energy);
-                state.outputs[i].implantPosition->Fill(implant.x, implant.y);
-                const auto& planes = state.outputs[i].aidaImplants;
+                auto& output = state.outputs[i];
+                const auto& planes = output.aidaPlanes;
                 if (implant.dssd > 0 && static_cast<std::size_t>(implant.dssd) <= planes.size())
                 {
                     const auto& plane = planes[implant.dssd - 1];
-                    plane.energy->Fill(implant.energy);
-                    plane.strips->Fill(implant.x, implant.y);
-                    plane.position->Fill(implant.positionX, implant.positionY);
+                    plane.all.Fill(implant);
+                    if (implant.stopped) plane.stopped.Fill(implant);
                 }
+                if (!implant.stopped) continue;
+                output.implantEnergy->Fill(implant.energy);
+                output.implantPosition->Fill(implant.x, implant.y);
                 if (!fUseBetas) fill[i] = true;
             }
-            if (fUseBetas) state.history.emplace(implant.time, std::make_pair(implant, *selected));
+            if (fUseBetas && implant.stopped)
+                state.history.emplace(implant.time, std::make_pair(implant, *selected));
         }
     }
     else
