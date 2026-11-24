@@ -10,7 +10,7 @@ A file listed for removal is a candidate once its callers and any required ROOT 
 
 - **Remove after both dependencies are gone:** `c4data/fatimaData/FatimaTwinpeaksData.{h,cxx}`.
 - **Update:** `c4source/fatima/FatimaRaw2Cal.{h,cxx}`. Move the matcher to the pulse representation used by the new path, then retire the old branch lookup, transient `TClonesArray` and standalone TAMEX input option when their callers have moved. Preserve `FatimaTwinpeaksCalData` and `FatimaTimeMachineData` for their consumers.
-- **Review raw-type includes:** `analysis/correlations/FatimaGermaniumCorrelations.cxx`, `analysis/correlations/FrsFatimaCorrelations.cxx`, `analysis/correlations/nearline/FrsFatimaCorrelationsNearline.cxx` and the commented example in `c4source/test/TestReader.cxx`.
+- **Review raw-type includes:** `analysis/correlations/FrsFatimaCorrelations.cxx`, `analysis/correlations/nearline/FrsFatimaCorrelationsNearline.cxx` and the commented example in `c4source/test/TestReader.cxx`.
 
 ## bPlast and BGO TAMEX
 
@@ -22,7 +22,7 @@ Both readers still default to the old path. On that path they do fine-time calib
 | BGO | `c4data/bgoData/BGOTwinpeaksData.{h,cxx}` | `c4source/bgo/BGOReader.{h,cxx}`, `c4source/bgo/BGORaw2Cal.{h,cxx}` | `BGOTwinpeaksData` → `BGORawData`. Preserve `BGOTwinpeaksCalData`. |
 
 - Move the remaining macros to board input before removing the readers' old pulse and fine-time paths. Update the fast/slow matchers before deleting the data classes. Include bPlast trigger-3 records in comparisons, including events with no edges.
-- Review the raw Twinpeaks include in `analysis/correlations/FrsBplastCorrelations.cxx`. Recheck `c4source/bgo/BGOPackedSafety.h` and its test coverage after removing the BGO reader’s pulse path.
+- Recheck `c4source/bgo/BGOPackedSafety.h` and its test coverage after removing the BGO reader’s pulse path.
 - Keep the shared `c4data/digitisers/tamexData/TamexRawData.{h,cxx}`, `c4source/digitisers/tamex/TamexReader.h`, `TamexFineTimeCalibration.{h,cxx}` and `TamexPulseBuilder.h`. Review the Twinpeaks-specific adapter in `TamexPulseBuilder.h` once all three detectors use their new pulse representation. Preserve fine-time histogram compatibility and pairing behavior. `c4source/base/TamexPackedSafety.h` also serves the shared reader and MCP.
 - Keep `tests/tamex_family_decoder_test.cxx` and `tests/fatima_tamex_raw_pipeline_test.cxx`. Update their pulse checks as the representation changes.
 
@@ -35,7 +35,7 @@ Both readers still default to the old path. On that path they do fine-time calib
 | `c4source/fatima/FatimaVmeReader.{h,cxx}`, `FatimaVmeRaw2Cal.{h,cxx}`, `c4data/fatimaData/FatimaVmeData.{h,cxx}` | Switch the macros and old-tree readers after validating the new output. These are removal candidates once those consumers are gone. |
 | `c4source/fatima/FatimaRaw2Cal.{h,cxx}`, `FatimaVmeCalibrator.{h,cxx}` | Keep the detector raw path. Review `UseVmeRawInput` and the fallback for separate `V1751RawData` and `V1290RawData` ROOT branches. The underlying hit types also serve the structured FATIMA and BB7 paths. Keep `c4data/digitisers/vmeData/VmeDigitiserRawData.{h,cxx}`. |
 | `c4data/fatimaData/FatimaVmeCalData.{h,cxx}` | Review individual types. This file pair holds the older calibrated types and the new `FatimaVmeQdcCalHit` and `FatimaVmeTdcCalHit` types. Keep the pair for the new output. |
-| `analysis/online/fatima/FatimaVmeOnlineSpectra.{h,cxx}`, `analysis/nearline/fatima/FatimaVmeNearlineSpectra.{h,cxx}`, `analysis/correlations/nearline/WhiterabbitCorrelationNearline.{h,cxx}`, `analysis/correlations/online/WhiterabbitCorrelationOnline.{h,cxx}`, `analysis/correlations/FrsFatimaVmeCorrelations.{h,cxx}` | Review raw diagnostics and the old calibrated branches `FatimaVmeCalData`, `FatimaVmeQDCCalData`, `FatimaVmeTDCCalData`, `FatimaVmeResiduals` and `FatimaVmeTimeMachineData`. Include the currently disabled FRS–FATIMA VME task when checking callers. |
+| `analysis/online/fatima/FatimaVmeOnlineSpectra.{h,cxx}`, `analysis/nearline/fatima/FatimaVmeNearlineSpectra.{h,cxx}`, `analysis/correlations/nearline/WhiterabbitCorrelationNearline.{h,cxx}`, `analysis/correlations/online/WhiterabbitCorrelationOnline.{h,cxx}` | Review raw diagnostics and the old calibrated branches `FatimaVmeCalData`, `FatimaVmeQDCCalData`, `FatimaVmeTDCCalData`, `FatimaVmeResiduals` and `FatimaVmeTimeMachineData`. |
 
 The new calibrator publishes separate QDC and TDC calibrated hits. Before removing the old task, check detector assignment, calibrated timing and spectra, residual signals, and Time Machine output used by the affected runs. Keep the common VME decoder, its safety helpers, `tests/vme_digitiser_decode_test.cxx` and `tests/s100_fatima_vme_subevent_test.py`.
 
@@ -76,8 +76,8 @@ These are tracked references, including commented examples and tasks with select
 
 ### Germanium and DEGAS analysis
 
-- `analysis/correlations/` — `AidaGermaniumCorrelations.cxx`, `FatimaGermaniumCorrelations.cxx`, `FrsGermaniumCorrelations.cxx`, `bPlastGermaniumCorrelations.cxx`
-- `analysis/correlations/triplePlusCorrs/` — `BetaIonCorrelations.cxx`, `FrsAidaBplastGermaniumCorrelations.cxx`
+- `analysis/correlations/` — `AidaGermaniumCorrelations.cxx`, `FrsGermaniumCorrelations.cxx`, `bPlastGermaniumCorrelations.cxx`
+- `analysis/correlations/triplePlusCorrs/` — `BetaIonCorrelations.cxx`
 - `analysis/nearline/bgo/` — `BGONearlineSpectra.cxx`
 - `analysis/correlations/nearline/` — `FatimaTimingAnalysisSummedGeGated.cxx`, `FrsGermaniumCorrelationsNearline.cxx`
 - `analysis/nearline/germanium/` — `GermaniumNearlineSpectra.cxx`, `GermaniumResolution.cxx`

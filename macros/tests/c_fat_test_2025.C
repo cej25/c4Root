@@ -459,12 +459,6 @@ void c_fat_test_2025()
         run->AddTask(bplastgecorr);
     }
 
-    if (BPLAST_ON && FRS_ON)
-    {
-	    //FrsBplastCorrelations* frsbplast = new FrsBplastCorrelations();
-	    //run->AddTask(frsbplast);
-    }
-
     // Initialise
     run->Init();
     

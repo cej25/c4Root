@@ -479,12 +479,6 @@ void s100_tests(const char* input = "/u/cjones/data/lustre/despec/fatima_test_20
         run->AddTask(bplastgecorr);
     }
 
-    if (BPLAST_ON && FRS_ON)
-    {
-	    //FrsBplastCorrelations* frsbplast = new FrsBplastCorrelations();
-	    //run->AddTask(frsbplast);
-    }
-
     // Initialise
     run->Init();
     

@@ -556,12 +556,6 @@ void s100_online_new()
         
     }
 
-    // if(AIDA_ON && BPLAST_ON){
-    //     AidabPlastCorrelations * aidabplast = new AidabPlastCorrelations();
-    //     run->AddTask(aidabplast);
-    
-    // }
-
     TString b = "Aida";
     TString c = "Fatima";
     TString d = "FatimaVme";

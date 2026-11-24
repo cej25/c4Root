@@ -43,18 +43,18 @@ run->AddTask(decays);
 | FATIMA start–stop time and time vs energy with a DEGAS energy gate | `FatimaTimingAnalysisSummed` | Keep `FatimaTimingAnalysisSummedDegasGated`. Its DEGAS cascade condition is independent of the ion gate. |
 | DEGAS energy surviving or rejected by BGO, BGO energy/time, BGO–DEGAS time differences | Combined inclusive DEGAS energy and the BGO singles from the diagnostics | Keep `DegasBGOOnlineSpectra` / `DegasBGONearlineSpectra` and the veto in `DegasCal2Anl`. |
 | Pairwise WR differences, trigger-specific WR differences, subsystem intervals, and delayed/undelayed Time Machine spectra and matrices | Ungated trigger distributions, per-subsystem WR intervals and Time Machine singles from the same diagnostic tasks | Retained as separate online/nearline correlation diagnostics. Cross-subsystem time differences require the pair. |
-| FATIMA VME spectra, lifetime and gamma matrices with FRS gates | `FatimaVmeOnlineSpectra` / `FatimaVmeNearlineSpectra` | VME singles exist. Dedicated FRS–FATIMA VME source is outside the build. Keep it as the record of the gate and start/stop variants. |
+| FATIMA VME spectra, lifetime and gamma matrices with FRS gates | `FatimaVmeOnlineSpectra` / `FatimaVmeNearlineSpectra` | VME singles exist. The former FRS task was outside the build. Its histogram identifiers below record the gate and start–stop variants. |
 | LISA layer/channel energy and position with FRS gates, MUSIC–LISA and tracking matrices, WR/trigger plots | LISA and FRS standalone spectra | Keep LISA–FRS analysis. |
-| FRS-gated MCP timing, position and maps | `H10MCPOnlineSpectra` / `H10MCPNearlineSpectra` | Dedicated FRS–MCP source is outside the build. Keep it as the record of the selection. |
+| FRS-gated MCP timing, position and maps | `H10MCPOnlineSpectra` / `H10MCPNearlineSpectra` | The former FRS task was outside the build. Its histogram identifiers are recorded below. |
 
 Before removing any legacy correlation task, compare the selected events and histogram bins using the same data, gates and timing settings. An identical plot from standalone spectra establishes an inclusive baseline. Plots with quantities from both subsystems require both inputs even in their loosest selection.
 
 ## Legacy histogram identifiers
 
-This index lists histogram members booked or filled in the correlation sources, including diagnostics and dormant source files. One member can represent many per-gate, per-detector or per-trigger histograms. Use the coverage table above to identify the inclusive baseline and the legacy producer to retain.
+This index lists histogram members booked or filled in the correlation sources, including diagnostics and historical entries for removed tasks. One member can represent many per-gate, per-detector or per-trigger histograms. Use the coverage table above to identify the inclusive baseline and the legacy producer to retain.
 
 <details>
-<summary>AidaBplastCorrelations (outside the build) (7 member identifiers)</summary>
+<summary>AidaBplastCorrelations (removed, previously outside the build) (7 member identifiers)</summary>
 
 `h1_bplast_abs_time`, `h1_bplast_fastToT`, `h1_bplast_fast_hitpatterns`, `h1_bplast_rel_time`, `h1_bplast_slowToT`, `h1_bplast_slow_hitpatterns`, `h2_bplast_slowToT_vs_fastToT`
 
@@ -81,10 +81,6 @@ This index lists histogram members booked or filled in the correlation sources, 
 
 </details>
 
-- [FatimaBplastCorrelations](../analysis/correlations/FatimaBplastCorrelations.cxx) has no histogram bookings or fills in executable code.
-
-- [FatimaGermaniumCorrelations](../analysis/correlations/FatimaGermaniumCorrelations.cxx) has no histogram bookings or fills in executable code.
-
 <details>
 <summary>FrsAidaCorrelations (25 member identifiers)</summary>
 
@@ -93,7 +89,7 @@ This index lists histogram members booked or filled in the correlation sources, 
 </details>
 
 <details>
-<summary>FrsBplastCorrelations (outside the build) (1 member identifiers)</summary>
+<summary>FrsBplastCorrelations (removed, previously outside the build) (1 member identifiers)</summary>
 
 `h2_Z_vs_slowToT`
 
@@ -128,7 +124,7 @@ This index lists histogram members booked or filled in the correlation sources, 
 </details>
 
 <details>
-<summary>FrsFatimaVmeCorrelations (outside the build) (21 member identifiers)</summary>
+<summary>FrsFatimaVmeCorrelations (removed, previously outside the build) (21 member identifiers)</summary>
 
 `h1_FRS_FatVME_E_Z1Z2x2AoQgate`, `h1_FRS_FatVME_E_Z1Z2x4AoQgate`, `h1_FRS_FatVME_E_ZAoQgate`, `h1_FRS_FatVME_LT1_start_stop`, `h1_FRS_FatVME_LT1_start_stop_ns`, `h1_FRS_FatVME_LT1_stop_start`, `h1_FRS_FatVME_LT1_stop_start_ns`, `h1_FRS_FatVME_LT2_start_stop`, `h1_FRS_FatVME_LT2_start_stop_ns`, `h1_FRS_FatVME_LT2_stop_start`, `h1_FRS_FatVME_LT2_stop_start_ns`, `h1_FRS_FatVME_LT3_start_stop`, `h1_FRS_FatVME_LT3_start_stop_ns`, `h1_FRS_FatVME_LT3_stop_start`, `h1_FRS_FatVME_LT3_stop_start_ns`, `h2_FRS_FatVME_E1vsE2_Z1Z2x2AoQgate`, `h2_FRS_FatVME_E1vsE2_Z1Z2x4AoQgate`, `h2_FRS_FatVME_E1vsE2_ZAoQgate`, `h2_FRS_FatVME_EvsT_Z1Z2x2AoQgate`, `h2_FRS_FatVME_EvsT_Z1Z2x4AoQgate`, `h2_FRS_FatVME_EvsT_ZAoQgate`
 
@@ -149,7 +145,7 @@ This index lists histogram members booked or filled in the correlation sources, 
 </details>
 
 <details>
-<summary>FrsMCPCorrelations (outside the build) (2 member identifiers)</summary>
+<summary>FrsMCPCorrelations (removed, previously outside the build) (2 member identifiers)</summary>
 
 `h1_test_histogram_FRSGated`, `histogram2_FRSGated`
 
@@ -261,7 +257,7 @@ This index lists histogram members booked or filled in the correlation sources, 
 </details>
 
 <details>
-<summary>FrsAidaBplastGermaniumCorrelations (outside the build) (14 member identifiers)</summary>
+<summary>FrsAidaBplastGermaniumCorrelations (removed, previously outside the build) (14 member identifiers)</summary>
 
 `h1_bplast_abs_time`, `h1_bplast_fastToT`, `h1_bplast_fast_hitpatterns`, `h1_bplast_rel_time`, `h1_bplast_slowToT`, `h1_bplast_slow_hitpatterns`, `h2_aida_implants_dssd1_frs_gated`, `h2_aida_implants_dssd2_frs_gated`, `h2_bplast_fast_vs_slow_gated`, `h2_bplast_slowToT_vs_fastToT`, `h2_frs_Z_vs_AoQ_gated`, `h2_frs_Z_vs_Z2_gated`, `h2_frs_x2_vs_AoQ_gated`, `h2_frs_x4_vs_AoQ_gated`
 

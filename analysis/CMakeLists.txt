@@ -116,7 +116,6 @@ set(SRCS
 ./correlations/FrsAidaCorrelations.cxx
 ./correlations/online/FrsAidaCorrelationsOnline.cxx
 ./correlations/FrsFatimaCorrelations.cxx
-#./correlations/FrsFatimaVmeCorrelations.cxx
 ./correlations/FrsGermaniumCorrelations.cxx
 ./correlations/FrsDegasCorrelations.cxx
 ./correlations/nearline/FrsFatimaCorrelationsNearline.cxx
@@ -136,12 +135,10 @@ set(SRCS
 ./correlations/online/bPlastDegasCorrelationsOnline.cxx
 ./correlations/online/BB7GermaniumCorrelationsOnline.cxx
 ./correlations/online/BB7DegasCorrelationsOnline.cxx
-#./correlations/FrsBplastCorrelations.cxx
 ./correlations/triplePlusCorrs/BetaIonCorrelations.cxx
 ./correlations/triplePlusCorrs/BetaIonDegasCorrelations.cxx
 
 
-#./correlations/FrsBplastCorrelations.cxx
 ./correlations/online/LisaFrsCorrelationsOnline.cxx
 ./correlations/LisaFrsCorrelations.cxx
 
