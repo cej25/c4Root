@@ -1,6 +1,8 @@
 #include "IonCorrelations.h"
 
 #include "AidaHitData.h"
+#include "TAidaConfiguration.h"
+#include "TCorrelationsConfiguration.h"
 #include "BB7FebexHitData.h"
 #include "StefanHitData.h"
 #include "FrsGate.h"
@@ -39,6 +41,8 @@ struct TargetHit
     Int_t maxY;
     Double_t x;
     Double_t y;
+    Double_t positionX;
+    Double_t positionY;
     Double_t energy;
     Bool_t stopped;
 };
@@ -58,7 +62,7 @@ ReadTarget BindTarget(FairRootManager& manager, const char* branch)
         output.clear();
         for (const auto& hit : *hits)
             output.push_back({hit.Time, hit.DSSD, hit.StripXMin, hit.StripXMax,
-                              hit.StripYMin, hit.StripYMax, hit.StripX, hit.StripY, hit.Energy, hit.Stopped});
+                              hit.StripYMin, hit.StripYMax, hit.StripX, hit.StripY, hit.PosX, hit.PosY, hit.Energy, hit.Stopped});
     };
 }
 
@@ -92,10 +96,18 @@ bool MakeSpectra(std::vector<Spectra>& output, const TString& name)
     return true;
 }
 
+struct ImplantSpectra
+{
+    TH1D* energy;
+    TH2D* strips;
+    TH2D* position;
+};
+
 struct GateOutput
 {
     std::vector<Spectra> spectra;
     TH1D* implantEnergy = nullptr;
+    std::vector<ImplantSpectra> aidaImplants;
     TH2D* implantPosition = nullptr;
     TH1D* betaEnergy = nullptr;
     TH1D* implantBetaTime = nullptr;
@@ -105,6 +117,11 @@ struct GateOutput
 struct IonCorrelations::State
 {
     const std::vector<FrsHitItem>* frs = nullptr;
+    const TAidaConfiguration* aida = nullptr;
+    Long64_t frsAidaLower = 0;
+    Long64_t frsAidaUpper = 0;
+    ULong64_t noFrsMatch = 0;
+    ULong64_t ambiguousFrsMatch = 0;
     ReadTarget readImplants;
     ReadTarget readBetas;
     std::vector<TargetHit> implants;
@@ -170,6 +187,20 @@ InitStatus IonCorrelations::Init()
     {
         if (fTarget == "AIDA")
         {
+            if (fRequireFrs)
+            {
+                const auto gates = TCorrelationsConfiguration::GetInstance()->CorrelationsMap();
+                const auto window = gates.find("FRS-AIDA WR Gate");
+                if (window == gates.end() || window->second.size() != 2
+                    || window->second[0] >= window->second[1])
+                {
+                    c4LOG(error, "IonCorrelations requires an increasing FRS_AIDA_WR window (ns) in correlations.dat");
+                    return kFATAL;
+                }
+                fState->frsAidaLower = window->second[0];
+                fState->frsAidaUpper = window->second[1];
+                fState->aida = TAidaConfiguration::GetInstance();
+            }
             fState->readImplants = BindTarget<AidaHit>(*manager, "AidaImplantHits");
             if (fUseBetas) fState->readBetas = BindTarget<AidaHit>(*manager, "AidaDecayHits");
         }
@@ -226,6 +257,27 @@ InitStatus IonCorrelations::Init()
             output.implantPosition = new TH2D("implant_strip_xy", "Stopped implant position;X strip;Y strip",
                                                 512, -0.5, 511.5, 512, -0.5, 511.5);
             output.implantPosition->SetDirectory(directory);
+            if (fState->aida)
+            {
+                const int xStrips = fState->aida->Wide() ? 386 : 128;
+                const double xMax = fState->aida->Wide() ? 113.4 : 37.8;
+                for (int dssd = 1; dssd <= fState->aida->DSSDs(); ++dssd)
+                {
+                    auto* plane = directory->mkdir(Form("DSSD%d", dssd));
+                    if (!plane) return kFATAL;
+                    TDirectory::TContext planeContext(plane);
+                    auto* energy = new TH1D("implant_energy", "Stopped implant energy;Energy [MeV];Implants",
+                                            2000, 0, 20000);
+                    auto* strips = new TH2D("implant_strip_xy", "Stopped implant hit pattern;X strip;Y strip",
+                                            xStrips, 0, xStrips, 128, 0, 128);
+                    auto* position = new TH2D("implant_pos_xy", "Stopped implant position;X [mm];Y [mm]",
+                                              xStrips, -xMax, xMax, 128, -37.8, 37.8);
+                    energy->SetDirectory(plane);
+                    strips->SetDirectory(plane);
+                    position->SetDirectory(plane);
+                    output.aidaImplants.push_back({energy, strips, position});
+                }
+            }
             if (fUseBetas)
             {
                 output.betaEnergy = new TH1D("beta_energy", "Matched decay energy;Energy;Decays", 2000, 0, 10000);
@@ -255,13 +307,16 @@ InitStatus IonCorrelations::Init()
 void IonCorrelations::Exec(Option_t*)
 {
     auto& state = *fState;
-    std::vector<std::size_t> selected;
-    if (!state.frs || (!state.frs->empty() && fGates.empty())) selected.push_back(0);
-    for (std::size_t i = 0; i < fGates.size(); ++i)
+    std::vector<std::size_t> eventGates;
+    if (!state.aida)
     {
-        if (std::any_of(state.frs->begin(), state.frs->end(),
-                        [gate = fGates[i]](const auto& hit) { return Passes(*gate, hit); }))
-            selected.push_back(i);
+        if (!state.frs || (!state.frs->empty() && fGates.empty())) eventGates.push_back(0);
+        for (std::size_t i = 0; i < fGates.size(); ++i)
+        {
+            if (std::any_of(state.frs->begin(), state.frs->end(),
+                            [gate = fGates[i]](const auto& hit) { return Passes(*gate, hit); }))
+                eventGates.push_back(i);
+        }
     }
 
     std::vector<bool> fill(state.outputs.size(), false);
@@ -272,18 +327,48 @@ void IonCorrelations::Exec(Option_t*)
         {
             if (!implant.stopped || implant.time <= 0) continue;
             state.latestTargetTime = std::max(state.latestTargetTime, implant.time);
-            for (const auto i : selected)
+            const auto* selected = &eventGates;
+            std::vector<std::size_t> implantGates;
+            if (state.aida)
+            {
+                const auto inTime = [&](const FrsHitItem& hit) {
+                    const auto time = hit.Get_wr_t();
+                    if (time <= 0) return false;
+                    const auto difference = implant.time - time;
+                    return state.frsAidaLower < difference && difference < state.frsAidaUpper;
+                };
+                const auto end = state.frs->end();
+                const auto match = std::find_if(state.frs->begin(), end, inTime);
+                if (match == end) ++state.noFrsMatch;
+                else if (std::any_of(std::next(match), end, inTime)) ++state.ambiguousFrsMatch;
+                else if (fGates.empty()) implantGates.push_back(0);
+                else
+                {
+                    for (std::size_t i = 0; i < fGates.size(); ++i)
+                        if (Passes(*fGates[i], *match)) implantGates.push_back(i);
+                }
+                selected = &implantGates;
+            }
+            for (const auto i : *selected)
             {
                 state.outputs[i].implantEnergy->Fill(implant.energy);
                 state.outputs[i].implantPosition->Fill(implant.x, implant.y);
+                const auto& planes = state.outputs[i].aidaImplants;
+                if (implant.dssd > 0 && static_cast<std::size_t>(implant.dssd) <= planes.size())
+                {
+                    const auto& plane = planes[implant.dssd - 1];
+                    plane.energy->Fill(implant.energy);
+                    plane.strips->Fill(implant.x, implant.y);
+                    plane.position->Fill(implant.positionX, implant.positionY);
+                }
                 if (!fUseBetas) fill[i] = true;
             }
-            if (fUseBetas) state.history.emplace(implant.time, std::make_pair(implant, selected));
+            if (fUseBetas) state.history.emplace(implant.time, std::make_pair(implant, *selected));
         }
     }
     else
     {
-        for (const auto i : selected) fill[i] = true;
+        for (const auto i : eventGates) fill[i] = true;
     }
 
     if (state.readBetas)
@@ -319,6 +404,9 @@ void IonCorrelations::Exec(Option_t*)
 void IonCorrelations::FinishTask()
 {
     if (!fState) return;
+    if (fState->aida)
+        c4LOG(info, "Stopped AIDA implants without an in-window FRS hit: " << fState->noFrsMatch
+                     << ", with multiple in-window FRS hits: " << fState->ambiguousFrsMatch);
     auto* file = FairRootManager::Instance()->GetOutFile();
     for (const auto& output : fState->outputs)
     {

@@ -469,6 +469,12 @@ void s100_tests(const char* input = "/u/cjones/data/lustre/despec/fatima_test_20
         //FrsAidaCorrelations* frsaidaonline = new FrsAidaCorrelations(fgs);
 
         run->AddTask(frsaidaonline);
+
+        auto* ionImplants = new IonCorrelationsOnline();
+        ionImplants->SetGates(fgs);
+        ionImplants->CorrelateTarget("AIDA");
+        ionImplants->CorrelateImplants();
+        run->AddTask(ionImplants);
     }
 
     if (BPLAST_ON && DEGAS_ON)
