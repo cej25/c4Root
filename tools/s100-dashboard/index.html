@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>c4Root Dashboard</title>
+  <link rel="stylesheet" href="/style.css">
+  <script defer src="/app.js"></script>
+</head>
+<body>
+  <header>
+    <div class="brand"><strong>c4Root</strong><span>S100 Dashboard</span></div>
+    <nav aria-label="Dashboard">
+      <button data-view="monitor" aria-current="page">Live Monitor</button>
+      <button data-view="setup">Run Setup</button>
+    </nav>
+  </header>
+  <main>
+    <section id="monitor" aria-labelledby="monitor-title">
+      <div class="section-heading">
+        <div><h1 id="monitor-title">Live Monitor</h1><p id="connection" role="status">Connecting to ROOT…</p></div>
+        <div class="actions">
+          <label>Layout <select id="layout"><option value="columns">Side by side</option><option value="stack">Stacked</option><option value="wide">Matrix wide</option></select></label>
+          <button id="reload">Reload histograms</button>
+        </div>
+      </div>
+      <div id="plots" class="plots columns"></div>
+    </section>
+    <section id="setup" aria-labelledby="setup-title" hidden>
+      <div class="section-heading"><div><h1 id="setup-title">Run Setup</h1><p>S100 online preset · live stream or LMD replay</p></div></div>
+      <div class="setup-grid">
+        <form id="run-form">
+          <fieldset>
+            <legend>Run settings</legend>
+            <label>Input source <input name="input" required placeholder="stream://host or /data/run.lmd"></label>
+            <label>Repository path <input name="repository" required></label>
+            <div class="pair">
+              <label>Event limit <input name="events" type="number" min="-1" value="-1" required></label>
+              <label>ROOT server port <input name="port" type="number" min="1" max="65535" value="6969" required></label>
+            </div>
+            <label>ROOT output file <input name="output" placeholder="Optional"></label>
+          </fieldset>
+          <fieldset><legend>Subsystems and diagnostics</legend><div id="flags" class="checks"></div></fieldset>
+          <details><summary>Configuration file overrides</summary><div id="config-files"></div></details>
+          <button class="primary" type="submit">Preview macro</button>
+          <p id="setup-status" role="status"></p>
+        </form>
+        <div class="preview">
+          <div class="card-heading"><h2>Macro preview</h2><button id="download" disabled>Download s100_tests.C</button></div>
+          <pre id="macro-preview">Configure the run and preview the macro.</pre>
+        </div>
+      </div>
+    </section>
+  </main>
+  <template id="panel-template">
+    <article class="panel">
+      <div class="card-heading"><h2></h2><button class="pause" aria-pressed="false">Pause</button></div>
+      <label>Histogram <select class="histogram"></select></label>
+      <div class="chart"></div>
+      <div class="panel-footer">
+        <span class="plot-status" role="status"></span>
+        <label>Refresh <select class="refresh"><option value="2">2 s</option><option value="5">5 s</option><option value="10">10 s</option><option value="30">30 s</option></select></label>
+        <label class="style-label"><select class="plot-style"></select></label>
+        <label class="colour-label">Line <input class="line-colour" type="color" value="#7ce3d3"></label>
+      </div>
+    </article>
+  </template>
+</body>
+</html>
