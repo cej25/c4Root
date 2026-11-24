@@ -193,6 +193,51 @@ document.querySelectorAll("nav button").forEach((button) => button.addEventListe
 }));
 
 const form = $("#run-form");
+const existingForm = $("#existing-form");
+const macroSource = $("#macro-source");
+const existingChoice = $("#existing-macro");
+const stopRun = $("#stop-run");
+const runStatus = $("#run-status");
+const runLog = $("#run-log");
+const post = (path, value) => api(path, { method: "POST",
+  headers: { "Content-Type": "application/json" }, body: JSON.stringify(value) });
+let listedMacros;
+let runActionPending = false;
+
+function renderRun(status) {
+  stopRun.disabled = !status.running || runActionPending;
+  document.querySelectorAll('button[value="start"], #existing-form button[type="submit"]')
+    .forEach(button => { button.disabled = status.running || runActionPending; });
+  runStatus.textContent = status.running ? "ROOT is running"
+    : status.exitCode === null ? "No run started" : `ROOT exited (${status.exitCode})`;
+  runLog.textContent = status.log;
+}
+
+async function runAction(path, payload) {
+  if (runActionPending) return;
+  runActionPending = true;
+  try {
+    const status = await post(path, payload);
+    runActionPending = false;
+    renderRun(status);
+  } finally {
+    runActionPending = false;
+  }
+}
+
+async function pollRun() {
+  try {
+    if (!runActionPending) {
+      const status = await api("/api/run");
+      if (!runActionPending) renderRun(status);
+    }
+  } catch (error) {
+    runStatus.textContent = error.message;
+  } finally {
+    setTimeout(pollRun, 1500);
+  }
+}
+pollRun();
 const preview = $("#macro-preview");
 const download = $("#download");
 const setupStatus = $("#setup-status");
@@ -234,8 +279,11 @@ form.addEventListener("submit", async (event) => {
       subsystems: Object.fromEntries(Object.keys(defaults.subsystems).map((key) => [key, values[key].checked])),
       files: Object.fromEntries(defaults.files.map((key) => [key, values[key].value.trim()]).filter(([, value]) => value)),
     };
-    const response = await api("/api/macro", { method: "POST", headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(settings) });
+    if (event.submitter?.value === "start") {
+      await runAction("/api/run/start", { source: "generated", settings });
+      return;
+    }
+    const response = await post("/api/macro", settings);
     if (revision !== setupRevision) return;
     macro = response.macro;
     preview.textContent = macro;
@@ -244,6 +292,54 @@ form.addEventListener("submit", async (event) => {
   } catch (error) {
     if (revision !== setupRevision) return;
     preview.textContent = "";
+    setupStatus.textContent = error.message;
+  }
+});
+macroSource.addEventListener("change", async () => {
+  invalidateExport();
+  preview.textContent = "Select Preview macro to show the source.";
+  setupStatus.textContent = "";
+  const existing = macroSource.value === "existing";
+  form.hidden = existing;
+  existingForm.hidden = !existing;
+  download.hidden = existing;
+  if (existing && !listedMacros) {
+    try {
+      listedMacros = await api("/api/macros");
+      existingChoice.replaceChildren(...listedMacros.map(path => new Option(path, path)));
+    } catch (error) {
+      setupStatus.textContent = error.message;
+    }
+  }
+});
+existingChoice.addEventListener("change", () => {
+  setupRevision++;
+  preview.textContent = "Select Preview macro to show the source.";
+});
+$("#existing-preview").addEventListener("click", async () => {
+  if (!existingChoice.value) return;
+  const revision = ++setupRevision;
+  try {
+    const { macro: source } = await api("/api/macro-preview?" + new URLSearchParams({ path: existingChoice.value }));
+    if (revision === setupRevision) preview.textContent = source;
+  } catch (error) {
+    if (revision === setupRevision) setupStatus.textContent = error.message;
+  }
+});
+existingForm.addEventListener("submit", async (event) => {
+  event.preventDefault();
+  setupStatus.textContent = "";
+  try {
+    const args = JSON.parse($("#macro-arguments").value.trim() || "[]");
+    await runAction("/api/run/start", { source: "existing", macro: existingChoice.value, arguments: args });
+  } catch (error) {
+    setupStatus.textContent = error.message;
+  }
+});
+stopRun.addEventListener("click", async () => {
+  try {
+    await runAction("/api/run/stop", {});
+  } catch (error) {
     setupStatus.textContent = error.message;
   }
 });

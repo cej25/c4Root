@@ -43,3 +43,19 @@ overrides are interpreted on that machine. The S100 UCESB command requires
 repository and input paths without spaces. The exported macro uses FairRoot
 online tasks for both live input and replay. Start it manually, then point
 the dashboard at its ROOT port.
+
+### Launch from the dashboard
+
+Start the Python dashboard from the same shell environment you use to run
+ROOT. Under **Macro source**, choose **Generate from settings** or **Use an
+existing macro**. The existing macro picker lists `.C` files
+under the checkout's `macros/` directory. Choose **Preview macro** to read it
+before running. For a macro with arguments, enter a JSON array in the order
+expected by that macro, such as `["stream://host:6002", 10000]`. Leave the field
+empty to use its defaults.
+
+**Start run** launches ROOT on the dashboard machine and shows the latest
+output. Existing macros run with their containing directory as the working
+directory. Generated macros run from the checkout root. **Stop run** sends SIGTERM to the dashboard run and its process
+group. The dashboard manages one run at a time. Use the ROOT HTTP port
+configured by `--root-url` and reload the histogram list after ROOT starts.

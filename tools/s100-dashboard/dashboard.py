@@ -3,9 +3,14 @@
 
 import argparse
 import json
+import os
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 import re
+import signal
+import subprocess
+from tempfile import TemporaryDirectory
+from threading import Lock
 from urllib.parse import parse_qs, quote, urlsplit
 from urllib.request import HTTPRedirectHandler, build_opener
 
@@ -70,6 +75,78 @@ def export_macro(settings):
     if signatures != 1 or ports != 1:
         raise ValueError("The S100 macro structure has changed. Review the dashboard exporter.")
     return source
+
+
+MACROS = REPO / "macros"
+
+
+def existing_macros():
+    for path in sorted(MACROS.rglob("*.C")):
+        if (re.fullmatch(r"[A-Za-z0-9_.+-]+\.C", path.name) and path.is_file()
+                and path.resolve().is_relative_to(MACROS)):
+            yield path.relative_to(MACROS).as_posix()
+
+
+def existing_macro(name):
+    if name not in existing_macros():
+        raise ValueError("Select a .C macro under the checkout's macros directory.")
+    return (MACROS / name).resolve()
+
+
+class Run:
+    def __init__(self, directory):
+        self.directory = Path(directory)
+        self.log = self.directory / "run.log"
+        self.process = None
+        self.lock = Lock()
+
+    def start(self, settings):
+        with self.lock:
+            if self.process and self.process.poll() is None:
+                raise ValueError("A dashboard run is already active.")
+            if settings["source"] == "generated":
+                macro = self.directory / "s100_tests.C"
+                macro.write_text(export_macro(settings["settings"]))
+                expression = str(macro)
+                working_directory = REPO
+            elif settings["source"] == "existing":
+                macro = existing_macro(settings["macro"])
+                args = settings.get("arguments", [])
+                if not isinstance(args, list) or len(args) > 20 or any(
+                    type(arg) not in (int, str) or
+                    (isinstance(arg, str) and arg and not SAFE_PATH.fullmatch(arg)) or
+                    (type(arg) is int and not -(2**31) <= arg < 2**31)
+                    for arg in args
+                ):
+                    raise ValueError("Use a JSON array of integers or plain strings without spaces.")
+                working_directory = macro.parent
+                expression = macro.name + "(" + ", ".join(json.dumps(arg) for arg in args) + ")"
+            else:
+                raise ValueError("Select a macro source.")
+            with self.log.open("wb") as log:
+                self.process = subprocess.Popen(
+                    ["root", "-l", "-b", "-q", expression],
+                    cwd=working_directory, stdin=subprocess.DEVNULL, stdout=log,
+                    stderr=subprocess.STDOUT, start_new_session=True,
+                )
+
+    def stop(self):
+        with self.lock:
+            if self.process and self.process.poll() is None:
+                try:
+                    os.killpg(self.process.pid, signal.SIGTERM)
+                except ProcessLookupError:
+                    pass
+
+    def status(self):
+        with self.lock:
+            code = self.process.poll() if self.process else None
+            log = ""
+            if self.log.exists():
+                with self.log.open("rb") as file:
+                    file.seek(max(0, self.log.stat().st_size - 16000))
+                    log = file.read(16000).decode(errors="replace")
+            return {"running": self.process is not None and code is None, "exitCode": code, "log": log}
 
 
 def axis_data(axis):
@@ -144,7 +221,19 @@ class Dashboard(BaseHTTPRequestHandler):
         self.end_headers()
         self.wfile.write(body)
 
+    def check_local_request(self):
+        port = self.server.server_port
+        hosts = {f"127.0.0.1:{port}", f"localhost:{port}"}
+        host = self.headers.get("Host")
+        origin = self.headers.get("Origin")
+        if host not in hosts or origin not in (None, f"http://{host}"):
+            self.send_data(403, {"error": "Open the dashboard using its local address."})
+            return False
+        return True
+
     def do_GET(self):
+        if not self.check_local_request():
+            return
         url = urlsplit(self.path)
         assets = {"/": ("index.html", "text/html"), "/app.js": ("app.js", "text/javascript"),
                   "/style.css": ("style.css", "text/css")}
@@ -156,6 +245,13 @@ class Dashboard(BaseHTTPRequestHandler):
                 self.send_data(200, self.server.plotly.read_bytes(), "text/javascript")
             elif url.path == "/api/setup":
                 self.send_data(200, setup_defaults())
+            elif url.path == "/api/macros":
+                self.send_data(200, list(existing_macros()))
+            elif url.path == "/api/macro-preview":
+                name = parse_qs(url.query).get("path", [""])[0]
+                self.send_data(200, {"macro": existing_macro(name).read_text(errors="replace")})
+            elif url.path == "/api/run":
+                self.send_data(200, self.server.run.status())
             elif url.path == "/api/status":
                 self.send_data(200, {"root": self.server.root_url, "localPlotly": bool(self.server.plotly)})
             elif url.path == "/api/histograms":
@@ -174,16 +270,27 @@ class Dashboard(BaseHTTPRequestHandler):
             self.send_data(502, {"error": str(error)})
 
     def do_POST(self):
-        if self.path != "/api/macro":
+        if not self.check_local_request():
+            return
+        if self.path not in ("/api/macro", "/api/run/start", "/api/run/stop"):
             self.send_data(404, {"error": "Page not found."})
             return
         try:
+            if self.headers.get_content_type() != "application/json":
+                raise ValueError("Expected JSON run settings.")
             size = int(self.headers.get("Content-Length", "0"))
             if not 0 < size <= 65536:
                 raise ValueError("Invalid run settings size.")
             settings = json.loads(self.rfile.read(size))
-            self.send_data(200, {"macro": export_macro(settings)})
-        except (KeyError, AttributeError, ValueError, TypeError) as error:
+            if self.path == "/api/macro":
+                self.send_data(200, {"macro": export_macro(settings)})
+                return
+            if self.path == "/api/run/start":
+                self.server.run.start(settings)
+            else:
+                self.server.run.stop()
+            self.send_data(200, self.server.run.status())
+        except (OSError, KeyError, AttributeError, ValueError, TypeError) as error:
             self.send_data(400, {"error": str(error)})
 
 
@@ -198,11 +305,18 @@ def main():
         parser.error("--root-url must be an HTTP(S) server URL without a query or fragment")
     if args.plotly_js and not args.plotly_js.is_file():
         parser.error("--plotly-js must point to a JavaScript bundle")
-    with ThreadingHTTPServer(("127.0.0.1", args.port), Dashboard) as server:
+    with TemporaryDirectory(prefix="c4root-run-") as directory, \
+            ThreadingHTTPServer(("127.0.0.1", args.port), Dashboard) as server:
+        server.run = Run(directory)
         server.root_url = args.root_url.rstrip("/")
         server.plotly = args.plotly_js
         print(f"c4Root Dashboard at http://127.0.0.1:{server.server_port}", flush=True)
-        server.serve_forever()
+        try:
+            server.serve_forever()
+        except KeyboardInterrupt:
+            pass
+        finally:
+            server.run.stop()
 
 
 if __name__ == "__main__":

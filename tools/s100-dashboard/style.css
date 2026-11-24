@@ -73,3 +73,7 @@ pre { background: #0b101a; border-radius: 7px; padding: 14px; max-height: 65vh; 
   header, .section-heading { flex-wrap: wrap; padding-block: 12px; }
   main { padding-top: 18px; }
 }
+
+.setup-controls { display: grid; gap: 12px; align-content: start; min-width: 0; }
+.setup-controls form > p, #existing-form > label { margin-bottom: 12px; }
+#run-log { max-height: 35vh; }

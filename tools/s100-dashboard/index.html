@@ -27,9 +27,22 @@
       <div id="plots" class="plots columns"></div>
     </section>
     <section id="setup" aria-labelledby="setup-title" hidden>
-      <div class="section-heading"><div><h1 id="setup-title">Run Setup</h1><p>S100 online preset · live stream or LMD replay</p></div></div>
+      <div class="section-heading"><div><h1 id="setup-title">Run Setup</h1><p>Choose a macro to prepare or run</p></div></div>
       <div class="setup-grid">
+        <div class="setup-controls">
+        <label>Macro source
+          <select id="macro-source"><option value="generated">Generate from settings</option><option value="existing">Use an existing macro</option></select>
+        </label>
+        <form id="existing-form" hidden>
+          <label>Existing macro <select id="existing-macro" required></select></label>
+          <label>Arguments (JSON array, optional)
+            <input id="macro-arguments" placeholder='["stream://host:6002", 10000]'>
+          </label>
+          <button id="existing-preview" type="button">Preview macro</button>
+          <button class="primary" type="submit">Start run</button>
+        </form>
         <form id="run-form">
+          <p>S100 online preset · live stream or LMD replay</p>
           <fieldset>
             <legend>Run settings</legend>
             <label>Input source <input name="input" required placeholder="stream://host or /data/run.lmd"></label>
@@ -42,12 +55,17 @@
           </fieldset>
           <fieldset><legend>Subsystems and diagnostics</legend><div id="flags" class="checks"></div></fieldset>
           <details><summary>Configuration file overrides</summary><div id="config-files"></div></details>
-          <button class="primary" type="submit">Preview macro</button>
-          <p id="setup-status" role="status"></p>
+          <button type="submit" value="preview">Preview macro</button>
+          <button class="primary" type="submit" value="start">Start run</button>
         </form>
+        <p id="setup-status" role="status"></p>
+        </div>
         <div class="preview">
           <div class="card-heading"><h2>Macro preview</h2><button id="download" disabled>Download s100_tests.C</button></div>
-          <pre id="macro-preview">Configure the run and preview the macro.</pre>
+          <pre id="macro-preview">Choose a macro source and select Preview macro.</pre>
+          <div class="card-heading"><h2>Run log</h2><button id="stop-run" disabled>Stop run</button></div>
+          <p id="run-status" role="status">No run started</p>
+          <pre id="run-log"></pre>
         </div>
       </div>
     </section>
