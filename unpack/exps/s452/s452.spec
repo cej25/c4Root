@@ -1,9 +1,10 @@
 // -*- C++ -*-
 
-#include "../../common/whiterabbit.spec"
+#include "../../common/whiterabbit_13bit.spec"
 #include "../../../config/s452/setup.hh"
 
 #include "../../common/vme_caen_v1x90.spec"
+#include "../../common/vme_caen_v1290_geo.spec"
 #include "../../common/vme_caen_v1751.spec"
 #include "../../common/vme_caen_v830.spec"
 
@@ -96,62 +97,42 @@ SUBEVENT(fatima_tamex_subev)
 
 
 SUBEVENT(fatima_vme_subev)
-{   
-
-    // we have...
-    // WR TS
-    // possible random 0x060 word
-    // scalers
-    // possible random 0x060 word?
-    // qdc
-    // possible random 0x060 word?
-    // tdc x1 or x2? x0?
-    // possible eob/0x060 word?
-
-    ts = TIMESTAMP_WHITERABBIT_EXTENDED(id=0x1500);
+{
+    ts = TIMESTAMP_WHITERABBIT(id = 0x1500);
 
     select several
     {
-        e = ERR_WORD_SIX();
-    }
+        error1 = ERR_WORD_SIX();
+    };
 
-    // SCALERS
     select optional
     {
         scalers = FATIMA_VME_SCALERS();
-    }
+    };
 
-    // number of boards 
-    
-    
-        qdc[0] = VME_CAEN_V1751();
-    
-        qdc[1] = VME_CAEN_V1751();
-        qdc[2] = VME_CAEN_V1751();
-        qdc[3] = VME_CAEN_V1751();
-       //qdc[4] = VME_CAEN_V1751();
-    
+    // Use the S100 board addresses for the five enabled QDCs and two TDCs.
+    // The remaining addresses reserve slots in the shared output layout.
     select several
     {
-        e2 = ERR_WORD_SIX();
-    }
-
-    // TDC
-    select optional
-    {
-        tdc1 = VME_CAEN_V1290_FRS();
-    }
+        qdc[0] = VME_CAEN_V1751(board = 6);
+        qdc[1] = VME_CAEN_V1751(board = 7);
+        qdc[2] = VME_CAEN_V1751(board = 8);
+        qdc[3] = VME_CAEN_V1751(board = 9);
+        qdc[4] = VME_CAEN_V1751(board = 10);
+        qdc[5] = VME_CAEN_V1751(board = 31);
+        error2 = ERR_WORD_SIX();
+    };
 
     select several
     {
-        e3 = ERR_WORD_SIX();
-    }
-    
-    select optional
-    {
-        tdc2 = VME_CAEN_V1290_FRS();
-    }
-
+        tdc1 = VME_CAEN_V1290_GEO(geom_expected = 12);
+        tdc2 = VME_CAEN_V1290_GEO(geom_expected = 13);
+        tdc3 = VME_CAEN_V1290_GEO(geom_expected = 31);
+        tdc4 = VME_CAEN_V1290_GEO(geom_expected = 30);
+        tdc5 = VME_CAEN_V1290_GEO(geom_expected = 29);
+        tdc6 = VME_CAEN_V1290_GEO(geom_expected = 28);
+        error3 = ERR_WORD_SIX();
+    };
 }
 
 /*

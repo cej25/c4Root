@@ -1,3 +1,9 @@
+#include "FatimaReader.h"
+#include "FatimaVmeReader.h"
+#include "FatimaRaw2Cal.h"
+#include "ext_h101_fatima.h"
+#include "../../../unpack/exps/s100/s100_config.gen.spec"
+#include "ext_h101_fatimavme.h"
 #include <TROOT.h>
 
 // Switch all tasks related to {subsystem} on (1)/off (0)
@@ -33,7 +39,6 @@ typedef struct EXT_STR_h101_t
     EXT_STR_h101_frstpat_onion_t frstpat;
     EXT_STR_h101_beammonitor_onion_t beammonitor;
     EXT_STR_h101_bgo_onion_t bgo;
-    // EXT_STR_h101_bb7febex_onion_t bb7febex;
 } EXT_STR_h101;
 
 
@@ -179,11 +184,14 @@ void s100_online_thresholds(const Int_t nev = -1, const Int_t fRunId = 1, const 
     
     source->AddReader(unpackheader);
     
-    if (FATIMA_ON)
+    if (FATIMA_ON || FATIMA_VME_ON)
     {
-        FatimaReader* unpackfatima = new FatimaReader((EXT_STR_h101_fatima_onion*)&ucesb_struct.fatima, offsetof(EXT_STR_h101, fatima));
-      //unpackfatima->DoFineTimeCalOnline(config_path + "/fatima/fine_time_9apr_test.root", 200000);
-        unpackfatima->SetInputFileFineTimeHistos(config_path + "/fatima/fine_time_9apr_test.root");
+        const FatimaReader::TamexInput tamex{
+            FATIMA_ON ? &ucesb_struct.fatima : nullptr, offsetof(EXT_STR_h101, fatima), S100_PROCID_FATIMA};
+        const FatimaReader::VmeInput vme{
+            FATIMA_VME_ON ? &ucesb_struct.fatimavme : nullptr,
+            offsetof(EXT_STR_h101, fatimavme), S100_PROCID_FATIMAVME};
+        auto* unpackfatima = new FatimaReader(tamex, vme);
 
         unpackfatima->SetOnline(true);
         source->AddReader(unpackfatima);
@@ -191,7 +199,7 @@ void s100_online_thresholds(const Int_t nev = -1, const Int_t fRunId = 1, const 
     
     if (FATIMA_VME_ON)
     {
-        FatimaVmeReader* unpackfatimavme = new FatimaVmeReader((EXT_STR_h101_fatimavme_onion*)&ucesb_struct.fatimavme, offsetof(EXT_STR_h101, fatimavme));
+        auto* unpackfatimavme = new FatimaVmeReader();
         
         unpackfatimavme->SetOnline(true);
         source->AddReader(unpackfatimavme);
@@ -267,6 +275,10 @@ void s100_online_thresholds(const Int_t nev = -1, const Int_t fRunId = 1, const 
     if (FATIMA_ON)
     {
         FatimaRaw2Cal* calfatima = new FatimaRaw2Cal();
+        // Replace online calibration with this call once the histograms are available.
+        // calfatima->UseFatimaRawInput(config_path + "/fatima/fine_time_9apr_test.root");
+        calfatima->UseFatimaRawInput();
+        calfatima->CalibrateTamexFineTimeOnline("", 200000);
         // calfatima->PrintDetectorMap();
         // calfatima->PrintDetectorCal();
         

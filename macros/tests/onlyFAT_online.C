@@ -65,9 +65,9 @@ void onlyFAT_online()
     UnpackReader* unpackheader = new UnpackReader((EXT_STR_h101_unpack*)&ucesb_struct.eventheaders, offsetof(EXT_STR_h101, eventheaders));
     source->AddReader(unpackheader);
 
-    FatimaReader* unpackfatima = new FatimaReader((EXT_STR_h101_fatima_onion*)&ucesb_struct.fatima, offsetof(EXT_STR_h101, fatima));
-    unpackfatima->DoFineTimeCalOnline("~/Analysis/LISA/configs/fine_time_histos_300926_labr.root",10000);
-    // unpackfatima->SetInputFileFineTimeHistos("/u/despec/s100_online/fatimatimingtest/fine_time_histos_01032024_fatima.root");
+    const FatimaReader::TamexInput tamex{
+        &ucesb_struct.fatima, offsetof(EXT_STR_h101, fatima), 100};
+    auto* unpackfatima = new FatimaReader(tamex, {});
 
     unpackfatima->SetOnline(true);
     
@@ -77,6 +77,8 @@ void onlyFAT_online()
 
 
     FatimaRaw2Cal * calfatima = new FatimaRaw2Cal();
+    calfatima->UseFatimaRawInput();
+    calfatima->CalibrateTamexFineTimeOnline("~/Analysis/LISA/configs/fine_time_histos_300926_labr.root", 10000);
     //calfatima->SetDetectorMapFile("/u/despec/s100_online/fatimatimingtest/fatima_alloc.txt");
     calfatima->PrintDetectorMap();
     //calfatima->SetDetectorCalFile("/u/jbormans/fatima/fatima_cal.txt");

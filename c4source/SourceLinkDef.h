@@ -9,7 +9,6 @@
 #pragma link C++ class UcesbSource+;
 #pragma link C++ class c4Reader+;
 #pragma link C++ class CorrelationsMap+;
-#pragma link C++ class GainShift+;
 
 #pragma link C++ class FrsReader+;
 #pragma link C++ class FrsRaw2Cal+;
@@ -32,12 +31,13 @@
 #pragma link C++ class FatimaReader+;
 #pragma link C++ class FatimaRaw2Cal+;
 #pragma link C++ class BGOReader+;
-#pragma link C++ class TamexReader+;
+#pragma link C++ class DegasReader+;
+#pragma link C++ class DegasRaw2Cal+;
+#pragma link C++ class DegasCal2Anl+;
 #pragma link C++ class BGORaw2Cal+;
 #pragma link C++ class FatimaVmeReader+;
 #pragma link C++ class FatimaVmeRaw2Cal+;
 #pragma link C++ class BB7Reader+;
-#pragma link C++ class BB7FebexReader+;
 #pragma link C++ class BB7Raw2Cal+;
 #pragma link C++ class BB7FebexRaw2Cal+;
 #pragma link C++ class BB7FebexCal2Hit+;
@@ -53,6 +53,8 @@
 #pragma link C++ class EXT_STR_h101_unpack_t;
 #pragma link C++ class EXT_STR_h101_frs_onion_t;
 #pragma link C++ class EXT_STR_h101_germanium_onion_t;
+#pragma link C++ class EXT_STR_h101_degas_onion_t;
+#pragma link C++ class EXT_STR_h101_degas_traces_onion_t;
 #pragma link C++ class EXT_STR_h101_germanium_traces_onion_t;
 #pragma link C++ class EXT_STR_h101_fatima_onion_t;
 #pragma link C++ class EXT_STR_h101_fatimavme_onion_t;
@@ -61,7 +63,7 @@
 #pragma link C++ class EXT_STR_h101_aida_onion_t;
 #pragma link C++ class EXT_STR_h101_bplast_onion_t;
 #pragma link C++ class EXT_STR_h101_beammonitor_onion_t;
-// #pragma link C++ class EXT_STR_h101_bb7vme_onion_t;
+#pragma link C++ class EXT_STR_h101_bb7vme_onion_t;
 #pragma link C++ class EXT_STR_h101_bbfebex_onion_t;
 #pragma link C++ class EXT_STR_h101_fimp_onion_t;
 #pragma link C++ class EXT_STR_h101_mcp_onion_t;

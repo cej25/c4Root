@@ -21,6 +21,7 @@
 // c4
 #include "GermaniumFebexData.h"
 #include "GermaniumReader.h"
+#include "../digitisers/febex/FebexConversions.h"
 #include "GermaniumPackedSafety.h"
 #include "c4Logger.h"
 
@@ -133,22 +134,10 @@ Bool_t GermaniumReader::Read()
             if (VetoPileup && fData->germanium_data[it_board_number].pileupv[index]) continue;
             
 
-            //according to febex manual on gsi website, the 24th bit of the energy denotes the sign to indicate the polarity of the pulse
-            if (fData->germanium_data[it_board_number].channel_energyv[index] & (1 << 23)){
-                channel_energy = -(int32_t)(fData->germanium_data[it_board_number].channel_energyv[index] & 0x007FFFFF);
-            }else{
-                channel_energy = +(int32_t)(fData->germanium_data[it_board_number].channel_energyv[index] & 0x007FFFFF);            
-            }
-
-
-            //collect the LSB and MSB into one variable for channel trigger time
-            //((uint64_t)(fData->germanium_data[it_board_number].channel_trigger_time_hiv[index]) << 32)
-            //chop some more digits of it:
-            channel_trigger_time_long = (double)( (fData->germanium_data[it_board_number].channel_trigger_time_lov[index]) & 0x00FFFFFF );
-            //add the CF from the constant fraction. It is denoted by 6 bits in the energy word of the FEBEX data format
-            channel_trigger_time_long = (((double)(fData->germanium_data[it_board_number].channel_cfdv[index] & 0x3F))/64.0 + channel_trigger_time_long)*10.0; // units of ns 
-            
-            // if (fData->germanium_data[it_board_number].pileupv[index] == 1) std::cout << "pileup!! " << fData->germanium_data[it_board_number].pileupv[index] << std::endl; 
+            channel_energy = febex::GammaSignedEnergy(fData->germanium_data[it_board_number].channel_energyv[index]);
+            channel_trigger_time_long = febex::LegacyChannelTimeNs(
+                fData->germanium_data[it_board_number].channel_trigger_time_lov[index],
+                fData->germanium_data[it_board_number].channel_cfdv[index]);
 
             new ((*fArray)[fArray->GetEntriesFast()]) GermaniumFebexData(
                 trig,

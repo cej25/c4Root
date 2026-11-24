@@ -1,5 +1,5 @@
-#ifndef C4_TAMEX_PACKED_SAFETY_H
-#define C4_TAMEX_PACKED_SAFETY_H
+#ifndef TAMEX_PACKED_SAFETY_H
+#define TAMEX_PACKED_SAFETY_H
 
 #include <algorithm>
 #include <cstdint>

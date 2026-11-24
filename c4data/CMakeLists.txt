@@ -16,7 +16,10 @@ ${C4ROOT_SOURCE_DIR}/c4data/baseData
 ${C4ROOT_SOURCE_DIR}/c4data/bb7Data
 ${C4ROOT_SOURCE_DIR}/c4data/fimpData
 ${C4ROOT_SOURCE_DIR}/c4data/mcpData
-${C4ROOT_SOURCE_DIR}/c4data/tamexData
+${C4ROOT_SOURCE_DIR}/c4data/digitisers/tamexData
+${C4ROOT_SOURCE_DIR}/c4data/digitisers/febexData
+${C4ROOT_SOURCE_DIR}/c4data/digitisers/vmeData
+${C4ROOT_SOURCE_DIR}/c4data/degasData
 ${C4ROOT_SOURCE_DIR}/c4data/stefanData
 ${C4ROOT_SOURCE_DIR}/c4source
 ${C4ROOT_SOURCE_DIR}/c4source/base
@@ -58,10 +61,11 @@ bgoData/TBGOTwinpeaksConfiguration.cxx
 fatimaData/TFatimaVmeConfiguration.cxx
 fatimaData/FatimaVmeData.cxx
 fatimaData/FatimaVmeCalData.cxx
+digitisers/vmeData/VmeDigitiserRawData.cxx
+fatimaData/FatimaRawData.cxx
 timemachineData/TimeMachineData.cxx
-bb7Data/BB7VmeData.cxx
+bb7Data/BB7RawData.cxx
 bb7Data/BB7VmeCalData.cxx
-bb7Data/BB7FebexData.cxx
 bb7Data/BB7FebexCalData.cxx
 bb7Data/BB7FebexHitData.cxx
 bb7Data/TBB7VmeConfiguration.cxx
@@ -70,7 +74,11 @@ fimpData/FimpData.cxx
 fimpData/FimpCalData.cxx
 fimpData/TFimpConfiguration.cxx
 mcpData/H10MCPTwinpeaksData.cxx
-tamexData/TamexRawData.cxx
+digitisers/tamexData/TamexRawData.cxx
+digitisers/febexData/FebexRawData.cxx
+degasData/DegasRawData.cxx
+degasData/TDegasConfiguration.cxx
+degasData/DegasCalData.cxx
 mcpData/H10MCPTwinpeaksCalData.cxx
 mcpData/H10MCPTwinpeaksAnaData.cxx
 mcpData/TH10MCPConfiguration.cxx
@@ -92,8 +100,7 @@ change_file_extension(*.cxx *.h HEADERS "${SRCS}")
 
 set(LINKDEF DataLinkDef.h)
 set(LIBRARY_NAME c4Data)
-#set(DEPENDENCIES Base FairTools ${VMCLIB} FairLogger::FairLogger)
-set(DEPENDENCIES Base FairTools FairLogger::FairLogger)
+set(DEPENDENCIES c4Base Base FairTools FairLogger::FairLogger Core RIO Hist Graf)
 
 
 generate_library()

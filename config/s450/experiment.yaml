@@ -1,0 +1,17 @@
+# Active routes in unpack/exps/s450/s450.spec.
+# compiled_slots lists addresses in output slot order. Installed boards are
+# recorded only where the run setup is known.
+# Slot addresses use FEBEX card IDs.
+
+Germanium:
+  subevent: febex_subev
+  member: germanium
+  type: 10
+  subtype: 1
+  procid: 60
+  control: 20
+  whiterabbit: 0x400
+  digitiser: febex
+  version: 4
+  traces: false
+  compiled_slots: [0, 1, 2, 3]

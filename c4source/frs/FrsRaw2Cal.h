@@ -56,7 +56,6 @@ class FrsRaw2Cal : public FairTask
         std::vector<FrsCalTpcItem>* calTpcArray;
 
         // TAC dE
-        const UInt_t* sciDE; // up to 18 channnels
         UInt_t de_11l;
         UInt_t de_11r;
         UInt_t de_21l;
@@ -75,7 +74,6 @@ class FrsRaw2Cal : public FairTask
         UInt_t de_81r;
 
         // TAC dT
-        const UInt_t* sciDT; // was 16, 19+ with Sci11 2025
         UInt_t dt_11l_11r;
         UInt_t dt_21l_21r;
         UInt_t dt_22l_22r;
@@ -97,7 +95,6 @@ class FrsRaw2Cal : public FairTask
         UInt_t dt_22r_81r;
 
         // MHTDC
-        const std::vector<Int_t>* sciMHTDC; // up to 24 channels
         std::vector<Int_t> sci11la_hits;
         std::vector<Int_t> sci11lb_hits;
         std::vector<Int_t> sci11lc_hits;
@@ -282,7 +279,7 @@ class FrsRaw2Cal : public FairTask
 
 
     public:
-        ClassDef(FrsRaw2Cal, 1);
+        ClassDef(FrsRaw2Cal, 2);
 
 };
 

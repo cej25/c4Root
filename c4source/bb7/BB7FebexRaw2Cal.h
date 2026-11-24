@@ -1,16 +1,16 @@
 #ifndef BB7FebexRaw2Cal_H
 #define BB7FebexRaw2Cal_H
 
-#include "TClonesArray.h"
+#include "FairTask.h"
 #include "EventHeader.h"
 #include "TBB7FebexConfiguration.h"
-#include "BB7FebexData.h"
 #include "BB7FebexCalData.h"
 #include <map>
 #include <vector>
 
 class EventHeader;
-class BB7FebexItem;
+struct BB7FebexRawCrate;
+class BB7FebexRawData;
 class BB7FebexCalItem;
 
 class BB7FebexRaw2Cal : public FairTask
@@ -34,22 +34,20 @@ class BB7FebexRaw2Cal : public FairTask
 
         TBB7FebexConfiguration const* bb7_config;
     
-        std::vector<BB7FebexItem> const* bb7array;
+        void CalibrateCrate(const BB7FebexRawCrate& crate, int crateId);
+
+        const BB7FebexRawData* fRaw = nullptr; //! Borrowed input
         std::vector<BB7FebexCalItem>* bb7calImplants;
         std::vector<BB7FebexCalItem>* bb7calDecays;
 
         EventHeader* header;
         Bool_t fOnline;
-        Int_t fNEvents;
 
-        int64_t wr_t;
-
-        uint32_t implantThreshold = 10000;
-        uint32_t decayThreshold = 100;
+        int32_t implantThreshold = 10000;
+        int32_t decayThreshold = 100;
 
         Int_t nUnmapped = 0;
         Int_t nNothings = 0;
-        Int_t nTotalBB7 = 0;
 
 
         Int_t count_in_event = 0;
@@ -61,7 +59,7 @@ class BB7FebexRaw2Cal : public FairTask
 
 
     public:
-        ClassDef(BB7FebexRaw2Cal, 1)
+        ClassDef(BB7FebexRaw2Cal, 2)
 
 };
 

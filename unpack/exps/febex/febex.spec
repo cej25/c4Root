@@ -1,6 +1,6 @@
 // -*- C++ -*-
 
-#include "../../common/whiterabbit.spec"
+#include "../../common/whiterabbit_13bit.spec"
 #include "../../common/gsi_febex4.spec"
 
 
@@ -8,7 +8,7 @@ SUBEVENT(bb_first_subev)
 {
     select optional 
     {
-        ts = TIMESTAMP_WHITERABBIT_EXTENDED(id = 0x1800);
+        ts = TIMESTAMP_WHITERABBIT(id = 0x1800);
     }
 
     select several
@@ -34,7 +34,7 @@ SUBEVENT(bb_second_subev)
 {
     select optional 
     {
-        ts = TIMESTAMP_WHITERABBIT_EXTENDED(id = 0x1900);
+        ts = TIMESTAMP_WHITERABBIT(id = 0x1900);
     }
 
     select several
@@ -56,6 +56,12 @@ SUBEVENT(bb_second_subev)
 	
 }
 
+#ifdef DEGAS_WITH_TRACES
+#define DEGAS_FEBEX_BOARD FEBEX_EVENT_TRACES
+#else
+#define DEGAS_FEBEX_BOARD FEBEX_EVENT
+#endif
+
 SUBEVENT(febex_subev)
 {
     select optional
@@ -70,12 +76,12 @@ SUBEVENT(febex_subev)
 
     select several
     {
-        data[0] = FEBEX_EVENT(card = 0);
-        data[1] = FEBEX_EVENT(card = 1);
-        data[2] = FEBEX_EVENT(card = 2);
-        data[3] = FEBEX_EVENT(card = 3);
-        data[4] = FEBEX_EVENT(card = 4);
-        data[5] = FEBEX_EVENT(card = 5); // max 6 boards ever
+        data[0] = DEGAS_FEBEX_BOARD(card = 0);
+        data[1] = DEGAS_FEBEX_BOARD(card = 1);
+        data[2] = DEGAS_FEBEX_BOARD(card = 2);
+        data[3] = DEGAS_FEBEX_BOARD(card = 3);
+        data[4] = DEGAS_FEBEX_BOARD(card = 4);
+        data[5] = DEGAS_FEBEX_BOARD(card = 5); // max 6 boards ever
     };
 }
 
@@ -84,7 +90,11 @@ EVENT
     bbfirst = bb_first_subev(procid=35, control=20);
     bbsecond = bb_second_subev(procid=36);
 
+#ifdef DEGAS_WITH_TRACES
+    degastrace = febex_subev(type = 10, subtype = 1, procid = 60, control = 20);
+#else
     germanium = febex_subev(type = 10, subtype = 1, procid = 60, control = 20);
+#endif
 
     ignore_unknown_subevent;
 }

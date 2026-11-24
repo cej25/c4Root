@@ -1,0 +1,680 @@
+/******************************************************************************
+ *   Copyright (C) 2024 GSI Helmholtzzentrum für Schwerionenforschung GmbH    *
+ *   Copyright (C) 2024 Members of HISPEC/DESPEC Collaboration                *
+ *                                                                            *
+ *             This software is distributed under the terms of the            *
+ *                 GNU General Public Licence (GPL) version 3,                *
+ *                    copied verbatim in the file "LICENSE".                  *
+ *                                                                            *
+ * In applying this license GSI does not waive the privileges and immunities  *
+ * granted to it by virtue of its status as an Intergovernmental Organization *
+ * or submit itself to any jurisdiction.                                      *
+ ******************************************************************************
+ *                        J.E.L. Larsson, C.E. Jones                          *
+ *                               17.12.24                                     *
+ ******************************************************************************/
+
+// FairRoot
+#include "FairLogger.h"
+#include "FairRootManager.h"
+#include "FairRunAna.h"
+#include "FairRunOnline.h"
+#include "FairRuntimeDb.h"
+
+// c4
+#include "FrsDegasCorrelations.h"
+#include "EventHeader.h"
+#include "DegasCalData.h"
+#include "FrsGate.h"
+#include "FrsHitData.h"
+#include "TDegasConfiguration.h"
+
+#include "AnalysisTools.h"
+#include "c4Logger.h"
+
+
+#include "TCanvas.h"
+#include "TClonesArray.h"
+#include "TFolder.h"
+#include "TH1F.h"
+#include "TH2F.h"
+#include "TGraph.h"
+#include "THttpServer.h"
+#include "TMath.h"
+#include "TRandom.h"
+#include "TFile.h"
+#include "TDirectory.h"
+
+FrsDegasCorrelations::FrsDegasCorrelations() : FrsDegasCorrelations("FrsDegasCorrelations")
+{
+    degas_configuration = TDegasConfiguration::GetInstance();
+    frs_configuration = TFrsConfiguration::GetInstance();
+
+}
+
+FrsDegasCorrelations::FrsDegasCorrelations(FrsGate * fg) : FrsDegasCorrelations("FrsDegasCorrelations")
+{
+    degas_configuration = TDegasConfiguration::GetInstance();
+    frsgate = fg;
+    frs_configuration = TFrsConfiguration::GetInstance();
+}
+
+FrsDegasCorrelations::FrsDegasCorrelations(const TString& name, Int_t verbose)
+    : FairTask(name, verbose)
+    , fHitGe(NULL)
+    , hitArrayFrs(nullptr)
+    , multihitArray(nullptr)
+    , fNEvents(0)
+    , header(nullptr)
+{
+    degas_configuration = TDegasConfiguration::GetInstance();
+}
+
+FrsDegasCorrelations::~FrsDegasCorrelations()
+{
+    c4LOG(info, "");
+}
+
+
+InitStatus FrsDegasCorrelations::Init()
+{
+    FairRootManager* mgr = FairRootManager::Instance();
+    c4LOG_IF(fatal, NULL == mgr, "FairRootManager not found");
+
+    FairRunOnline * run = FairRunOnline::Instance();
+    run->GetHttpServer()->Register("", this);
+
+    header = (EventHeader*)mgr->GetObject("EventHeader.");
+    c4LOG_IF(error, !header, "Branch EventHeader. not found");
+
+
+
+    // TString data_item = TString("Degas") + input_anl_or_cal + TString("Data");
+    // c4LOG(info, TString("Getting data_item = ")+data_item);
+    fHitGe = (TClonesArray*)mgr->GetObject("DegasCalData"); // data_item
+    if (!fHitGe || fHitGe->GetClass() != DegasCalData::Class())
+    {
+        c4LOG(error, "Expected DEGAS hit objects in the input branch");
+        return kFATAL;
+    }
+
+    hitArrayFrs = mgr->InitObjectAs<decltype(hitArrayFrs)>("FrsHitData");
+    c4LOG_IF(fatal, !hitArrayFrs, "Branch FrsHitData not found!");
+    multihitArray = mgr->InitObjectAs<decltype(multihitArray)>("FrsMultiHitData");
+    c4LOG_IF(fatal, !multihitArray, "Branch FrsMultiHitData not found!");
+    histograms = (TFolder*)mgr->GetObject("Histograms");
+
+    TDirectory::TContext ctx(nullptr);
+
+    // look for FRS directory, create it if not found
+    dir_frs = (TDirectory*)mgr->GetObject("FRS");
+    if (dir_frs == nullptr)
+    {
+        c4LOG(info, "Creating FRS Online Directory");
+        dir_frs = new TDirectory("FRS Online", "FRS Online", "", 0);
+        mgr->Register("FRS", "FRS Online Directory", dir_frs, false); // allow other tasks to find this
+        histograms->Add(dir_frs);
+        dir_frs->cd();
+        dir_frs_ge_corr = new TDirectory("FRS-DEGAS Correlations", "FRS-DEGAS Correlations", "", 0);
+        mgr->Register("FRS-DEGAS", "FRS-DEGAS Correlations Directory", dir_frs_ge_corr, false);
+    }
+    // I want to not do this, would be really nice if we had a vector of Gates, js.
+    else
+    {
+        // look for FRS-DEGAS Correlations TDirectory, create it if not found
+        dir_frs_ge_corr = (TDirectory*)mgr->GetObject("FRS-DEGAS");
+        if (dir_frs_ge_corr == nullptr)
+        {
+            dir_frs->cd(); // does this work?
+            dir_frs_ge_corr = new TDirectory("FRS-DEGAS Correlations", "FRS-DEGAS Correlations", "", 0);
+            mgr->Register("FRS-DEGAS", "FRS-DEGAS Correlations Directory", dir_frs_ge_corr, false);
+        }
+    }
+
+    dir_frs_ge_gate = dir_frs_ge_corr->mkdir(TString("Gate:" + frsgate->GetName()));
+    dir_frs_ge_gate->cd();
+
+    //Implant rate
+    c_frs_rate = new TCanvas(TString("c_frs_degas_rate_monitor_gated_")+frsgate->GetName(),TString("Implant rate gated on ")+frsgate->GetName());
+    g_frs_rate = new TGraph();
+    g_frs_rate->SetName(TString("g_frs_degas_rate_monitor_gated_")+frsgate->GetName());
+    g_frs_rate->SetTitle(TString("FRS identified ions per second, avg 60 secs"));
+    g_frs_rate->GetXaxis()->SetTitle("seconds");
+    g_frs_rate->Draw("ALP");
+    dir_frs_ge_corr->Append(c_frs_rate);
+    //dir_frs_ge_corr->Add(g_frs_rate);
+
+    c_frs_total = new TCanvas(TString("c_frs_degas_total_monitor_gated_")+frsgate->GetName(),TString("Implanted total ions gated on ")+frsgate->GetName());
+    g_frs_total = new TGraph();
+    g_frs_total->SetName(TString("g_frs_degas_total_monitor_gated_")+frsgate->GetName());
+    g_frs_total->SetTitle(TString("FRS identified ions in total"));
+    g_frs_total->GetXaxis()->SetTitle("seconds");
+    g_frs_total->Draw("ALP");
+    dir_frs_ge_corr->Append(c_frs_total);
+    //dir_frs_ge_corr->Add(g_frs_total);
+
+    c_frs_Z_vs_AoQ_gated = new TCanvas(TString("c_frs_degas_Z_vs_AoQ_gated_")+frsgate->GetName(),TString("Z vs AoQ plot gated on FRS ")+frsgate->GetName());
+    h2_frs_Z_vs_AoQ_gated = new TH2F(TString("h2_frs_degas_Z_vs_AoQ_gated_")+frsgate->GetName(),TString("Z vs AoQ plot gated on FRS ")+frsgate->GetName(),1000,frs_configuration->fMin_AoQ,frs_configuration->fMax_AoQ,1000,frs_configuration->fMin_Z,frs_configuration->fMax_Z);
+    h2_frs_Z_vs_AoQ_gated->GetXaxis()->SetTitle("A/Q");
+    h2_frs_Z_vs_AoQ_gated->GetYaxis()->SetTitle("Z");
+    h2_frs_Z_vs_AoQ_gated->Draw("COLZ");
+    c_frs_Z_vs_AoQ_gated->cd(0);
+    dir_frs_ge_corr->Append(c_frs_Z_vs_AoQ_gated);
+    //dir_frs_ge_corr->Add(h2_frs_Z_vs_AoQ_gated);
+
+    c_frs_Z_vs_Z2_gated = new TCanvas(TString("c_frs_degas_Z_vs_Z2_gated_")+frsgate->GetName(),TString("Z1 vs Z2 plot gated on FRS ")+frsgate->GetName());
+    h2_frs_Z_vs_Z2_gated = new TH2F(TString("h2_frs_degas_Z_vs_Z2_gated_")+frsgate->GetName(),TString("Z1 vs Z2 plot gated on FRS ")+frsgate->GetName(),1000,frs_configuration->fMin_Z,frs_configuration->fMax_Z,1000,frs_configuration->fMin_Z,frs_configuration->fMax_Z);
+    h2_frs_Z_vs_Z2_gated->GetXaxis()->SetTitle("Z1");
+    h2_frs_Z_vs_Z2_gated->GetYaxis()->SetTitle("Z2");
+    h2_frs_Z_vs_Z2_gated->Draw("COLZ");
+    c_frs_Z_vs_Z2_gated->cd(0);
+    dir_frs_ge_corr->Append(c_frs_Z_vs_Z2_gated);
+    //dir_frs_ge_corr->Add(h2_frs_Z_vs_Z2_gated);
+
+
+    c_frs_x2_vs_AoQ_gated = new TCanvas(TString("c_frs_degas_x2_vs_AoQ_gated_")+frsgate->GetName(),TString("x2 vs AoQ plot gated on FRS ")+frsgate->GetName());
+    h2_frs_x2_vs_AoQ_gated = new TH2F(TString("h2_frs_degas_x2_vs_AoQ_gated_")+frsgate->GetName(),TString("x2 vs AoQ plot gated on FRS ")+frsgate->GetName(),1000,frs_configuration->fMin_AoQ,frs_configuration->fMax_AoQ,1000,frs_configuration->fMin_x2,frs_configuration->fMax_x2);
+    h2_frs_x2_vs_AoQ_gated->GetYaxis()->SetTitle("x2");
+    h2_frs_x2_vs_AoQ_gated->GetXaxis()->SetTitle("A/Q");
+    h2_frs_x2_vs_AoQ_gated->Draw("COLZ");
+    c_frs_x2_vs_AoQ_gated->cd(0);
+    dir_frs_ge_corr->Append(c_frs_x2_vs_AoQ_gated);
+    //dir_frs_ge_corr->Add(h2_frs_x2_vs_AoQ_gated);
+
+    c_frs_x4_vs_AoQ_gated = new TCanvas(TString("c_frs_degas_x4_vs_AoQ_gated_")+frsgate->GetName(),TString("x4 vs AoQ plot gated on FRS ")+frsgate->GetName());
+    h2_frs_x4_vs_AoQ_gated = new TH2F(TString("h2_frs_degas_x4_vs_AoQ_gated_")+frsgate->GetName(),TString("x4 vs AoQ plot gated on FRS ")+frsgate->GetName(),1000,frs_configuration->fMin_AoQ,frs_configuration->fMax_AoQ,1000,frs_configuration->fMin_x4,frs_configuration->fMax_x4);
+    h2_frs_x4_vs_AoQ_gated->GetXaxis()->SetTitle("A/Q");
+    h2_frs_x4_vs_AoQ_gated->GetYaxis()->SetTitle("x4");
+    h2_frs_x4_vs_AoQ_gated->Draw("COLZ");
+    c_frs_x4_vs_AoQ_gated->cd(0);
+    dir_frs_ge_corr->Append(c_frs_x4_vs_AoQ_gated);
+   // dir_frs_ge_corr->Add(h2_frs_x4_vs_AoQ_gated);
+
+
+    c_frs_Z_vs_dEdeg_gated = new TCanvas(TString("c_frs_degas_Z_vs_dEdeg_gated_")+frsgate->GetName(),TString("Z vs dEdeg plot gated on FRS ")+frsgate->GetName());
+    h2_frs_Z_vs_dEdeg_gated = new TH2F(TString("h2_frs_degas_Z_vs_dEdeg_gated_")+frsgate->GetName(),TString("Z vs dEdeg plot gated on FRS ")+frsgate->GetName(),1000,40,60,1000,frs_configuration->fMin_Z,frs_configuration->fMax_Z);
+    h2_frs_Z_vs_dEdeg_gated->GetXaxis()->SetTitle("dEdeg");
+    h2_frs_Z_vs_dEdeg_gated->GetYaxis()->SetTitle("Z");
+    h2_frs_Z_vs_dEdeg_gated->Draw("COLZ");
+    c_frs_Z_vs_dEdeg_gated->cd(0);
+    dir_frs_ge_corr->Append(c_frs_Z_vs_dEdeg_gated);
+    //dir_frs_ge_corr->Add(h2_frs_Z_vs_dEdeg_gated);
+
+
+    c_frs_Z_vs_sci42E_gated = new TCanvas(TString("c_frs_degas_Z_vs_sci42E_gated_")+frsgate->GetName(),TString("Z vs sci42 E plot gated on FRS ")+frsgate->GetName());
+    h2_frs_Z_vs_sci42E_gated = new TH2F(TString("h2_frs_degas_Z_vs_sci42E_gated_")+frsgate->GetName(),TString("Z vs sci42 E plot gated on FRS ")+frsgate->GetName(),1000,0,3000,1000,frs_configuration->fMin_Z,frs_configuration->fMax_Z);
+    h2_frs_Z_vs_sci42E_gated->GetXaxis()->SetTitle("sci42E");
+    h2_frs_Z_vs_sci42E_gated->GetYaxis()->SetTitle("Z");
+    h2_frs_Z_vs_sci42E_gated->Draw("COLZ");
+    c_frs_Z_vs_sci42E_gated->cd(0);
+    dir_frs_ge_corr->Append(c_frs_Z_vs_sci42E_gated);
+    //dir_frs_ge_corr->Add(h2_frs_Z_vs_sci42E_gated);
+
+
+
+    c_degas_energy_vs_tsci41 = new TCanvas(TString("c_degas_summed_vs_tsci41_frs_gate_"+frsgate->GetName()),TString("Degas energies vs t(det) - t(sci41), short lifetime, gated FRS on "+frsgate->GetName()),650,350);
+    h2_degas_energy_vs_tsci41 = new TH2F(TString("h2_degas_energy_vs_tsci41_frs_gate_"+frsgate->GetName()),TString("Degas energies vs t(det) - t(sci41), short lifetime,  gated FRS on "+frsgate->GetName()),1000,-2000,stop_short_lifetime_collection,fenergy_nbins,fenergy_bin_low,fenergy_bin_high);
+    h2_degas_energy_vs_tsci41->GetXaxis()->SetTitle("time difference (ns)");
+    h2_degas_energy_vs_tsci41->GetYaxis()->SetTitle("energy (keV)");
+    h2_degas_energy_vs_tsci41->Draw("COLZ");
+    c_degas_energy_vs_tsci41->cd(0);
+    dir_frs_ge_corr->Append(c_degas_energy_vs_tsci41);
+    //dir_frs_ge_corr->Add(h2_degas_energy_vs_tsci41);
+
+
+    c_degas_energy_promptflash_cut = new TCanvas(TString("c_degas_energy_promptflash_cut_frs_gate_"+frsgate->GetName()),TString("Degas energy, prompt flash cut out, short lifetime, gated FRS on "+frsgate->GetName()),650,350);
+    h1_degas_energy_promptflash_cut = new TH1F(TString("h1_degas_energy_promptflash_cut_frs_gate_"+frsgate->GetName()),TString("Degas energy, prompt flash cut out, short lifetime, gated FRS on "+frsgate->GetName()),fenergy_nbins,fenergy_bin_low,fenergy_bin_high);
+    h1_degas_energy_promptflash_cut->GetXaxis()->SetTitle("energy (keV)");
+    h1_degas_energy_promptflash_cut->Draw("COLZ");
+    c_degas_energy_promptflash_cut->cd(0);
+    dir_frs_ge_corr->Append(c_degas_energy_promptflash_cut);
+    //dir_frs_ge_corr->Add(h1_degas_energy_promptflash_cut);
+
+    // mhtdc version of above
+    c_degas_energy_promptflash_cut_mhtdc_gated = new TCanvas(TString("c_degas_energy_promptflash_cut_mhtdc_gated_"+frsgate->GetName()),TString("Degas energy, prompt flash cut out, short lifetime, MHTDC gated FRS on "+frsgate->GetName()),650,350);
+    h1_degas_energy_promptflash_cut_mhtdc_gated = new TH1F(TString("h1_degas_energy_promptflash_cut_mhtdc_gated_"+frsgate->GetName()),TString("Degas energy, prompt flash cut out, short lifetime, MHTDC gated FRS on "+frsgate->GetName()),fenergy_nbins,fenergy_bin_low,fenergy_bin_high);
+    h1_degas_energy_promptflash_cut_mhtdc_gated->GetXaxis()->SetTitle("Energy [keV]");
+    h1_degas_energy_promptflash_cut_mhtdc_gated->Draw("COLZ");
+    c_degas_energy_promptflash_cut_mhtdc_gated->cd(0);
+
+
+
+    c_degas_energy_energy_promptflash_cut = new TCanvas(TString("c_degas_energy_energy_promptflash_cut_frs_gate_"+frsgate->GetName()),TString(Form("Degas energy vs energy, |t(det1)-t(det2)|<%i ns, prompt flash cut out, short lifetime, gated FRS on ",degas_coincidence_gate)+frsgate->GetName()),650,350);
+    h2_degas_energy_energy_promptflash_cut = new TH2F(TString("h2_degas_energy_energy_promptflash_cut_frs_gate_"+frsgate->GetName()),TString(Form("Degas energy vs energy, |t(det1)-t(det2)|<%i ns, prompt flash cut out, short lifetime, gated FRS on ",degas_coincidence_gate)+frsgate->GetName()),fenergy_nbins,fenergy_bin_low,fenergy_bin_high,fenergy_nbins,fenergy_bin_low,fenergy_bin_high);
+    h2_degas_energy_energy_promptflash_cut->GetXaxis()->SetTitle("energy (keV)");
+    h2_degas_energy_energy_promptflash_cut->GetYaxis()->SetTitle("energy (keV)");
+    h2_degas_energy_energy_promptflash_cut->Draw("COLZ");
+    c_degas_energy_energy_promptflash_cut->cd(0);
+    dir_frs_ge_corr->Append(c_degas_energy_energy_promptflash_cut);
+    //dir_frs_ge_corr->Add(h2_degas_energy_energy_promptflash_cut);
+
+
+
+
+    c_degas_energy_vs_sci41_wr_long = new TCanvas(TString("c_degas_energy_vs_sci41_wr_long_frs_gate_"+frsgate->GetName()),TString("Degas energies vs t(det,wr) - t(sci41,wr) long lifetime, gated FRS on "+frsgate->GetName()),650,350);
+    h2_degas_energy_vs_sci41_wr_long = new TH2F(TString("h2_degas_energy_vs_sci41_wr_long_frs_gate_"+frsgate->GetName()),TString("Degas energies vs t(det,wr) - t(sci41,wr) long lifetime, gated FRS on "+frsgate->GetName()),1000,long_lifetime_binlow,long_lifetime_binhigh,fenergy_nbins,fenergy_bin_low,fenergy_bin_high);
+    h2_degas_energy_vs_sci41_wr_long->GetXaxis()->SetTitle("time difference (ns)");
+    h2_degas_energy_vs_sci41_wr_long->GetYaxis()->SetTitle("energy (keV)");
+    h2_degas_energy_vs_sci41_wr_long->Draw("COLZ");
+    c_degas_energy_vs_sci41_wr_long->cd(0);
+    dir_frs_ge_corr->Append(c_degas_energy_vs_sci41_wr_long);
+    //dir_frs_ge_corr->Add(h2_degas_energy_vs_sci41_wr_long);
+
+
+    c_degas_energy_promptflash_cut_long = new TCanvas(TString("c_degas_energy_promptflash_cut_long_frs_gate_"+frsgate->GetName()),TString("Degas energy, prompt flash cut out, long lifetime, gated FRS on "+frsgate->GetName()),650,350);
+    h1_degas_energy_promptflash_cut_long = new TH1F(TString("h1_degas_energy_promptflash_cut_long_frs_gate_"+frsgate->GetName()),TString("Degas energy, prompt flash cut out, long lifetime, gated FRS on "+frsgate->GetName()),fenergy_nbins,fenergy_bin_low,fenergy_bin_high);
+    h1_degas_energy_promptflash_cut_long->GetXaxis()->SetTitle("energy (keV)");
+    h1_degas_energy_promptflash_cut_long->Draw("COLZ");
+    c_degas_energy_promptflash_cut_long->cd(0);
+    dir_frs_ge_corr->Append(c_degas_energy_promptflash_cut_long);
+    //dir_frs_ge_corr->Add(h1_degas_energy_promptflash_cut_long);
+
+    c_degas_energy_energy_promptflash_cut_long = new TCanvas(TString("c_degas_energy_energy_promptflash_cut_long_frs_gate_"+frsgate->GetName()),TString(Form("Degas energy vs energy, |t(det1)-t(det2)|<%i ns, prompt flash cut out, long lifetime, gated FRS on ",degas_coincidence_gate)+frsgate->GetName()),650,350);
+    h2_degas_energy_energy_promptflash_cut_long = new TH2F(TString("h2_degas_energy_energy_promptflash_cut_long_frs_gate_"+frsgate->GetName()),TString(Form("Degas energy vs energy, |t(det1)-t(det2)|<%i ns, prompt flash cut out, long lifetime, gated FRS on ",degas_coincidence_gate)+frsgate->GetName()),fenergy_nbins,fenergy_bin_low,fenergy_bin_high,fenergy_nbins,fenergy_bin_low,fenergy_bin_high);
+    h2_degas_energy_energy_promptflash_cut_long->GetXaxis()->SetTitle("energy (keV)");
+    h2_degas_energy_energy_promptflash_cut_long->GetYaxis()->SetTitle("energy (keV)");
+    h2_degas_energy_energy_promptflash_cut_long->Draw("COLZ");
+    c_degas_energy_energy_promptflash_cut_long->cd(0);
+    dir_frs_ge_corr->Append(c_degas_energy_energy_promptflash_cut_long);
+    //dir_frs_ge_corr->Add(h2_degas_energy_energy_promptflash_cut_long);
+
+
+    //energy-gated spectra:
+    folder_energy_gated = new TFolder*[gamma_energies_of_interest.size()];
+
+    c_degas_tsci41_energy_gated = new TCanvas*[gamma_energies_of_interest.size()];
+    h1_degas_tsci41_energy_gated = new TH1F*[gamma_energies_of_interest.size()];
+
+    c_degas_energy_promptflash_cut_energy_gated = new TCanvas*[gamma_energies_of_interest.size()];
+    h1_degas_energy_promptflash_cut_energy_gated = new TH1F*[gamma_energies_of_interest.size()];
+
+    //long:
+    c_degas_energy_promptflash_cut_long_energy_gated = new TCanvas*[gamma_energies_of_interest.size()];
+    h1_degas_energy_promptflash_cut_long_energy_gated = new TH1F*[gamma_energies_of_interest.size()];
+
+    c_degas_twr_sci41_energy_gated = new TCanvas*[gamma_energies_of_interest.size()];
+    h1_degas_twr_sci41_energy_gated = new TH1F*[gamma_energies_of_interest.size()];
+
+
+    for (int idx_gamma_gate = 0; idx_gamma_gate < gamma_energies_of_interest.size(); idx_gamma_gate++){
+        folder_energy_gated[idx_gamma_gate] = new TFolder(Form("Energy gated coincidence spectra, Eg = %i",(int)gamma_energies_of_interest.at(idx_gamma_gate)),Form("Energy gated coincidence spectra, Eg = %i",(int)gamma_energies_of_interest.at(idx_gamma_gate)));
+        // folder_degas->Add(folder_energy_gated[idx_gamma_gate]);
+
+        c_degas_tsci41_energy_gated[idx_gamma_gate] = new TCanvas(TString(Form("c_degas_tsci41_energy_gated_%i_frs_gate_",(int)gamma_energies_of_interest.at(idx_gamma_gate)))+frsgate->GetName(),TString(Form("t(det) - t(sci41) gated on E = %i keV, gated FRS on ",(int)gamma_energies_of_interest.at(idx_gamma_gate))+frsgate->GetName()));
+        h1_degas_tsci41_energy_gated[idx_gamma_gate] = new TH1F(TString(Form("h1_degas_tsci41_energy_gated_%i_frs_gate_",(int)gamma_energies_of_interest.at(idx_gamma_gate)))+frsgate->GetName(),TString(Form("t(det) - t(sci41) gated on E = %i keV, gated FRS on ",(int)gamma_energies_of_interest.at(idx_gamma_gate))+frsgate->GetName()),1000,-2e3,stop_short_lifetime_collection);
+        h1_degas_tsci41_energy_gated[idx_gamma_gate]->GetXaxis()->SetTitle("time (ns)");
+        h1_degas_tsci41_energy_gated[idx_gamma_gate]->Draw();
+        c_degas_tsci41_energy_gated[idx_gamma_gate]->cd(0);
+        // folder_energy_gated[idx_gamma_gate]->Add(c_degas_tsci41_energy_gated[idx_gamma_gate]);
+        // folder_energy_gated[idx_gamma_gate]->Add(h1_degas_tsci41_energy_gated[idx_gamma_gate]);
+
+
+        c_degas_energy_promptflash_cut_energy_gated[idx_gamma_gate] = new TCanvas(TString(Form("c_degas_energy_promptflash_cut_energy_gated_%i_frs_gate_",(int)gamma_energies_of_interest.at(idx_gamma_gate)))+frsgate->GetName(),TString(Form("Coincident gammas gated on E = %i keV, gated FRS on ",(int)gamma_energies_of_interest.at(idx_gamma_gate))+frsgate->GetName()));
+        h1_degas_energy_promptflash_cut_energy_gated[idx_gamma_gate] = new TH1F(TString(Form("h1_degas_energy_promptflash_cut_energy_gated_%i_frs_gate_",(int)gamma_energies_of_interest.at(idx_gamma_gate)))+frsgate->GetName(),TString(Form("Coincident gammas gated on E = %i keV, gated FRS on ",(int)gamma_energies_of_interest.at(idx_gamma_gate))+frsgate->GetName()),fenergy_nbins,fenergy_bin_low,fenergy_bin_high);
+        h1_degas_energy_promptflash_cut_energy_gated[idx_gamma_gate]->GetXaxis()->SetTitle("Energy (keV)");
+        h1_degas_energy_promptflash_cut_energy_gated[idx_gamma_gate]->Draw();
+        c_degas_energy_promptflash_cut_energy_gated[idx_gamma_gate]->cd(0);
+        // folder_energy_gated[idx_gamma_gate]->Add(c_degas_energy_promptflash_cut_energy_gated[idx_gamma_gate]);
+        // folder_energy_gated[idx_gamma_gate]->Add(h1_degas_energy_promptflash_cut_energy_gated[idx_gamma_gate]);
+
+        c_degas_twr_sci41_energy_gated[idx_gamma_gate] = new TCanvas(TString(Form("c_degas_twr_sci41_energy_gated_%i_frs_gate_",(int)gamma_energies_of_interest.at(idx_gamma_gate)))+frsgate->GetName(),TString(Form("WR t(det) - t(sci41) gated on E = %i keV, gated FRS on ",(int)gamma_energies_of_interest.at(idx_gamma_gate))+frsgate->GetName()));
+        h1_degas_twr_sci41_energy_gated[idx_gamma_gate] = new TH1F(TString(Form("h1_degas_twr_sci41_energy_gated_%i_frs_gate_",(int)gamma_energies_of_interest.at(idx_gamma_gate)))+frsgate->GetName(),TString(Form("WR t(det) - t(sci41) gated on E = %i keV, gated FRS on ",(int)gamma_energies_of_interest.at(idx_gamma_gate))+frsgate->GetName()),10000,long_lifetime_binlow,long_lifetime_binhigh);
+        h1_degas_twr_sci41_energy_gated[idx_gamma_gate]->GetXaxis()->SetTitle("time (ns)");
+        h1_degas_twr_sci41_energy_gated[idx_gamma_gate]->Draw();
+        c_degas_twr_sci41_energy_gated[idx_gamma_gate]->cd(0);
+        // folder_energy_gated[idx_gamma_gate]->Add(c_degas_twr_sci41_energy_gated[idx_gamma_gate]);
+        // folder_energy_gated[idx_gamma_gate]->Add(h1_degas_twr_sci41_energy_gated[idx_gamma_gate]);
+
+        c_degas_energy_promptflash_cut_long_energy_gated[idx_gamma_gate] = new TCanvas(TString(Form("c_degas_energy_promptflash_cut_long_energy_gated_%i_frs_gate_",(int)gamma_energies_of_interest.at(idx_gamma_gate)))+frsgate->GetName(),TString(Form("Coincident gammas gated on E = %i keV, gated FRS on ",(int)gamma_energies_of_interest.at(idx_gamma_gate))+frsgate->GetName()));
+        h1_degas_energy_promptflash_cut_long_energy_gated[idx_gamma_gate] = new TH1F(TString(Form("h1_degas_energy_promptflash_cut_long_energy_gated_%i_frs_gate_",(int)gamma_energies_of_interest.at(idx_gamma_gate)))+frsgate->GetName(),TString(Form("Coincident gammas gated on E = %i keV, gated FRS on ",(int)gamma_energies_of_interest.at(idx_gamma_gate))+frsgate->GetName()),fenergy_nbins,fenergy_bin_low,fenergy_bin_high);
+        h1_degas_energy_promptflash_cut_long_energy_gated[idx_gamma_gate]->GetXaxis()->SetTitle("Energy (keV)");
+        h1_degas_energy_promptflash_cut_long_energy_gated[idx_gamma_gate]->Draw();
+        c_degas_energy_promptflash_cut_long_energy_gated[idx_gamma_gate]->cd(0);
+        // folder_energy_gated[idx_gamma_gate]->Add(c_degas_energy_promptflash_cut_long_energy_gated[idx_gamma_gate]);
+        // folder_energy_gated[idx_gamma_gate]->Add(h1_degas_energy_promptflash_cut_long_energy_gated[idx_gamma_gate]);
+
+    }
+
+    //cej
+    crystals_to_plot.clear();
+    std::map<std::pair<int,int>,std::pair<int,int>> gmap = degas_configuration->Mapping();
+    for (auto it_mapping = gmap.begin(); it_mapping != gmap.end(); ++it_mapping)
+    {
+        if (it_mapping->second.first >= 0) crystals_to_plot.emplace_back(std::pair<int,int>(it_mapping->second.first,it_mapping->second.second));
+    }
+
+    number_of_detectors_to_plot = crystals_to_plot.size();
+
+    h1_ge_time_ref_frs_wr = new TH1*[number_of_detectors_to_plot];
+    for (int detid_idx = 0; detid_idx < number_of_detectors_to_plot; detid_idx++)
+    {
+        h1_ge_time_ref_frs_wr[detid_idx] = MakeTH1(dir_frs_ge_gate, "F", Form("h1_degas_rel_time_det_%d_%d_to_frs_wr",crystals_to_plot.at(detid_idx).first,crystals_to_plot.at(detid_idx).second),Form("Degas delta time t(%d%c) - FRS WR",crystals_to_plot.at(detid_idx).first,(char)(crystals_to_plot.at(detid_idx).second+65)), 2e3, -1e3, 20e3, "dT Ge-FRS WR", kMagenta, kBlue+2);
+    }
+
+
+
+    return kSUCCESS;
+}
+
+
+void FrsDegasCorrelations::Exec(Option_t* option)
+{
+    // 2025:
+    // For 2025, we will use MHTDC, since TAC has fallen completely out of favour
+    // We will update for retroactive to use a switch to decide either TAC, MHTDC or both
+    // But this will come later...
+    if (hitArrayFrs->size() == 0) return; // Avoid processing for nothing
+    auto const & frshit = hitArrayFrs->at(0);
+
+    positive_PID = false;
+
+    wr_t = frshit.Get_wr_t(); // Until next update, wr_t not set in MHTDC vector
+    if(wr_t_first_frs_hit == 0) wr_t_first_frs_hit = wr_t;
+
+    ID_x2 = frshit.Get_ID_x2(); // positions are not MH (well, only since we "always use TPC", but actually we could use SC)
+    ID_y2 = frshit.Get_ID_y2();
+    ID_x4 = frshit.Get_ID_x4();
+
+    if (use_tac)
+    {
+        ID_AoQ_s2s4 = frshit.Get_ID_AoQ_s2s4();
+        ID_z41 = frshit.Get_ID_z41();
+        ID_z42 = frshit.Get_ID_z42();
+        ID_dEdegZ41 = frshit.Get_ID_dEdeg_z41();
+
+    }
+    else if (!use_tac || use_mhtdc) // change later
+    {
+        if (multihitArray->size() == 0) return; // both are empty, nothing to process
+        auto const & multihitItem = multihitArray->at(0);
+        std::vector<Float_t> AoQ_s2s4_mhtdc = multihitItem.Get_ID_AoQ_s2s4_mhtdc();
+        std::vector<Float_t> z41_mhtdc = multihitItem.Get_ID_z41_mhtdc();
+        std::vector<Float_t> z42_mhtdc = multihitItem.Get_ID_z42_mhtdc();
+        std::vector<Float_t> dEdeg_z41_mhtdc = multihitItem.Get_ID_dEdeg_z41_mhtdc();
+
+        // For now we just take first hit, not really sure how to check PID with multihits honestly
+        if (AoQ_s2s4_mhtdc.size() > 0)
+        {
+            ID_AoQ_s2s4 = AoQ_s2s4_mhtdc.at(0);
+            ID_z41 = z41_mhtdc.at(0);
+            ID_z42 = z42_mhtdc.at(0);
+            ID_dEdegZ41 = dEdeg_z41_mhtdc.at(0);
+        }
+    }
+
+    // Well we can do something more strict but for now ZvsAoQ is fine
+    positive_PID = frsgate->Passed_Z41vsAoQs2s4(ID_z41,ID_AoQ_s2s4);
+    // positive_PID = frsgate->PassedGate(ID_z, ID_z2, ID_x2, ID_x4, ID_AoQ, ID_dEdeg);
+
+    if (positive_PID)
+    {
+        wr_t_last_frs_hit = wr_t;
+        frs_rate_implanted++;
+        frs_total_implanted++;
+
+        h2_frs_Z_vs_AoQ_gated->Fill(ID_AoQ_s2s4,ID_z41);
+        h2_frs_Z_vs_Z2_gated->Fill(ID_z41,ID_z42);
+        h2_frs_x2_vs_AoQ_gated->Fill(ID_AoQ_s2s4,ID_x2);
+        h2_frs_x4_vs_AoQ_gated->Fill(ID_AoQ_s2s4,ID_x4);
+
+        if (wr_t_last_frs_hit - frs_rate_time > 60e9)
+        {
+            g_frs_rate->AddPoint((wr_t_last_frs_hit - wr_t_first_frs_hit)/1000000000, frs_rate_implanted  /60.0);
+            g_frs_total->AddPoint((wr_t_last_frs_hit - wr_t_first_frs_hit)/1000000000, frs_total_implanted);
+            frs_rate_time = wr_t_last_frs_hit;
+            frs_rate_implanted = 0;
+        }
+    }
+    else wr_t_last_frs_hit = 0;
+
+
+    if (fHitGe && fHitGe->GetEntriesFast() > 0)
+    {
+
+        Int_t nHits = fHitGe->GetEntriesFast();
+
+        bool sci41_seen = false; // off-spill raw spectra
+        int sci41_hit_idx = -1; // sci41's hit index, for getting the time
+        int detector_id_sci41 = 0;
+        int crystal_id_sci41 = 0;
+        double energy_sci41 = 0;
+        double time_sci41 = 0;
+
+
+        //find sci41:
+        for (Int_t ihit = 0; ihit < nHits; ihit++)
+        { // find the sci41 hit if it is there.
+
+            DegasCalData* hit1 = (DegasCalData*)fHitGe->At(ihit);
+            if (!hit1) continue;
+            int detector_id1 = hit1->Get_detector_id();
+            int crystal_id1 = hit1->Get_crystal_id();
+            double energy1 = hit1->Get_channel_energy();
+            double time1 = hit1->Get_channel_trigger_time();
+            int crystal_index1 = std::distance(crystals_to_plot.begin(), std::find(crystals_to_plot.begin(),crystals_to_plot.end(),std::pair<int,int>(detector_id1,crystal_id1)));
+
+            if (wr_t_last_frs_hit > 0)
+            {
+                int64_t dt = hit1->Get_absolute_event_time() - wr_t_last_frs_hit;
+                h1_ge_time_ref_frs_wr[crystal_index1]->Fill(dt);
+            }
+
+            if (detector_id1 == degas_configuration->SC41L() /*|| detector_id1 == degas_configuration->SC41R()*/) {
+                detector_id_sci41 = hit1->Get_detector_id();
+                crystal_id_sci41 = hit1->Get_crystal_id();
+                energy_sci41 = hit1->Get_channel_energy();
+                time_sci41 = hit1->Get_channel_trigger_time();
+
+                sci41_seen = true;
+                sci41_hit_idx = ihit;
+                break;
+            }
+        }
+
+        // Spectra with respect to SCI41 - 'short' isomers
+        if (nHits >= 2 && sci41_seen && positive_PID)
+        {
+            for (int ihit2 = 0; ihit2 < nHits; ihit2 ++)
+            {
+                if (ihit2 == sci41_hit_idx) continue;
+                DegasCalData* hit2 = (DegasCalData*)fHitGe->At(ihit2);
+                if (!hit2) continue;
+                int detector_id1 = hit2->Get_detector_id();
+                int crystal_id1 = hit2->Get_crystal_id();
+                double energy1 = hit2->Get_channel_energy();
+                double time1 = hit2->Get_channel_trigger_time();
+
+                if (degas_configuration->IsDetectorAuxilliary(detector_id1)) continue;
+
+                double timediff1 = time1 - time_sci41 - degas_configuration->GetTimeshiftCoefficient(detector_id1,crystal_id1);
+
+                h2_degas_energy_vs_tsci41->Fill(timediff1 ,energy1);
+
+                //after this test, the prompt flash is cut out.
+                if ((degas_configuration->IsInsidePromptFlashCut(timediff1 ,energy1)==true) ) continue;
+                if ((timediff1 < -400 || timediff1 > stop_short_lifetime_collection)) continue;
+
+                h1_degas_energy_promptflash_cut->Fill(energy1);
+                // if (positive_PID_mhtdc) h1_degas_energy_promptflash_cut_mhtdc_gated->Fill(energy1);
+
+                for (int idx_gamma_gate = 0; idx_gamma_gate < gamma_energies_of_interest.size(); idx_gamma_gate++){
+                    if (!(TMath::Abs(energy1 - gamma_energies_of_interest.at(idx_gamma_gate))<gate_width_gamma_energies_of_interest.at(idx_gamma_gate))) continue;
+
+                    //now energy1 fulfills the energy requirement and is outside prompt flash
+                    h1_degas_tsci41_energy_gated[idx_gamma_gate]->Fill(timediff1);
+                }
+
+
+                if (nHits >= 3)
+                {
+
+                    for (int ihit3 = 0; ihit3<nHits; ihit3 ++)
+                    {
+                        if (ihit3 == sci41_hit_idx) continue;
+                        if (ihit3 == ihit2) continue;
+
+                        DegasCalData* hit3 = (DegasCalData*)fHitGe->At(ihit3);
+                        if (!hit3) continue;
+
+                        int detector_id2 = hit3->Get_detector_id();
+                        if (detector_id1 == detector_id2) continue; //this is likely a good veto before the add-back is done ...
+
+                        int crystal_id2 = hit3->Get_crystal_id();
+                        double energy2 = hit3->Get_channel_energy();
+                        double time2 = hit3->Get_channel_trigger_time();
+
+                        if (degas_configuration->IsDetectorAuxilliary(detector_id2)) continue;
+                        if (TMath::Abs(time2-time1) > degas_coincidence_gate) continue;
+
+                        double timediff2 = time2 - time_sci41 - degas_configuration->GetTimeshiftCoefficient(detector_id2,crystal_id2);
+
+                        if ((degas_configuration->IsInsidePromptFlashCut(timediff2, energy2)==true)) continue;
+                        if ((timediff2 < -400 || timediff2 > stop_short_lifetime_collection)) continue;
+
+                        if (ihit3 > ihit2) h2_degas_energy_energy_promptflash_cut->Fill(energy1,energy2); // avoid double filling ...
+
+
+                        for (int idx_gamma_gate = 0; idx_gamma_gate < gamma_energies_of_interest.size(); idx_gamma_gate++)
+                        {
+                            if (!(TMath::Abs(energy1 - gamma_energies_of_interest.at(idx_gamma_gate))<gate_width_gamma_energies_of_interest.at(idx_gamma_gate))) continue;
+                            // energy1 and energy2 are both in coincidence and outside the promptflash here:
+                            h1_degas_energy_promptflash_cut_energy_gated[idx_gamma_gate]->Fill(energy2);
+                        }
+                    }
+                }
+            }
+        } // positive PID, sc41 seen, nHits>=2
+
+
+        if (nHits >= 1 && wr_t_last_frs_hit != 0)
+        {
+            //long isomer
+            for (int ihit1 = 0; ihit1 < nHits; ihit1 ++)
+            {
+
+                DegasCalData* hit_long1 = (DegasCalData*)fHitGe->At(ihit1);
+                if (!hit_long1) continue;
+                int detector_id_long = hit_long1->Get_detector_id();
+                int crystal_id_long = hit_long1->Get_crystal_id();
+                double energy_long = hit_long1->Get_channel_energy();
+                double time_long = hit_long1->Get_channel_trigger_time();
+                int64_t ge_wr_long = hit_long1->Get_absolute_event_time();
+
+                if (degas_configuration->IsDetectorAuxilliary(detector_id_long)==true) continue;
+
+
+                h2_degas_energy_vs_sci41_wr_long->Fill(ge_wr_long-wr_t_last_frs_hit, energy_long);
+
+
+                // cut the prompt flash on the whiterabbit, roughly, but you are after long isomers ... :)
+                if (ge_wr_long - wr_t_last_frs_hit < start_long_lifetime_collection) continue;
+
+
+
+                if (ge_wr_long - wr_t_last_frs_hit < stop_long_lifetime_collection) h1_degas_energy_promptflash_cut_long->Fill(energy_long);
+
+                for (int idx_gamma_gate = 0; idx_gamma_gate < gamma_energies_of_interest.size(); idx_gamma_gate++)
+                {
+                    if (!(TMath::Abs(energy_long - gamma_energies_of_interest.at(idx_gamma_gate))<gate_width_gamma_energies_of_interest.at(idx_gamma_gate))) continue;
+                    //now energy1 fulfills the energy requirement and is outside prompt flash
+
+                    h1_degas_twr_sci41_energy_gated[idx_gamma_gate]->Fill(ge_wr_long-wr_t_last_frs_hit);
+                }
+
+
+                if (nHits >= 2)
+                {
+
+                    for (int ihit2 = 0; ihit2<nHits; ihit2 ++)
+                    {
+                        DegasCalData* hit_long2 = (DegasCalData*)fHitGe->At(ihit2);
+                        if (!hit_long2) continue;
+                        if (ihit1 == ihit2) continue;
+                        int detector_id_long2 = hit_long2->Get_detector_id();
+                        int crystal_id_long2 = hit_long2->Get_crystal_id();
+                        double energy_long2 = hit_long2->Get_channel_energy();
+                        double time_long2 = hit_long2->Get_channel_trigger_time();
+                        int64_t ge_wr_long2 = hit_long2->Get_absolute_event_time();
+
+
+                        if (degas_configuration->IsDetectorAuxilliary(detector_id_long2)) continue;
+
+                        if (ge_wr_long2 - wr_t_last_frs_hit < start_long_lifetime_collection) continue;
+                        if (detector_id_long == detector_id_long2) continue; //this is likely a good veto before the add-back is done
+
+                        // check coincidence, this should also make it so that the second hit is outside the prompt flash as well...:
+                        if (TMath::Abs(time_long2-time_long- degas_configuration->GetTimeshiftCoefficient(detector_id_long2,crystal_id_long2)- degas_configuration->GetTimeshiftCoefficient(detector_id_long,crystal_id_long)) > degas_coincidence_gate) continue;
+
+                        //avoid double filling:
+                        if (ihit2>ihit1) h2_degas_energy_energy_promptflash_cut_long->Fill(energy_long,energy_long2);
+
+                        for (int idx_gamma_gate = 0; idx_gamma_gate < gamma_energies_of_interest.size(); idx_gamma_gate++)
+                        {
+                            if (!(TMath::Abs(energy_long - gamma_energies_of_interest.at(idx_gamma_gate))<gate_width_gamma_energies_of_interest.at(idx_gamma_gate))) continue;
+                            //now energy1 fulfills the energy requirement and is outside prompt flash
+                            // energy1 and energy2 are both in coincidence and outside the promptflash here:
+                            if (ge_wr_long2 - wr_t_last_frs_hit < stop_long_lifetime_collection) h1_degas_energy_promptflash_cut_long_energy_gated[idx_gamma_gate]->Fill(energy_long2);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    fNEvents += 1;
+}
+
+void FrsDegasCorrelations::FinishEvent()
+{
+    wr_t = 0;
+
+    ID_x2 = -999;
+    ID_y2 = -999;
+    ID_x4 = -999;
+    ID_AoQ_s2s4 = 0.;
+    ID_z41 = 0.;
+    ID_z42 = 0.;
+    ID_dEdegZ41 = 0.;
+}
+
+void FrsDegasCorrelations::FinishTask()
+{
+    if (fNEvents == 0)
+    {
+        c4LOG(warning, "No events processed, no histograms written.");
+        return;
+    }
+
+    c4LOG(info,TString("Counts for  " + frsgate->GetName()));
+    c4LOG(info,Form("wr_t_last_frs_hit = %li",wr_t_last_frs_hit));
+    c4LOG(info,Form("wr_t_first_frs_hit = %li", wr_t_first_frs_hit));
+    c4LOG(info,Form("time (s) = %lf",((int64_t)wr_t_last_frs_hit-(int64_t)wr_t_first_frs_hit)/1e9));
+    c4LOG(info,Form("implants = %li",frs_total_implanted));
+    c4LOG(info,Form("rate = %lf",frs_total_implanted/(((int64_t)wr_t_last_frs_hit-(int64_t)wr_t_first_frs_hit)/1e9)));
+    c4LOG(info,"\n\n");
+
+
+    c4LOG(info, Form("sci41l_seen_in_febex = %d", sci41l_seen_in_febex));
+    c4LOG(info, Form("sci41r_seen_in_febex = %d", sci41r_seen_in_febex));
+
+    c4LOG(info, Form("sci41l_seen_in_frs = %d", sci41l_seen_in_frs));
+    c4LOG(info, Form("sci41r_seen_in_frs = %d", sci41r_seen_in_frs));
+
+    c4LOG(info, Form("sci41l_seen_in_febex_no_frs = %d", sci41l_seen_in_febex_no_frs));
+    c4LOG(info, Form("sci41r_seen_in_febex_no_frs = %d", sci41r_seen_in_febex_no_frs));
+
+    c4LOG(info, Form("sci41l_seen_in_frs_no_febex = %d", sci41l_seen_in_frs_no_febex));
+    c4LOG(info, Form("sci41r_seen_in_frs_no_febex = %d", sci41r_seen_in_frs_no_febex));
+    c4LOG(info, "\n\n");
+
+
+
+
+    if (fHitGe)
+    {
+        //dir_frs_ge_corr->Write();
+        c4LOG(info, "DEGAS histograms written to file.");
+    }
+}
+
+ClassImp(FrsDegasCorrelations)

@@ -20,15 +20,6 @@ typedef struct EXT_STR_h101_fimp_t EXT_STR_h101_fimp;
 typedef struct EXT_STR_h101_fimp_onion_t EXT_STR_h101_fimp_onion;
 class ext_data_struct_info;
 
-struct ctdc_data_store
-{   
-    uint16_t channel = 0;
-    uint16_t coarse_time = 0;
-    double fine_time = 0.0;
-    int leadOrTrail = -1;
-    uint16_t raw_ft = 0; // maybe setting to 0 causes some issue, we'll see
-};
-
 class FimpReader : public c4Reader
 {
     public:
@@ -83,7 +74,6 @@ class FimpReader : public c4Reader
         Bool_t fOnline;
         
         std::vector<FimpItem>* fimpArray;
-        //ctdc_data_store last_hit;
 
         std::vector<uint16_t> lead_coarse;
         std::vector<double> lead_fine;

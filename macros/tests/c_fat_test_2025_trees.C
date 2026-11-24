@@ -1,3 +1,4 @@
+#include "../../unpack/exps/s100/s100_config.gen.spec"
 #include <TROOT.h>
 
 // Switch all tasks related to {subsystem} on (1)/off (0)
@@ -30,7 +31,6 @@ typedef struct EXT_STR_h101_t
     EXT_STR_h101_frs_onion_t frs;
     EXT_STR_h101_beammonitor_onion_t beammonitor;
     EXT_STR_h101_bgo_onion_t bgo;
-    // EXT_STR_h101_bb7febex_onion_t bb7febex;
 } EXT_STR_h101;
 
 
@@ -118,9 +118,15 @@ void c_fat_test_2025_trees()
     source->AddReader(unpackheader);
     
     
-    FatimaVmeReader* unpackfatimavme = new FatimaVmeReader((EXT_STR_h101_fatimavme_onion*)&ucesb_struct.fatimavme, offsetof(EXT_STR_h101, fatimavme));
+    const FatimaReader::VmeInput vme{
+        &ucesb_struct.fatimavme, offsetof(EXT_STR_h101, fatimavme), S100_PROCID_FATIMAVME};
+    auto* unpackfatima = new FatimaReader({}, vme);
+    // The existing tasks and trees consume the legacy VME branches.
+    unpackfatima->SetOnline(true);
+    auto* unpackfatimavme = new FatimaVmeReader();
     
     unpackfatimavme->SetOnline(false);
+    source->AddReader(unpackfatima);
     source->AddReader(unpackfatimavme);
     
 

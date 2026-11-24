@@ -95,7 +95,7 @@ void run_bb7_online(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t fE
     
 
     //BB7Reader* unpackbb7 = new BB7Reader((EXT_STR_h101_bb7vme_onion*)&ucesb_struct.bb7vme, offsetof(EXT_STR_h101, bb7vme));
-    BB7FebexReader* unpackbb7 = new BB7FebexReader((EXT_STR_h101_bbfebex_onion*)&ucesb_struct.bbfebex, offsetof(EXT_STR_h101, bbfebex));
+    BB7Reader* unpackbb7 = new BB7Reader((EXT_STR_h101_bbfebex_onion*)&ucesb_struct.bbfebex, offsetof(EXT_STR_h101, bbfebex));
 
     unpackbb7->SetOnline(false);
     source->AddReader(unpackbb7);

@@ -33,6 +33,16 @@
 #include <chrono>
 
 #include "FatimaRaw2Cal.h"
+#include "FatimaRawData.h"
+#include "FatimaVmeCalibrator.h"
+#include "TamexPulseBuilder.h"
+#include "TamexFineTimeCalibration.h"
+#include "TamexRawData.h"
+
+#include <array>
+#include <cstdint>
+#include <cmath>
+#include <stdexcept>
 
 /*
 empty constructor required for FairRoot.
@@ -46,7 +56,7 @@ funcal_data(nullptr),
 fcal_data(new TClonesArray("FatimaTwinpeaksCalData")),
 ftime_machine_array(new TClonesArray("TimeMachineData"))
 {
-   fatima_configuration = TFatimaTwinpeaksConfiguration::GetInstance();
+   fatima_configuration = nullptr;
 }
 
 /*
@@ -61,7 +71,7 @@ FatimaRaw2Cal::FatimaRaw2Cal(const TString& name, Int_t verbose)
     fcal_data(new TClonesArray("FatimaTwinpeaksCalData")),
     ftime_machine_array(new TClonesArray("TimeMachineData"))
 {
-    fatima_configuration = TFatimaTwinpeaksConfiguration::GetInstance();
+    fatima_configuration = nullptr;
 }
 /*
 Clearing old constructed objects.
@@ -70,8 +80,59 @@ FatimaRaw2Cal::~FatimaRaw2Cal(){
     c4LOG(info, "Deleting FatimaRaw2Cal task");
     if (fcal_data) delete fcal_data;
     if(ftime_machine_array) delete ftime_machine_array;
+    delete fTamexLegacyHits;
+    delete fVmeProcessor;
 }
 
+
+
+void FatimaRaw2Cal::Electronics(
+    const std::string& first, const std::string& second)
+{
+    if (second.empty()) Electronics(std::vector<std::string>{first});
+    else Electronics(std::vector<std::string>{first, second});
+}
+
+void FatimaRaw2Cal::Electronics(const std::vector<std::string>& readouts)
+{
+    if (readouts.empty())
+        throw std::invalid_argument("FatimaRaw2Cal::Electronics needs at least one readout");
+
+    bool tamex = false;
+    bool vme = false;
+    for (const auto& readout : readouts)
+    {
+        if (readout == "tamex") tamex = true;
+        else if (readout == "vme") vme = true;
+        else throw std::invalid_argument(
+            "Unsupported FATIMA electronics: " + readout + " (expected tamex or vme)");
+    }
+    fUseTamexRaw = tamex;
+    fUseVmeRaw = vme;
+}
+
+void FatimaRaw2Cal::UseFatimaRawInput(const TString& fine_time_histograms)
+{
+    fUseFatimaRaw = true;
+    if (!fUseVmeRaw) fUseTamexRaw = true;
+    fTamexFineTimeFile = fine_time_histograms;
+}
+
+void FatimaRaw2Cal::UseTamexRawInput(std::uint16_t procid, const TString& fine_time_histograms)
+{
+    fUseTamexRaw = true;
+    fUseFatimaRaw = false;
+    fTamexProcId = procid;
+    fTamexFineTimeFile = fine_time_histograms;
+}
+
+void FatimaRaw2Cal::CalibrateTamexFineTimeOnline(
+    const TString& output_file, std::uint64_t events_to_collect)
+{
+    fTamexCalibrateOnline = true;
+    fTamexCalibrationEvents = events_to_collect;
+    fTamexFineTimeOutput = output_file;
+}
 
 void FatimaRaw2Cal::SetParContainers()
 {
@@ -88,11 +149,80 @@ InitStatus FatimaRaw2Cal::Init()
     c4LOG_IF(fatal, NULL == mgr, "FairRootManager not found");
 
 
+    if (fUseFatimaRaw)
+    {
+        fFatimaRaw = mgr->InitObjectAs<const FatimaRawData*>("FatimaRawData");
+        if (!fFatimaRaw)
+        {
+            c4LOG(error, "FATIMA input branch FatimaRawData not found");
+            return kFATAL;
+        }
+    }
+    if (fUseVmeRaw)
+    {
+        fVmeProcessor = new FatimaVmeCalibrator();
+        if (!fVmeProcessor->Init(mgr, !fOnline, fFatimaRaw ? &fFatimaRaw->VMEChain : nullptr)) return kFATAL;
+    }
+    // VME-only mode never requires the TAMEX calibration configuration
+    // or its event branches.
+    if (fUseVmeRaw && !fUseTamexRaw) return kSUCCESS;
+    fatima_configuration = TFatimaTwinpeaksConfiguration::GetInstance();
+
     header = (EventHeader*)mgr->GetObject("EventHeader.");
     c4LOG_IF(error, !header, "Branch EventHeader. not found");
 
-    funcal_data = (TClonesArray*)mgr->GetObject("FatimaTwinpeaksData");
-    c4LOG_IF(fatal, !funcal_data, "Fatima branch of FatimaTwinpeaksData not found.");
+    if (fUseTamexRaw)
+    {
+        if (!fFatimaRaw)
+        {
+            fTamexInput = dynamic_cast<TClonesArray*>(mgr->GetObject("TamexRawData"));
+            if (!fTamexInput)
+            {
+                c4LOG(error, "FATIMA TAMEX input branch TamexRawData not found");
+                return kFATAL;
+            }
+        }
+
+        constexpr auto channels_per_board = tamex::Tamex4Format::channel_count;
+        constexpr std::size_t max_boards = 12; // Standard TAMEX unpacker capacity
+
+        if (fTamexCalibrateOnline)
+        {
+            if (fTamexCalibrationEvents == 0)
+            {
+                c4LOG(error, "TAMEX fine-time learning requires at least one event");
+                return kFATAL;
+            }
+            fTamexFineTimes.resize(max_boards * channels_per_board);
+            fTamexFineCounts.resize(max_boards * channels_per_board);
+            fTamexCalibrationReady = false;
+        }
+        else
+        {
+            if (fTamexFineTimeFile.IsNull())
+            {
+                c4LOG(error, "TAMEX input requires a calibration file or online calibration");
+                return kFATAL;
+            }
+            try
+            {
+                fTamexFineTimes = tamex::ReadFineTimeHistograms(fTamexFineTimeFile, max_boards);
+            }
+            catch (const std::runtime_error& error)
+            {
+                c4LOG(error, "FATIMA TAMEX fine-time calibration: " << error.what());
+                return kFATAL;
+            }
+            fTamexCalibrationReady = true;
+        }
+        fTamexLegacyHits = new TClonesArray("FatimaTwinpeaksData");
+        funcal_data = fTamexLegacyHits; // Reuse existing calibrated-output algorithm
+    }
+    else
+    {
+        funcal_data = dynamic_cast<TClonesArray*>(mgr->GetObject("FatimaTwinpeaksData"));
+        c4LOG_IF(fatal, !funcal_data, "Fatima branch of FatimaTwinpeaksData not found.");
+    }
     
     //need to have the name of the detector subsystem here:
     FairRootManager::Instance()->Register("FatimaTwinpeaksCalData", "FatimaTwinpeaksCalDataFolder", fcal_data, !fOnline);
@@ -141,6 +271,19 @@ void FatimaRaw2Cal::PrintDetectorCal()
     }
 }        
 
+std::size_t FatimaRaw2Cal::TamexBoardCount() const
+{
+    if (fFatimaRaw) return fFatimaRaw->TAMEX.boards.size();
+    return fTamexInput->GetEntriesFast();
+}
+
+const TamexRawData* FatimaRaw2Cal::TamexBoardAt(std::size_t index) const
+{
+    if (fFatimaRaw) return &fFatimaRaw->TAMEX.boards[index];
+    const auto* board = static_cast<const TamexRawData*>(fTamexInput->At(index));
+    return board && board->ProcId() == fTamexProcId ? board : nullptr;
+}
+
 /*
 The event loop executable. This is where the events are analyzed. Only used implicitly by FairRoot during Run().
 
@@ -151,8 +294,102 @@ If no detector map is set then be careful with how the mapping happens: tamex mo
 
 Writes the times in ns!
 */
+void FatimaRaw2Cal::AccumulateTamexFineTime()
+{
+    constexpr auto channels_per_board = tamex::Tamex4Format::channel_count;
+    for (std::size_t i = 0; i < TamexBoardCount(); ++i)
+    {
+        const auto* board = TamexBoardAt(i);
+        if (!board ||
+            board->FormatVersion() != 4 ||
+            board->Board() >= fTamexFineCounts.size() / channels_per_board) continue;
+
+        for (const auto& word : board->Words())
+        {
+            if (word.kind != TamexRawWord::Edge || !word.leading ||
+                (word.flags & TamexRawWord::InvalidFine) ||
+                word.channel >= channels_per_board || word.fine >= tamex::Tamex4Format::fine_bins ||
+                word.fine == tamex::Tamex4Format::invalid_fine_code) continue;
+
+            ++fTamexFineCounts[static_cast<std::size_t>(board->Board()) *
+                               channels_per_board + word.channel][word.fine];
+        }
+    }
+}
+
+void FatimaRaw2Cal::WriteTamexFineTimeHistograms()
+{
+    if (fTamexFineTimeOutput.IsNull()) return;
+    try
+    {
+        tamex::WriteFineTimeHistograms(fTamexFineTimeOutput, fTamexFineCounts);
+    }
+    catch (const std::runtime_error& error)
+    {
+        c4LOG(error, "FATIMA TAMEX fine-time calibration: " << error.what());
+        return;
+    }
+    c4LOG(info, "FATIMA TAMEX fine-time histograms written to " << fTamexFineTimeOutput);
+}
+
+void FatimaRaw2Cal::FinaliseTamexFineTime()
+{
+    if (fTamexCalibrationReady || fTamexFineCounts.empty()) return;
+    for (std::size_t index = 0; index < fTamexFineCounts.size(); ++index)
+    {
+        tamex::FineTimeCalibration<> calibration;
+        calibration.SetCounts(fTamexFineCounts[index]);
+        calibration.Calculate();
+        fTamexFineTimes[index] = calibration.Times();
+    }
+    fTamexCalibrationReady = true;
+    WriteTamexFineTimeHistograms();
+    c4LOG(info, "FATIMA TAMEX fine-time calibration completed after "
+                 << fTamexEventsSeen << " input events");
+}
+
+void FatimaRaw2Cal::BuildTamexLegacyHits()
+{
+    fTamexLegacyHits->Clear();
+    constexpr auto channels_per_board = tamex::Tamex4Format::channel_count;
+    for (std::size_t i = 0; i < TamexBoardCount(); ++i)
+    {
+        const auto* board = TamexBoardAt(i);
+        if (!board || board->FormatVersion() != 4 ||
+            board->Board() >= fTamexFineTimes.size() / channels_per_board)
+        {
+            c4LOG(error, "Unsupported procid, format or FATIMA board in TAMEX Raw input");
+            continue;
+        }
+        tamex::AppendTwinpeaksHits<FatimaTwinpeaksData>(*board, fTamexFineTimes, *fTamexLegacyHits);
+    }
+}
+
 void FatimaRaw2Cal::Exec(Option_t* option)
 {
+    if (fVmeProcessor) fVmeProcessor->Process();
+    if (fUseVmeRaw && !fUseTamexRaw) return;
+    ProcessTamex();
+}
+
+void FatimaRaw2Cal::ProcessTamex()
+{
+    if (fUseTamexRaw)
+    {
+        if (!fTamexCalibrationReady)
+        {
+            // Match legacy behaviour: use the first N events for histogram
+            // accumulation, then start reconstructing on event N+1.
+            if (fTamexEventsSeen < fTamexCalibrationEvents)
+            {
+                AccumulateTamexFineTime();
+                ++fTamexEventsSeen;
+                return;
+            }
+            FinaliseTamexFineTime();
+        }
+        BuildTamexLegacyHits();
+    }
     auto start = std::chrono::high_resolution_clock::now();
     
     if (funcal_data && funcal_data->GetEntriesFast() > 1)
@@ -367,8 +604,11 @@ Clears the TClonesArray used in the function. If they are not cleared after each
 void FatimaRaw2Cal::FinishEvent()
 {
     // Reset only arrays produced by this task; the reader resets raw input.
+    if (fVmeProcessor) fVmeProcessor->Clear();
+    if (fUseVmeRaw && !fUseTamexRaw) return;
     fcal_data->Clear();
     ftime_machine_array->Clear();
+    if (fTamexLegacyHits) fTamexLegacyHits->Clear();
 };
 
 /*
@@ -376,9 +616,17 @@ Some stats are written when finishing.
 */
 void FatimaRaw2Cal::FinishTask()
 {
+    // Short calibration-only runs still produce reusable histogram files.
+    if (fUseTamexRaw && fTamexCalibrateOnline && !fTamexCalibrationReady)
+    {
+        c4LOG(warning, "Fine-time calibration event target not reached; "
+                       "writing preliminary histograms, no reconstructed hits produced");
+        WriteTamexFineTimeHistograms();
+    }
     c4LOG(info, Form("Wrote %i events.",fNEvents));
     c4LOG(info, Form("%i events are unmatched (not written).",fNunmatched));
-    c4LOG(info, "Average execution time: " << (double)total_time_microsecs/fExecs << " microseconds.");
+    if (fExecs > 0)
+        c4LOG(info, "Average execution time: " << (double)total_time_microsecs/fExecs << " microseconds.");
 }
 
 

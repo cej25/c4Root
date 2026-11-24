@@ -1,0 +1,51 @@
+# Active routes in unpack/exps/s143/s143.spec.
+# compiled_slots lists addresses in output slot order. Installed boards are
+# recorded only where the run setup is known.
+# Slot addresses use TAMEX [SFP, card], clock TDC [SFP, TDC ID].
+
+FRS_Main:
+  subevent: frs_main_subev
+  member: frsmain
+  procid: 10
+
+FRS_TPC:
+  subevent: frs_tpc_subev
+  member: frstpc
+  procid: 20
+
+FRS_User:
+  subevent: frs_user_subev
+  member: frsuser
+  procid: 30
+
+FRS_TPAT:
+  subevent: frs_tpat_subev
+  member: frstpat
+  procid: 15
+  whiterabbit: 0x100
+
+FRS_Travelling_MUSIC:
+  subevent: travmus_subev
+  member: travmus
+  procid: 35
+  whiterabbit: 0x200
+
+FIMP:
+  subevent: fimp_subev
+  member: fimp
+  procid: 100
+  whiterabbit: 0x1300
+  digitiser: clock_tdc
+  compiled_slots: [[1, 0]]
+
+FATIMA:
+  subevent: fatima_tamex_subev
+  member: fatima
+  type: 10
+  subtype: 1
+  procid: 80
+  control: 20
+  whiterabbit: 0x500
+  digitiser: tamex
+  version: 4
+  compiled_slots: [[1, 0], [0, 1], [0, 2], [0, 3]]

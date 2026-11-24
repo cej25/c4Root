@@ -46,10 +46,10 @@ class BeamMonitorReader : public c4Reader
         std::vector<BeamMonitorItem>* s2array;
         std::vector<BeamMonitorItem>* s4array;
 
-        std::vector<uint32_t> s4data;
+        BeamMonitorRawData* fRaw; //! Owns the detector raw branch
     
     public:
-        ClassDefOverride(BeamMonitorReader, 1);
+        ClassDefOverride(BeamMonitorReader, 2);
 };
 
 #endif

@@ -1,10 +1,7 @@
 // chrome-extension://efaidnbmnnnibpcajpcglclefindmkaj/http://npg.dl.ac.uk/MIDAS/MIDASWebServices/VME/docs/UM3356_V1751_UserManual_rev16.pdf
 
-// channel mask is provided
-// one option is simply to encode this mask value
-// analyse it for fired channels later? 
-// not sure its possible in ucesb .spec
-
+// DPP-PSD channel aggregate lengths depend on enabled waveform/time/extras/charge.
+// TRACE_LENGTH is the per-channel storage cap in the generated onion layout.
 #define TRACE_LENGTH 120
 
 
@@ -47,6 +44,9 @@ VME_CAEN_V1751(board)
         ENCODE(board_id, (value = id));
     };
 
+    // The second aggregate word identifies the board in grouped selections.
+    MATCH_END;
+
     UINT32 board_agg_counter NOENCODE
     {
         0_22: counter;
@@ -64,7 +64,21 @@ VME_CAEN_V1751(board)
     if (board_agg_size.event_size > 4)
     {
 
-        list (0 <= index < (board_agg_size.event_size - 4) / (6+TRACE_LENGTH)) // ah, this is not correct. 
+        // One channel aggregate per enabled channel (8-channel V1751).
+        // Its word count is VARIABLE: do not divide the board aggregate
+        // by a fixed per-channel size. In particular a 10-word board
+        // aggregate can contain one 6-word, waveform-disabled channel.
+        // Compute the popcount of the board channel mask using integer
+        // arithmetic supported by the UCESB specification language.
+        list (0 <= index <
+            ((board_details.channels % 2) +
+             ((board_details.channels / 2) % 2) +
+             ((board_details.channels / 4) % 2) +
+             ((board_details.channels / 8) % 2) +
+             ((board_details.channels / 16) % 2) +
+             ((board_details.channels / 32) % 2) +
+             ((board_details.channels / 64) % 2) +
+             ((board_details.channels / 128) % 2)))
         {
 
             // loop over channel aggregates
@@ -114,9 +128,9 @@ VME_CAEN_V1751(board)
                     };
                 }
 
-                if (format_one.es == 1) // waveform stuff
+                if (format_one.es == 1) // number of 32-bit trace words is NUM_SAMPLES_WAVE/12 * 12
                 {
-                    list (0 <= i < TRACE_LENGTH)
+                    list (0 <= i < format_one.no_wave_samples * 12)
                     {
                         UINT32 sample NOENCODE
                         {
@@ -206,9 +220,9 @@ VME_CAEN_V1751(board)
                     };
                 }
 
-                if (format_one.es == 1) // waveform stuff
+                if (format_one.es == 1) // number of 32-bit trace words is NUM_SAMPLES_WAVE/12 * 12
                 {
-                    list (0 <= i < TRACE_LENGTH)
+                    list (0 <= i < format_one.no_wave_samples * 12)
                     {
                         UINT32 sample NOENCODE
                         {
@@ -244,4 +258,3 @@ VME_CAEN_V1751(board)
     } // size > 4
     
 }
-

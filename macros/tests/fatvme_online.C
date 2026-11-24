@@ -1,3 +1,6 @@
+#include "FatimaReader.h"
+#include "FatimaVmeReader.h"
+#include "ext_h101_fatimavme.h"
 #include <TROOT.h>
 
 // Switch all tasks related to {subsystem} on (1)/off (0)
@@ -153,12 +156,12 @@ void fatvme_online(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t fEx
     // EventHeader - should always be done
     UnpackReader* unpackheader = new UnpackReader((EXT_STR_h101_unpack*)&ucesb_struct.eventheaders, offsetof(EXT_STR_h101, eventheaders));
 
-    // FATIMA
-    //FatimaReader* unpackfatima = new FatimaReader((EXT_STR_h101_fatima_onion*)&ucesb_struct.fatima, offsetof(EXT_STR_h101, fatima));
-    // unpackfatima->DoFineTimeCalOnline(config_path + "/fatima/fine_time_histos_111223_fatima.root", 50000);
-    // unpackfatima->SetInputFileFineTimeHistos(config_path + "/fatima/fine_time_histos_111223_fatima.root");
-
-    FatimaVmeReader* unpackfatimavme = new FatimaVmeReader((EXT_STR_h101_fatimavme_onion*)&ucesb_struct.fatimavme, offsetof(EXT_STR_h101, fatimavme));
+    const FatimaReader::VmeInput vme{
+        &ucesb_struct.fatimavme, offsetof(EXT_STR_h101, fatimavme), 70};
+    auto* unpackfatima = new FatimaReader({}, vme);
+    // The existing tasks and trees consume the legacy VME branches.
+    unpackfatima->SetOnline(true);
+    auto* unpackfatimavme = new FatimaVmeReader();
     
     // AIDA
     //AidaReader* unpackaida = new AidaReader((EXT_STR_h101_aida_onion*)&ucesb_struct.aida, offsetof(EXT_STR_h101, aida));
@@ -182,7 +185,6 @@ void fatvme_online(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t fEx
 
 
     // Set 'Reader' tasks Online/Offline - false will write data to a tree.
-    //unpackfatima->SetOnline(true);
     unpackfatimavme->SetOnline(true);
     //unpackaida->SetOnline(true);
     //unpackbplast->SetOnline(true);
@@ -196,7 +198,7 @@ void fatvme_online(const Int_t nev = -1, const Int_t fRunId = 1, const Int_t fEx
 
     // Add 'Reader' tasks to incoming UcesbSource
     source->AddReader(unpackheader);
-    //source->AddReader(unpackfatima);
+    source->AddReader(unpackfatima);
     source->AddReader(unpackfatimavme);
     //source->AddReader(unpackaida);
     //source->AddReader(unpackbplast);

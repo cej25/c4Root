@@ -1,7 +1,8 @@
 #########################################################
 # Specify the name of the target executable
 
-TARGETS:=febex
+.DEFAULT_GOAL := febex
+TARGETS:=febex febextrace
 
 #########################################################
 # Include common Makefile

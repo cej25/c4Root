@@ -1,0 +1,11 @@
+# Active routes in unpack/exps/bb7/bb7.spec.
+# compiled_slots lists addresses in output slot order. Installed boards are
+# recorded only where the run setup is known.
+
+BB7:
+  subevent: bb7_subev
+  member: bb7
+  procid: 31
+  whiterabbit: 0x1800
+  digitiser: v775
+  compiled_slots: [6, 8, 10]

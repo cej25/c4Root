@@ -26,6 +26,9 @@
 
 #include "TClonesArray.h"
 #include "TFolder.h" //?
+#include <algorithm>
+#include <iterator>
+#include <string_view>
 #include <vector>
 #include "ext_data_struct_info.hh"
 
@@ -33,6 +36,49 @@ extern "C"
 {
     #include "ext_data_client.h" 
     #include "ext_h101_frs.h"
+}
+
+namespace
+{
+struct RawRegistration
+{
+    ext_data_structure_info* info;
+    bool hasOnlyTwoMusicChambers;
+
+    static int ScintillatorLimit(std::string_view field, int fallback)
+    {
+        if (field == "SCI_TAC_DE" || field == "SCI_TAC_DT" ||
+            field == "SCI_MHTDC_TM" || field == "SCI_MHTDC_LOTM") return 16;
+        if (field == "SCI_MHTDC_T" || field == "SCI_MHTDC_LOT") return 16 * 128;
+        return fallback;
+    }
+};
+
+// The generated ITEMS_INFO supplies client offsets into the shared backing store.
+// Register the fields and capacities emitted by the selected 16-channel unpacker.
+int ext_data_struct_info_item(RawRegistration registration, std::size_t offset, std::size_t size,
+                             int type, const char* parent, int index, const char* field,
+                             const char* control, int limit, std::uint32_t flags)
+{
+    const std::string_view name(field);
+    if (name.substr(0, 7) == "TM_WR_T") return 0;
+    const auto chamber = name.substr(0, 6);
+    if (registration.hasOnlyTwoMusicChambers &&
+        (chamber == "MUSIC3" || chamber == "MUSIC4" || chamber == "MUSIC5")) return 0;
+    if (const auto count = RawRegistration::ScintillatorLimit(control, 0))
+        size = count * sizeof(std::uint32_t);
+    limit = RawRegistration::ScintillatorLimit(field, limit);
+    return ::ext_data_struct_info_item(registration.info, offset, size, type, parent, index,
+                                      field, control, limit, flags);
+}
+
+int ext_data_struct_info_item_stderr(RawRegistration registration, std::size_t offset,
+                                    std::size_t size, int type, const char* parent, int index,
+                                    const char* field, const char* control, int limit, std::uint32_t flags)
+{
+    return ext_data_struct_info_item(registration, offset, size, type, parent, index,
+                                    field, control, limit, flags) == 0;
+}
 }
 
 FrsReader::FrsReader(EXT_STR_h101_frs_onion* data, size_t offset)
@@ -58,7 +104,15 @@ Bool_t FrsReader::Init(ext_data_struct_info* a_struct_info)
 {
     Int_t ok;
     
-    EXT_STR_h101_frs_ITEMS_INFO(ok, *a_struct_info, fOffset, EXT_STR_h101_frs, 0);
+    if (fRawLayout != RawLayout::Full)
+    {
+        const RawRegistration registration{*a_struct_info, fRawLayout == RawLayout::S181};
+        EXT_STR_h101_frs_ITEMS_INFO(ok, registration, fOffset, EXT_STR_h101_frs, 0);
+    }
+    else
+    {
+        EXT_STR_h101_frs_ITEMS_INFO(ok, *a_struct_info, fOffset, EXT_STR_h101_frs, 0);
+    }
 
     if (!ok)
     {
@@ -118,10 +172,13 @@ void FrsReader::ScalerReader()
 {
     for (int i = 0; i < 2; i++)
     {
-        for (int j = 0; j < fData->SCALERS[i]._; j++)
+        const auto& bank = fData->SCALERS[i];
+        const auto count = std::min<std::size_t>(bank._, std::size(bank.I));
+        for (std::size_t j = 0; j < count; ++j)
         {
-            uint32_t index = fData->SCALERS[i].I[j] + i * 32; // 2 sets of scalers
-            uint32_t scaler = fData->SCALERS[i].v[j];
+            if (!frs_reader_safety::ValidOneBasedChannel(bank.I[j], std::size(bank.I))) continue;
+            uint32_t index = bank.I[j] + i * 32; // 2 sets of scalers
+            uint32_t scaler = bank.v[j];
             auto & entry = scalerArray->emplace_back();
             entry.SetAll(index, scaler);
         }

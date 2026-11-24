@@ -22,6 +22,9 @@ class TFolder;
 class FatimaNearlineSpectra : public FairTask
 {
     public:
+        void SetSpectraDirectory(const TString& name) { fSpectraDirectory = name; }
+        void FillEvent();
+
         FatimaNearlineSpectra();
         FatimaNearlineSpectra(const TString& name, Int_t verbose = 1);
 
@@ -97,6 +100,7 @@ class FatimaNearlineSpectra : public FairTask
 
     
     private:
+        TString fSpectraDirectory; //! Alternate directory for gated spectra
         TClonesArray* fHitFatimaTwinpeaks;
         const TFatimaTwinpeaksConfiguration * fatima_configuration;
 

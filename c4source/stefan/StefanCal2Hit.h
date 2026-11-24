@@ -8,8 +8,6 @@
 #include <vector>
 #include "EventHeader.h"
 
-class StefanCluster;
-
 class StefanCal2Hit : public FairTask
 {
     public:
@@ -40,39 +38,8 @@ class StefanCal2Hit : public FairTask
 
         Int_t calEvents = 0;
 
-        std::vector<StefanCluster> ItemsToClusters(std::vector<StefanCalItem> const& );
-        StefanHitItem ClusterPairToHit(std::pair<StefanCluster, StefanCluster> const&);
-
     public:
         ClassDef(StefanCal2Hit, 1)
 };
 
-class StefanCluster
-{
-    public:
-
-        int DSSD;
-        int Side;
-        int Strip;
-        bool HighEnergy;
-        double Energy;
-        int64_t Time;
-
-        int StripMin, StripMax;
-        int64_t TimeMin, TimeMax;
-
-        int StripSum;
-        int N;
-
-        StefanCluster() { Zero(); }
-        void Zero();
-        ~StefanCluster() {}
-        void AddItem(StefanCalItem const& item);
-        void AddCluster(StefanCluster const& cluster);
-        bool IsAdjacent(StefanCalItem const& item) const;
-        bool IsGoodTime(StefanCalItem const& item, int window = 2000) const;
-        bool IsGoodTime(StefanCluster const& cluster, int window) const;
-};
-
 #endif /* StefanCal2Hit_H */
-

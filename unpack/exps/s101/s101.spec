@@ -1,6 +1,6 @@
 // -*- C++ -*-
 
-#include "../../common/whiterabbit.spec"
+#include "../../common/whiterabbit_13bit.spec"
 #include "../../common/gsi_febex4.spec"
 #include "../../common/gsi_tamex4.spec"
 #include "../../common/vme_caen_v1751.spec"
@@ -17,7 +17,7 @@ SUBEVENT(bgo_tamex_subevent)
 {
     select optional
     {
-        ts = TIMESTAMP_WHITERABBIT_EXTENDED(id=0x1900);
+        ts = TIMESTAMP_WHITERABBIT(id=0x1900);
     };
 
     optional UINT32 be { 0_31: b = MATCH(0xbad00bad);}
@@ -207,7 +207,7 @@ SUBEVENT(bb_first_subev)
 {
     select optional 
     {
-        ts = TIMESTAMP_WHITERABBIT_EXTENDED(id = 0x1800);
+        ts = TIMESTAMP_WHITERABBIT(id = 0x1800);
     }
 
     select several
@@ -233,7 +233,7 @@ SUBEVENT(bb_second_subev)
 {
     select optional 
     {
-        ts = TIMESTAMP_WHITERABBIT_EXTENDED(id = 0x1900);
+        ts = TIMESTAMP_WHITERABBIT(id = 0x1900);
     }
 
     select several
@@ -339,7 +339,7 @@ SUBEVENT(bm_subev)
 { 
    select optional 
    {
-        ts = TIMESTAMP_WHITERABBIT_EXTENDED(id=0x1700);
+        ts = TIMESTAMP_WHITERABBIT(id=0x1700);
    }
 
    select optional

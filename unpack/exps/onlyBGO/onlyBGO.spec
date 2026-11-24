@@ -1,11 +1,11 @@
 // -*- C++ -*-
 
-#include "../../common/whiterabbit.spec"
+#include "../../common/whiterabbit_13bit.spec"
 #include "../../common/gsi_tamex4.spec"
 
 SUBEVENT(bgo_tamex_subevent)
 {
-    ts = TIMESTAMP_WHITERABBIT_EXTENDED(id=0x1600); //change id
+    ts = TIMESTAMP_WHITERABBIT(id=0x1600); //change id
     trigger_window = TAMEX4_HEADER();
     select several 
     {

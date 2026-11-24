@@ -30,6 +30,9 @@
 #include "c4Logger.h"
 
 #include "TClonesArray.h"
+#include "TamexFineTimeCalibration.h"
+#include "TamexPulseBuilder.h"
+#include "TamexRawData.h"
 
 #include "BGORaw2Cal.h"
 
@@ -67,6 +70,7 @@ Clearing old constructed objects.
 */
 BGORaw2Cal::~BGORaw2Cal(){
     c4LOG(info, "Deleting BGORaw2Cal task");
+    delete fTamexHits;
     if (fcal_data) delete fcal_data;
     if(ftime_machine_array) delete ftime_machine_array;
 }
@@ -89,8 +93,32 @@ InitStatus BGORaw2Cal::Init()
     header = (EventHeader*)mgr->GetObject("EventHeader.");
     c4LOG_IF(error, !header, "Branch EventHeader. not found");
 
-    funcal_data = (TClonesArray*)mgr->GetObject("BGOTwinpeaksData");
-    c4LOG_IF(fatal, !funcal_data, "BGO branch of BGOTwinpeaksData not found.");
+    if (fUseTamexRaw)
+    {
+        fRawBoards = mgr->InitObjectAs<decltype(fRawBoards)>("BGORawData");
+        if (!fRawBoards)
+        {
+            c4LOG(error, "BGORawData input branch not found");
+            return kFATAL;
+        }
+        constexpr std::size_t max_boards = 12; // Standard TAMEX unpacker capacity
+        try
+        {
+            fFineTimes = tamex::ReadFineTimeHistograms(fFineTimeFile, max_boards);
+        }
+        catch (const std::runtime_error& error)
+        {
+            c4LOG(error, "BGO TAMEX fine-time calibration: " << error.what());
+            return kFATAL;
+        }
+        fTamexHits = new TClonesArray("BGOTwinpeaksData");
+        funcal_data = fTamexHits;
+    }
+    else
+    {
+        funcal_data = (TClonesArray*)mgr->GetObject("BGOTwinpeaksData");
+        c4LOG_IF(fatal, !funcal_data, "BGO branch of BGOTwinpeaksData not found.");
+    }
     
     //need to have the name of the detector subsystem here:
     FairRootManager::Instance()->Register("BGOTwinpeaksCalData", "BGOTwinpeaksCalDataFolder", fcal_data, !fOnline);
@@ -148,8 +176,25 @@ If no detector map is set then be careful with how the mapping happens: tamex mo
 
 Writes the times in ns!
 */
+void BGORaw2Cal::BuildTwinpeaksHits()
+{
+    fTamexHits->Clear();
+    constexpr auto channels = tamex::Tamex4Format::channel_count;
+    for (const auto& board : *fRawBoards)
+    {
+        if (board.Words().empty()) continue;
+        if (board.FormatVersion() != 4 || board.Board() >= fFineTimes.size() / channels)
+        {
+            c4LOG(error, "No BGO TAMEX4 calibration for board " << board.Board());
+            continue;
+        }
+        tamex::AppendTwinpeaksHits<BGOTwinpeaksData>(board, fFineTimes, *fTamexHits);
+    }
+}
+
 void BGORaw2Cal::Exec(Option_t* option)
 {
+    if (fRawBoards) BuildTwinpeaksHits();
     auto start = std::chrono::high_resolution_clock::now();
     
     if (funcal_data && funcal_data->GetEntriesFast() > 1)

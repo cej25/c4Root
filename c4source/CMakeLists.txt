@@ -16,6 +16,7 @@ ${C4ROOT_SOURCE_DIR}/c4source/aida
 ${C4ROOT_SOURCE_DIR}/c4source/bplast
 ${C4ROOT_SOURCE_DIR}/c4source/fatima
 ${C4ROOT_SOURCE_DIR}/c4source/germanium
+${C4ROOT_SOURCE_DIR}/c4source/degas
 ${C4ROOT_SOURCE_DIR}/c4source/bgo
 ${C4ROOT_SOURCE_DIR}/c4source/beammonitor
 ${C4ROOT_SOURCE_DIR}/c4source/bb7
@@ -23,6 +24,9 @@ ${C4ROOT_SOURCE_DIR}/c4source/fimp
 ${C4ROOT_SOURCE_DIR}/c4source/mcp
 ${C4ROOT_SOURCE_DIR}/c4source/stefan
 ${C4ROOT_SOURCE_DIR}/c4source/digitisers/tamex
+${C4ROOT_SOURCE_DIR}/c4source/digitisers/febex
+${C4ROOT_SOURCE_DIR}/c4source/digitisers/vme
+${C4ROOT_SOURCE_DIR}/c4source/digitisers/clocktdc
 ${C4ROOT_SOURCE_DIR}/c4data
 ${C4ROOT_SOURCE_DIR}/c4data/frsData
 ${C4ROOT_SOURCE_DIR}/c4data/lisaData
@@ -38,7 +42,10 @@ ${C4ROOT_SOURCE_DIR}/c4data/bb7Data
 ${C4ROOT_SOURCE_DIR}/c4data/fimpData
 ${C4ROOT_SOURCE_DIR}/c4data/mcpData
 ${C4ROOT_SOURCE_DIR}/c4data/stefanData
-${C4ROOT_SOURCE_DIR}/c4data/tamexData
+${C4ROOT_SOURCE_DIR}/c4data/digitisers/tamexData
+${C4ROOT_SOURCE_DIR}/c4data/digitisers/febexData
+${C4ROOT_SOURCE_DIR}/c4data/digitisers/vmeData
+${C4ROOT_SOURCE_DIR}/c4data/degasData
 ${C4ROOT_SOURCE_DIR}/c4data/baseData
 )
 
@@ -57,8 +64,10 @@ set(SRCS
 ./base/UnpackReader.cxx
 ./base/c4Reader.cxx
 ./base/CorrelationsMap.cxx
-./base/GainShift.cxx
-./digitisers/tamex/TamexReader.cxx
+./digitisers/tamex/TamexFineTimeCalibration.cxx
+./degas/DegasReader.cxx
+./degas/DegasRaw2Cal.cxx
+./degas/DegasCal2Anl.cxx
 ./aida/AidaReader.cxx
 ./aida/AidaCal2Hit.cxx
 ./aida/AidaUnpack2Cal.cxx
@@ -81,8 +90,8 @@ set(SRCS
 ./bgo/BGORaw2Cal.cxx
 ./fatima/FatimaVmeReader.cxx
 ./fatima/FatimaVmeRaw2Cal.cxx
+./fatima/FatimaVmeCalibrator.cxx
 ./bb7/BB7Reader.cxx
-./bb7/BB7FebexReader.cxx
 ./bb7/BB7Raw2Cal.cxx
 ./bb7/BB7FebexRaw2Cal.cxx
 ./bb7/BB7FebexCal2Hit.cxx
@@ -99,6 +108,8 @@ set(SRCS
 )
 
 Set(STRUCT_HEADERS
+./degas/ext_h101_degas.h
+./degas/ext_h101_degas_traces.h
 ./base/ext_h101_unpack.h
 ./aida/ext_h101_aida.h
 ./frs/ext_h101_frs.h
@@ -110,7 +121,7 @@ Set(STRUCT_HEADERS
 ./fatima/ext_h101_fatima.h
 ./fatima/ext_h101_fatimavme.h
 ./bgo/ext_h101_bgo.h
-# ./bb7/ext_h101_bb7vme.h
+./bb7/ext_h101_bb7vme.h
 ./bb7/ext_h101_bbfebex.h
 ./fimp/ext_h101_fimp.h
 ./mcp/ext_h101_mcp.h
@@ -126,7 +137,7 @@ Set(HEADERS ${STRUCT_HEADERS} ${HEADERS})
 
 set(LINKDEF SourceLinkDef.h)
 set(DEPENDENCIES
-    GeoBase ParBase Base FairTools
+    GeoBase ParBase Base FairTools Online
     c4Base c4Data Core Geom GenVector
     Physics Matrix MathCore
     ${ucesb_LIBRARY_SHARED})
@@ -134,3 +145,8 @@ set(DEPENDENCIES
 set(LIBRARY_NAME c4source)
 
 GENERATE_LIBRARY()
+
+add_executable(fimp_calibration_test EXCLUDE_FROM_ALL
+    ../tests/integration/fimp_calibration_test.cxx)
+target_link_libraries(fimp_calibration_test PRIVATE
+    c4source c4Data c4Base Base Online Core FairLogger::FairLogger ${ucesb_LIBRARY_SHARED})

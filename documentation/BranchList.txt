@@ -358,17 +358,47 @@ Branch:
         - "fwr_subsystem_id" [uint16_t]
         - "fwr_t" [uint64_t]
     
-    "BB7VmeData"
-        - "fwr_t" [uint64_t]
-        - "fv7x5_geo" [std::vector<uint32_t>]
-        - "fv7x5_channel" [std::vector<uint32_t>]
-        - "fv7x5_data" [std::vector<uint32_t>]
-    "BB7VmeCalData"
-        - "fwr_t" [uint64_t]
-        - "fsides" [std::vector<int>]
-        - "fstrips" [std::vector<int>]
-        - "fraw_adc" [std::vector<uint32_t>]
+DEGAS FEBEX summary and trace input
+    "DegasRawData" [DegasRawData]
+        - "FEBEX" [std::vector<FebexRawData>] contains boards and their hits.
+        - Raw hit channels are zero-based. DEGAS allocation files use channels 1–16.
+        - "trace" [std::vector<UShort_t>] holds the waveform for its FEBEX hit when available.
+    "DegasCalData" and "DegasAnlData" [TClonesArray of DegasCalData]
+        - Configure the detector map, energy coefficients, time shifts and optional gates through TDegasConfiguration.
+        - Use Get_trace() for the waveform. Summary hits have an empty waveform.
+        - DegasCal2Anl applies the BGO veto and add-back before writing DegasAnlData.
+        - Add-back carries the waveform, crystal and time of the highest-energy contributor.
+        - The BGO veto and DEGAS-BGO spectra use the same detector ID and the configured BGO window and offset.
+          The time difference is BGO WR time minus the absolute DEGAS hit time, in ns.
+        - Read earlier DegasRawData trees with DegasRaw2Cal to rebuild the calibrated and analyzed branches.
 
+    For S100 summary runs, build the DEGAS bank variant used in macros/tests/s100_tests.C:
+        make -C unpack/exps/s100 s100degas
+    Use EXT_STR_h101_degas_onion_t with DegasReader. Regenerate its header with:
+        ./unpack/exps/s100/s100degas /dev/null --ntuple=NOTRIGEVENTNO,UNPACK:degas,STRUCT_HH,id=h101_degas,ext_h101_degas.h
+    For trace runs, build the optional FEBEX unpacker:
+        make -C unpack/exps/febex febextrace
+    Use EXT_STR_h101_degas_traces_onion_t with the same DegasReader and downstream tasks.
+    Regenerate its header with:
+        ./unpack/exps/febex/febextrace /dev/null --ntuple=NOTRIGEVENTNO,UNPACK:degastrace,STRUCT_HH,id=h101_degas_traces,ext_h101_degas_traces.h
+
+Shared VME raw records
+    "V1751RawData" and "V1290RawData" are electronics records in c4data/digitisers/vmeData.
+    New FATIMA and BB7 raw data store zero-based hardware channel numbers.
+    Version-1 FatimaVmeChainRaw used one-based V1290 channels. Use
+    FatimaVmeChainRaw::TdcHardwareChannel when reading its TDC hits from ROOT.
+    FATIMA allocation files and the calibrated TDC channel field use one-based channels.
+
+BB7 raw branches (both provided by BB7Reader)
+    "BB7FebexRawData" [BB7FebexRawData]
+        - "first", "second" [BB7FebexRawCrate]
+        - Each crate contains its White Rabbit timestamp and boards with FEBEX summaries and traces.
+        - Calibration outputs: "BB7FebexCalImplants", "BB7FebexCalDecays".
+    "BB7VmeRawData" [BB7VmeRawData]
+        - "wrTimestamp", "wrId", "procid"
+        - "V7x5" [std::vector<BB7V7x5RawHit>]
+        - "V1290" [std::vector<V1290RawData>]
+        - Calibration outputs: "BB7ImplantData", "BB7DecayData", "BB7ResidualData", "BB7TimeMachineData".
 
 
 FRS up-to-date as of 12/12/24 :: git tag "frs-2.0"

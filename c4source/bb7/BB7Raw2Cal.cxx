@@ -24,10 +24,9 @@
 
 // c4
 #include "BB7Raw2Cal.h"
-#include "BB7VmeData.h"
+#include "BB7RawData.h"
 #include "BB7VmeCalData.h"
 #include "TimeMachineData.h"
-#include "BB7Raw2Cal.h"
 #include "TBB7VmeConfiguration.h"
 #include "c4Logger.h"
 
@@ -40,8 +39,6 @@ BB7Raw2Cal::BB7Raw2Cal()
     ,   header(nullptr)
     ,   fNEvents(0)
     ,   fOnline(kFALSE)
-    ,   v7x5array(nullptr)
-    ,   v1290array(nullptr)
     ,   implantArray(new std::vector<BB7VmeImplantItem>)
     ,   decayArray(new std::vector<BB7VmeDecayItem>)
     ,   residualArray(new std::vector<BB7VmeResidualItem>)
@@ -54,7 +51,6 @@ BB7Raw2Cal::BB7Raw2Cal()
 BB7Raw2Cal::~BB7Raw2Cal()
 {
     if (fTimeMachineArray) delete fTimeMachineArray;
-    // v7x5array is a borrowed input managed by the BB7 reader.
     delete implantArray;
     delete decayArray;
     delete residualArray;
@@ -69,11 +65,9 @@ InitStatus BB7Raw2Cal::Init()
     header = (EventHeader*)mgr->GetObject("EventHeader.");
     c4LOG_IF(error, !header, "Branch EventHeader. not found");
 
-    v7x5array = mgr->InitObjectAs<decltype(v7x5array)>("BB7V7x5Data");
-    c4LOG_IF(fatal, !v7x5array, "Branch BB7V7x5Data not found!");
-    v1290array = mgr->InitObjectAs<decltype(v1290array)>("BB7V1290Data");
-    c4LOG_IF(fatal, !v1290array, "Branch BB7V1290Data not found!");
-    
+    fRaw = mgr->InitObjectAs<decltype(fRaw)>("BB7VmeRawData");
+    c4LOG_IF(fatal, !fRaw, "Branch BB7VmeRawData not found!");
+
     FairRootManager::Instance()->Register("BB7TimeMachineData", "BB7 TimeMachine Data", fTimeMachineArray, !fOnline);
     mgr->RegisterAny("BB7ImplantData", implantArray, !fOnline);
     mgr->RegisterAny("BB7DecayData", decayArray, !fOnline);
@@ -88,13 +82,13 @@ InitStatus BB7Raw2Cal::Init()
 
 void BB7Raw2Cal::Exec(Option_t* option)
 {
-    uint64_t wr_t = 0;
-    for (auto const & v7x5item : *v7x5array)
+    // The VME Time Machine output historically carries a WR stamp only for events with ADC hits.
+    const auto wr_t = fRaw->V7x5.empty() ? 0 : fRaw->wrTimestamp;
+    for (const auto& hit : fRaw->V7x5)
     {
-        wr_t = v7x5item.Get_wr_t();
-        uint32_t geo = v7x5item.Get_geo();
-        uint32_t data = v7x5item.Get_v7x5_data();
-        uint32_t channel = v7x5item.Get_channel();
+        const auto geo = hit.geo;
+        const auto data = hit.value;
+        const auto channel = hit.channel;
 
         // add skipping of time machine
         int detector = 0; int side = 0; int strip = 1; // all hits in 0 0 1 if no mapping
@@ -123,10 +117,10 @@ void BB7Raw2Cal::Exec(Option_t* option)
     }
 
     uint32_t sc41l = 0, sc41r = 0, tmd = 0, tmu = 0;
-    for (auto const & v1290item : *v1290array)
+    for (const auto& hit : fRaw->V1290)
     {
-        uint32_t channel = v1290item.Get_channel();
-        uint32_t data = v1290item.Get_v1290_data();
+        const auto channel = hit.channel;
+        auto data = hit.measurement;
         data *= 0.025; // factor from frs, using same module i think? testing..
 
         if (channel == bb7_config->SC41L()) sc41l = data;

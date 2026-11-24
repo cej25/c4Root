@@ -1,0 +1,51 @@
+# Active routes in unpack/exps/hispec10/hispec10.spec.
+# compiled_slots lists addresses in output slot order. Installed boards are
+# recorded only where the run setup is known.
+# Slot addresses use TAMEX [SFP, card], FEBEX card IDs.
+
+MCP:
+  subevent: mcp_tamex_event
+  member: mcp
+  procid: 50
+  whiterabbit: 0x500
+  digitiser: tamex
+  version: 4
+  compiled_slots: [[1, 0], [1, 1]]
+
+STEFAN:
+  subevent: stefan_febex_event
+  member: stefan
+  procid: 70
+  whiterabbit: 0x700
+  digitiser: febex
+  version: 4
+  traces: false
+  compiled_slots: [0, 1, 2, 3]
+
+FRS_Main:
+  subevent: frs_main_subev
+  member: frsmain
+  procid: 10
+
+FRS_TPC:
+  subevent: frs_tpc_subev
+  member: frstpc
+  procid: 20
+
+FRS_User:
+  subevent: frs_user_subev
+  member: frsuser
+  procid: 30
+
+FRS_TPAT:
+  subevent: frs_tpat_subev
+  member: frstpat
+  procid: 15
+  whiterabbit: 0x100
+
+FRS_Travelling_MUSIC:
+  subevent: frs_travmus_subev
+  member: frstravmus
+  procid: 35
+  control: 35
+  whiterabbit: 0x200

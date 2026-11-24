@@ -25,19 +25,18 @@
 
 // c4
 #include "BB7FebexRaw2Cal.h"
+#include "BB7RawData.h"
+#include "FebexConversions.h"
 #include "BB7FebexIndexSafety.h"
 #include "c4Logger.h"
 
 // ROOT
 #include <vector>
-#include <numeric>
 
 BB7FebexRaw2Cal::BB7FebexRaw2Cal()
     :   FairTask()
     ,   header(nullptr)
-    ,   fNEvents(0)
     ,   fOnline(kFALSE)
-    ,   bb7array(nullptr)
     ,   bb7calImplants(new std::vector<BB7FebexCalItem>)
     ,   bb7calDecays(new std::vector<BB7FebexCalItem>)
 {
@@ -49,7 +48,6 @@ BB7FebexRaw2Cal::BB7FebexRaw2Cal()
 
 BB7FebexRaw2Cal::~BB7FebexRaw2Cal()
 {
-    // bb7array is a borrowed input managed by the BB7 FEBEX reader.
     delete bb7calImplants;
     delete bb7calDecays;
 }
@@ -62,8 +60,8 @@ InitStatus BB7FebexRaw2Cal::Init()
     header = (EventHeader*)mgr->GetObject("EventHeader.");
     c4LOG_IF(error, !header, "Branch EventHeader. not found");
 
-    bb7array = mgr->InitObjectAs<decltype(bb7array)>("BB7FebexData");
-    c4LOG_IF(fatal, !bb7array, "Branch BB7FebexData not found!");
+    fRaw = mgr->InitObjectAs<decltype(fRaw)>("BB7FebexRawData");
+    c4LOG_IF(fatal, !fRaw, "Branch BB7FebexRawData not found!");
     
     mgr->RegisterAny("BB7FebexCalImplants", bb7calImplants, !fOnline);
     mgr->RegisterAny("BB7FebexCalDecays", bb7calDecays, !fOnline);
@@ -77,116 +75,56 @@ void BB7FebexRaw2Cal::Exec(Option_t* option)
     bb7calImplants->clear();
     bb7calDecays->clear();
 
-    if (bb7array->size() > 0) nTotalBB7++;
+    if (!bb7_config->MappingLoaded()) return;
+    CalibrateCrate(fRaw->first, 0);
+    CalibrateCrate(fRaw->second, 1);
+}
 
-    // std::cout << "EVENT :: " << std::endl;
-    for (auto const & bb7item : *bb7array)
+void BB7FebexRaw2Cal::CalibrateCrate(const BB7FebexRawCrate& crate, int crateId)
+{
+    for (const auto& board : crate.boards)
     {
-        // std::cout << "Crate :: " << bb7item.Get_crate_id() << std::endl;
-        // std::cout << "Board :: " << bb7item.Get_board_id() << std::endl;
-        // std::cout << "Channel :: " << bb7item.Get_channel_id_traces() << std::endl;
-        // channel id or channel id traces?
-        std::pair<int, int> febex_mc = {bb7item.Get_board_id(), bb7item.Get_channel_id_traces()};
-        std::pair<int, std::pair<int, int>> unmapped_channel = {bb7item.Get_crate_id(), febex_mc};
-        //Get_channel_id_traces() when taking the id information from the trace header
-        //Get_channel_id() when taking the id information from the header
-
-        if (bb7_config->MappingLoaded())
+        const auto eventTime = board.summary.eventTicks * 10;
+        for (std::size_t i = 0; i < board.summary.hits.size(); ++i)
         {
-            if (detector_mapping.count(unmapped_channel) > 0)
-            {
-                int dssd = detector_mapping.at(unmapped_channel).first;
-                int side = detector_mapping.at(unmapped_channel).second.first;
-                int strip = detector_mapping.at(unmapped_channel).second.second;
-
-                // Reject invalid mapped coordinates before creating calibrated hits.
-                std::size_t channel_index = 0;
-                if (!bb7_febex_index_safety::TryChannelIndex(
-                        dssd, side, strip, bb7_config->DSSDs(), channel_index)) continue;
-
-                // std::cout << "dssd:: " << dssd << std::endl;
-                // std::cout << "side:: " << side << std::endl;
-                // std::cout << "strip:: " << strip << std::endl;
-
-                uint32_t energy = bb7item.Get_channel_energy();
-                double energy_calib = energy;
-
-                if (bb7_config->CalibrationLoaded())
-                {
-                    // do calibration, calculation, whatever
-                    // energy_calib = ... 
-                }
-
-                if (energy > 400000000)
-                {
-                    // std::cout << "weird energy, I guess:: " << std::endl;
-                    // std::cout << "Channel:: " << bb7item.Get_channel_id() << std::endl;
-                    // std::cout << "Time:: " << bb7item.Get_channel_time() << std::endl;
-
-                    continue;
-                }
-
-                int64_t absolute_time = bb7item.Get_wr_t() + bb7item.Get_channel_time() - bb7item.Get_board_event_time();
-
-                if (bb7item.Get_overflow() == 1 || energy > implantThreshold || energy < 0)
-                {
-                    // implant 
-                    auto & entry = bb7calImplants->emplace_back();
-                    entry.SetAll(
-                        bb7item.Get_wr_t(),
-                        dssd,
-                        side,
-                        strip,
-                        bb7item.Get_channel_energy(),
-                        bb7item.Get_trace(),
-                        energy_calib,
-                        bb7item.Get_board_event_time(),
-                        bb7item.Get_channel_time(),
-                        absolute_time,
-                        bb7item.Get_pileup(),
-                        bb7item.Get_overflow()
-                    );
-                }
-                else if (energy > decayThreshold)
-                {
-                    // decay
-                    auto & entry = bb7calDecays->emplace_back();
-                    entry.SetAll(
-                        bb7item.Get_wr_t(),
-                        dssd,
-                        side,
-                        strip,
-                        bb7item.Get_channel_energy(),
-                        bb7item.Get_trace(),
-                        energy_calib,
-                        bb7item.Get_board_event_time(),
-                        bb7item.Get_channel_time(),
-                        absolute_time,
-                        bb7item.Get_pileup(),
-                        bb7item.Get_overflow()
-                    );
-                }
-                else
-                {
-                    if (count_in_event == 0)
-                    {
-                        nNothings++;
-                        count_in_event++;
-                    }
-                }
-            }
-            else
+            const auto& hit = board.summary.hits[i];
+            const auto mapped = detector_mapping.find({crateId, {board.summary.card, hit.channel}});
+            if (mapped == detector_mapping.end())
             {
                 if (count_in_event == 0)
                 {
                     nUnmapped++;
                     count_in_event++;
                 }
+                continue;
             }
-            // else c4LOG(warn, "Unmapped data? Board: "  << unmapped_channel.second.first << " Channel: " << unmapped_channel.second.second);
 
-            // possibly stuff with residuals
+            const auto& [dssd, sideAndStrip] = mapped->second;
+            const auto& [side, strip] = sideAndStrip;
+            std::size_t channelIndex = 0;
+            if (!bb7_febex_index_safety::TryChannelIndex(
+                    dssd, side, strip, bb7_config->DSSDs(), channelIndex)) continue;
 
+            const auto energy = febex::GammaSignedEnergy(hit.energyWord);
+            // Preserve the original cut: negative energies were rejected after conversion to unsigned.
+            if (energy < 0) continue;
+
+            const bool implant = hit.overflow || energy > implantThreshold;
+            if (!implant && energy <= decayThreshold)
+            {
+                if (count_in_event == 0)
+                {
+                    nNothings++;
+                    count_in_event++;
+                }
+                continue;
+            }
+
+            const auto channelTime = hit.channelTicks * 10;
+            const auto absoluteTime = crate.wrTimestamp + channelTime - eventTime;
+            auto& output = implant ? *bb7calImplants : *bb7calDecays;
+            output.emplace_back().SetAll(crate.wrTimestamp, dssd, side, strip, energy,
+                board.traces[i], energy, eventTime, channelTime, absoluteTime, hit.pileup, hit.overflow);
         }
     }
 }

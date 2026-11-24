@@ -1,12 +1,17 @@
 // -*- C++ -*-
 
 // #include "../../../config/setup.h"
-#include "../../common/whiterabbit.spec"
+#include "s100_config.gen.spec"
+#include "../../common/whiterabbit_13bit.spec"
+#define FEBEX_EXPORT_BOARD_METADATA
 #include "../../common/gsi_febex4.spec"
+#undef FEBEX_EXPORT_BOARD_METADATA
 #include "../../common/gsi_tamex4.spec"
+#include "tamex_payload.spec"
 #include "../../common/vme_caen_v1751.spec"
 //#include "../../common/vme_caen_v1x90.spec"
 #include "../frs/frs_s100.spec" //r3b frs
+#include "../../common/vme_caen_v1290_geo.spec"
 #include "fatima_vme.spec"
 #include "../../common/general.spec"
 
@@ -21,7 +26,7 @@ SUBEVENT(bgo_tamex_subevent)
 {
     select optional
     {
-        ts = TIMESTAMP_WHITERABBIT_EXTENDED(id=0x1900);
+        ts = TIMESTAMP_WHITERABBIT(id = S100_WR_BGO);
     };
 
     optional UINT32 be { 0_31: b = MATCH(0xbad00bad);}
@@ -38,74 +43,42 @@ SUBEVENT(bgo_tamex_subevent)
 
     select several
     {
-        tamex[0] = TAMEX4_SFP(sfp=1,card=0);
-        tamex[1] = TAMEX4_SFP(sfp=1,card=1);
-        tamex[2] = TAMEX4_SFP(sfp=1,card=2);
+        S100_TAMEX_CARDS_BGO
     }  
 }
 
 SUBEVENT(aida_subev)
 {
-    ts =TIMESTAMP_WHITERABBIT(id = 0x700);
+    ts = TIMESTAMP_WHITERABBIT(id = S100_WR_AIDA);
     external data = EXT_AIDA();
 }
 
-// this must change to be more general, or name should change from febex_subev
 SUBEVENT(febex_subev)
 {
     select optional
     {
-        ts = TIMESTAMP_WHITERABBIT(id = 0x400);
+        ts = TIMESTAMP_WHITERABBIT(id = S100_WR_GERMANIUM);
     };
-
     select several
     {
         padding = FEBEX_PADDING();
     };
-
     select several
     {
-        data[0] = FEBEX_EVENT(card = 0);
-        data[1] = FEBEX_EVENT(card = 1);
-        data[2] = FEBEX_EVENT(card = 2);
-        data[3] = FEBEX_EVENT(card = 3);
-        data[4] = FEBEX_EVENT(card = 4);
-        data[5] = FEBEX_EVENT(card = 5);
+        S100_DEGAS_CARDS
     };
 }
 
 SUBEVENT(fatima_tamex_subev)
 {
-
-    select optional
-    {
-        ts = TIMESTAMP_WHITERABBIT_EXTENDED(id = 0x1600);
-    };
-
-    select optional
-    {
-        trigger_window = TAMEX4_HEADER();
-    };
-    
-    select several
-    {
-        padding = TAMEX4_PADDING();
-    };
-
-    select several
-    {
-        tamex[0] = TAMEX4_SFP(sfp = 0, card = 0);
-        tamex[1] = TAMEX4_SFP(sfp = 0, card = 1);
-        tamex[2] = TAMEX4_SFP(sfp = 0, card = 2);
-        tamex[3] = TAMEX4_SFP(sfp = 0, card = 3);
-    };
+    S100_TAMEX_PAYLOAD(S100_WR_FATIMA, S100_TAMEX_CARDS_FATIMA)
 }
 
 SUBEVENT(fatima_vme_subev)
 {
     select optional
     {
-        ts = TIMESTAMP_WHITERABBIT_EXTENDED(id = 0x1500);
+        ts = TIMESTAMP_WHITERABBIT(id = S100_WR_FATIMAVME);
     };
 
     select several
@@ -118,64 +91,28 @@ SUBEVENT(fatima_vme_subev)
         scalers = FATIMA_VME_SCALERS();
     };
 
-    select optional { qdc1 = VME_CAEN_V1751(board=6); }
-    select optional { qdc2 = VME_CAEN_V1751(board=7); }
-    select optional { qdc3 = VME_CAEN_V1751(board=8); }
-    select optional { qdc4 = VME_CAEN_V1751(board=9); }
-    select optional { qdc5 = VME_CAEN_V1751(board=10); }
-
-   
+    // V1751 aggregate header identifies the physical board. Keep the
+    // output slot tied to the board ID, even if earlier boards are absent.
+    // The error marker can occur among module payloads.
     select several
     {
+        S100_V1751_BANKS
         error2 = ERR_WORD_SIX();
     };
 
-    // we don't always get information from both TDC boards
-    select optional
-    {
-        tdc1 = VME_CAEN_V1290_N();
-    };
-
+    // The installed V1290s use GEOs 12 and 13. The remaining slots are reserved.
+    // Both modules can be absent, and error words can appear between them.
+    // Their selection indices are fixed by GEO, not arrival order.
     select several
     {
+        S100_V1290_BANKS
         error3 = ERR_WORD_SIX();
-    };
-
-    select optional
-    {
-        tdc2 = VME_CAEN_V1290_N();
     };
 }
 
 SUBEVENT(bplast_subev)
 {
-    select optional
-    {
-        ts = TIMESTAMP_WHITERABBIT(id = 0x500);
-    };
-
-    select optional
-    {
-        trigger_window = TAMEX4_HEADER();
-    };
-
-    select several
-    {
-        padding = TAMEX4_PADDING();
-    };
-
-    select several
-    {
-        tamex[0] = TAMEX4_SFP(sfp = 0, card = 0);
-        tamex[1] = TAMEX4_SFP(sfp = 0, card = 1);
-        tamex[2] = TAMEX4_SFP(sfp = 0, card = 2);
-        tamex[3] = TAMEX4_SFP(sfp = 0, card = 3);
-        tamex[4] = TAMEX4_SFP(sfp = 0, card = 4);
-        tamex[5] = TAMEX4_SFP(sfp = 0, card = 5);
-        tamex[6] = TAMEX4_SFP(sfp = 0, card = 6);
-        tamex[7] = TAMEX4_SFP(sfp = 0, card = 7);
-        tamex[8] = TAMEX4_SFP(sfp = 0, card = 8);
-    };
+    S100_TAMEX_PAYLOAD(S100_WR_BPLAST, S100_TAMEX_CARDS_BPLAST)
 }
 
 SUBEVENT(frs_main_subev)
@@ -254,7 +191,7 @@ SUBEVENT(frs_tpat_subev)
 {
     select optional
     {
-        wr = TIMESTAMP_WHITERABBIT(id = 0x100);
+        wr = TIMESTAMP_WHITERABBIT(id = S100_WR_FRSTPAT);
     };
 
     select several
@@ -276,7 +213,7 @@ SUBEVENT(bm_subev)
 
     select optional
     {
-        ts = TIMESTAMP_WHITERABBIT_EXTENDED(id=0x1700);
+        ts = TIMESTAMP_WHITERABBIT(id = S100_WR_BEAMMONITOR);
     }
 
     // CEJ: wrap in select several later to catch bad events
@@ -320,21 +257,25 @@ SUBEVENT(bm_subev)
     }
 }
 
+#ifdef S100_WITH_DEGAS
+#define germanium degas
+#endif
+
 EVENT
 {
-    revisit aida = aida_subev(type = 10, subtype = 1, procid = 90, control = 37);
-    germanium = febex_subev(type = 10, subtype = 1, procid = 60, control = 20);
-    fatima = fatima_tamex_subev(type = 10, subtype = 1, procid = 75, control = 20);
-    fatimavme = fatima_vme_subev(procid = 70); // control 20, type 10, subtype 1
-    bplast = bplast_subev(type = 10, subtype = 1, procid = 80, control = 20);
-    bgo = bgo_tamex_subevent(procid = 100);
+    revisit aida = aida_subev(type = 10, subtype = 1, procid = S100_PROCID_AIDA, control = 37);
+    germanium = febex_subev(type = 10, subtype = 1, procid = S100_PROCID_GERMANIUM, control = 20);
+    fatima = fatima_tamex_subev(type = 10, subtype = 1, procid = S100_PROCID_FATIMA, control = 20);
+    fatimavme = fatima_vme_subev(procid = S100_PROCID_FATIMAVME); // control 20, type 10, subtype 1
+    bplast = bplast_subev(type = 10, subtype = 1, procid = S100_PROCID_BPLAST, control = 20);
+    bgo = bgo_tamex_subevent(procid = S100_PROCID_BGO);
 
-    frsmain = frs_main_subev(procid = 10);
-    frstpc = frs_tpc_subev(procid = 20);
-    frsuser = frs_user_subev(procid = 30);
-    frstpat = frs_tpat_subev(procid = 15);
+    frsmain = frs_main_subev(procid = S100_PROCID_FRSMAIN);
+    frstpc = frs_tpc_subev(procid = S100_PROCID_FRSTPC);
+    frsuser = frs_user_subev(procid = S100_PROCID_FRSUSER);
+    frstpat = frs_tpat_subev(procid = S100_PROCID_FRSTPAT);
     
-    beammonitor = bm_subev(procid = 1);
+    beammonitor = bm_subev(procid = S100_PROCID_BEAMMONITOR);
 
     ignore_unknown_subevent;
 };

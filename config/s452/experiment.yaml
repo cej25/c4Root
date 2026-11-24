@@ -1,0 +1,22 @@
+# Active routes in unpack/exps/s452/s452.spec.
+# compiled_slots lists addresses in output slot order. Installed boards are
+# recorded only where the run setup is known.
+# Use the S100 addresses for the confirmed five-QDC, two-TDC setup.
+# The historical allocation file also lists QDC IDs 11 and 12.
+
+FATIMA_VME:
+  subevent: fatima_vme_subev
+  member: fatimavme
+  type: 10
+  subtype: 1
+  procid: 70
+  control: 20
+  subcrate: 0
+  whiterabbit: 0x1500
+  digitiser: vme
+  v1751:
+    boards: [6, 7, 8, 9, 10]
+    compiled_slots: [6, 7, 8, 9, 10, 31]
+  v1290:
+    boards: [12, 13]
+    compiled_slots: [12, 13, 31, 30, 29, 28]

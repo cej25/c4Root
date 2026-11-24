@@ -604,27 +604,24 @@ set(
 )
 
 
-if(ROOT_VERSION)
-
-    set(
-        ROOT_FOUND_VERSION
-        "${ROOT_VERSION}"
-    )
-
-elseif(NOT ROOT_FOUND_VERSION AND DEFINED found_vers)
-
-    set(
-        ROOT_FOUND_VERSION
-        "${found_vers}"
-    )
-
+# FairRoot's legacy ROOTMacros compare ROOT_FOUND_VERSION as an integer
+# when deciding whether to install the ROOT 6 autoload maps and PCMs.
+if(NOT ROOT_FOUND_VERSION MATCHES "^[0-9]+$")
+    if(ROOT_VERSION MATCHES "^([0-9]+)\\.([0-9]+)[./]([0-9]+)")
+        math(EXPR ROOT_FOUND_VERSION
+            "${CMAKE_MATCH_1} * 10000 + ${CMAKE_MATCH_2} * 100 + ${CMAKE_MATCH_3}")
+    elseif(DEFINED found_vers)
+        set(ROOT_FOUND_VERSION "${found_vers}")
+    endif()
 endif()
 
-message(
-    STATUS
-    "ROOT version: ${BGreen}${ROOT_FOUND_VERSION}${CR}"
-)
+if(ROOT_VERSION)
+    set(_root_version "${ROOT_VERSION}")
+else()
+    set(_root_version "${ROOT_FOUND_VERSION}")
+endif()
 
+message(STATUS "ROOT version: ${BGreen}${_root_version}${CR}")
 
 set(
     FAIRROOT_LIBRARY_PROPERTIES
@@ -1110,12 +1107,6 @@ c4_print_dependency(
 
 
 # ROOT
-if(ROOT_VERSION)
-    set(_root_version "${ROOT_VERSION}")
-else()
-    set(_root_version "${ROOT_FOUND_VERSION}")
-endif()
-
 if(ROOT_INSTALL_DIR)
 
     set(

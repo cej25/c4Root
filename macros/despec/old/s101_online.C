@@ -28,7 +28,9 @@ typedef struct EXT_STR_h101_t
     EXT_STR_h101_frs_onion_t frs;
     EXT_STR_h101_beammonitor_onion_t beammonitor;
     EXT_STR_h101_bgo_onion_t bgo;
-//     EXT_STR_h101_bbfebex_onion_t bbfebex;
+#if BB7_ON
+    EXT_STR_h101_bbfebex_onion_t bbfebex;
+#endif
 } EXT_STR_h101;
 
 
@@ -154,12 +156,11 @@ void s101_online()
         source->AddReader(unpackaida);
     }
 
-//     if (BB7_ON)
-//     {
-//        BB7FebexReader* unpackbb7 = new BB7FebexReader((EXT_STR_h101_bbfebex_onion*)&ucesb_struct.bbfebex, offsetof(EXT_STR_h101, bbfebex));
-//        unpackbb7->SetOnline(true);
-//        source->AddReader(unpackbb7);
-//     }
+#if BB7_ON
+    auto* unpackbb7 = new BB7Reader(&ucesb_struct.bbfebex, offsetof(EXT_STR_h101, bbfebex));
+    unpackbb7->SetOnline(true);
+    source->AddReader(unpackbb7);
+#endif
 
     if (BPLAST_ON)
     {

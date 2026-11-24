@@ -19,19 +19,23 @@
 #pragma link C++ class std::vector<AidaHit>+;
 
 // BB7
-#pragma link C++ class BB7FebexItem+;
-#pragma link C++ class BB7EmptyItem+;
+#pragma link C++ class BB7FebexRawBoard+;
+#pragma link C++ class std::vector<BB7FebexRawBoard>+;
+#pragma link C++ class BB7FebexRawCrate+;
+#pragma link C++ class BB7FebexRawData+;
+#pragma link C++ class BB7V7x5RawHit+;
+#pragma link C++ class std::vector<BB7V7x5RawHit>+;
+#pragma link C++ class BB7VmeRawData+;
 #pragma link C++ class BB7FebexCalItem+;
 #pragma link C++ class BB7FebexHitItem+;
 
-#pragma link C++ class BB7V7x5Item+;
-#pragma link C++ class BB7V1290Item+;
 #pragma link C++ class BB7VmeImplantItem+;
 #pragma link C++ class BB7VmeDecayItem+;
 #pragma link C++ class BB7VmeResidualItem+;
 
 // BeamMonitor
 #pragma link C++ class BeamMonitorItem+;
+#pragma link C++ class BeamMonitorRawData+;
 
 // BGO
 #pragma link C++ class BGOTwinpeaksData+;
@@ -45,8 +49,14 @@
 #pragma link C++ class FatimaTwinpeaksData+;
 #pragma link C++ class FatimaTwinpeaksCalData+;
 
+#pragma link C++ class V1751RawData+;
+#pragma link C++ class V1290RawData+;
+#pragma link C++ class FatimaVmeQdcCalHit+;
+#pragma link C++ class FatimaVmeTdcCalHit+;
 #pragma link C++ class FatimaVmeQDCItem+;
 #pragma link C++ class FatimaVmeTDCItem+;
+#pragma link C++ class std::vector<FatimaVmeQDCItem>+;
+#pragma link C++ class std::vector<FatimaVmeTDCItem>+;
 #pragma link C++ class FatimaVmeQDCCalItem+;
 #pragma link C++ class FatimaVmeTDCCalItem+;
 #pragma link C++ class FatimaVmeResiduals+;
@@ -83,12 +93,35 @@
 // Germanium
 #pragma link C++ class GermaniumFebexData+;
 #pragma link C++ class GermaniumCalData+;
+#pragma read sourceClass="GermaniumCalData" version="[1-2]" targetClass="GermaniumCalData" \
+    source="uint32_t fdetector_id" target="ftrace" code="{ ftrace.clear(); }"
 #pragma link C++ class GermaniumFebexTraceData+;
 
 // Shared TAMEX electronics Raw data
 #pragma link C++ class TamexRawWord+;
 #pragma link C++ class std::vector<TamexRawWord>+;
 #pragma link C++ class TamexRawData+;
+#pragma link C++ class std::vector<TamexRawData>+;
+#pragma link C++ class std::vector<V1751RawData>+;
+#pragma link C++ class std::vector<V1290RawData>+;
+#pragma link C++ class FatimaTamexRaw+;
+#pragma link C++ class FatimaVmeChainRaw+;
+// Version 1 used one-based UCESB indices for FATIMA. BB7 already stored hardware channels.
+// The existing wrId leaf triggers the rule for split ROOT trees.
+#pragma read sourceClass="FatimaVmeChainRaw" version="[1]" targetClass="FatimaVmeChainRaw" \
+    source="std::uint16_t wrId" target="tdcChannelBase" code="{ tdcChannelBase = 1; }"
+#pragma link C++ class FatimaRawData+;
+#pragma link C++ class FebexRawHit+;
+#pragma read sourceClass="FebexRawHit" version="[1]" targetClass="FebexRawHit" \
+    source="" target="hasConvertedValues" code="{ hasConvertedValues = false; }"
+#pragma read sourceClass="FebexRawHit" version="[1-2]" targetClass="FebexRawHit" \
+    source="std::uint32_t energyWord" target="trace" code="{ trace.clear(); }"
+#pragma link C++ class std::vector<FebexRawHit>+;
+#pragma link C++ class FebexRawData+;
+#pragma link C++ class std::vector<FebexRawData>+;
+#pragma link C++ class DegasRawData+;
+#pragma link C++ class TDegasConfiguration+;
+#pragma link C++ class DegasCalData+;
 
 // HISPEC10 MCP
 #pragma link C++ class H10MCPTwinpeaksData+;

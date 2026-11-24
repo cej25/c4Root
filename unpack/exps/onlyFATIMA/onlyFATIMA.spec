@@ -1,6 +1,6 @@
 // -*- C++ -*-
 
-#include "../../common/whiterabbit.spec"
+#include "../../common/whiterabbit_13bit.spec"
 #include "../../common/gsi_tamex4.spec"
 
 DUMMY()
@@ -14,7 +14,7 @@ DUMMY()
 SUBEVENT(fatima_tamex_subev)
 {
     select optional {
-    	ts = TIMESTAMP_WHITERABBIT_EXTENDED(id=0x1600);
+        ts = TIMESTAMP_WHITERABBIT(id=0x1600);
     }
     trigger_window = TAMEX4_HEADER();
     select several 

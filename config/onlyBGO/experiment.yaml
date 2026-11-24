@@ -1,0 +1,17 @@
+# Active routes in unpack/exps/onlyBGO/onlyBGO.spec.
+# compiled_slots lists addresses in output slot order. Installed boards are
+# recorded only where the run setup is known.
+# Slot addresses use TAMEX [SFP, card].
+
+BGO:
+  subevent: bgo_tamex_subevent
+  member: bgo
+  type: 10
+  subtype: 1
+  procid: 75
+  control: 20
+  subcrate: 0
+  whiterabbit: 0x1600
+  digitiser: tamex
+  version: 4
+  compiled_slots: [[0, 0], [0, 1]]

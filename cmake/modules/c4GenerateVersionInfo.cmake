@@ -2,7 +2,7 @@
  Find_Package(Git)
 
  If(GIT_FOUND AND EXISTS "${SOURCE_DIR}/.git")
-   Execute_Process(COMMAND ${GIT_EXECUTABLE} describe
+   Execute_Process(COMMAND ${GIT_EXECUTABLE} describe --always
 	   	             #OUTPUT_VARIABLE R3BROOT_GIT_VERSION
 		               OUTPUT_VARIABLE C4ROOT_GIT_VERSION
                    OUTPUT_STRIP_TRAILING_WHITESPACE

@@ -157,7 +157,7 @@ void s101_tests()
 
     if (BB7_ON)
     {
-       BB7FebexReader* unpackbb7 = new BB7FebexReader((EXT_STR_h101_bbfebex_onion*)&ucesb_struct.bbfebex, offsetof(EXT_STR_h101, bbfebex));
+       BB7Reader* unpackbb7 = new BB7Reader((EXT_STR_h101_bbfebex_onion*)&ucesb_struct.bbfebex, offsetof(EXT_STR_h101, bbfebex));
        unpackbb7->SetOnline(true);
        source->AddReader(unpackbb7);
     }

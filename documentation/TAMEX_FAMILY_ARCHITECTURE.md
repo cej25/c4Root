@@ -1,23 +1,20 @@
 # TAMEX digitiser family
 
-Status: **initial specification / non-production prototype**. The old detector readers
-remain in use. Do not switch experiments to the new decoder without event-level
-comparison against recorded legacy outputs.
+## Readout and calibration
 
-## Goal and pipeline
+The S100 FATIMA, bPlast and BGO readers register their native UCESB structures.
+They share the electronics transfer in `TamexReader.h`, which reads the board
+columns and writes `TamexRawData` records with board and trigger metadata, White
+Rabbit time, epoch words and edges. The format traits describe TAMEX4 and are
+independent of the physical board slot.
 
-`UCESB -> TamexReader (family + selected format) -> TamexRawData ->
- detector Raw2Cal -> detector Cal -> Hit -> analysis`
+`TamexFineTimeCalibration` builds the fine-time tables. Its implementation reads
+the ROOT histogram files used by the detector tasks. `TamexPulseBuilder.h` uses
+those tables to pair leading and trailing edges and supplies the per-channel
+Twinpeaks records consumed by the existing fast/slow matching in Raw2Cal.
 
-- A reader understands **electronics**, not the connected detector. Detector
-  identity, channel mapping, physical calibration and detector-specific hit
-  building first appear at **Raw2Cal**.
-- A version-specific format describes how words are encoded. Shared parsing,
-  validation and timing/calibration helpers are implemented once in the TAMEX
-  family, rather than copied for TAMEX4 and future supported versions.
-- Treat a **format version** and a **physical module instance** separately:
-  multiple modules can use identical decoder code but distinct identities,
-  calibration tables and clock configuration.
+Detector mapping and detector calibration stay in the detector tasks. Compare
+event-level results against recorded legacy outputs when migrating an experiment.
 
 ## Test
 
