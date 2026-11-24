@@ -159,8 +159,14 @@ class Run:
             log = ""
             if self.log.exists():
                 with self.log.open("rb") as file:
-                    file.seek(max(0, self.log.stat().st_size - 16000))
-                    log = file.read(16000).decode(errors="replace")
+                    size = os.fstat(file.fileno()).st_size
+                    if size <= 32000:
+                        log = file.read(32000).decode(errors="replace")
+                    else:
+                        head = file.read(16000).decode(errors="replace")
+                        file.seek(size - 16000)
+                        tail = file.read(16000).decode(errors="replace")
+                        log = head + "\n\n[Middle of log omitted]\n\n" + tail
             return {"running": self.process is not None and code is None, "exitCode": code, "log": log}
 
 
