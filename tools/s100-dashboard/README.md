@@ -18,7 +18,9 @@ from its CDN by default. For an offline DAQ network, pass
 Choose a subsystem tab, then select one TH1 spectrum and one TH2 matrix.
 Tabs follow the top-level histogram folders published by the ROOT run. While
 waiting for a run, the tabs are FRS, AIDA, bPlast, FATIMA and DEGAS.
-Histogram selections are remembered per tab.
+Histogram selections are remembered per tab. The last discovered tabs remain
+after ROOT exits, including after a page reload. The currently displayed
+plots retain their last snapshots until you switch tabs or reload the page.
 When available, the initial plots use the DEGAS summed energy and energy
 versus detector index. The plot panels have independent refresh and pause
 controls. Zoom is retained during refresh. The layout, selection, refresh

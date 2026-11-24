@@ -15,7 +15,8 @@ const subsystemAliases = new Map([
   ...defaultSubsystems.map(name => [name.toLowerCase(), name]),
 ]);
 let subsystem = saved.subsystem || "DEGAS";
-let groups = new Map(defaultSubsystems.map(name => [name, []]));
+let lastGroups = new Map(Object.entries(saved.groups || {}));
+let groups = lastGroups.size ? lastGroups : new Map(defaultSubsystems.map(name => [name, []]));
 let selections = new Map(Object.entries(saved.selections || {}));
 let connected = false;
 let discoveredHistograms = false;
@@ -37,7 +38,7 @@ async function api(path, options) {
 }
 
 function persist() {
-  const value = { subsystem, selections: Object.fromEntries(selections), layout: $("#layout").value, panels: panels.map((panel) => ({
+  const value = { subsystem, groups: Object.fromEntries(lastGroups), selections: Object.fromEntries(selections), layout: $("#layout").value, panels: panels.map((panel) => ({
     path: panel.path, refresh: panel.refresh.value, style: panel.style.value, colour: panel.colour.value,
   })) };
   try { localStorage.setItem(stateKey, JSON.stringify(value)); } catch {}
@@ -128,7 +129,7 @@ function restart(panel) {
   clearTimeout(panel.timer);
   panel.request?.abort();
   const epoch = ++panel.epoch;
-  if (activeView === "monitor" && !panel.paused && panel.path) refreshPlot(panel, epoch);
+  if (activeView === "monitor" && connected && !panel.paused && panel.path) refreshPlot(panel, epoch);
 }
 
 async function refreshPlot(panel, epoch) {
@@ -190,7 +191,8 @@ function showSubsystem(name) {
     panel.path = nextPath;
     panel.select.value = panel.path;
     panel.select.disabled = !selected;
-    if (!selected) panel.status.textContent = connected ? "No matching histogram" : "Waiting for ROOT";
+    if (!connected) panel.status.textContent = panel.snapshot ? "Last live snapshot" : "Waiting for ROOT";
+    else if (!selected) panel.status.textContent = "No matching histogram";
     restart(panel);
   }
   if (items.length) selections.set(name, panels.map(panel => panel.path));
@@ -222,13 +224,15 @@ async function reloadHistograms() {
     discoveredHistograms = items.length > 0;
     $("#connection").textContent = items.length ? `${rootLabel} · ${items.length} histograms`
       : "ROOT is reachable. No TH1 or TH2 histograms are available.";
-    groups = items.length ? groupHistograms(items) : new Map(defaultSubsystems.map(name => [name, []]));
+    if (items.length) lastGroups = groupHistograms(items);
+    else connected = false;
+    if (lastGroups.size) groups = lastGroups;
     showTabs();
   } catch (error) {
     connected = false;
     discoveredHistograms = false;
     $("#connection").textContent = "ROOT connection unavailable · " + error.message;
-    groups = new Map(defaultSubsystems.map(name => [name, []]));
+    if (lastGroups.size) $("#connection").textContent += " · Showing last run";
     showTabs();
   } finally {
     button.disabled = false;
