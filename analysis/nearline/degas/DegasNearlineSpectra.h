@@ -23,6 +23,9 @@ class TDirectory;
 class DegasNearlineSpectra : public FairTask
 {
     public:
+        void SetSpectraDirectory(const TString& name) { fSpectraDirectory = name; }
+        void FillEvent();
+
         DegasNearlineSpectra();
         DegasNearlineSpectra(const TString& name, Int_t verbose = 1);
 
@@ -71,6 +74,7 @@ class DegasNearlineSpectra : public FairTask
 
 
     private:
+        TString fSpectraDirectory; //! Alternate directory for gated spectra
         TClonesArray* fHitGe;
 
         const TDegasConfiguration * degas_configuration;

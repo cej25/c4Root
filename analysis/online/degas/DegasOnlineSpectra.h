@@ -24,6 +24,9 @@ class TH1;
 class DegasOnlineSpectra : public FairTask
 {
     public:
+        void SetSpectraDirectory(const TString& name) { fSpectraDirectory = name; }
+        void FillEvent();
+
         DegasOnlineSpectra();
         DegasOnlineSpectra(const TString& name, Int_t verbose = 1);
 
@@ -83,6 +86,7 @@ class DegasOnlineSpectra : public FairTask
 
 
     private:
+        TString fSpectraDirectory; //! Alternate directory for gated spectra
         TClonesArray* fHitGe;
 
         const TDegasConfiguration * degas_configuration;

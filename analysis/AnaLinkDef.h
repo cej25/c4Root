@@ -8,6 +8,9 @@
 
 
 // online
+#pragma link C++ class IonCorrelations+;
+#pragma link C++ class IonCorrelationsOnline+;
+#pragma link C++ class IonCorrelationsNearline+;
 #pragma link C++ class AidaOnlineSpectra+;
 #pragma link C++ class AidaPulserWalkthrough+;
 #pragma link C++ class FrsOnlineSpectra+;

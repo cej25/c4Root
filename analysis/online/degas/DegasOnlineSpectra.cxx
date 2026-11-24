@@ -68,13 +68,18 @@ void DegasOnlineSpectra::SetParContainers()
 
 InitStatus DegasOnlineSpectra::Init()
 {
+    const auto canvasName = [this](const char* name) {
+        return fSpectraDirectory.IsNull() ? TString(name) : fSpectraDirectory + "_" + name;
+    };
+
     FairRootManager* mgr = FairRootManager::Instance();
     c4LOG_IF(fatal, NULL == mgr, "FairRootManager not found");
 
     FairRunOnline * run = FairRunOnline::Instance();
-    run->GetHttpServer()->Register("", this);
+    if (run && run->GetHttpServer()) run->GetHttpServer()->Register("", this);
 
-    run->GetHttpServer()->RegisterCommand("Reset_Ge_Histos", Form("/Objects/%s/->Reset_Histo()", GetName()));
+    if (run && run->GetHttpServer())
+        run->GetHttpServer()->RegisterCommand(fSpectraDirectory.IsNull() ? "Reset_Ge_Histos" : Form("Reset_%s", fSpectraDirectory.Data()), Form("/Objects/%s/->Reset_Histo()", GetName()));
 
 
     header = (EventHeader*)mgr->GetObject("EventHeader.");
@@ -102,8 +107,9 @@ InitStatus DegasOnlineSpectra::Init()
 
     TDirectory::TContext ctx(nullptr);
 
-    dir_degas = new TDirectory("DEGAS", "DEGAS", "", 0);
-    mgr->Register("DEGAS", "DEGAS Directory", dir_degas, false);
+    dir_degas = new TDirectory(fSpectraDirectory.IsNull() ? "DEGAS" : fSpectraDirectory.Data(), "DEGAS", "", 0);
+    if (fSpectraDirectory.IsNull()) mgr->Register("DEGAS", "DEGAS Directory", dir_degas, false);
+    if (!histograms) return kFATAL;
     histograms->Add(dir_degas);
 
     dir_degas_energy = dir_degas->mkdir("Calibrated Energy Spectra");
@@ -122,7 +128,7 @@ InitStatus DegasOnlineSpectra::Init()
 
 
     // energy spectra:
-    c_degas_energy  = new TCanvas("c_degas_energy","Calibrated Degas spectra",650,350);
+    c_degas_energy  = new TCanvas(canvasName("c_degas_energy"),"Calibrated Degas spectra",650,350);
     c_degas_energy->Divide((number_of_detectors_to_plot<5) ? number_of_detectors_to_plot : 5,(number_of_detectors_to_plot%5==0) ? (number_of_detectors_to_plot/5) : (number_of_detectors_to_plot/5 + 1));
     h1_degas_energy = new TH1*[number_of_detectors_to_plot];
     for (int ihist = 0; ihist < number_of_detectors_to_plot; ihist++)
@@ -135,7 +141,7 @@ InitStatus DegasOnlineSpectra::Init()
     dir_degas_energy->Append(c_degas_energy);
 
     // time spectra:
-    c_degas_time  = new TCanvas("c_degas_time","Calibrated Degas spectra",650,350);
+    c_degas_time  = new TCanvas(canvasName("c_degas_time"),"Calibrated Degas spectra",650,350);
     c_degas_time->Divide((number_of_detectors_to_plot<5) ? number_of_detectors_to_plot : 5,(number_of_detectors_to_plot%5==0) ? (number_of_detectors_to_plot/5) : (number_of_detectors_to_plot/5 + 1));
     h1_degas_time = new TH1*[number_of_detectors_to_plot];
     for (int ihist = 0; ihist < number_of_detectors_to_plot; ihist++)
@@ -146,45 +152,45 @@ InitStatus DegasOnlineSpectra::Init()
     }
     c_degas_time->cd(0);
 
-    c_degas_energy_vs_detidx = new TCanvas("c_degas_energy_vs_detidx","Calibrated Degas spectra vs. detector index",650,350);
+    c_degas_energy_vs_detidx = new TCanvas(canvasName("c_degas_energy_vs_detidx"),"Calibrated Degas spectra vs. detector index",650,350);
     h2_degas_energy_vs_detidx = MakeTH2(dir_degas_energy, "F", "h2_degas_energy_vs_detidx","Calibrated Degas spectra vs. detector index",fenergy_nbins,fenergy_bin_low,fenergy_bin_high,number_of_detectors_to_plot,0,number_of_detectors_to_plot, "Energy [keV]", "Detector");
     h2_degas_energy_vs_detidx->Draw();
     c_degas_energy_vs_detidx->cd(0);
     dir_degas_energy->Append(c_degas_energy_vs_detidx);
 
-    c_degas_energy_summed = new TCanvas("c_degas_energy_summed","Calibrated Degas spectra summed all dets",650,350);
+    c_degas_energy_summed = new TCanvas(canvasName("c_degas_energy_summed"),"Calibrated Degas spectra summed all dets",650,350);
     h1_degas_energy_summed = MakeTH1(dir_degas_energy, "F", "h1_degas_energy_summed","Calibrated Degas spectra summed all dets",fenergy_nbins,fenergy_bin_low,fenergy_bin_high, "Energy [keV]", kOrange-3, kBlue+2);
     h1_degas_energy_summed->Draw();
     c_degas_energy_summed->cd(0);
     dir_degas_energy->Append(c_degas_energy_summed);
 
     // Spectra relating to SCI41:
-    c_degas_energy_summed_vetosci41 = new TCanvas("c_degas_energy_summed_vetosci41","Calibrated Degas spectra summed all dets veto sci41",650,350);
+    c_degas_energy_summed_vetosci41 = new TCanvas(canvasName("c_degas_energy_summed_vetosci41"),"Calibrated Degas spectra summed all dets veto sci41",650,350);
     h1_degas_energy_summed_vetosci41 = MakeTH1(dir_degas_sci41, "F", "h1_degas_energy_summed_vetosci41","Calibrated Degas spectra summed all dets veto sci 41",fenergy_nbins,fenergy_bin_low,fenergy_bin_high, "Energy [keV]", kOrange-3, kBlue+2);
     h1_degas_energy_summed_vetosci41->Draw();
     c_degas_energy_summed_vetosci41->cd(0);
     dir_degas_sci41->Append(c_degas_energy_summed_vetosci41);
 
 
-    c_degas_energy_summed_vs_tsci41 = new TCanvas("c_degas_energy_summed_vs_tsci41","Calibrated Degas spectra summed all energyies vs t(det) - t(sci41)",650,350);
+    c_degas_energy_summed_vs_tsci41 = new TCanvas(canvasName("c_degas_energy_summed_vs_tsci41"),"Calibrated Degas spectra summed all energyies vs t(det) - t(sci41)",650,350);
     h2_degas_energy_summed_vs_tsci41 = MakeTH2(dir_degas_sci41, "F", "h2_degas_energy_summed_vs_tsci41","Calibrated Degas spectra summed all energyies vs t(det) - t(sci41)",1000,-500,5000,fenergy_nbins,fenergy_bin_low,fenergy_bin_high, "Time difference [ns]", "Energy [keV]");
     h2_degas_energy_summed_vs_tsci41->Draw();
     c_degas_energy_summed_vs_tsci41->cd(0);
     dir_degas_sci41->Append(c_degas_energy_summed_vs_tsci41);
 
-    c_degas_energy_summed_vs_tsci41_cut = new TCanvas("c_degas_energy_summed_vs_tsci41_cut","Calibrated Degas spectra summed all energyies, t(det) - t(sci41) > 200 ns",650,350);
+    c_degas_energy_summed_vs_tsci41_cut = new TCanvas(canvasName("c_degas_energy_summed_vs_tsci41_cut"),"Calibrated Degas spectra summed all energyies, t(det) - t(sci41) > 200 ns",650,350);
     h1_degas_energy_summed_vs_tsci41_cut = MakeTH1(dir_degas_sci41, "F", "h1_degas_energy_summed_vs_tsci41_cut","Calibrated Degas spectra summed all energyies, t(det) - t(sci41) > 200 ns",fenergy_nbins,fenergy_bin_low,fenergy_bin_high, "Energy [keV]", kOrange-3, kBlue+2);
     h1_degas_energy_summed_vs_tsci41_cut->Draw();
     c_degas_energy_summed_vs_tsci41_cut->cd(0);
     dir_degas_sci41->Append(c_degas_energy_summed_vs_tsci41_cut);
 
-    c_degas_energy_energy_vetosci41 = new TCanvas("c_degas_energy_energy_vetosci41","Calibrated Degas spectra summed all energies, t(det) - t(sci41) > 200 ns",650,350);
+    c_degas_energy_energy_vetosci41 = new TCanvas(canvasName("c_degas_energy_energy_vetosci41"),"Calibrated Degas spectra summed all energies, t(det) - t(sci41) > 200 ns",650,350);
     h2_degas_energy_energy_vetosci41 = MakeTH2(dir_degas_sci41, "F", "h2_degas_energy_energy_vetosci41","Calibrated Degas spectra summed all energies, t(det) - t(sci41) > 200 ns",fenergy_nbins,fenergy_bin_low,fenergy_bin_high,fenergy_nbins,fenergy_bin_low,fenergy_bin_high, "Energy [keV]", "Energy [keV]");
     h2_degas_energy_energy_vetosci41->Draw();
     c_degas_energy_energy_vetosci41->cd(0);
     dir_degas_sci41->Append(c_degas_energy_energy_vetosci41);
 
-    c_degas_energy_energy_sci41_cut = new TCanvas("c_degas_energy_energy_sci41_cut","Calibrated Degas spectra summed all energies, t(det) - t(sci41) > 200 ns",650,350);
+    c_degas_energy_energy_sci41_cut = new TCanvas(canvasName("c_degas_energy_energy_sci41_cut"),"Calibrated Degas spectra summed all energies, t(det) - t(sci41) > 200 ns",650,350);
     h2_degas_energy_energy_sci41_cut = MakeTH2(dir_degas_sci41, "F", "h2_degas_energy_energy_sci41_cut","Calibrated Degas spectra summed all energies, t(det) - t(sci41) > 200 ns",fenergy_nbins,fenergy_bin_low,fenergy_bin_high,fenergy_nbins,fenergy_bin_low,fenergy_bin_high, "Energy [keV]", "Energy [keV]");
     h2_degas_energy_energy_sci41_cut->Draw();
     c_degas_energy_energy_sci41_cut->cd(0);
@@ -192,7 +198,7 @@ InitStatus DegasOnlineSpectra::Init()
 
 
     dir_degas_multiplicity->cd();
-    c_degas_multiplicity = new TCanvas("c_degas_multiplicity","Multiplicity of Degas events",650,350);
+    c_degas_multiplicity = new TCanvas(canvasName("c_degas_multiplicity"),"Multiplicity of Degas events",650,350);
     h1_degas_multiplicity = MakeTH1(dir_degas_multiplicity, "I", "h1_degas_multiplicity","Multiplicity of Degas events",number_of_detectors_to_plot,0,number_of_detectors_to_plot, "Event Multiplicity", kRed-3, kBlack);
     h1_degas_multiplicity->Draw();
     dir_degas_multiplicity->Append(c_degas_multiplicity);
@@ -209,7 +215,7 @@ InitStatus DegasOnlineSpectra::Init()
         name << "time_differences_rel_" << dt_reference_detectors.at(ihist).first << "_" << dt_reference_detectors.at(ihist).second << "_energy_gate_" << (int)dt_reference_detectors_energy_gates.at(ihist).first << "_" << (int)dt_reference_detectors_energy_gates.at(ihist).second;
         dir_degas_time_differences[ihist] = dir_degas->mkdir(name.str().c_str());
 
-        c_degas_time_differences  = new TCanvas(Form("c_degas_time_differences_rel_det_%d_%d_energy_gate_%d_%d",dt_reference_detectors.at(ihist).first,dt_reference_detectors.at(ihist).second,(int)dt_reference_detectors_energy_gates.at(ihist).first,(int)dt_reference_detectors_energy_gates.at(ihist).second),"degas relative time differences",650,350);
+        c_degas_time_differences  = new TCanvas(canvasName(Form("c_degas_time_differences_rel_det_%d_%d_energy_gate_%d_%d",dt_reference_detectors.at(ihist).first,dt_reference_detectors.at(ihist).second,(int)dt_reference_detectors_energy_gates.at(ihist).first,(int)dt_reference_detectors_energy_gates.at(ihist).second)),"degas relative time differences",650,350);
         c_degas_time_differences->Divide((number_of_detectors_to_plot<5) ? number_of_detectors_to_plot : 5,(number_of_detectors_to_plot%5==0) ? (number_of_detectors_to_plot/5) : (number_of_detectors_to_plot/5 + 1));
         h1_degas_time_differences[ihist] = new TH1*[number_of_detectors_to_plot];
 
@@ -222,7 +228,7 @@ InitStatus DegasOnlineSpectra::Init()
         c_degas_time_differences->cd(0);
         dir_degas_time_differences[ihist]->Append(c_degas_time_differences);
 
-        c_degas_time_differences_vs_energy  = new TCanvas(Form("c_degas_time_differences_rel_det_%d_%d_vs_energy_energy_gate_%d_%d",dt_reference_detectors.at(ihist).first,dt_reference_detectors.at(ihist).second,(int)dt_reference_detectors_energy_gates.at(ihist).first,(int)dt_reference_detectors_energy_gates.at(ihist).second),"degas relative time differences vs energy",650,350);
+        c_degas_time_differences_vs_energy  = new TCanvas(canvasName(Form("c_degas_time_differences_rel_det_%d_%d_vs_energy_energy_gate_%d_%d",dt_reference_detectors.at(ihist).first,dt_reference_detectors.at(ihist).second,(int)dt_reference_detectors_energy_gates.at(ihist).first,(int)dt_reference_detectors_energy_gates.at(ihist).second)),"degas relative time differences vs energy",650,350);
         c_degas_time_differences_vs_energy->Divide((number_of_detectors_to_plot<5) ? number_of_detectors_to_plot : 5,(number_of_detectors_to_plot%5==0) ? (number_of_detectors_to_plot/5) : (number_of_detectors_to_plot/5 + 1));
         h2_degas_time_differences_vs_energy[ihist] = new TH2*[number_of_detectors_to_plot];
 
@@ -244,7 +250,7 @@ InitStatus DegasOnlineSpectra::Init()
     for (int i = 0; i < number_of_detectors_to_plot; i++) h1_degas_rates[i] = MakeTH1(dir_degas_rates, "I", Form("h1_degas_rates_det%i_crystal%i", crystals_to_plot.at(i).first, crystals_to_plot.at(i).second), Form("DEGAS Rate Detector %i Crystal %i", crystals_to_plot.at(i).first, crystals_to_plot.at(i).second), 1800, 0, 1800, "Time [2s]", kCyan, kBlack);
 
 
-    c_degas_hitpattern = new TCanvas("c_degas_hitpattern","Hit pattern DEGAS",650,350);
+    c_degas_hitpattern = new TCanvas(canvasName("c_degas_hitpattern"),"Hit pattern DEGAS",650,350);
     h1_degas_hitpattern = MakeTH1(dir_degas_hitpattern, "I", "h1_degas_hitpattern","Hit pattern of DEGAS",number_of_detectors_to_plot,0,number_of_detectors_to_plot, "Crystal", kRed-3, kBlack);
     for (int ihist = 0; ihist < number_of_detectors_to_plot; ihist++)
     {
@@ -261,7 +267,7 @@ InitStatus DegasOnlineSpectra::Init()
     // RESOLUTIONS:
     f1_gaussian = new TF1("f1_gaussian","gaus",centroid_resolution-width_resolution,centroid_resolution+width_resolution);
 
-    c1_degas_energy_last  = new TCanvas("c1_degas_energy_last","Calibrated Degas spectra",650,350);
+    c1_degas_energy_last  = new TCanvas(canvasName("c1_degas_energy_last"),"Calibrated Degas spectra",650,350);
     c1_degas_energy_last->Divide((number_of_detectors_to_plot<5) ? number_of_detectors_to_plot : 5,(number_of_detectors_to_plot%5==0) ? (number_of_detectors_to_plot/5) : (number_of_detectors_to_plot/5 + 1));
     h1_degas_energy_last = new TH1*[number_of_detectors_to_plot];
     for (int ihist = 0; ihist < number_of_detectors_to_plot; ihist++)
@@ -273,7 +279,7 @@ InitStatus DegasOnlineSpectra::Init()
     c1_degas_energy_last->cd(0);
     dir_degas_resolution->Append(c1_degas_energy_last);
 
-    c1_degas_energy_last_fitted  = new TCanvas("c1_degas_energy_last_fitted","Calibrated Degas spectra",650,350);
+    c1_degas_energy_last_fitted  = new TCanvas(canvasName("c1_degas_energy_last_fitted"),"Calibrated Degas spectra",650,350);
     c1_degas_energy_last_fitted->Divide((number_of_detectors_to_plot<5) ? number_of_detectors_to_plot : 5,(number_of_detectors_to_plot%5==0) ? (number_of_detectors_to_plot/5) : (number_of_detectors_to_plot/5 + 1));
     h1_degas_energy_last_fitted = new TH1*[number_of_detectors_to_plot];
     for (int ihist = 0; ihist < number_of_detectors_to_plot; ihist++)
@@ -286,7 +292,7 @@ InitStatus DegasOnlineSpectra::Init()
     dir_degas_resolution->Append(c1_degas_energy_last_fitted);
 
     dir_degas_resolution->cd();
-    c_last_resolutions_FWHM = new TCanvas("c_last_resolutions_FWHM",Form("Last measurement of the resolution at E = %i keV DEGAS",(int)centroid_resolution),650,350);
+    c_last_resolutions_FWHM = new TCanvas(canvasName("c_last_resolutions_FWHM"),Form("Last measurement of the resolution at E = %i keV DEGAS",(int)centroid_resolution),650,350);
     c_last_resolutions_FWHM->Divide(3);
     c_last_resolutions_FWHM->cd(1);
 
@@ -326,7 +332,7 @@ InitStatus DegasOnlineSpectra::Init()
     h1_last_resolutions_gratio->Draw("HIST");
     dir_degas_resolution->Append(c_last_resolutions_FWHM);
 
-    c_resolutions_FWHM  = new TCanvas("c_resolutions_FWHM","Resolutions",650,350);
+    c_resolutions_FWHM  = new TCanvas(canvasName("c_resolutions_FWHM"),"Resolutions",650,350);
     c_resolutions_FWHM->Divide((number_of_detectors_to_plot<5) ? number_of_detectors_to_plot : 5,(number_of_detectors_to_plot%5==0) ? (number_of_detectors_to_plot/5) : (number_of_detectors_to_plot/5 + 1));
     g1_resolutions_FWHM = new TGraph*[number_of_detectors_to_plot];
     for (int ihist = 0; ihist < number_of_detectors_to_plot; ihist++)
@@ -344,7 +350,7 @@ InitStatus DegasOnlineSpectra::Init()
     dir_degas_resolution->Append(c_resolutions_FWHM);
 
 
-    c_resolutions_FWTM  = new TCanvas("c_resolutions_FWTM","Resolutions",650,350);
+    c_resolutions_FWTM  = new TCanvas(canvasName("c_resolutions_FWTM"),"Resolutions",650,350);
     c_resolutions_FWTM->Divide((number_of_detectors_to_plot<5) ? number_of_detectors_to_plot : 5,(number_of_detectors_to_plot%5==0) ? (number_of_detectors_to_plot/5) : (number_of_detectors_to_plot/5 + 1));
     g1_resolutions_FWTM = new TGraph*[number_of_detectors_to_plot];
     for (int ihist = 0; ihist < number_of_detectors_to_plot; ihist++)
@@ -362,7 +368,7 @@ InitStatus DegasOnlineSpectra::Init()
     dir_degas_resolution->Append(c_resolutions_FWTM);
 
 
-    c_resolutions_gratio  = new TCanvas("c_resolutions_gratio","Resolutions",650,350);
+    c_resolutions_gratio  = new TCanvas(canvasName("c_resolutions_gratio"),"Resolutions",650,350);
     c_resolutions_gratio->Divide((number_of_detectors_to_plot<5) ? number_of_detectors_to_plot : 5,(number_of_detectors_to_plot%5==0) ? (number_of_detectors_to_plot/5) : (number_of_detectors_to_plot/5 + 1));
     g1_resolutions_gratio = new TGraph*[number_of_detectors_to_plot];
     for (int ihist = 0; ihist < number_of_detectors_to_plot; ihist++)
@@ -396,7 +402,12 @@ void DegasOnlineSpectra::Reset_Histo() {
     }
 }
 
-void DegasOnlineSpectra::Exec(Option_t* option)
+void DegasOnlineSpectra::Exec(Option_t*)
+{
+    FillEvent();
+}
+
+void DegasOnlineSpectra::FillEvent()
 {
     int sc41_hits_seen = 0;
     if (fHitGe && fHitGe->GetEntriesFast() > 0)

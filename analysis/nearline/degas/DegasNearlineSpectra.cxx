@@ -86,8 +86,8 @@ InitStatus DegasNearlineSpectra::Init()
 
     TDirectory* tmp = gDirectory;
     FairRootManager::Instance()->GetOutFile()->cd();
-    dir_degas = gDirectory->mkdir("DEGAS");
-    gDirectory->cd("DEGAS");
+    dir_degas = gDirectory->mkdir(fSpectraDirectory.IsNull() ? "DEGAS" : fSpectraDirectory.Data());
+    if (!dir_degas || !dir_degas->cd()) return kFATAL;
 
     dir_degas_energy = dir_degas->mkdir("Calibrated Energy Spectra");
     dir_degas_drift = dir_degas->mkdir("Drift Time Spectra");
@@ -178,7 +178,13 @@ InitStatus DegasNearlineSpectra::Init()
     return kSUCCESS;
 }
 
-void DegasNearlineSpectra::Exec(Option_t* option){
+void DegasNearlineSpectra::Exec(Option_t*)
+{
+    FillEvent();
+}
+
+void DegasNearlineSpectra::FillEvent()
+{
 
     if (fHitGe && fHitGe->GetEntriesFast() > 0){
 
@@ -372,7 +378,7 @@ void DegasNearlineSpectra::FinishEvent()
 
 void DegasNearlineSpectra::FinishTask()
 {
-    if (fNEvents == 0)
+    if (fNEvents == 0 && fSpectraDirectory.IsNull())
     {
         c4LOG(warning, "No events processed, no histograms written.");
         return;

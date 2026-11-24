@@ -23,6 +23,9 @@ class TDirectory;
 class bPlastNearlineSpectra : public FairTask
 {
     public:
+        void SetSpectraDirectory(const TString& name) { fSpectraDirectory = name; }
+        void FillEvent();
+
         bPlastNearlineSpectra();
         bPlastNearlineSpectra(const TString& name, Int_t verbose = 1);
 
@@ -37,6 +40,7 @@ class bPlastNearlineSpectra : public FairTask
         virtual void FinishTask();
     
     private:
+        TString fSpectraDirectory; //! Alternate directory for gated spectra
         TClonesArray* fHitbPlastTwinpeaks;
 
         TbPlastConfiguration const* bplast_conf;

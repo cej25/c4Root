@@ -61,6 +61,10 @@ FatimaNearlineSpectra::~FatimaNearlineSpectra()
 
 InitStatus FatimaNearlineSpectra::Init()
 {
+    const auto canvasName = [this](const char* name) {
+        return fSpectraDirectory.IsNull() ? TString(name) : fSpectraDirectory + "_" + name;
+    };
+
     FairRootManager* mgr = FairRootManager::Instance();
     c4LOG_IF(fatal, NULL == mgr, "FairRootManager not found");
 
@@ -74,8 +78,8 @@ InitStatus FatimaNearlineSpectra::Init()
     
     TDirectory* tmp = gDirectory;
     FairRootManager::Instance()->GetOutFile()->cd();
-    dir_fatima = gDirectory->mkdir("FATIMA");
-    gDirectory->cd("FATIMA");
+    dir_fatima = gDirectory->mkdir(fSpectraDirectory.IsNull() ? "FATIMA" : fSpectraDirectory.Data());
+    if (!dir_fatima || !dir_fatima->cd()) return kFATAL;
 
     dir_fatima_slowToT = gDirectory->mkdir("SlowToT"); // do these just exist in bplast already lol
     dir_fatima_fastToT = gDirectory->mkdir("FastToT");
@@ -145,7 +149,7 @@ InitStatus FatimaNearlineSpectra::Init()
 
     // Spectra relating to SCI41:
     // dir_fatima_sci41->cd();   
-    c_fatima_energy_summed_vs_tsci41 = new TCanvas("c_fatima_energy_summed_vs_tsci41","Calibrated FATIMA spectra summed all energyies vs t(det) - t(sci41)",650,350);
+    c_fatima_energy_summed_vs_tsci41 = new TCanvas(canvasName("c_fatima_energy_summed_vs_tsci41"),"Calibrated FATIMA spectra summed all energyies vs t(det) - t(sci41)",650,350);
     h2_fatima_energy_summed_vs_tsci41 = MakeTH2(dir_fatima_sci41, "F", "h2_fatima_energy_summed_vs_tsci41","Calibrated FATIMA spectra summed all energyies vs t(det) - t(sci41)",1000,-500,5000,fenergy_nbins,fenergy_bin_low,fenergy_bin_high, "Time difference [ns]", "Energy [keV]");
     // h2_fatima_energy_summed_vs_tsci41 = new TH2F("h2_fatima_energy_summed_vs_tsci41","Calibrated FATIMA spectra summed all energyies vs t(det) - t(sci41)",1000,-500,5000,fenergy_nbins,fenergy_bin_low,fenergy_bin_high);
     // h2_fatima_energy_summed_vs_tsci41->GetXaxis()->SetTitle("time difference (ns)");
@@ -154,7 +158,7 @@ InitStatus FatimaNearlineSpectra::Init()
     c_fatima_energy_summed_vs_tsci41->cd(0);
     dir_fatima_sci41->Append(c_fatima_energy_summed_vs_tsci41);
 
-    c_fatima_energy_summed_vs_tsci41_cut = new TCanvas("c_fatima_energy_summed_vs_tsci41_cut","Calibrated FATIMA spectra summed all energyies, prompt flash cut",650,350);
+    c_fatima_energy_summed_vs_tsci41_cut = new TCanvas(canvasName("c_fatima_energy_summed_vs_tsci41_cut"),"Calibrated FATIMA spectra summed all energyies, prompt flash cut",650,350);
     h1_fatima_energy_summed_vs_tsci41_cut = MakeTH1(dir_fatima_sci41, "F", "h1_fatima_energy_summed_vs_tsci41_cut","Calibrated FATIMA spectra summed all energies, prompt flash cut",fenergy_nbins,fenergy_bin_low,fenergy_bin_high, "Energy [keV]", kMagenta, kBlue+2);
     // h1_fatima_energy_summed_vs_tsci41_cut = new TH1F("h1_fatima_energy_summed_vs_tsci41_cut","Calibrated FATIMA spectra summed all energyies, prompt flash cut",fenergy_nbins,fenergy_bin_low,fenergy_bin_high);
     // h1_fatima_energy_summed_vs_tsci41_cut->GetXaxis()->SetTitle("energy (keV)");
@@ -162,7 +166,7 @@ InitStatus FatimaNearlineSpectra::Init()
     c_fatima_energy_summed_vs_tsci41_cut->cd(0);
     dir_fatima_sci41->Append(c_fatima_energy_summed_vs_tsci41_cut);
 
-    c_fatima_energy_energy_sci41_cut = new TCanvas("c_fatima_energy_energy_sci41_cut","Calibrated FATIMA spectra summed all energyies, t(det) - t(sci41) > 200 ns",650,350);
+    c_fatima_energy_energy_sci41_cut = new TCanvas(canvasName("c_fatima_energy_energy_sci41_cut"),"Calibrated FATIMA spectra summed all energyies, t(det) - t(sci41) > 200 ns",650,350);
     h2_fatima_energy_energy_sci41_cut = MakeTH2(dir_fatima_sci41, "F", "h2_fatima_energy_energy_sci41_cut","Calibrated FATIMA spectra energy vs energy, prompt flash cut",fenergy_nbins,fenergy_bin_low,fenergy_bin_high,fenergy_nbins,fenergy_bin_low,fenergy_bin_high, "Energy [keV]", "Energy [keV]");
     // h2_fatima_energy_energy_sci41_cut = new TH2F("h2_fatima_energy_energy_sci41_cut","Calibrated FATIMA spectra energy vs energy, prompt flash cut",fenergy_nbins,fenergy_bin_low,fenergy_bin_high,fenergy_nbins,fenergy_bin_low,fenergy_bin_high);
     // h2_fatima_energy_energy_sci41_cut->GetXaxis()->SetTitle("energy (keV)");
@@ -263,7 +267,12 @@ InitStatus FatimaNearlineSpectra::Init()
 }
 
 
-void FatimaNearlineSpectra::Exec(Option_t* option)
+void FatimaNearlineSpectra::Exec(Option_t*)
+{
+    FillEvent();
+}
+
+void FatimaNearlineSpectra::FillEvent()
 {   
     auto start = std::chrono::high_resolution_clock::now();
     
@@ -444,7 +453,7 @@ void FatimaNearlineSpectra::FinishEvent()
 
 void FatimaNearlineSpectra::FinishTask()
 {
-    if(fNEvents == 0){
+    if (fNEvents == 0 && fSpectraDirectory.IsNull()){
         c4LOG(warning, "No events processed, histograms will not be saved!");
         return;
     }

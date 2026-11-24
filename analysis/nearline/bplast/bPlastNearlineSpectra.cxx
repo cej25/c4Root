@@ -74,8 +74,8 @@ InitStatus bPlastNearlineSpectra::Init()
 
     TDirectory* tmp = gDirectory;
     FairRootManager::Instance()->GetOutFile()->cd();
-    dir_bplast = gDirectory->mkdir("bPlast");
-    gDirectory->cd("bPlast");
+    dir_bplast = gDirectory->mkdir(fSpectraDirectory.IsNull() ? "bPlast" : fSpectraDirectory.Data());
+    if (!dir_bplast || !dir_bplast->cd()) return kFATAL;
 
     dir_bplast_slowToT = gDirectory->mkdir("Slow ToT");
     dir_bplast_fastToT = gDirectory->mkdir("Fast ToT");
@@ -154,7 +154,12 @@ InitStatus bPlastNearlineSpectra::Init()
     return kSUCCESS;
 }
 
-void bPlastNearlineSpectra::Exec(Option_t* option)
+void bPlastNearlineSpectra::Exec(Option_t*)
+{
+    FillEvent();
+}
+
+void bPlastNearlineSpectra::FillEvent()
 {   
     auto start = std::chrono::high_resolution_clock::now();
         
@@ -250,7 +255,7 @@ void bPlastNearlineSpectra::FinishEvent()
 
 void bPlastNearlineSpectra::FinishTask()
 {
-    if(fNEvents == 0)
+    if (fNEvents == 0 && fSpectraDirectory.IsNull())
     { 
         c4LOG(warn, "No events found, not saving histograms!");
         return;

@@ -66,11 +66,15 @@ void bPlastOnlineSpectra::SetParContainers()
 
 InitStatus bPlastOnlineSpectra::Init()
 {
+    const auto canvasName = [this](const char* name) {
+        return fSpectraDirectory.IsNull() ? TString(name) : fSpectraDirectory + "_" + name;
+    };
+
     FairRootManager* mgr = FairRootManager::Instance();
     c4LOG_IF(fatal, NULL == mgr, "FairRootManager not found");
 
     FairRunOnline* run = FairRunOnline::Instance();
-    run->GetHttpServer()->Register("", this);
+    if (run && run->GetHttpServer()) run->GetHttpServer()->Register("", this);
 
     header = (EventHeader*)mgr->GetObject("EventHeader.");
     c4LOG_IF(error, !header, "Branch EventHeader. not found");
@@ -82,8 +86,9 @@ InitStatus bPlastOnlineSpectra::Init()
 
     TDirectory::TContext ctx(nullptr);
 
-    dir_bplast = new TDirectory("bPlast","bPlast", "", 0);
+    dir_bplast = new TDirectory(fSpectraDirectory.IsNull() ? "bPlast" : fSpectraDirectory.Data(),"bPlast", "", 0);
     // mgr->Register("bPlast", "bPlast Directory", dir_bplast, false); // allow other tasks to access directory.
+    if (!histograms) return kFATAL;
     histograms->Add(dir_bplast);
 
     dir_bplast_slowToT = dir_bplast->mkdir("Slow ToT");
@@ -107,7 +112,7 @@ InitStatus bPlastOnlineSpectra::Init()
     h2_bplast_fastToT_vs_slowToT.resize(nDetectors+1);
 
     // Slow ToT
-    c_bplast_slowToT  = new TCanvas("c_bplast_slowToT","slow ToT bPlast spectra",1200,800);
+    c_bplast_slowToT  = new TCanvas(canvasName("c_bplast_slowToT"),"slow ToT bPlast spectra",1200,800);
     c_bplast_slowToT->Divide(5,(nDetectors%5==0) ? (nDetectors/5) : (nDetectors/5 + 1));
     h1_bplast_slowToT.resize(nDetectors+1); // index from 1
     for (int ihist = 1; ihist <= nDetectors; ihist++)
@@ -120,7 +125,7 @@ InitStatus bPlastOnlineSpectra::Init()
     dir_bplast_slowToT->Append(c_bplast_slowToT);
 
     // Fast ToT
-    c_bplast_fastToT  = new TCanvas("c_bplast_fastToT","Fast ToT bPlast spectra",1200,800);
+    c_bplast_fastToT  = new TCanvas(canvasName("c_bplast_fastToT"),"Fast ToT bPlast spectra",1200,800);
     c_bplast_fastToT->Divide(5,(nDetectors%5==0) ? (nDetectors/5) : (nDetectors/5 + 1));
     h1_bplast_fastToT.resize(nDetectors+1);
     for (int ihist = 1; ihist <= nDetectors; ihist++)
@@ -134,7 +139,7 @@ InitStatus bPlastOnlineSpectra::Init()
 
     // Hit Pattern
     dir_bplast_hitpattern->cd();
-    c_bplast_hitpatterns = new TCanvas("c_bplast_hitpatterns","bPlast Hit Pattern",1200,800);
+    c_bplast_hitpatterns = new TCanvas(canvasName("c_bplast_hitpatterns"),"bPlast Hit Pattern",1200,800);
     c_bplast_hitpatterns->Divide(2,1);
     c_bplast_hitpatterns->cd(1);
     h1_bplast_hitpatterns.resize(2); // this is hard coded yeah i know, but we aren't going to more bplasts?
@@ -147,7 +152,7 @@ InitStatus bPlastOnlineSpectra::Init()
     dir_bplast_hitpattern->Append(c_bplast_hitpatterns);
 
     // tamex card hit pattern
-    c_bplast_tamex_card_hitpattern  = new TCanvas("c_bplast_tamex_card_hitpattern","bPlast Tamex Card Hit Pattern",1200,800);
+    c_bplast_tamex_card_hitpattern  = new TCanvas(canvasName("c_bplast_tamex_card_hitpattern"),"bPlast Tamex Card Hit Pattern",1200,800);
     c_bplast_tamex_card_hitpattern->Divide(5,(nTamexBoards%5==0) ? (nTamexBoards/5) : (nTamexBoards/5 + 1));
     h1_bplast_tamex_card_hitpattern.resize(nTamexBoards);
     for (int ihist = 0; ihist < nTamexBoards; ihist++)
@@ -159,7 +164,7 @@ InitStatus bPlastOnlineSpectra::Init()
     c_bplast_tamex_card_hitpattern->cd(0);
     dir_bplast_hitpattern->Append(c_bplast_tamex_card_hitpattern);
 
-    c_bplast_fast_v_slow  = new TCanvas("c_bplast_fast_v_slow","fast vs slow ToT bplast spectra",1200,800);
+    c_bplast_fast_v_slow  = new TCanvas(canvasName("c_bplast_fast_v_slow"),"fast vs slow ToT bplast spectra",1200,800);
     c_bplast_fast_v_slow->Divide(5,(nDetectors%5==0) ? (nDetectors/5) : (nDetectors/5 + 1));
     h2_bplast_fastToT_vs_slowToT.resize(nDetectors+1);
     for (int ihist = 1; ihist <= nDetectors; ihist++)
@@ -171,7 +176,7 @@ InitStatus bPlastOnlineSpectra::Init()
     c_bplast_fast_v_slow->cd(0);
     dir_bplast_fast_vs_slow->Append(c_bplast_fast_v_slow);
 
-    c_bplast_multiplicity  = new TCanvas("c_bplast_multiplicity","bPlast multiplicity spectra",1200,800);
+    c_bplast_multiplicity  = new TCanvas(canvasName("c_bplast_multiplicity"),"bPlast multiplicity spectra",1200,800);
     c_bplast_multiplicity->Divide(2,3);
     c_bplast_multiplicity->cd(1);
     h1_bplast_multiplicity[0] = MakeTH1(dir_bplast_hitpattern, "F", "h1_bplast_multiplicity_upstream","Upstream bPlast multiplicity => 2",64,0,64, "Channel Multiplicity", kRed-3, kBlack);
@@ -199,7 +204,7 @@ InitStatus bPlastOnlineSpectra::Init()
     c_bplast_multiplicity->cd(0);
     dir_bplast_hitpattern->Append(c_bplast_multiplicity);
 
-    c_bplast_wr_time_diff  = new TCanvas("c_bplast_wr_time_diff","bPlast WR time difference",1200,800);
+    c_bplast_wr_time_diff  = new TCanvas(canvasName("c_bplast_wr_time_diff"),"bPlast WR time difference",1200,800);
     h1_bplast_wr_time_diff = MakeTH1(dir_bplast_hitpattern, "F", "h1_bplast_wr_time_diff","bPlast WR time difference",1e3,-1e2,5e5, "White Rabbit Event Time Difference [ns]", kViolet, kBlue+2);
     h1_bplast_wr_time_diff->Draw();
     c_bplast_wr_time_diff->cd(0);
@@ -213,7 +218,8 @@ InitStatus bPlastOnlineSpectra::Init()
         h1_bplast_rates[ihist] = MakeTH1(dir_bplast_rates,"I",Form("h1_bplast_rates_%d",ihist),Form("bPlast Rates for Channel %d",ihist),1800,0,1800,"Time [10 minute binning]",kCyan,kBlack);
     }
 
-    run->GetHttpServer()->RegisterCommand("Reset_bPlast_Histos", Form("/Objects/%s/->Reset_Histo()", GetName()));
+    if (run && run->GetHttpServer())
+        run->GetHttpServer()->RegisterCommand(fSpectraDirectory.IsNull() ? "Reset_bPlast_Histos" : Form("Reset_%s", fSpectraDirectory.Data()), Form("/Objects/%s/->Reset_Histo()", GetName()));
 
     return kSUCCESS;
 
@@ -231,7 +237,12 @@ void bPlastOnlineSpectra::Reset_Histo() {
     }
 }
 
-void bPlastOnlineSpectra::Exec(Option_t* option)
+void bPlastOnlineSpectra::Exec(Option_t*)
+{
+    FillEvent();
+}
+
+void bPlastOnlineSpectra::FillEvent()
 {   
     auto start = std::chrono::high_resolution_clock::now();
 

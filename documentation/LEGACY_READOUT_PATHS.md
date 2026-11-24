@@ -10,7 +10,7 @@ A file listed for removal is a candidate once its callers and any required ROOT 
 
 - **Remove after both dependencies are gone:** `c4data/fatimaData/FatimaTwinpeaksData.{h,cxx}`.
 - **Update:** `c4source/fatima/FatimaRaw2Cal.{h,cxx}`. Move the matcher to the pulse representation used by the new path, then retire the old branch lookup, transient `TClonesArray` and standalone TAMEX input option when their callers have moved. Preserve `FatimaTwinpeaksCalData` and `FatimaTimeMachineData` for their consumers.
-- **Review raw-type includes:** `analysis/correlations/FatimaGermaniumCorrelations.cxx`, `analysis/correlations/FrsFatimaCorrelations.cxx`, `analysis/correlations/FrsFatimaCorrelationsNearline.cxx` and the commented example in `c4source/test/TestReader.cxx`.
+- **Review raw-type includes:** `analysis/correlations/FatimaGermaniumCorrelations.cxx`, `analysis/correlations/FrsFatimaCorrelations.cxx`, `analysis/correlations/nearline/FrsFatimaCorrelationsNearline.cxx` and the commented example in `c4source/test/TestReader.cxx`.
 
 ## bPlast and BGO TAMEX
 
@@ -35,7 +35,7 @@ Both readers still default to the old path. On that path they do fine-time calib
 | `c4source/fatima/FatimaVmeReader.{h,cxx}`, `FatimaVmeRaw2Cal.{h,cxx}`, `c4data/fatimaData/FatimaVmeData.{h,cxx}` | Switch the macros and old-tree readers after validating the new output. These are removal candidates once those consumers are gone. |
 | `c4source/fatima/FatimaRaw2Cal.{h,cxx}`, `FatimaVmeCalibrator.{h,cxx}` | Keep the detector raw path. Review `UseVmeRawInput` and the fallback for separate `V1751RawData` and `V1290RawData` ROOT branches. The underlying hit types also serve the structured FATIMA and BB7 paths. Keep `c4data/digitisers/vmeData/VmeDigitiserRawData.{h,cxx}`. |
 | `c4data/fatimaData/FatimaVmeCalData.{h,cxx}` | Review individual types. This file pair holds the older calibrated types and the new `FatimaVmeQdcCalHit` and `FatimaVmeTdcCalHit` types. Keep the pair for the new output. |
-| `analysis/online/fatima/FatimaVmeOnlineSpectra.{h,cxx}`, `analysis/nearline/fatima/FatimaVmeNearlineSpectra.{h,cxx}`, `analysis/nearline/wr/WhiterabbitCorrelationNearline.{h,cxx}`, `analysis/online/wr/WhiterabbitCorrelationOnline.{h,cxx}`, `analysis/correlations/FrsFatimaVmeCorrelations.{h,cxx}` | Review raw diagnostics and the old calibrated branches `FatimaVmeCalData`, `FatimaVmeQDCCalData`, `FatimaVmeTDCCalData`, `FatimaVmeResiduals` and `FatimaVmeTimeMachineData`. Include the currently disabled FRS–FATIMA VME task when checking callers. |
+| `analysis/online/fatima/FatimaVmeOnlineSpectra.{h,cxx}`, `analysis/nearline/fatima/FatimaVmeNearlineSpectra.{h,cxx}`, `analysis/correlations/nearline/WhiterabbitCorrelationNearline.{h,cxx}`, `analysis/correlations/online/WhiterabbitCorrelationOnline.{h,cxx}`, `analysis/correlations/FrsFatimaVmeCorrelations.{h,cxx}` | Review raw diagnostics and the old calibrated branches `FatimaVmeCalData`, `FatimaVmeQDCCalData`, `FatimaVmeTDCCalData`, `FatimaVmeResiduals` and `FatimaVmeTimeMachineData`. Include the currently disabled FRS–FATIMA VME task when checking callers. |
 
 The new calibrator publishes separate QDC and TDC calibrated hits. Before removing the old task, check detector assignment, calibrated timing and spectra, residual signals, and Time Machine output used by the affected runs. Keep the common VME decoder, its safety helpers, `tests/vme_digitiser_decode_test.cxx` and `tests/s100_fatima_vme_subevent_test.py`.
 
@@ -76,15 +76,15 @@ These are tracked references, including commented examples and tasks with select
 
 ### Germanium and DEGAS analysis
 
-- `analysis/correlations/` — `AidaGermaniumCorrelations.cxx`, `FatimaGermaniumCorrelations.cxx`, `FrsGermaniumCorrelations.cxx`, `FrsGermaniumCorrelationsNearline.cxx`, `bPlastGermaniumCorrelations.cxx`
+- `analysis/correlations/` — `AidaGermaniumCorrelations.cxx`, `FatimaGermaniumCorrelations.cxx`, `FrsGermaniumCorrelations.cxx`, `bPlastGermaniumCorrelations.cxx`
 - `analysis/correlations/triplePlusCorrs/` — `BetaIonCorrelations.cxx`, `FrsAidaBplastGermaniumCorrelations.cxx`
 - `analysis/nearline/bgo/` — `BGONearlineSpectra.cxx`
-- `analysis/nearline/fatima/` — `FatimaTimingAnalysisSummedGeGated.cxx`
+- `analysis/correlations/nearline/` — `FatimaTimingAnalysisSummedGeGated.cxx`, `FrsGermaniumCorrelationsNearline.cxx`
 - `analysis/nearline/germanium/` — `GermaniumNearlineSpectra.cxx`, `GermaniumResolution.cxx`
-- `analysis/nearline/wr/` — `WhiterabbitCorrelationNearline.cxx`
+- `analysis/correlations/nearline/` — `WhiterabbitCorrelationNearline.cxx`
 - `analysis/online/bgo/` — `BGOOnlineSpectra.h`
 - `analysis/online/germanium/` — `GermaniumLabTest.cxx`, `GermaniumOnlineSpectra.cxx`, `GermaniumOnlineSpectra.h`
-- `analysis/online/onlineCorrelations/` — `BB7GermaniumCorrelationsOnline.cxx`, `bPlastGermaniumCorrelationsOnline.h`
+- `analysis/correlations/online/` — `BB7GermaniumCorrelationsOnline.cxx`, `bPlastGermaniumCorrelationsOnline.h`
 - `c4source/germanium/` — `GermaniumCal2Anl.cxx`, `GermaniumRaw2Cal.cxx`, `GermaniumReader.cxx`, `GermaniumTraceReader.cxx`
 
 ## Before deleting a path

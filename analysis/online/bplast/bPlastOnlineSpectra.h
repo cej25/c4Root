@@ -23,6 +23,9 @@ class TDirectory;
 class bPlastOnlineSpectra : public FairTask
 {
     public:
+        void SetSpectraDirectory(const TString& name) { fSpectraDirectory = name; }
+        void FillEvent();
+
         bPlastOnlineSpectra();
         bPlastOnlineSpectra(const TString& name, Int_t verbose = 1);
         
@@ -44,6 +47,7 @@ class bPlastOnlineSpectra : public FairTask
 
     
     private:
+        TString fSpectraDirectory; //! Alternate directory for gated spectra
         std::map<std::pair<int, int>, std::pair<int, std::pair<char, char>>> bplast_map;
 
         EventHeader* header;

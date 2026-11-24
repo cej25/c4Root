@@ -33,7 +33,12 @@ ${C4ROOT_SOURCE_DIR}/analysis/nearline
 ${C4ROOT_SOURCE_DIR}/analysis/nearline/bplast
 ${C4ROOT_SOURCE_DIR}/analysis/online
 ${C4ROOT_SOURCE_DIR}/analysis/online/frs
-${C4ROOT_SOURCE_DIR}/correlations
+${C4ROOT_SOURCE_DIR}/analysis/correlations
+${C4ROOT_SOURCE_DIR}/analysis/nearline/degas
+${C4ROOT_SOURCE_DIR}/analysis/nearline/fatima
+${C4ROOT_SOURCE_DIR}/analysis/online/degas
+${C4ROOT_SOURCE_DIR}/analysis/online/fatima
+${C4ROOT_SOURCE_DIR}/analysis/online/bplast
 ${C4ROOT_SOURCE_DIR}/c4source
 ${C4ROOT_SOURCE_DIR}/c4source/frs
 ${C4ROOT_SOURCE_DIR}/c4source/base
@@ -72,8 +77,6 @@ set(SRCS
 ./online/frs/FrsCalSpectra.cxx
 ./online/bgo/BGOOnlineSpectra.cxx
 ./online/degas/DegasBGOOnlineSpectra.cxx
-./online/timemachine/TimeMachineOnline.cxx
-./online/wr/WhiterabbitCorrelationOnline.cxx
 ./online/bb7/BB7OnlineSpectra.cxx
 ./online/bb7/BB7FebexOnlineSpectra.cxx
 ./online/fimp/FimpOnlineSpectra.cxx
@@ -91,8 +94,6 @@ set(SRCS
 ./nearline/degas/DegasNearlineSpectra.cxx
 ./nearline/bgo/BGONearlineSpectra.cxx
 ./nearline/degas/DegasBGONearlineSpectra.cxx
-./nearline/wr/WhiterabbitCorrelationNearline.cxx
-./nearline/timemachine/TimeMachineNearline.cxx
 ./nearline/lisa/LisaNearlineSpectra.cxx
 ./nearline/lisa/LisaNearlineSpectraDaq.cxx
 ./nearline/lisa/LisaNearlineSpectraAna.cxx
@@ -105,36 +106,43 @@ set(SRCS
 ./nearline/stefan/StefanNearlineSpectra.cxx
 
 ## correlations ##
+./correlations/online/TimeMachineOnline.cxx
+./correlations/online/WhiterabbitCorrelationOnline.cxx
+./correlations/nearline/WhiterabbitCorrelationNearline.cxx
+./correlations/nearline/TimeMachineNearline.cxx
+./correlations/IonCorrelations.cxx
+./correlations/online/IonCorrelationsOnline.cxx
+./correlations/nearline/IonCorrelationsNearline.cxx
 ./correlations/FrsAidaCorrelations.cxx
-./online/onlineCorrelations/FrsAidaCorrelationsOnline.cxx
+./correlations/online/FrsAidaCorrelationsOnline.cxx
 ./correlations/FrsFatimaCorrelations.cxx
 #./correlations/FrsFatimaVmeCorrelations.cxx
 ./correlations/FrsGermaniumCorrelations.cxx
 ./correlations/FrsDegasCorrelations.cxx
-./correlations/FrsFatimaCorrelationsNearline.cxx
-./correlations/FrsGermaniumCorrelationsNearline.cxx
-./correlations/FrsDegasCorrelationsNearline.cxx
+./correlations/nearline/FrsFatimaCorrelationsNearline.cxx
+./correlations/nearline/FrsGermaniumCorrelationsNearline.cxx
+./correlations/nearline/FrsDegasCorrelationsNearline.cxx
 ./correlations/AidaFatimaCorrelations.cxx
 ./nearline/fatima/FatimaTimingAnalysis.cxx
 ./nearline/fatima/FatimaTimingAnalysisSummed.cxx
-./nearline/fatima/FatimaTimingAnalysisSummedGeGated.cxx
-./nearline/fatima/FatimaTimingAnalysisSummedDegasGated.cxx
+./correlations/nearline/FatimaTimingAnalysisSummedGeGated.cxx
+./correlations/nearline/FatimaTimingAnalysisSummedDegasGated.cxx
 ./nearline/fatima/FatimaSinglesAnalysis.cxx
 ./correlations/AidaGermaniumCorrelations.cxx
 ./correlations/AidaDegasCorrelations.cxx
 ./correlations/bPlastGermaniumCorrelations.cxx
 ./correlations/bPlastDegasCorrelations.cxx
-./online/onlineCorrelations/bPlastGermaniumCorrelationsOnline.cxx
-./online/onlineCorrelations/bPlastDegasCorrelationsOnline.cxx
-./online/onlineCorrelations/BB7GermaniumCorrelationsOnline.cxx
-./online/onlineCorrelations/BB7DegasCorrelationsOnline.cxx
+./correlations/online/bPlastGermaniumCorrelationsOnline.cxx
+./correlations/online/bPlastDegasCorrelationsOnline.cxx
+./correlations/online/BB7GermaniumCorrelationsOnline.cxx
+./correlations/online/BB7DegasCorrelationsOnline.cxx
 #./correlations/FrsBplastCorrelations.cxx
 ./correlations/triplePlusCorrs/BetaIonCorrelations.cxx
 ./correlations/triplePlusCorrs/BetaIonDegasCorrelations.cxx
 
 
 #./correlations/FrsBplastCorrelations.cxx
-./online/onlineCorrelations/LisaFrsCorrelationsOnline.cxx
+./correlations/online/LisaFrsCorrelationsOnline.cxx
 ./correlations/LisaFrsCorrelations.cxx
 
 )
